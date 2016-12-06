@@ -214,11 +214,11 @@ export class ChatDirect {
                 });
             } else {
                 toastr.error(data.data, '获取消息失败!');
-                window.location = utils.getBaseUrl() + wurl('path') + `#/login?redirect=${encodeURIComponent(this.originalHref)}`;
+                utils.redirect2Login(this.originalHref);
             }
         }).always((xhr, sts, error) => {
             if (sts == 'error') { // for loal dev & debug.
-                window.location = utils.getBaseUrl() + wurl('path') + `#/login?redirect=${encodeURIComponent(this.originalHref)}`;
+                utils.redirect2Login(this.originalHref);
             }
         });
     }
@@ -280,11 +280,15 @@ export class ChatDirect {
                 } else {
                     toastr.error(data.data, '轮询获取消息失败!');
                 }
-            }).fail(() => {
+            }).fail((xhr, sts) => {
                 stopCb();
-                utils.errorAutoTry(() => {
-                    resetCb();
-                });
+                if (xhr && xhr.status == 401) {
+                    utils.redirect2Login(this.originalHref);
+                } else {
+                    utils.errorAutoTry(() => {
+                        resetCb();
+                    });
+                }
             });
         });
     }
