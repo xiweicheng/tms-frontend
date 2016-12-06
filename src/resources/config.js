@@ -10,6 +10,11 @@ import {
     default as NProgress
 }
 from 'nprogress';
+import utils from 'common/common-utils';
+import {
+    default as wurl
+}
+from 'wurl';
 
 export class Config {
 
@@ -48,6 +53,7 @@ export class Config {
 
                             if (resp.status == 401) {
                                 toastr.error('用户未登录!');
+                                utils.redirect2Login();
                                 return;
                             }
                         }
@@ -91,9 +97,11 @@ export class Config {
         // $(document).ajaxComplete(function(event, request, settings) {
         //     console.log(request);
         // });
-        // $(document).ajaxError(function(event, request, settings) {
-        //     console.log(request);
-        // });
+        $(document).ajaxError(function(event, xhr, settings) {
+            if (xhr && xhr.status == 401) {
+                utils.redirect2Login();
+            }
+        });
 
         return this;
     }
