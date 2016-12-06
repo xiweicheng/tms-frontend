@@ -1,3 +1,7 @@
+import {
+    default as wurl
+}
+from 'wurl';
 export class CommonUtils {
 
     /**
@@ -13,6 +17,17 @@ export class CommonUtils {
             }
         }
         return '';
+    }
+
+    redirect2Login(redirectUrl) {
+        let redirect = this.urlQuery('redirect');
+        if (!redirect) {
+            redirectUrl = redirectUrl ? redirectUrl : wurl();
+            window.location = this.getBaseUrl() + wurl('path') + `#/login?redirect=${encodeURIComponent(redirectUrl)}`;
+        } else {
+            console.log('url has contains ?redirect');
+        }
+
     }
 
     /**
