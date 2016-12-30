@@ -1,0 +1,17 @@
+<template>
+    <div class="ui left visible segment sidebar tms-left-sidebar">
+        <div class="tms-header">
+            <h1 class="ui header"><a href="/admin/dynamic?scroll=1">私聊频道</a></h1>
+            <input value.bind="filter" focusin.trigger="chatToUserFilerFocusinHanlder()" keyup.trigger="chatToUserFilerKeyupHanlder($event)" type="text" placeholder="私聊对象查找">
+            <i title="清空过滤输入" click.delegate="clearFilterHandler()" class="bordered close icon link small"></i>
+        </div>
+        <div ref="userListRef" class="ui middle aligned selection list">
+            <a repeat.for="item of users" title="${item.username}" show.bind="!item.hidden" href="#/chat/@${item.username}" class="item ${item.username == chatTo ? 'active' : ''}" data-id="${item.username}">
+                <i class="circular icon user"></i>
+                <div class="content">
+                    <div style="color: black;">${item.name ? item.name : item.username}</div>
+                </div>
+            </a>
+        </div>
+    </div>
+</template>

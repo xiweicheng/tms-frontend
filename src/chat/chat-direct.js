@@ -1,30 +1,12 @@
 import { bindable, inject } from 'aurelia-framework';
 import poll from "common/common-poll";
-import 'jquery.scrollto'; // https://github.com/flesler/jquery.scrollTo
-import {
-    default as marked
-} from 'marked'; // https://github.com/chjj/marked
 import {
     default as Clipboard
 } from 'clipboard';
-import 'common/common-plugin'
 import {
     default as Dropzone
 } from 'dropzone';
-import 'timeago';
-import {
-    default as autosize
-} from 'autosize';
-import 'hotkeys';
-import {
-    default as hljs
-} from 'highlight';
-import {
-    EventAggregator
-}
-from 'aurelia-event-aggregator';
 
-@inject(EventAggregator)
 export class ChatDirect {
 
     @bindable content = '';
@@ -45,13 +27,6 @@ export class ChatDirect {
      * 构造函数
      */
     constructor(ea) {
-        this.eventAggregator = ea;
-        marked.setOptions({
-            breaks: true,
-            highlight: function(code) {
-                return hljs.highlightAuto(code).value;
-            }
-        });
 
         Dropzone.autoDiscover = false;
         this.poll = poll;
@@ -68,12 +43,44 @@ export class ChatDirect {
 
     initSubscribeEvent() {
 
-        this.subscribe = this.eventAggregator.subscribe(nsCons.EVENT_CHAT_MSG_SENDED, (payload) => {
+        this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_MSG_SENDED, (payload) => {
 
             if (!this.first) {
                 this._init(false);
             }
         });
+
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_SIDEBAR_TOGGLE, (payload) => {
+
+            this.isRightSidebarShow = payload.isShow;
+            if (this.isRightSidebarShow) {
+                $(this.contentBodyRef).width($(this.contentRef).width() - 392);
+            }
+        });
+
+        this.subscribe3 = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_RESULT, (payload) => {
+
+            let result = payload.result;
+            this.searchChats = result.content;
+            _.each(this.searchChats, (item) => {
+                item.contentMd = marked(item.content);
+            });
+            this.lastSearch = result.last;
+            this.moreSearchCnt = result.totalElements - (result.number + 1) * result.size;
+        });
+    }
+
+    /**
+     * 当数据绑定引擎从视图解除绑定时被调用
+     */
+    unbind() {
+
+        this.subscribe.dispose();
+        this.subscribe2.dispose();
+        this.subscribe3.dispose();
+
+        clearInterval(this.timeagoTimer);
+        poll.stop();
     }
 
     convertMd(chats) {
@@ -114,8 +121,6 @@ export class ChatDirect {
         routeConfig.navModel.setTitle(`${name} | 私聊 | TMS`);
 
         this.init(this.chatName);
-
-        $(this.chatToDropdownRef).dropdown('set selected', this.chatTo);
 
         if (this.markId) {
             if ('pushState' in history) {
@@ -293,36 +298,6 @@ export class ChatDirect {
         });
     }
 
-    /**
-     * 当数据绑定引擎从视图解除绑定时被调用
-     */
-    unbind() {
-        poll.stop();
-    }
-
-    chatToUserFilerKeyupHanlder(evt) {
-        _.each(this.users, (item) => {
-            item.hidden = item.username.indexOf(this.filter) == -1;
-        });
-
-        if (evt.keyCode === 13) {
-            let user = _.find(this.users, {
-                hidden: false
-            });
-
-            if (user) {
-                window.location = wurl('path') + `#/chat/@${user.username}`;
-            }
-        }
-    }
-
-    clearFilterHandler() {
-        this.filter = '';
-        _.each(this.users, (item) => {
-            item.hidden = item.username.indexOf(this.filter) == -1;
-        });
-    }
-
     deleteHandler(item) {
 
         this.emConfirmModal.show({
@@ -404,7 +379,6 @@ export class ChatDirect {
             return false;
         } else if (evt.ctrlKey && evt.keyCode === 85) {
             $(txtRef).next('.tms-edit-actions').find('.upload').click();
-            // this.eventAggregator.publish(nsCons.EVENT_CHAT_MSG_EDIT_UPLOAD, { target: txtRef });
             return false;
         } else if (evt.keyCode === 27) {
             this.editCancelHandler(evt, item, txtRef);
@@ -413,18 +387,10 @@ export class ChatDirect {
         return true;
     }
 
-    chatToUserFilerFocusinHanlder() {
-        $(this.userListRef).scrollTo(`a.item[data-id="${this.chatTo}"]`);
-    }
-
     /**
      * 当视图被附加到DOM中时被调用
      */
     attached() {
-
-        _.delay(() => {
-            $(this.userListRef).scrollTo(`a.item[data-id="${this.chatTo}"]`);
-        }, 1000);
 
         let tg = timeago();
         this.timeagoTimer = setInterval(() => {
@@ -433,7 +399,6 @@ export class ChatDirect {
             });
         }, 5000);
 
-        this.initSearch();
         this.initHotkeys();
         this.initFocusedComment();
 
@@ -460,81 +425,6 @@ export class ChatDirect {
         });
     }
 
-    initSearch() {
-        var source = [];
-        if (localStorage) {
-            var v = localStorage.getItem('tms/chat-direct:search');
-            source = v ? $.parseJSON(v) : [];
-        }
-        this.searchSource = source;
-        $(this.searchRef).search({
-            source: source,
-            onSelect: (result, response) => {
-                this.searchHandler();
-            },
-            onResults: () => {
-                $(this.searchRef).search('hide results');
-            }
-        });
-
-    }
-
-    searchKeyupHandler(evt) {
-        if (evt.keyCode === 13) {
-            this.searchHandler();
-        }
-        return true;
-    }
-
-    searchHandler() {
-
-        $(this.searchRef).search('hide results');
-
-        let search = $(this.searchInputRef).val();
-
-        if (!search || search.length < 2) {
-            toastr.error('检索条件至少需要两个字符!');
-            return;
-        }
-
-        this.search = search;
-
-        // 保存检索值
-        var isExists = false;
-        $.each(this.searchSource, function(index, val) {
-            if (val.title == search) {
-                isExists = true;
-                return false;
-            }
-        });
-        if (!isExists) {
-            this.searchSource.splice(0, 0, {
-                title: search
-            });
-            $(this.searchRef).search({
-                source: _.clone(this.searchSource)
-            });
-        }
-        localStorage && localStorage.setItem('tms/chat-direct:search', JSON.stringify(this.searchSource));
-
-        this.searchingP = $.get('/admin/chat/direct/search', {
-            search: this.search,
-            size: 20,
-            page: 0
-        }, (data) => {
-            if (data.success) {
-                this.toggleRightSidebar(true);
-                this.searchChats = data.data.content;
-                _.each(this.searchChats, (item) => {
-                    item.contentMd = marked(item.content);
-                });
-                this.searchPage = data.data;
-                this.lastSearch = data.data.last;
-                this.moreSearchCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
-            }
-        });
-    }
-
     searchMoreHandler() {
 
         this.searchMoreP = $.get('/admin/chat/direct/search', {
@@ -548,15 +438,10 @@ export class ChatDirect {
                 });
                 this.searchChats = _.concat(this.searchChats, data.data.content);
 
-                this.searchPage = data.data;
                 this.lastSearch = data.data.last;
                 this.moreSearchCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
             }
         });
-    }
-
-    clearSearchHandler() {
-        $(this.searchInputRef).val('').focus();
     }
 
     getScrollTargetComment(isPrev) {
@@ -603,15 +488,9 @@ export class ChatDirect {
         }).bind('keydown', 'alt+ctrl+down', () => {
             event.preventDefault();
             this.scrollTo($(this.commentsRef).children('.comment.item:last'));
-        }).bind('keydown', 'ctrl+.', () => {
-            event.preventDefault();
-            this.toggleRightSidebar();
-        }).bind('keydown', 'ctrl+k', () => {
-            event.preventDefault();
-            $(this.chatToDropdownRef).dropdown('toggle');
         }).bind('keydown', 'ctrl+i', () => {
             event.preventDefault();
-            this.eventAggregator.publish(nsCons.HOTKEY, {
+            ea.publish(nsCons.HOTKEY, {
                 key: 'ctrl+i'
             });
         }).bind('keydown', 'o', () => {
@@ -620,64 +499,6 @@ export class ChatDirect {
             item && (item.isOpen = !item.isOpen);
         });
 
-        $(this.filterChatToUser).bind('keydown', 'ctrl+k', () => {
-            event.preventDefault();
-            $(this.chatToDropdownRef).dropdown('toggle');
-        });
-    }
-
-    /**
-     * 当数据绑定引擎从视图解除绑定时被调用
-     */
-    unbind() {
-        clearInterval(this.timeagoTimer);
-    }
-
-    initChatToDropdownHandler(last) {
-        if (last) {
-            _.defer(() => {
-                $(this.chatToDropdownRef).dropdown().dropdown('set selected', this.chatTo).dropdown({
-                    onChange: (value, text, $choice) => {
-                        window.location = wurl('path') + `#/chat/@${value}`;
-                    }
-                });
-            });
-        }
-    }
-
-    sibebarRightHandler() {
-        this.toggleRightSidebar();
-    }
-
-    toggleRightSidebar(asShow) {
-        if (_.isUndefined(asShow)) {
-            this.isRightSidebarShow = !this.isRightSidebarShow;
-        } else {
-            this.isRightSidebarShow = asShow;
-        }
-
-        if (this.isRightSidebarShow) {
-            $(this.contentBodyRef).width($(this.contentRef).width() - 392);
-        }
-    }
-
-    starHandler() {
-        this.isStarShow = !this.isStarShow;
-        this.toggleRightSidebar(this.isStarShow);
-    }
-
-    searchFocusinHandler() {
-        $(this.searchInputRef).css('width', 'auto');
-        $(this.searchRemoveRef).show();
-        this.isActiveSearch = true;
-    }
-
-    searchFocusoutHandler() {
-        if (!$(this.searchInputRef).val()) {
-            $(this.searchInputRef).css('width', '100px');
-            $(this.searchRemoveRef).hide();
-            this.isActiveSearch = false;
-        }
     }
 
     gotoChatHandler(item) {

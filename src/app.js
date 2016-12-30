@@ -1,21 +1,8 @@
 import 'tms-semantic-ui';
-import {
-    default as toastr
-}
-from 'toastr';
-import {
-    default as wurl
-}
-from 'wurl';
-import 'lodash';
-import utils from 'common/common-utils';
-import 'common/common-constant';
 
 export class App {
+
     constructor() {
-        window.toastr = toastr;
-        window.wurl = wurl;
-        window.utils = utils;
         this.init();
     }
 
