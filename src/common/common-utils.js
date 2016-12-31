@@ -171,6 +171,19 @@ export class CommonUtils {
             callback && callback.call(null);
         });
     }
+    
+    /**
+     * 获取聊天对象标识
+     * @param  {[type]} name [description]
+     * @return {[type]}      [description]
+     */
+    getChatName(name) {
+        if (_.startsWith(name, '@')) {
+            return name.substr(1);
+        } else {
+            return name;
+        }
+    }
 
 }
 

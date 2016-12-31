@@ -147,6 +147,7 @@
       {
         "name": "vendor-bundle.js",
         "prepend": [
+          "node_modules/babel-polyfill/dist/polyfill.min.js",
           "node_modules/bluebird/js/browser/bluebird.core.js",
           "node_modules/requirejs/require.js"
         ],

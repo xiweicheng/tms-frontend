@@ -12,6 +12,24 @@ define('app',['exports', 'tms-semantic-ui'], function (exports) {
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     var App = exports.App = function () {
         function App() {
             _classCallCheck(this, App);
@@ -19,76 +37,80 @@ define('app',['exports', 'tms-semantic-ui'], function (exports) {
             this.init();
         }
 
-        App.prototype.init = function init() {
-            _.extend($.fn.form.settings.prompt, {
-                empty: '{name}不能为空',
-                checked: '{name}必须被勾选',
-                email: '{name}必须是正确的邮件格式',
-                url: '{name}必须是正确的URL格式',
-                regExp: '{name}验证格式不正确',
-                integer: '{name}必须为一个整数',
-                decimal: '{name}必须为一个小数',
-                number: '{name}必须设置为一个数字',
-                is: '{name}必须符合规则"{ruleValue}"',
-                isExactly: '{name}必须精确匹配"{ruleValue}"',
-                not: '{name}不能设置为"{ruleValue}"',
-                notExactly: '{name}不能准确设置为"{ruleValue}"',
-                contain: '{name}需要包含"{ruleValue}"',
-                containExactly: '{name}需要精确包含"{ruleValue}"',
-                doesntContain: '{name}不能包含"{ruleValue}"',
-                doesntContainExactly: '{name}不能精确包含"{ruleValue}"',
-                minLength: '{name}必须至少包含{ruleValue}个字符',
-                length: '{name}必须为{ruleValue}个字符',
-                exactLength: '{name}必须为{ruleValue}个字符',
-                maxLength: '{name}必须不能超过{ruleValue}个字符',
-                match: '{name}必须匹配{ruleValue}字段',
-                different: '{name}必须不同于{ruleValue}字段',
-                creditCard: '{name}必须是一个正确的信用卡数字格式',
-                minCount: '{name}必须至少包含{ruleValue}个选择项',
-                exactCount: '{name}必须准确包含{ruleValue}个选择项',
-                maxCount: '{name} 必须有{ruleValue}或者更少个选择项'
-            });
-        };
+        _createClass(App, [{
+            key: 'init',
+            value: function init() {
+                _.extend($.fn.form.settings.prompt, {
+                    empty: '{name}不能为空',
+                    checked: '{name}必须被勾选',
+                    email: '{name}必须是正确的邮件格式',
+                    url: '{name}必须是正确的URL格式',
+                    regExp: '{name}验证格式不正确',
+                    integer: '{name}必须为一个整数',
+                    decimal: '{name}必须为一个小数',
+                    number: '{name}必须设置为一个数字',
+                    is: '{name}必须符合规则"{ruleValue}"',
+                    isExactly: '{name}必须精确匹配"{ruleValue}"',
+                    not: '{name}不能设置为"{ruleValue}"',
+                    notExactly: '{name}不能准确设置为"{ruleValue}"',
+                    contain: '{name}需要包含"{ruleValue}"',
+                    containExactly: '{name}需要精确包含"{ruleValue}"',
+                    doesntContain: '{name}不能包含"{ruleValue}"',
+                    doesntContainExactly: '{name}不能精确包含"{ruleValue}"',
+                    minLength: '{name}必须至少包含{ruleValue}个字符',
+                    length: '{name}必须为{ruleValue}个字符',
+                    exactLength: '{name}必须为{ruleValue}个字符',
+                    maxLength: '{name}必须不能超过{ruleValue}个字符',
+                    match: '{name}必须匹配{ruleValue}字段',
+                    different: '{name}必须不同于{ruleValue}字段',
+                    creditCard: '{name}必须是一个正确的信用卡数字格式',
+                    minCount: '{name}必须至少包含{ruleValue}个选择项',
+                    exactCount: '{name}必须准确包含{ruleValue}个选择项',
+                    maxCount: '{name} 必须有{ruleValue}或者更少个选择项'
+                });
+            }
+        }, {
+            key: 'configureRouter',
+            value: function configureRouter(config, router) {
 
-        App.prototype.configureRouter = function configureRouter(config, router) {
+                config.map([{
+                    route: ['pwd-reset'],
+                    name: 'reset',
+                    moduleId: 'user/user-pwd-reset',
+                    nav: false,
+                    title: '密码重置'
+                }, {
+                    route: ['register'],
+                    name: 'register',
+                    moduleId: 'user/user-register',
+                    nav: false,
+                    title: '用户注册'
+                }, {
+                    route: ['chat/:username'],
+                    name: 'chat',
+                    moduleId: 'chat/chat-direct',
+                    nav: false,
+                    title: '私聊'
+                }, {
+                    route: ['login'],
+                    name: 'login',
+                    moduleId: 'user/user-login',
+                    nav: false,
+                    title: '登录'
+                }, {
+                    route: ['test'],
+                    name: 'test',
+                    moduleId: 'test/test-lifecycle',
+                    nav: false,
+                    title: '测试'
+                }, {
+                    route: '',
+                    redirect: 'chat/@admin'
+                }]);
 
-            config.map([{
-                route: ['pwd-reset'],
-                name: 'reset',
-                moduleId: 'user/user-pwd-reset',
-                nav: false,
-                title: '密码重置'
-            }, {
-                route: ['register'],
-                name: 'register',
-                moduleId: 'user/user-register',
-                nav: false,
-                title: '用户注册'
-            }, {
-                route: ['chat/:username'],
-                name: 'chat',
-                moduleId: 'chat/chat-direct',
-                nav: false,
-                title: '私聊'
-            }, {
-                route: ['login'],
-                name: 'login',
-                moduleId: 'user/user-login',
-                nav: false,
-                title: '登录'
-            }, {
-                route: ['test'],
-                name: 'test',
-                moduleId: 'test/test-lifecycle',
-                nav: false,
-                title: '测试'
-            }, {
-                route: '',
-                redirect: 'chat/@admin'
-            }]);
-
-            this.router = router;
-        };
+                this.router = router;
+            }
+        }]);
 
         return App;
     }();
@@ -142,7 +164,7 @@ define('main',['exports', './environment'], function (exports, _environment) {
     });
   }
 });
-define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll', 'clipboard', 'dropzone'], function (exports, _aureliaFramework, _commonPoll, _clipboard, _dropzone) {
+define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll', 'clipboard', 'dropzone', './chat-service'], function (exports, _aureliaFramework, _commonPoll, _clipboard, _dropzone, _chatService) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -156,20 +178,12 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
 
     var _dropzone2 = _interopRequireDefault(_dropzone);
 
+    var _chatService2 = _interopRequireDefault(_chatService);
+
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
             default: obj
         };
-    }
-
-    function _initDefineProp(target, property, descriptor, context) {
-        if (!descriptor) return;
-        Object.defineProperty(target, property, {
-            enumerable: descriptor.enumerable,
-            configurable: descriptor.configurable,
-            writable: descriptor.writable,
-            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
-        });
     }
 
     function _classCallCheck(instance, Constructor) {
@@ -178,51 +192,34 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
         }
     }
 
-    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
-        var desc = {};
-        Object['ke' + 'ys'](descriptor).forEach(function (key) {
-            desc[key] = descriptor[key];
-        });
-        desc.enumerable = !!desc.enumerable;
-        desc.configurable = !!desc.configurable;
-
-        if ('value' in desc || desc.initializer) {
-            desc.writable = true;
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
         }
 
-        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
-            return decorator(target, property, desc) || desc;
-        }, desc);
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
 
-        if (context && desc.initializer !== void 0) {
-            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
-            desc.initializer = undefined;
-        }
-
-        if (desc.initializer === void 0) {
-            Object['define' + 'Property'](target, property, desc);
-            desc = null;
-        }
-
-        return desc;
-    }
-
-    function _initializerWarningHelper(descriptor, context) {
-        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
-    }
-
-    var _desc, _value, _class, _descriptor;
-
-    var ChatDirect = exports.ChatDirect = (_class = function () {
-        function ChatDirect(ea) {
+    var ChatDirect = exports.ChatDirect = function () {
+        function ChatDirect() {
             _classCallCheck(this, ChatDirect);
-
-            _initDefineProp(this, 'content', _descriptor, this);
 
             this.offset = 0;
             this.first = true;
             this.last = true;
             this.originalHref = wurl();
+            this.users = [];
+            this.channels = [];
             this.chatTo = null;
 
 
@@ -238,366 +235,560 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             this.initSubscribeEvent();
         }
 
-        ChatDirect.prototype.initSubscribeEvent = function initSubscribeEvent() {
-            var _this = this;
+        _createClass(ChatDirect, [{
+            key: 'initSubscribeEvent',
+            value: function initSubscribeEvent() {
+                var _this = this;
 
-            this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_MSG_SENDED, function (payload) {
+                this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_MSG_SENDED, function (payload) {
 
-                if (!_this.first) {
-                    _this._init(false);
-                }
-            });
+                    if (!_this.first) {
+                        _this.listChatDirect(false);
+                    }
+                });
 
-            this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_SIDEBAR_TOGGLE, function (payload) {
+                this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_SIDEBAR_TOGGLE, function (payload) {
 
-                _this.isRightSidebarShow = payload.isShow;
-                if (_this.isRightSidebarShow) {
-                    $(_this.contentBodyRef).width($(_this.contentRef).width() - 392);
-                }
-            });
+                    _this.isRightSidebarShow = payload.isShow;
+                    if (_this.isRightSidebarShow) {
+                        $(_this.contentBodyRef).width($(_this.contentRef).width() - 392);
+                    }
+                });
 
-            this.subscribe4 = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, function (payload) {
+                this.subscribe3 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_CREATED, function (payload) {
+                    _this.channels.splice(0, 0, payload.channel);
+                });
 
-                _this.gotoChatItem(payload.chatItem);
-            });
-        };
+                this.subscribe4 = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, function (payload) {
 
-        ChatDirect.prototype.unbind = function unbind() {
-
-            this.subscribe.dispose();
-            this.subscribe2.dispose();
-            this.subscribe4.dispose();
-
-            clearInterval(this.timeagoTimer);
-            _commonPoll2.default.stop();
-        };
-
-        ChatDirect.prototype.convertMd = function convertMd(chats) {
-            _.each(chats, function (item) {
-                item.contentMd = marked(item.content);
-            });
-            return chats;
-        };
-
-        ChatDirect.prototype.getChatName = function getChatName(name) {
-            if (_.startsWith(name, '@')) {
-                return name.substr(1);
-            } else {
-                return name;
+                    _this.gotoChatItem(payload.chatItem);
+                });
             }
-        };
+        }, {
+            key: 'unbind',
+            value: function unbind() {
 
-        ChatDirect.prototype.activate = function activate(params, routeConfig, navigationInstruction) {
+                this.subscribe.dispose();
+                this.subscribe2.dispose();
+                this.subscribe3.dispose();
+                this.subscribe4.dispose();
 
-            this.markId = params.id;
-            this.routeConfig = routeConfig;
+                clearInterval(this.timeagoTimer);
+                _commonPoll2.default.stop();
+            }
+        }, {
+            key: 'convertMd',
+            value: function convertMd(chats) {
+                _.each(chats, function (item) {
+                    item.contentMd = marked(item.content);
+                });
+                return chats;
+            }
+        }, {
+            key: 'activate',
+            value: function activate(params, routeConfig, navigationInstruction) {
+                var _this2 = this;
 
-            this.isAt = _.startsWith(params.username, '@');
-            this.chatName = this.getChatName(params.username);
+                this.markId = params.id;
+                this.routeConfig = routeConfig;
 
-            this.user = _.find(this.users, {
-                username: this.chatName
-            });
+                this.chatId = params.username;
+                this.isAt = _.startsWith(params.username, '@');
+                this.chatTo = utils.getChatName(params.username);
 
-            var name = this.user ? this.user.name : this.chatName;
-            routeConfig.navModel.setTitle(name + ' | \u79C1\u804A | TMS');
+                _chatService2.default.loginUser(true).then(function (user) {
+                    _this2.loginUser = user;
+                });
 
-            this.init(this.chatName);
+                _chatService2.default.listUsers(true).then(function (users) {
+                    _this2.users = users;
+                    if (_this2.isAt) {
+                        _this2.user = _.find(_this2.users, {
+                            username: _this2.chatTo
+                        });
+                        var name = _this2.user ? _this2.user.name : _this2.chatTo;
+                        routeConfig.navModel.setTitle(name + ' | \u79C1\u804A | TMS');
 
-            if (this.markId) {
-                if ('pushState' in history) {
+                        _this2.listChatDirect(true);
+                    }
+                });
+
+                _chatService2.default.listChannels(true).then(function (channels) {
+                    _this2.channels = channels;
+                    if (!_this2.isAt) {
+                        _this2.channel = _.find(_this2.channels, {
+                            name: _this2.chatTo
+                        });
+                        routeConfig.navModel.setTitle(_this2.channel.name + ' | \u79C1\u804A | TMS');
+
+                        _this2.listChatChannel();
+                    }
+                });
+
+                if (this.markId) {
                     history.replaceState(null, '', utils.removeUrlQuery('id'));
-                } else {
-                    window.location.href = utils.removeUrlQuery('id');
                 }
             }
-        };
+        }, {
+            key: 'lastMoreHandler',
+            value: function lastMoreHandler() {
+                var _this3 = this;
 
-        ChatDirect.prototype.lastMoreHandler = function lastMoreHandler() {
-            var _this2 = this;
-
-            var start = _.first(this.chats).id;
-            this.lastMoreP = $.get('/admin/chat/direct/more', {
-                last: true,
-                start: start,
-                size: 20,
-                chatTo: this.chatTo
-            }, function (data) {
-                if (data.success) {
-                    _this2.chats = _.unionBy(_.reverse(_this2.convertMd(data.data)), _this2.chats);
-                    _this2.last = data.msgs[0] - data.data.length <= 0;
-                    !_this2.last && (_this2.lastCnt = data.msgs[0] - data.data.length);
-                    _.defer(function () {
-                        $(_this2.commentsRef).scrollTo('.comment[data-id=' + start + ']', {
-                            offset: _this2.offset
+                var start = _.first(this.chats).id;
+                this.lastMoreP = $.get('/admin/chat/direct/more', {
+                    last: true,
+                    start: start,
+                    size: 20,
+                    chatTo: this.chatTo
+                }, function (data) {
+                    if (data.success) {
+                        _this3.chats = _.unionBy(_.reverse(_this3.convertMd(data.data)), _this3.chats);
+                        _this3.last = data.msgs[0] - data.data.length <= 0;
+                        !_this3.last && (_this3.lastCnt = data.msgs[0] - data.data.length);
+                        _.defer(function () {
+                            $(_this3.commentsRef).scrollTo('.comment[data-id=' + start + ']', {
+                                offset: _this3.offset
+                            });
                         });
-                    });
-                } else {
-                    toastr.error(data.data, '获取更多消息失败!');
-                }
-            });
-        };
+                    } else {
+                        toastr.error(data.data, '获取更多消息失败!');
+                    }
+                });
+            }
+        }, {
+            key: 'firstMoreHandler',
+            value: function firstMoreHandler() {
+                var _this4 = this;
 
-        ChatDirect.prototype.firstMoreHandler = function firstMoreHandler() {
-            var _this3 = this;
-
-            var start = _.last(this.chats).id;
-            this.nextMoreP = $.get('/admin/chat/direct/more', {
-                last: false,
-                start: start,
-                size: 20,
-                chatTo: this.chatTo
-            }, function (data) {
-                if (data.success) {
-                    _this3.chats = _.unionBy(_this3.chats, _this3.convertMd(data.data));
-                    _this3.first = data.msgs[0] - data.data.length <= 0;
-                    !_this3.first && (_this3.firstCnt = data.msgs[0] - data.data.length);
-                    _.defer(function () {
-                        $(_this3.commentsRef).scrollTo('.comment[data-id=' + start + ']', {
-                            offset: _this3.offset
+                var start = _.last(this.chats).id;
+                this.nextMoreP = $.get('/admin/chat/direct/more', {
+                    last: false,
+                    start: start,
+                    size: 20,
+                    chatTo: this.chatTo
+                }, function (data) {
+                    if (data.success) {
+                        _this4.chats = _.unionBy(_this4.chats, _this4.convertMd(data.data));
+                        _this4.first = data.msgs[0] - data.data.length <= 0;
+                        !_this4.first && (_this4.firstCnt = data.msgs[0] - data.data.length);
+                        _.defer(function () {
+                            $(_this4.commentsRef).scrollTo('.comment[data-id=' + start + ']', {
+                                offset: _this4.offset
+                            });
                         });
-                    });
-                } else {
-                    toastr.error(data.data, '获取更多消息失败!');
+                    } else {
+                        toastr.error(data.data, '获取更多消息失败!');
+                    }
+                });
+            }
+        }, {
+            key: 'listChatChannel',
+            value: function listChatChannel() {
+                var _this5 = this;
+
+                $.get('/admin/chat/channel/listBy', {
+                    channelId: this.channel.id,
+                    size: 20
+                }, function (data) {
+                    _this5.processChats(data);
+                });
+            }
+        }, {
+            key: 'listChatDirect',
+            value: function listChatDirect(isCareMarkId) {
+                var _this6 = this;
+
+                var data = {
+                    size: 20,
+                    chatTo: this.chatTo
+                };
+
+                if (this.markId && isCareMarkId) {
+                    data.id = this.markId;
                 }
-            });
-        };
-
-        ChatDirect.prototype._init = function _init(isCareMarkId) {
-            var _this4 = this;
-
-            if (!this.chatTo) {
-                toastr.error('聊天对象未指定!');
-                return;
+                $.get('/admin/chat/direct/list', data, function (data) {
+                    _this6.processChats(data);
+                });
             }
+        }, {
+            key: 'processChats',
+            value: function processChats(data) {
+                var _this7 = this;
 
-            var data = {
-                size: 20,
-                chatTo: this.chatTo
-            };
-
-            if (this.markId && isCareMarkId) {
-                data.id = this.markId;
-            }
-
-            $.get('/admin/chat/direct/list', data, function (data) {
                 if (data.success) {
-                    _this4.chats = _.reverse(_this4.convertMd(data.data.content));
-                    _this4.last = data.data.last;
-                    _this4.first = data.data.first;
-                    !_this4.last && (_this4.lastCnt = data.data.totalElements - data.data.numberOfElements);
-                    !_this4.first && (_this4.firstCnt = data.data.size * data.data.number);
+                    this.chats = _.reverse(this.convertMd(data.data.content));
+                    this.last = data.data.last;
+                    this.first = data.data.first;
+                    !this.last && (this.lastCnt = data.data.totalElements - data.data.numberOfElements);
+                    !this.first && (this.firstCnt = data.data.size * data.data.number);
 
                     _.defer(function () {
 
-                        utils.imgLoaded($(_this4.commentsRef).find('.comment img'), function () {
-                            if (_this4.markId) {
-                                $(_this4.commentsRef).scrollTo('.comment[data-id=' + _this4.markId + ']', {
-                                    offset: _this4.offset
+                        utils.imgLoaded($(_this7.commentsRef).find('.comment img'), function () {
+                            if (_this7.markId) {
+                                $(_this7.commentsRef).scrollTo('.comment[data-id=' + _this7.markId + ']', {
+                                    offset: _this7.offset
                                 });
                             } else {
-                                $(_this4.commentsRef).scrollTo('max');
+                                $(_this7.commentsRef).scrollTo('max');
                             }
                         });
                     });
-                } else {
-                    toastr.error(data.data, '获取消息失败!');
-                    utils.redirect2Login(_this4.originalHref);
                 }
-            }).always(function (xhr, sts, error) {
-                if (sts == 'error') {
-                    utils.redirect2Login(_this4.originalHref);
-                }
-            });
-        };
+            }
+        }, {
+            key: 'pollChats',
+            value: function pollChats() {
+                var _this8 = this;
 
-        ChatDirect.prototype.init = function init(chatTo) {
+                _commonPoll2.default.start(function (resetCb, stopCb) {
 
-            this.chatTo = chatTo;
-            this._init(true);
-        };
-
-        ChatDirect.prototype.bind = function bind(ctx) {
-            var _this5 = this;
-
-            $.get('/admin/user/loginUser', function (data) {
-                if (data.success) {
-                    _this5.loginUser = data.data;
-                } else {
-                    toastr.error(data.data, '获取当前登录用户失败!');
-                }
-            });
-
-            $.get('/admin/user/all', {
-                enabled: true
-            }, function (data) {
-                if (data.success) {
-                    _this5.users = data.data;
-                    _this5.user = _.find(_this5.users, {
-                        username: _this5.chatTo
-                    });
-                    _this5.user && _this5.routeConfig.navModel.setTitle(_this5.user.name + ' | \u79C1\u804A | TMS');
-                } else {
-                    toastr.error(data.data, '获取全部用户失败!');
-                }
-            });
-
-            _commonPoll2.default.start(function (resetCb, stopCb) {
-
-                if (!_this5.chats || !_this5.first) {
-                    return;
-                }
-
-                var lastChat = _.last(_this5.chats);
-
-                $.get('/admin/chat/direct/latest', {
-                    id: lastChat ? lastChat.id : 0,
-                    chatTo: _this5.chatTo
-                }, function (data) {
-                    if (data.success) {
-                        if (data.data.length == 0) {
-                            return;
-                        }
-                        _this5.chats = _.unionBy(_this5.chats, _this5.convertMd(data.data), 'id');
-                        _.defer(function () {
-                            $(_this5.commentsRef).scrollTo('max');
-                        });
-                    } else {
-                        toastr.error(data.data, '轮询获取消息失败!');
+                    if (!_this8.chats || !_this8.first) {
+                        return;
                     }
-                }).fail(function (xhr, sts) {
-                    stopCb();
-                    if (xhr && xhr.status == 401) {
-                        utils.redirect2Login(_this5.originalHref);
-                    } else {
+
+                    var lastChat = _.last(_this8.chats);
+
+                    $.get('/admin/chat/direct/latest', {
+                        id: lastChat ? lastChat.id : 0,
+                        chatTo: _this8.chatTo
+                    }, function (data) {
+                        if (data.success) {
+                            if (data.data.length == 0) {
+                                return;
+                            }
+                            _this8.chats = _.unionBy(_this8.chats, _this8.convertMd(data.data), 'id');
+                            _.defer(function () {
+                                $(_this8.commentsRef).scrollTo('max');
+                            });
+                        } else {
+                            toastr.error(data.data, '轮询获取消息失败!');
+                        }
+                    }).fail(function (xhr, sts) {
+                        stopCb();
                         utils.errorAutoTry(function () {
                             resetCb();
                         });
+                    });
+                });
+            }
+        }, {
+            key: 'bind',
+            value: function bind(ctx) {}
+        }, {
+            key: 'attached',
+            value: function attached() {
+                var _this9 = this;
+
+                var tg = timeago();
+                this.timeagoTimer = setInterval(function () {
+                    $(_this9.chatContainerRef).find('[data-timeago]').each(function (index, el) {
+                        $(el).text(tg.format($(el).attr('data-timeago'), 'zh_CN'));
+                    });
+                }, 5000);
+
+                this.initHotkeys();
+                this.initFocusedComment();
+            }
+        }, {
+            key: 'initFocusedComment',
+            value: function initFocusedComment() {
+                var _this10 = this;
+
+                $(this.commentsRef).on('click', '.comment.item', function (event) {
+                    _this10.focusedComment = $(event.currentTarget);
+                }).on('dblclick', '.comment.item', function (event) {
+                    if (event.ctrlKey) {
+                        (function () {
+                            var chatId = $(event.currentTarget).attr('data-id');
+                            var $t = $(event.currentTarget).find('.content > textarea');
+                            var item = _.find(_this10.chats, { id: Number.parseInt(chatId) });
+
+                            item.isEditing = true;
+                            item.contentOld = item.content;
+                            _.defer(function () {
+                                $t.focus().select();
+                                autosize.update($t.get(0));
+                            });
+                        })();
                     }
                 });
-            });
-        };
-
-        ChatDirect.prototype.attached = function attached() {
-            var _this6 = this;
-
-            var tg = timeago();
-            this.timeagoTimer = setInterval(function () {
-                $(_this6.chatContainerRef).find('[data-timeago]').each(function (index, el) {
-                    $(el).text(tg.format($(el).attr('data-timeago'), 'zh_CN'));
-                });
-            }, 5000);
-
-            this.initHotkeys();
-            this.initFocusedComment();
-        };
-
-        ChatDirect.prototype.initFocusedComment = function initFocusedComment() {
-            var _this7 = this;
-
-            $(this.commentsRef).on('click', '.comment.item', function (event) {
-                _this7.focusedComment = $(event.currentTarget);
-            }).on('dblclick', '.comment.item', function (event) {
-                if (event.ctrlKey) {
-                    (function () {
-                        var chatId = $(event.currentTarget).attr('data-id');
-                        var $t = $(event.currentTarget).find('.content > textarea');
-                        var item = _.find(_this7.chats, { id: Number.parseInt(chatId) });
-
-                        item.isEditing = true;
-                        item.contentOld = item.content;
-                        _.defer(function () {
-                            $t.focus().select();
-                            autosize.update($t.get(0));
-                        });
-                    })();
-                }
-            });
-        };
-
-        ChatDirect.prototype.getScrollTargetComment = function getScrollTargetComment(isPrev) {
-            if (isPrev) {
-                if (this.focusedComment && this.focusedComment.size() === 1) {
-                    var prev = this.focusedComment.prev('.comment.item');
-                    prev.size() === 1 && (this.focusedComment = prev);
-                } else {
-                    this.focusedComment = $(this.commentsRef).children('.comment.item:first');
-                }
-            } else {
-                if (this.focusedComment && this.focusedComment.size() === 1) {
-                    var next = this.focusedComment.next('.comment.item');
-                    next.size() === 1 && (this.focusedComment = next);
-                } else {
-                    this.focusedComment = $(this.commentsRef).children('.comment.item:last');
-                }
             }
-            return this.focusedComment;
-        };
-
-        ChatDirect.prototype.scrollTo = function scrollTo(target) {
-            $(this.commentsRef).scrollTo(target, {
-                offset: this.offset
-            });
-        };
-
-        ChatDirect.prototype.initHotkeys = function initHotkeys() {
-            var _this8 = this;
-
-            $(document).bind('keydown', 'ctrl+u', function (evt) {
-                evt.preventDefault();
-                $(_this8.emChatInputRef.btnItemUploadRef).find('.content').click();
-            }).bind('keydown', 'ctrl+/', function (evt) {
-                evt.preventDefault();
-                _this8.emChatInputRef.emHotkeysModal.show();
-            }).bind('keydown', 'alt+up', function (evt) {
-                evt.preventDefault();
-                _this8.scrollTo(_this8.getScrollTargetComment(true));
-            }).bind('keydown', 'alt+down', function (evt) {
-                evt.preventDefault();
-                _this8.scrollTo(_this8.getScrollTargetComment());
-            }).bind('keydown', 'alt+ctrl+up', function () {
-                event.preventDefault();
-                _this8.scrollTo($(_this8.commentsRef).children('.comment.item:first'));
-            }).bind('keydown', 'alt+ctrl+down', function () {
-                event.preventDefault();
-                _this8.scrollTo($(_this8.commentsRef).children('.comment.item:last'));
-            }).bind('keydown', 'ctrl+i', function () {
-                event.preventDefault();
-                ea.publish(nsCons.HOTKEY, {
-                    key: 'ctrl+i'
-                });
-            });
-        };
-
-        ChatDirect.prototype.gotoChatItem = function gotoChatItem(item) {
-
-            var chat = _.find(this.chats, { id: item.id });
-            if (chat) {
-                $(this.commentsRef).find('.comment[data-id]').removeClass('active');
-                $(this.commentsRef).find('.comment[data-id=' + item.id + ']').addClass('active');
-                $(this.commentsRef).scrollTo('.comment[data-id=' + item.id + ']', {
+        }, {
+            key: 'getScrollTargetComment',
+            value: function getScrollTargetComment(isPrev) {
+                if (isPrev) {
+                    if (this.focusedComment && this.focusedComment.size() === 1) {
+                        var prev = this.focusedComment.prev('.comment.item');
+                        prev.size() === 1 && (this.focusedComment = prev);
+                    } else {
+                        this.focusedComment = $(this.commentsRef).children('.comment.item:first');
+                    }
+                } else {
+                    if (this.focusedComment && this.focusedComment.size() === 1) {
+                        var next = this.focusedComment.next('.comment.item');
+                        next.size() === 1 && (this.focusedComment = next);
+                    } else {
+                        this.focusedComment = $(this.commentsRef).children('.comment.item:last');
+                    }
+                }
+                return this.focusedComment;
+            }
+        }, {
+            key: 'scrollTo',
+            value: function scrollTo(target) {
+                $(this.commentsRef).scrollTo(target, {
                     offset: this.offset
                 });
-            } else {
+            }
+        }, {
+            key: 'initHotkeys',
+            value: function initHotkeys() {
+                var _this11 = this;
 
-                if (this.chatTo == item.chatTo.username) {
-                    this.activate({
-                        id: item.id,
-                        username: '@' + item.chatTo.username
-                    }, this.routeConfig);
+                $(document).bind('keydown', 'ctrl+u', function (evt) {
+                    evt.preventDefault();
+                    $(_this11.emChatInputRef.btnItemUploadRef).find('.content').click();
+                }).bind('keydown', 'ctrl+/', function (evt) {
+                    evt.preventDefault();
+                    _this11.emChatInputRef.emHotkeysModal.show();
+                }).bind('keydown', 'alt+up', function (evt) {
+                    evt.preventDefault();
+                    _this11.scrollTo(_this11.getScrollTargetComment(true));
+                }).bind('keydown', 'alt+down', function (evt) {
+                    evt.preventDefault();
+                    _this11.scrollTo(_this11.getScrollTargetComment());
+                }).bind('keydown', 'alt+ctrl+up', function () {
+                    event.preventDefault();
+                    _this11.scrollTo($(_this11.commentsRef).children('.comment.item:first'));
+                }).bind('keydown', 'alt+ctrl+down', function () {
+                    event.preventDefault();
+                    _this11.scrollTo($(_this11.commentsRef).children('.comment.item:last'));
+                }).bind('keydown', 'ctrl+i', function () {
+                    event.preventDefault();
+                    ea.publish(nsCons.HOTKEY, {
+                        key: 'ctrl+i'
+                    });
+                });
+            }
+        }, {
+            key: 'gotoChatItem',
+            value: function gotoChatItem(item) {
+
+                var chat = _.find(this.chats, { id: item.id });
+                if (chat) {
+                    $(this.commentsRef).find('.comment[data-id]').removeClass('active');
+                    $(this.commentsRef).find('.comment[data-id=' + item.id + ']').addClass('active');
+                    $(this.commentsRef).scrollTo('.comment[data-id=' + item.id + ']', {
+                        offset: this.offset
+                    });
                 } else {
-                    window.location = wurl('path') + ('#/chat/@' + item.chatTo.username + '?id=' + item.id);
+
+                    if (this.chatTo == item.chatTo.username) {
+                        this.activate({
+                            id: item.id,
+                            username: '@' + item.chatTo.username
+                        }, this.routeConfig);
+                    } else {
+                        window.location = wurl('path') + ('#/chat/@' + item.chatTo.username + '?id=' + item.id);
+                    }
                 }
             }
-        };
+        }]);
 
         return ChatDirect;
-    }(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'content', [_aureliaFramework.bindable], {
-        enumerable: true,
-        initializer: function initializer() {
-            return '';
+    }();
+});
+define('chat/chat-service',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    function _asyncToGenerator(fn) {
+        return function () {
+            var gen = fn.apply(this, arguments);
+            return new Promise(function (resolve, reject) {
+                function step(key, arg) {
+                    try {
+                        var info = gen[key](arg);
+                        var value = info.value;
+                    } catch (error) {
+                        reject(error);
+                        return;
+                    }
+
+                    if (info.done) {
+                        resolve(value);
+                    } else {
+                        return Promise.resolve(value).then(function (value) {
+                            step("next", value);
+                        }, function (err) {
+                            step("throw", err);
+                        });
+                    }
+                }
+
+                return step("next");
+            });
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
         }
-    })), _class);
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var ChatService = function () {
+        function ChatService() {
+            _classCallCheck(this, ChatService);
+        }
+
+        _createClass(ChatService, [{
+            key: 'loginUser',
+            value: function () {
+                var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(useCache) {
+                    var _this = this;
+
+                    return regeneratorRuntime.wrap(function _callee$(_context) {
+                        while (1) {
+                            switch (_context.prev = _context.next) {
+                                case 0:
+                                    if (!(!useCache || !this.user)) {
+                                        _context.next = 3;
+                                        break;
+                                    }
+
+                                    _context.next = 3;
+                                    return $.get('/admin/user/loginUser', function (data) {
+                                        if (data.success) {
+                                            _this.user = data.data;
+                                        }
+                                    });
+
+                                case 3:
+                                    return _context.abrupt('return', this.user);
+
+                                case 4:
+                                case 'end':
+                                    return _context.stop();
+                            }
+                        }
+                    }, _callee, this);
+                }));
+
+                function loginUser(_x) {
+                    return _ref.apply(this, arguments);
+                }
+
+                return loginUser;
+            }()
+        }, {
+            key: 'listUsers',
+            value: function () {
+                var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(useCache) {
+                    var _this2 = this;
+
+                    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                        while (1) {
+                            switch (_context2.prev = _context2.next) {
+                                case 0:
+                                    if (!(!useCache || !this.users)) {
+                                        _context2.next = 3;
+                                        break;
+                                    }
+
+                                    _context2.next = 3;
+                                    return $.get('/admin/user/all', {
+                                        enabled: true
+                                    }, function (data) {
+                                        if (data.success) {
+                                            _this2.users = data.data;
+                                        }
+                                    });
+
+                                case 3:
+                                    return _context2.abrupt('return', this.users);
+
+                                case 4:
+                                case 'end':
+                                    return _context2.stop();
+                            }
+                        }
+                    }, _callee2, this);
+                }));
+
+                function listUsers(_x2) {
+                    return _ref2.apply(this, arguments);
+                }
+
+                return listUsers;
+            }()
+        }, {
+            key: 'listChannels',
+            value: function () {
+                var _ref3 = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(useCache) {
+                    var _this3 = this;
+
+                    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                        while (1) {
+                            switch (_context3.prev = _context3.next) {
+                                case 0:
+                                    if (!(!useCache || !this.channels)) {
+                                        _context3.next = 3;
+                                        break;
+                                    }
+
+                                    _context3.next = 3;
+                                    return $.get('/admin/channel/listMy', function (data) {
+                                        if (data.success) {
+                                            _this3.channels = data.data;
+                                        }
+                                    });
+
+                                case 3:
+                                    return _context3.abrupt('return', this.channels);
+
+                                case 4:
+                                case 'end':
+                                    return _context3.stop();
+                            }
+                        }
+                    }, _callee3, this);
+                }));
+
+                function listChannels(_x3) {
+                    return _ref3.apply(this, arguments);
+                }
+
+                return listChannels;
+            }()
+        }]);
+
+        return ChatService;
+    }();
+
+    exports.default = new ChatService();
 });
 define('common/common-constant',[], function () {
     'use strict';
@@ -608,7 +799,8 @@ define('common/common-constant',[], function () {
         EVENT_CHAT_MSG_EDIT_UPLOAD: 'event_chat_msg_edit_upload',
         EVENT_CHAT_SIDEBAR_TOGGLE: 'event_chat_sidebar_toggle',
         EVENT_CHAT_SEARCH_RESULT: 'event_chat_search_result',
-        EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM: 'event_chat_search_goto_chat_item'
+        EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM: 'event_chat_search_goto_chat_item',
+        EVENT_CHAT_CHANNEL_CREATED: 'event_chat_channel_created'
     };
 });
 define('common/common-plugin',[], function () {
@@ -853,137 +1045,174 @@ define('common/common-utils',['exports', 'wurl'], function (exports, _wurl) {
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     var CommonUtils = exports.CommonUtils = function () {
         function CommonUtils() {
             _classCallCheck(this, CommonUtils);
         }
 
-        CommonUtils.prototype.getBaseUrl = function getBaseUrl() {
-            if (typeof _wurl2.default == 'function') {
-                if ((0, _wurl2.default)('port') == 80 || (0, _wurl2.default)('port') == 443) {
-                    return (0, _wurl2.default)('protocol') + '://' + (0, _wurl2.default)('hostname');
-                } else {
-                    return (0, _wurl2.default)('protocol') + '://' + (0, _wurl2.default)('hostname') + ':' + (0, _wurl2.default)('port');
-                }
-            }
-            return '';
-        };
-
-        CommonUtils.prototype.redirect2Login = function redirect2Login(redirectUrl) {
-            var redirect = this.urlQuery('redirect');
-            if (!redirect) {
-                redirectUrl = redirectUrl ? redirectUrl : (0, _wurl2.default)();
-                window.location = this.getBaseUrl() + (0, _wurl2.default)('path') + ('#/login?redirect=' + encodeURIComponent(redirectUrl));
-            } else {
-                console.log('url has contains ?redirect');
-            }
-        };
-
-        CommonUtils.prototype.getHash = function getHash() {
-            var hash = (0, _wurl2.default)('hash');
-            var index = hash.indexOf('?');
-            if (index != -1) {
-                return hash.substring(0, index);
-            }
-
-            return hash;
-        };
-
-        CommonUtils.prototype.urlQuery = function urlQuery(name) {
-            return (0, _wurl2.default)('?' + name) || (0, _wurl2.default)('?' + name, (0, _wurl2.default)('hash'));
-        };
-
-        CommonUtils.prototype.removeUrlQuery = function removeUrlQuery(name, href) {
-
-            var s = href ? href : window.location.href;
-
-            var rs = new RegExp('(&|\\?)?' + name + '=?[^&#]*(.)?', 'g').exec(s);
-
-
-            if (rs) {
-                if (rs[1] == '&') {
-                    return s.replace(new RegExp('&' + name + '=?[^&#]+', 'g'), '');
-                } else if (rs[1] == '?') {
-                    if (rs[2] != '&') {
-                        return s.replace(new RegExp('\\?' + name + '=?[^&#]*', 'g'), '');
+        _createClass(CommonUtils, [{
+            key: 'getBaseUrl',
+            value: function getBaseUrl() {
+                if (typeof _wurl2.default == 'function') {
+                    if ((0, _wurl2.default)('port') == 80 || (0, _wurl2.default)('port') == 443) {
+                        return (0, _wurl2.default)('protocol') + '://' + (0, _wurl2.default)('hostname');
                     } else {
-                        return s.replace(new RegExp('' + name + '=?[^&#]*&', 'g'), '');
+                        return (0, _wurl2.default)('protocol') + '://' + (0, _wurl2.default)('hostname') + ':' + (0, _wurl2.default)('port');
                     }
                 }
+                return '';
             }
-
-            return s;
-        };
-
-        CommonUtils.prototype.errorAutoTry = function errorAutoTry(callback, time) {
-            var _this = this;
-
-            if (this.isRunning) {
-                return;
-            }
-
-            var cnt = time ? time : 10;
-            var timer = null;
-            var $t = toastr.error('\u7F51\u7EDC\u8FDE\u63A5\u9519\u8BEF,' + cnt + '\u79D2\u540E\u81EA\u52A8\u91CD\u8BD5!', null, {
-                "closeButton": false,
-                "timeOut": "0",
-                "preventDuplicates": false,
-                "onclick": function onclick() {
-                    clearInterval(_this.timer);
-                    callback && callback();
+        }, {
+            key: 'redirect2Login',
+            value: function redirect2Login(redirectUrl) {
+                var redirect = this.urlQuery('redirect');
+                if (!redirect) {
+                    redirectUrl = redirectUrl ? redirectUrl : (0, _wurl2.default)();
+                    window.location = this.getBaseUrl() + (0, _wurl2.default)('path') + ('#/login?redirect=' + encodeURIComponent(redirectUrl));
+                } else {
+                    console.log('url has contains ?redirect');
                 }
-            });
+            }
+        }, {
+            key: 'getHash',
+            value: function getHash() {
+                var hash = (0, _wurl2.default)('hash');
+                var index = hash.indexOf('?');
+                if (index != -1) {
+                    return hash.substring(0, index);
+                }
 
-            this.isRunning = true;
-            timer = setInterval(function () {
-                if (cnt === 0) {
-                    clearInterval(timer);
-                    _this.isRunning = false;
-                    toastr.remove();
-                    callback && callback();
+                return hash;
+            }
+        }, {
+            key: 'urlQuery',
+            value: function urlQuery(name) {
+                return (0, _wurl2.default)('?' + name) || (0, _wurl2.default)('?' + name, (0, _wurl2.default)('hash'));
+            }
+        }, {
+            key: 'removeUrlQuery',
+            value: function removeUrlQuery(name, href) {
+
+                var s = href ? href : window.location.href;
+
+                var rs = new RegExp('(&|\\?)?' + name + '=?[^&#]*(.)?', 'g').exec(s);
+
+
+                if (rs) {
+                    if (rs[1] == '&') {
+                        return s.replace(new RegExp('&' + name + '=?[^&#]+', 'g'), '');
+                    } else if (rs[1] == '?') {
+                        if (rs[2] != '&') {
+                            return s.replace(new RegExp('\\?' + name + '=?[^&#]*', 'g'), '');
+                        } else {
+                            return s.replace(new RegExp('' + name + '=?[^&#]*&', 'g'), '');
+                        }
+                    }
+                }
+
+                return s;
+            }
+        }, {
+            key: 'errorAutoTry',
+            value: function errorAutoTry(callback, time) {
+                var _this = this;
+
+                if (this.isRunning) {
                     return;
                 }
-                $t && $t.find('.toast-message').text('\u7F51\u7EDC\u8FDE\u63A5\u9519\u8BEF,' + cnt + '\u79D2\u540E\u81EA\u52A8\u91CD\u8BD5!');
-                cnt--;
-            }, 1000);
-        };
 
-        CommonUtils.prototype.isElementInViewport = function isElementInViewport(el) {
-            if (typeof jQuery === "function" && el instanceof jQuery) {
-                el = el[0];
-            }
-
-            var rect = el.getBoundingClientRect();
-
-            return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
-        };
-
-        CommonUtils.prototype.imgLoaded = function imgLoaded($imgs, callback) {
-            var imgdefereds = [];
-            $imgs.each(function () {
-                var dfd = $.Deferred();
-                $(this).bind('load', function () {
-                    dfd.resolve();
-                }).bind('error', function () {
-                    dfd.resolve();
+                var cnt = time ? time : 10;
+                var timer = null;
+                var $t = toastr.error('\u7F51\u7EDC\u8FDE\u63A5\u9519\u8BEF,' + cnt + '\u79D2\u540E\u81EA\u52A8\u91CD\u8BD5!', null, {
+                    "closeButton": false,
+                    "timeOut": "0",
+                    "preventDuplicates": false,
+                    "onclick": function onclick() {
+                        clearInterval(_this.timer);
+                        callback && callback();
+                    }
                 });
-                if (this.complete) {
-                    dfd.resolve();
+
+                this.isRunning = true;
+                timer = setInterval(function () {
+                    if (cnt === 0) {
+                        clearInterval(timer);
+                        _this.isRunning = false;
+                        toastr.remove();
+                        callback && callback();
+                        return;
+                    }
+                    $t && $t.find('.toast-message').text('\u7F51\u7EDC\u8FDE\u63A5\u9519\u8BEF,' + cnt + '\u79D2\u540E\u81EA\u52A8\u91CD\u8BD5!');
+                    cnt--;
+                }, 1000);
+            }
+        }, {
+            key: 'isElementInViewport',
+            value: function isElementInViewport(el) {
+                if (typeof jQuery === "function" && el instanceof jQuery) {
+                    el = el[0];
                 }
 
-                imgdefereds.push(dfd);
-            });
-            $.when.apply(null, imgdefereds).done(function () {
-                callback && callback.call(null);
-            });
-        };
+                var rect = el.getBoundingClientRect();
+
+                return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+            }
+        }, {
+            key: 'imgLoaded',
+            value: function imgLoaded($imgs, callback) {
+                var imgdefereds = [];
+                $imgs.each(function () {
+                    var dfd = $.Deferred();
+                    $(this).bind('load', function () {
+                        dfd.resolve();
+                    }).bind('error', function () {
+                        dfd.resolve();
+                    });
+                    if (this.complete) {
+                        dfd.resolve();
+                    }
+
+                    imgdefereds.push(dfd);
+                });
+                $.when.apply(null, imgdefereds).done(function () {
+                    callback && callback.call(null);
+                });
+            }
+        }, {
+            key: 'getChatName',
+            value: function getChatName(name) {
+                if (_.startsWith(name, '@')) {
+                    return name.substr(1);
+                } else {
+                    return name;
+                }
+            }
+        }]);
 
         return CommonUtils;
     }();
 
     exports.default = new CommonUtils();
 });
-define('init/config',['exports', 'aurelia-templating-resources', 'aurelia-event-aggregator', 'toastr', 'wurl', 'common/common-utils', 'marked', 'highlight', 'autosize', 'common/common-plugin', 'common/common-constant'], function (exports, _aureliaTemplatingResources, _aureliaEventAggregator, _toastr, _wurl, _commonUtils, _marked, _highlight, _autosize) {
+define('init/config',['exports', 'aurelia-templating-resources', 'aurelia-event-aggregator', 'aurelia-fetch-client', 'toastr', 'wurl', 'common/common-utils', 'marked', 'highlight', 'autosize', 'nprogress', 'isomorphic-fetch', 'common/common-plugin', 'common/common-constant'], function (exports, _aureliaTemplatingResources, _aureliaEventAggregator, _aureliaFetchClient, _toastr, _wurl, _commonUtils, _marked, _highlight, _autosize, _nprogress) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -1003,6 +1232,8 @@ define('init/config',['exports', 'aurelia-templating-resources', 'aurelia-event-
 
     var _autosize2 = _interopRequireDefault(_autosize);
 
+    var _nprogress2 = _interopRequireDefault(_nprogress);
+
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
             default: obj
@@ -1015,64 +1246,157 @@ define('init/config',['exports', 'aurelia-templating-resources', 'aurelia-event-
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     var Config = exports.Config = function () {
         function Config() {
             _classCallCheck(this, Config);
         }
 
-        Config.prototype.initToastr = function initToastr() {
-            _toastr2.default.options.positionClass = 'toast-bottom-center';
-            _toastr2.default.options.preventDuplicates = true;
+        _createClass(Config, [{
+            key: 'initHttp',
+            value: function initHttp() {
+                window.json = function (param) {
+                    console.log(JSON.stringify(param));
+                    return (0, _aureliaFetchClient.json)(param);
+                };
+                window.http = this.aurelia.container.root.get(_aureliaFetchClient.HttpClient);
+                http.configure(function (config) {
+                    config.withDefaults({
+                        credentials: 'same-origin',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'fetch'
+                        }
+                    }).withInterceptor({
+                        request: function request(req) {
+                            _nprogress2.default && _nprogress2.default.start();
+                            return req;
+                        },
+                        requestError: function requestError(req) {
+                            console.log(req);
+                        },
+                        response: function response(resp) {
+                            _nprogress2.default && _nprogress2.default.done();
+                            if (!resp.ok) {
+                                resp.json().then(function (data) {
+                                    _toastr2.default.error(data.message);
+                                });
 
-            return this;
-        };
+                                if (resp.status == 401) {
+                                    _toastr2.default.error('用户未登录!');
+                                    _commonUtils2.default.redirect2Login();
+                                    return;
+                                }
+                            }
 
-        Config.prototype.initMarked = function initMarked() {
-
-            _marked2.default.setOptions({
-                breaks: true,
-                highlight: function highlight(code) {
-                    return _highlight2.default.highlightAuto(code).value;
-                }
-            });
-
-            return this;
-        };
-
-        Config.prototype.initAjax = function initAjax() {
-            $.ajaxSetup({
-                cache: false
-            });
-            return this;
-        };
-
-        Config.prototype.initGlobalVar = function initGlobalVar() {
-            window.toastr = _toastr2.default;
-            window.wurl = _wurl2.default;
-            window.utils = _commonUtils2.default;
-            window.marked = _marked2.default;
-            window.autosize = _autosize2.default;
-            window.bs = this.aurelia.container.root.get(_aureliaTemplatingResources.BindingSignaler);
-            window.ea = this.aurelia.container.root.get(_aureliaEventAggregator.EventAggregator);
-            return this;
-        };
-
-        Config.prototype.initAnimateCss = function initAnimateCss() {
-            $.fn.extend({
-                animateCss: function animateCss(animationName) {
-                    var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-                    this.addClass('animated ' + animationName).one(animationEnd, function () {
-                        $(this).removeClass('animated ' + animationName);
+                            return resp;
+                        },
+                        responseError: function responseError(resp) {
+                            _toastr2.default.error(resp.message, '网络请求错误!');
+                            console.log(resp);
+                        }
                     });
-                }
-            });
-            return this;
-        };
+                });
 
-        Config.prototype.context = function context(aurelia) {
-            this.aurelia = aurelia;
-            return this;
-        };
+                return this;
+            }
+        }, {
+            key: 'initToastr',
+            value: function initToastr() {
+                _toastr2.default.options.positionClass = 'toast-bottom-center';
+                _toastr2.default.options.preventDuplicates = true;
+
+                return this;
+            }
+        }, {
+            key: 'initMarked',
+            value: function initMarked() {
+
+                _marked2.default.setOptions({
+                    breaks: true,
+                    highlight: function highlight(code) {
+                        return _highlight2.default.highlightAuto(code).value;
+                    }
+                });
+
+                return this;
+            }
+        }, {
+            key: 'initAjax',
+            value: function initAjax() {
+                $.ajaxSetup({
+                    cache: false
+                });
+
+                $(document).ajaxSend(function (event, jqxhr, settings) {
+
+                    if (settings.url.lastIndexOf('/chat/direct/latest') == -1) {
+                        _nprogress2.default && _nprogress2.default.start();
+                    }
+                });
+
+                $(document).on('ajaxStop', function () {
+                    _nprogress2.default && _nprogress2.default.done();
+                });
+
+                $(document).ajaxError(function (event, xhr, settings) {
+                    if (xhr && xhr.status == 401) {
+                        _commonUtils2.default.redirect2Login();
+                    }
+                });
+
+                return this;
+            }
+        }, {
+            key: 'initGlobalVar',
+            value: function initGlobalVar() {
+                window.toastr = _toastr2.default;
+                window.wurl = _wurl2.default;
+                window.utils = _commonUtils2.default;
+                window.marked = _marked2.default;
+                window.autosize = _autosize2.default;
+                window.bs = this.aurelia.container.root.get(_aureliaTemplatingResources.BindingSignaler);
+                window.ea = this.aurelia.container.root.get(_aureliaEventAggregator.EventAggregator);
+                return this;
+            }
+        }, {
+            key: 'initAnimateCss',
+            value: function initAnimateCss() {
+                $.fn.extend({
+                    animateCss: function animateCss(animationName) {
+                        var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+                        this.addClass('animated ' + animationName).one(animationEnd, function () {
+                            $(this).removeClass('animated ' + animationName);
+                        });
+                    }
+                });
+                return this;
+            }
+        }, {
+            key: 'context',
+            value: function context(aurelia) {
+                this.aurelia = aurelia;
+                return this;
+            }
+        }]);
 
         return Config;
     }();
@@ -1100,149 +1424,6 @@ define('init/index',['exports', './config', 'jquery', 'jquery.scrollto', 'timeag
         _config2.default.context(aurelia).initGlobalVar().initAjax().initToastr().initMarked().initAnimateCss();
     }
 });
-define('resources/config',['exports', 'aurelia-fetch-client', 'aurelia-framework', 'toastr', 'nprogress', 'common/common-utils', 'wurl', 'isomorphic-fetch'], function (exports, _aureliaFetchClient, _aureliaFramework, _toastr, _nprogress, _commonUtils, _wurl) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.Config = undefined;
-
-    var _toastr2 = _interopRequireDefault(_toastr);
-
-    var _nprogress2 = _interopRequireDefault(_nprogress);
-
-    var _commonUtils2 = _interopRequireDefault(_commonUtils);
-
-    var _wurl2 = _interopRequireDefault(_wurl);
-
-    function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-            default: obj
-        };
-    }
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    var Config = exports.Config = function () {
-        function Config() {
-            _classCallCheck(this, Config);
-        }
-
-        Config.prototype.initHttp = function initHttp() {
-            window.json = function (param) {
-                console.log(JSON.stringify(param));
-                return (0, _aureliaFetchClient.json)(param);
-            };
-            window.http = this.aurelia.container.root.get(_aureliaFetchClient.HttpClient);
-            http.configure(function (config) {
-                config.withDefaults({
-                    credentials: 'same-origin',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'fetch'
-                    }
-                }).withInterceptor({
-                    request: function request(req) {
-                        _nprogress2.default && _nprogress2.default.start();
-                        return req;
-                    },
-                    requestError: function requestError(req) {
-                        console.log(req);
-                    },
-                    response: function response(resp) {
-                        _nprogress2.default && _nprogress2.default.done();
-                        if (!resp.ok) {
-                            resp.json().then(function (data) {
-                                _toastr2.default.error(data.message);
-                            });
-
-                            if (resp.status == 401) {
-                                _toastr2.default.error('用户未登录!');
-                                _commonUtils2.default.redirect2Login();
-                                return;
-                            }
-                        }
-
-                        return resp;
-                    },
-                    responseError: function responseError(resp) {
-                        _toastr2.default.error(resp.message, '网络请求错误!');
-                        console.log(resp);
-                    }
-                });
-            });
-
-            return this;
-        };
-
-        Config.prototype.initToastr = function initToastr() {
-            _toastr2.default.options.positionClass = 'toast-bottom-center';
-            _toastr2.default.options.preventDuplicates = true;
-
-            return this;
-        };
-
-        Config.prototype.initAjax = function initAjax() {
-
-            $(document).ajaxSend(function (event, jqxhr, settings) {
-
-                if (settings.url.lastIndexOf('/chat/direct/latest') == -1) {
-                    _nprogress2.default && _nprogress2.default.start();
-                }
-            });
-
-            $(document).on('ajaxStop', function () {
-                _nprogress2.default && _nprogress2.default.done();
-            });
-
-            $(document).ajaxError(function (event, xhr, settings) {
-                if (xhr && xhr.status == 401) {
-                    _commonUtils2.default.redirect2Login();
-                }
-            });
-
-            return this;
-        };
-
-        Config.prototype.context = function context(aurelia) {
-            this.aurelia = aurelia;
-            return this;
-        };
-
-        return Config;
-    }();
-
-    exports.default = new Config();
-});
-define('resources/index',['exports', './config'], function (exports, _config) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.configure = configure;
-
-    var _config2 = _interopRequireDefault(_config);
-
-    function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-            default: obj
-        };
-    }
-
-    function configure(aurelia) {
-
-        _config2.default.context(aurelia).initHttp().initToastr().initAjax();
-
-        aurelia.globalResources(['resources/value-converters/vc-common', 'resources/attributes/attr-task', 'resources/attributes/attr-swipebox', 'resources/attributes/attr-pastable', 'resources/attributes/attr-autosize', 'resources/attributes/attr-dropzone', 'resources/elements/em-confirm-modal', 'resources/elements/em-hotkeys-modal', 'resources/elements/em-chat-input', 'resources/elements/em-chat-top-menu', 'resources/elements/em-chat-sidebar-left', 'resources/elements/em-chat-content-item', 'resources/elements/em-chat-sidebar-right']);
-    }
-});
 define('test/test-lifecycle',['exports', 'aurelia-framework', 'aurelia-event-aggregator'], function (exports, _aureliaFramework, _aureliaEventAggregator) {
     'use strict';
 
@@ -1266,6 +1447,24 @@ define('test/test-lifecycle',['exports', 'aurelia-framework', 'aurelia-event-agg
             throw new TypeError("Cannot call a class as a function");
         }
     }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
 
     function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
         var desc = {};
@@ -1313,41 +1512,52 @@ define('test/test-lifecycle',['exports', 'aurelia-framework', 'aurelia-event-agg
             console.log('constructor');
         }
 
-        TestLifeCycle.prototype.created = function created(view) {
-            console.log('created');
-        };
-
-        TestLifeCycle.prototype.bind = function bind(ctx) {
-            console.log('bind');
-        };
-
-        TestLifeCycle.prototype.unbind = function unbind() {
-            console.log('unbind');
-        };
-
-        TestLifeCycle.prototype.attached = function attached() {
-            console.log('attached');
-        };
-
-        TestLifeCycle.prototype.detached = function detached() {
-            console.log('detached');
-        };
-
-        TestLifeCycle.prototype.canActivate = function canActivate(params, routeConfig, navigationInstruction) {
-            console.log('canActivate');
-        };
-
-        TestLifeCycle.prototype.activate = function activate(params, routeConfig, navigationInstruction) {
-            console.log('activate');
-        };
-
-        TestLifeCycle.prototype.canDeactivate = function canDeactivate() {
-            console.log('canDeactivate');
-        };
-
-        TestLifeCycle.prototype.deactivate = function deactivate() {
-            console.log('deactivate');
-        };
+        _createClass(TestLifeCycle, [{
+            key: 'created',
+            value: function created(view) {
+                console.log('created');
+            }
+        }, {
+            key: 'bind',
+            value: function bind(ctx) {
+                console.log('bind');
+            }
+        }, {
+            key: 'unbind',
+            value: function unbind() {
+                console.log('unbind');
+            }
+        }, {
+            key: 'attached',
+            value: function attached() {
+                console.log('attached');
+            }
+        }, {
+            key: 'detached',
+            value: function detached() {
+                console.log('detached');
+            }
+        }, {
+            key: 'canActivate',
+            value: function canActivate(params, routeConfig, navigationInstruction) {
+                console.log('canActivate');
+            }
+        }, {
+            key: 'activate',
+            value: function activate(params, routeConfig, navigationInstruction) {
+                console.log('activate');
+            }
+        }, {
+            key: 'canDeactivate',
+            value: function canDeactivate() {
+                console.log('canDeactivate');
+            }
+        }, {
+            key: 'deactivate',
+            value: function deactivate() {
+                console.log('deactivate');
+            }
+        }]);
 
         return TestLifeCycle;
     }(), _class2.inject = [_aureliaEventAggregator.EventAggregator], _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'prop', [_aureliaFramework.bindable], {
@@ -1356,6 +1566,82 @@ define('test/test-lifecycle',['exports', 'aurelia-framework', 'aurelia-event-agg
             return null;
         }
     })), _class);
+});
+define('resources/config',['exports', 'aurelia-fetch-client', 'toastr', 'nprogress', 'common/common-utils', 'wurl', 'isomorphic-fetch'], function (exports, _aureliaFetchClient, _toastr, _nprogress, _commonUtils, _wurl) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.Config = undefined;
+
+    var _toastr2 = _interopRequireDefault(_toastr);
+
+    var _nprogress2 = _interopRequireDefault(_nprogress);
+
+    var _commonUtils2 = _interopRequireDefault(_commonUtils);
+
+    var _wurl2 = _interopRequireDefault(_wurl);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var Config = exports.Config = function () {
+        function Config() {
+            _classCallCheck(this, Config);
+        }
+
+        _createClass(Config, [{
+            key: 'context',
+            value: function context(aurelia) {
+                this.aurelia = aurelia;
+                return this;
+            }
+        }]);
+
+        return Config;
+    }();
+
+    exports.default = new Config();
+});
+define('resources/index',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.configure = configure;
+    function configure(aurelia) {
+
+        aurelia.globalResources(['resources/value-converters/vc-common', 'resources/binding-behaviors/bb-key', 'resources/attributes/attr-task', 'resources/attributes/attr-swipebox', 'resources/attributes/attr-pastable', 'resources/attributes/attr-autosize', 'resources/attributes/attr-dropzone', 'resources/attributes/attr-attr', 'resources/attributes/attr-c2c', 'resources/attributes/attr-dimmer', 'resources/attributes/attr-ui-dropdown', 'resources/attributes/attr-ui-tab', 'resources/elements/em-modal', 'resources/elements/em-dropdown', 'resources/elements/em-confirm-modal', 'resources/elements/em-hotkeys-modal', 'resources/elements/em-chat-input', 'resources/elements/em-chat-top-menu', 'resources/elements/em-chat-sidebar-left', 'resources/elements/em-chat-content-item', 'resources/elements/em-chat-sidebar-right', 'resources/elements/em-chat-channel-create']);
+    }
 });
 define('user/user-login',['exports'], function (exports) {
     'use strict';
@@ -1370,6 +1656,24 @@ define('user/user-login',['exports'], function (exports) {
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     var UserLogin = exports.UserLogin = function () {
         function UserLogin() {
             _classCallCheck(this, UserLogin);
@@ -1378,41 +1682,46 @@ define('user/user-login',['exports'], function (exports) {
             this.password = '';
         }
 
-        UserLogin.prototype.attached = function attached() {
-            $(this.rememberMeRef).checkbox();
-        };
-
-        UserLogin.prototype.kdHandler = function kdHandler(evt) {
-            if (evt.keyCode === 13) {
-                this.loginHandler();
+        _createClass(UserLogin, [{
+            key: 'attached',
+            value: function attached() {
+                $(this.rememberMeRef).checkbox();
             }
+        }, {
+            key: 'kdHandler',
+            value: function kdHandler(evt) {
+                if (evt.keyCode === 13) {
+                    this.loginHandler();
+                }
 
-            return true;
-        };
+                return true;
+            }
+        }, {
+            key: 'loginHandler',
+            value: function loginHandler() {
+                var _this = this;
 
-        UserLogin.prototype.loginHandler = function loginHandler() {
-            var _this = this;
+                $.get('/admin/login', function (data) {
 
-            $.get('/admin/login', function (data) {
+                    var rm = $(_this.rememberMeRef).checkbox('is checked') ? 'on' : '';
 
-                var rm = $(_this.rememberMeRef).checkbox('is checked') ? 'on' : '';
-
-                $.post('/admin/signin', {
-                    username: _this.username,
-                    password: _this.password,
-                    "remember-me": rm
-                }).always(function () {
-                    var redirect = utils.urlQuery('redirect');
-                    if (redirect) {
-                        window.location = decodeURIComponent(redirect);
-                    } else {
-                        window.location = wurl('path');
-                    }
+                    $.post('/admin/signin', {
+                        username: _this.username,
+                        password: _this.password,
+                        "remember-me": rm
+                    }).always(function () {
+                        var redirect = utils.urlQuery('redirect');
+                        if (redirect) {
+                            window.location = decodeURIComponent(redirect);
+                        } else {
+                            window.location = wurl('path');
+                        }
+                    });
                 });
-            });
 
-            return true;
-        };
+                return true;
+            }
+        }]);
 
         return UserLogin;
     }();
@@ -1430,6 +1739,24 @@ define('user/user-pwd-reset',['exports'], function (exports) {
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     var UserPwdReset = exports.UserPwdReset = function () {
         function UserPwdReset() {
             _classCallCheck(this, UserPwdReset);
@@ -1440,89 +1767,94 @@ define('user/user-pwd-reset',['exports'], function (exports) {
             this.token = utils.urlQuery('id');
         }
 
-        UserPwdReset.prototype.resetPwdHandler = function resetPwdHandler() {
-            var _this = this;
+        _createClass(UserPwdReset, [{
+            key: 'resetPwdHandler',
+            value: function resetPwdHandler() {
+                var _this = this;
 
-            if (!$(this.fm).form('is valid')) {
-                toastr.error('邮件地址输入不合法!');
-                return;
+                if (!$(this.fm).form('is valid')) {
+                    toastr.error('邮件地址输入不合法!');
+                    return;
+                }
+
+                this.isReq = true;
+                http.fetch('/free/user/pwd/reset', {
+                    method: 'post',
+                    body: json({
+                        mail: this.mail,
+                        baseUrl: utils.getBaseUrl(),
+                        path: wurl('path')
+                    })
+                }).then(function (resp) {
+                    if (resp.ok) {
+                        resp.json().then(function (data) {
+                            if (data.success) {
+                                toastr.success('重置密码邮件链接发送成功!');
+                                _.delay(function () {
+                                    window.location = "/admin/login";
+                                }, 2000);
+                            } else {
+                                toastr.error(data.data, '重置密码邮件链接发送失败!');
+                                _this.isReq = false;
+                            }
+                        });
+                    }
+                });
             }
+        }, {
+            key: 'newPwdHandler',
+            value: function newPwdHandler() {
+                var _this2 = this;
 
-            this.isReq = true;
-            http.fetch('/free/user/pwd/reset', {
-                method: 'post',
-                body: json({
-                    mail: this.mail,
-                    baseUrl: utils.getBaseUrl(),
-                    path: wurl('path')
-                })
-            }).then(function (resp) {
-                if (resp.ok) {
-                    resp.json().then(function (data) {
-                        if (data.success) {
-                            toastr.success('重置密码邮件链接发送成功!');
-                            _.delay(function () {
-                                window.location = "/admin/login";
-                            }, 2000);
-                        } else {
-                            toastr.error(data.data, '重置密码邮件链接发送失败!');
-                            _this.isReq = false;
-                        }
-                    });
+                if (!$(this.fm2).form('is valid')) {
+                    toastr.error('新密码输入不合法!');
+                    return;
                 }
-            });
-        };
 
-        UserPwdReset.prototype.newPwdHandler = function newPwdHandler() {
-            var _this2 = this;
-
-            if (!$(this.fm2).form('is valid')) {
-                toastr.error('新密码输入不合法!');
-                return;
+                this.isReq = true;
+                http.fetch('/free/user/pwd/new', {
+                    method: 'post',
+                    body: json({
+                        token: this.token,
+                        pwd: this.pwd
+                    })
+                }).then(function (resp) {
+                    if (resp.ok) {
+                        resp.json().then(function (data) {
+                            if (data.success) {
+                                toastr.success('重置密码成功!');
+                                _.delay(function () {
+                                    window.location = "/admin/login";
+                                }, 2000);
+                            } else {
+                                toastr.error(data.data, '重置密码失败!');
+                                _this2.isReq = false;
+                            }
+                        });
+                    }
+                });
             }
+        }, {
+            key: 'attached',
+            value: function attached() {
 
-            this.isReq = true;
-            http.fetch('/free/user/pwd/new', {
-                method: 'post',
-                body: json({
-                    token: this.token,
-                    pwd: this.pwd
-                })
-            }).then(function (resp) {
-                if (resp.ok) {
-                    resp.json().then(function (data) {
-                        if (data.success) {
-                            toastr.success('重置密码成功!');
-                            _.delay(function () {
-                                window.location = "/admin/login";
-                            }, 2000);
-                        } else {
-                            toastr.error(data.data, '重置密码失败!');
-                            _this2.isReq = false;
-                        }
-                    });
-                }
-            });
-        };
+                $(this.fm).form({
+                    on: 'blur',
+                    inline: true,
+                    fields: {
+                        mail: ['empty', 'email']
+                    }
+                });
 
-        UserPwdReset.prototype.attached = function attached() {
-
-            $(this.fm).form({
-                on: 'blur',
-                inline: true,
-                fields: {
-                    mail: ['empty', 'email']
-                }
-            });
-
-            $(this.fm2).form({
-                on: 'blur',
-                inline: true,
-                fields: {
-                    mail: ['empty', 'minLength[8]']
-                }
-            });
-        };
+                $(this.fm2).form({
+                    on: 'blur',
+                    inline: true,
+                    fields: {
+                        mail: ['empty', 'minLength[8]']
+                    }
+                });
+            }
+        }]);
 
         return UserPwdReset;
     }();
@@ -1540,6 +1872,24 @@ define('user/user-register',['exports'], function (exports) {
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     var ViewModel = exports.ViewModel = function () {
         function ViewModel() {
             _classCallCheck(this, ViewModel);
@@ -1547,119 +1897,246 @@ define('user/user-register',['exports'], function (exports) {
             this.header = '账户激活页面';
         }
 
-        ViewModel.prototype.activate = function activate(params, routeConfig, navigationInstruction) {
-            var _this = this;
+        _createClass(ViewModel, [{
+            key: 'activate',
+            value: function activate(params, routeConfig, navigationInstruction) {
+                var _this = this;
 
-            if (params.id) {
-                this.token = params.id;
+                if (params.id) {
+                    this.token = params.id;
+
+                    this.isReq = true;
+                    this.header = '账户激活中,请稍后...!';
+                    http.fetch('/free/user/register/activate', {
+                        method: 'post',
+                        body: json({
+                            token: this.token
+                        })
+                    }).then(function (resp) {
+                        if (resp.ok) {
+                            resp.json().then(function (data) {
+                                if (data.success) {
+                                    _this.header = '账户激活成功,请返回登录页面登录!';
+                                } else {
+                                    _this.header = '账户激活失败!';
+                                    toastr.error(data.data, '账户激活失败!');
+                                }
+                            });
+                            _this.isReq = false;
+                        }
+                    });
+                }
+            }
+        }, {
+            key: 'attached',
+            value: function attached() {
+
+                $(this.fm).form({
+                    on: 'blur',
+                    inline: true,
+                    fields: {
+                        username: {
+                            identifier: 'username',
+                            rules: [{
+                                type: 'empty'
+                            }, {
+                                type: 'minLength[3]'
+                            }, {
+                                type: 'regExp',
+                                value: /^[a-z]+[a-z0-9\.\-_]*[a-z0-9]+$/,
+                                prompt: '小写字母数字.-_组合,字母开头,字母数字结尾'
+                            }]
+                        },
+                        pwd: {
+                            identifier: 'pwd',
+                            rules: [{
+                                type: 'empty'
+                            }, {
+                                type: 'minLength[8]'
+                            }]
+                        },
+                        name: {
+                            identifier: 'name',
+                            rules: [{
+                                type: 'empty'
+                            }, {
+                                type: 'maxLength[20]'
+                            }]
+                        },
+                        mail: {
+                            identifier: 'mail',
+                            rules: [{
+                                type: 'empty'
+                            }, {
+                                type: 'email'
+                            }]
+                        }
+                    }
+                });
+            }
+        }, {
+            key: 'okHandler',
+            value: function okHandler() {
+                var _this2 = this;
+
+                if (!$(this.fm).form('is valid')) {
+                    toastr.error('账户注册信息输入不合法!');
+                    return;
+                }
 
                 this.isReq = true;
-                this.header = '账户激活中,请稍后...!';
-                http.fetch('/free/user/register/activate', {
+                http.fetch('/free/user/register', {
                     method: 'post',
                     body: json({
-                        token: this.token
+                        username: this.username,
+                        pwd: this.pwd,
+                        name: this.name,
+                        mail: this.mail,
+                        baseUrl: utils.getBaseUrl(),
+                        path: wurl('path')
                     })
                 }).then(function (resp) {
                     if (resp.ok) {
                         resp.json().then(function (data) {
                             if (data.success) {
-                                _this.header = '账户激活成功,请返回登录页面登录!';
+                                toastr.success('注册成功,请通过接收到的激活邮件激活账户!');
+                                _.delay(function () {
+                                    window.location = "/admin/login";
+                                }, 2000);
                             } else {
-                                _this.header = '账户激活失败!';
-                                toastr.error(data.data, '账户激活失败!');
+                                toastr.error(data.data, '注册失败!');
+                                _this2.isReq = false;
                             }
                         });
-                        _this.isReq = false;
                     }
                 });
             }
-        };
-
-        ViewModel.prototype.attached = function attached() {
-
-            $(this.fm).form({
-                on: 'blur',
-                inline: true,
-                fields: {
-                    username: {
-                        identifier: 'username',
-                        rules: [{
-                            type: 'empty'
-                        }, {
-                            type: 'minLength[3]'
-                        }, {
-                            type: 'regExp',
-                            value: /^[a-z]+[a-z0-9\.\-_]*[a-z0-9]+$/,
-                            prompt: '小写字母数字.-_组合,字母开头,字母数字结尾'
-                        }]
-                    },
-                    pwd: {
-                        identifier: 'pwd',
-                        rules: [{
-                            type: 'empty'
-                        }, {
-                            type: 'minLength[8]'
-                        }]
-                    },
-                    name: {
-                        identifier: 'name',
-                        rules: [{
-                            type: 'empty'
-                        }, {
-                            type: 'maxLength[20]'
-                        }]
-                    },
-                    mail: {
-                        identifier: 'mail',
-                        rules: [{
-                            type: 'empty'
-                        }, {
-                            type: 'email'
-                        }]
-                    }
-                }
-            });
-        };
-
-        ViewModel.prototype.okHandler = function okHandler() {
-            var _this2 = this;
-
-            if (!$(this.fm).form('is valid')) {
-                toastr.error('账户注册信息输入不合法!');
-                return;
-            }
-
-            this.isReq = true;
-            http.fetch('/free/user/register', {
-                method: 'post',
-                body: json({
-                    username: this.username,
-                    pwd: this.pwd,
-                    name: this.name,
-                    mail: this.mail,
-                    baseUrl: utils.getBaseUrl(),
-                    path: wurl('path')
-                })
-            }).then(function (resp) {
-                if (resp.ok) {
-                    resp.json().then(function (data) {
-                        if (data.success) {
-                            toastr.success('注册成功,请通过接收到的激活邮件激活账户!');
-                            _.delay(function () {
-                                window.location = "/admin/login";
-                            }, 2000);
-                        } else {
-                            toastr.error(data.data, '注册失败!');
-                            _this2.isReq = false;
-                        }
-                    });
-                }
-            });
-        };
+        }]);
 
         return ViewModel;
     }();
+});
+define('resources/attributes/attr-attr',['exports', 'aurelia-framework', 'aurelia-dependency-injection'], function (exports, _aureliaFramework, _aureliaDependencyInjection) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.AttrAttr = undefined;
+
+    function _initDefineProp(target, property, descriptor, context) {
+        if (!descriptor) return;
+        Object.defineProperty(target, property, {
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+            writable: descriptor.writable,
+            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+        });
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+        var desc = {};
+        Object['ke' + 'ys'](descriptor).forEach(function (key) {
+            desc[key] = descriptor[key];
+        });
+        desc.enumerable = !!desc.enumerable;
+        desc.configurable = !!desc.configurable;
+
+        if ('value' in desc || desc.initializer) {
+            desc.writable = true;
+        }
+
+        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+            return decorator(target, property, desc) || desc;
+        }, desc);
+
+        if (context && desc.initializer !== void 0) {
+            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+            desc.initializer = undefined;
+        }
+
+        if (desc.initializer === void 0) {
+            Object['define' + 'Property'](target, property, desc);
+            desc = null;
+        }
+
+        return desc;
+    }
+
+    function _initializerWarningHelper(descriptor, context) {
+        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+    }
+
+    var _dec, _dec2, _class, _desc, _value, _class2, _descriptor, _descriptor2;
+
+    var AttrAttr = exports.AttrAttr = (_dec = (0, _aureliaFramework.customAttribute)('attr'), _dec2 = (0, _aureliaDependencyInjection.inject)(Element), _dec(_class = _dec2(_class = (_class2 = function () {
+        function AttrAttr(element) {
+            _classCallCheck(this, AttrAttr);
+
+            _initDefineProp(this, 'name', _descriptor, this);
+
+            _initDefineProp(this, 'value', _descriptor2, this);
+
+            this.element = element;
+        }
+
+        _createClass(AttrAttr, [{
+            key: 'nameChanged',
+            value: function nameChanged(value) {}
+        }, {
+            key: 'valueChanged',
+            value: function valueChanged(value) {
+
+                this.value = value;
+
+                if (value) {
+                    $(this.element).attr(this.name, value);
+                } else {
+                    $(this.element).removeAttr(this.name);
+                }
+            }
+        }, {
+            key: 'bind',
+            value: function bind(bindingContext) {
+                this.valueChanged(this.value);
+            }
+        }, {
+            key: 'unbind',
+            value: function unbind() {}
+        }]);
+
+        return AttrAttr;
+    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'name', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'value', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    })), _class2)) || _class) || _class);
 });
 define('resources/attributes/attr-autosize',['exports', 'aurelia-framework', 'aurelia-templating', 'autosize'], function (exports, _aureliaFramework, _aureliaTemplating, _autosize) {
     'use strict';
@@ -1683,6 +2160,24 @@ define('resources/attributes/attr-autosize',['exports', 'aurelia-framework', 'au
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     var _dec, _dec2, _class;
 
     var AttrAutosize = exports.AttrAutosize = (_dec = (0, _aureliaTemplating.customAttribute)('autosize'), _dec2 = (0, _aureliaFramework.inject)(Element), _dec(_class = _dec2(_class = function () {
@@ -1692,19 +2187,173 @@ define('resources/attributes/attr-autosize',['exports', 'aurelia-framework', 'au
             this.element = element;
         }
 
-        AttrAutosize.prototype.valueChanged = function valueChanged(newValue, oldValue) {
-            (0, _autosize2.default)(this.element);
-        };
-
-        AttrAutosize.prototype.bind = function bind(bindingContext) {
-            this.valueChanged(this.value);
-        };
-
-        AttrAutosize.prototype.unbind = function unbind() {
-            _autosize2.default.destroy(this.elements);
-        };
+        _createClass(AttrAutosize, [{
+            key: 'valueChanged',
+            value: function valueChanged(newValue, oldValue) {
+                (0, _autosize2.default)(this.element);
+            }
+        }, {
+            key: 'bind',
+            value: function bind(bindingContext) {
+                this.valueChanged(this.value);
+            }
+        }, {
+            key: 'unbind',
+            value: function unbind() {
+                _autosize2.default.destroy(this.elements);
+            }
+        }]);
 
         return AttrAutosize;
+    }()) || _class) || _class);
+});
+define('resources/attributes/attr-c2c',['exports', 'aurelia-framework', 'clipboard'], function (exports, _aureliaFramework, _clipboard) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.AttrC2cCustomAttribute = undefined;
+
+    var _clipboard2 = _interopRequireDefault(_clipboard);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var _dec, _dec2, _class;
+
+    var AttrC2cCustomAttribute = exports.AttrC2cCustomAttribute = (_dec = (0, _aureliaFramework.customAttribute)('c2c'), _dec2 = (0, _aureliaFramework.inject)(Element), _dec(_class = _dec2(_class = function () {
+        function AttrC2cCustomAttribute(element) {
+            _classCallCheck(this, AttrC2cCustomAttribute);
+
+            this.element = element;
+            this._init();
+        }
+
+        _createClass(AttrC2cCustomAttribute, [{
+            key: '_init',
+            value: function _init() {
+                var _this = this;
+
+                $(this.element).append('<span style="margin-left: 5px; display: none;" data-tooltip="\u590D\u5236\u5230\u526A\u8D34\u677F" data-position="right center" data-inverted=""><i class="copy link icon"></i></span>');
+                this.clipboard = new _clipboard2.default($(this.element).find('i.copy.icon')[0], {
+                    text: function text(trigger) {
+                        return _this.value ? _this.value : $(_this.element).text();
+                    }
+                });
+                var $tp = $(this.element).find('[data-tooltip]').hover(function () {}, function () {
+                    $(this).attr('data-tooltip', '复制到剪贴板!');
+                });
+                this.clipboard.on('success', function (e) {
+                    $tp.attr('data-tooltip', '复制成功!');
+                }).on('error', function (e) {
+                    $tp.attr('data-tooltip', '复制失败!');
+                });
+
+                $(this.element).hover(function () {
+                    if (_this.value || $(_this.element).text()) {
+                        $tp.show();
+                    }
+                }, function () {
+                    $tp.hide();
+                });
+            }
+        }, {
+            key: 'unbind',
+            value: function unbind() {
+                this.clipboard && this.clipboard.destroy();
+            }
+        }]);
+
+        return AttrC2cCustomAttribute;
+    }()) || _class) || _class);
+});
+define('resources/attributes/attr-dimmer',['exports', 'aurelia-dependency-injection', 'aurelia-templating'], function (exports, _aureliaDependencyInjection, _aureliaTemplating) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.AttrDimmer = undefined;
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var _dec, _dec2, _class;
+
+    var AttrDimmer = exports.AttrDimmer = (_dec = (0, _aureliaTemplating.customAttribute)('dimmer'), _dec2 = (0, _aureliaDependencyInjection.inject)(Element), _dec(_class = _dec2(_class = function () {
+        function AttrDimmer(element) {
+            _classCallCheck(this, AttrDimmer);
+
+            this.element = element;
+            this.$dimmer = $('<div class="ui inverted active dimmer"> <div class="ui loader"></div> </div>');
+        }
+
+        _createClass(AttrDimmer, [{
+            key: 'valueChanged',
+            value: function valueChanged(newValue) {
+                if (this.value) {
+                    $(this.element).prepend(this.$dimmer);
+                } else {
+                    this.$dimmer.remove();
+                }
+            }
+        }, {
+            key: 'bind',
+            value: function bind(bindingContext) {
+                this.valueChanged(this.value);
+            }
+        }]);
+
+        return AttrDimmer;
     }()) || _class) || _class);
 });
 define('resources/attributes/attr-dropzone',['exports', 'aurelia-framework', 'aurelia-templating', 'aurelia-event-aggregator'], function (exports, _aureliaFramework, _aureliaTemplating, _aureliaEventAggregator) {
@@ -1730,6 +2379,24 @@ define('resources/attributes/attr-dropzone',['exports', 'aurelia-framework', 'au
             throw new TypeError("Cannot call a class as a function");
         }
     }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
 
     function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
         var desc = {};
@@ -1786,51 +2453,55 @@ define('resources/attributes/attr-dropzone',['exports', 'aurelia-framework', 'au
             });
         }
 
-        AttrDropzone.prototype.valueChanged = function valueChanged(newValue, oldValue) {
+        _createClass(AttrDropzone, [{
+            key: 'valueChanged',
+            value: function valueChanged(newValue, oldValue) {
 
-            var target = this.target ? this.target : this.element;
+                var target = this.target ? this.target : this.element;
 
-            $(this.element).children().andSelf().dropzone({
-                url: "/admin/file/upload",
-                paramName: 'file',
-                clickable: !!this.clickable,
-                dictDefaultMessage: '',
-                maxFilesize: 10,
-                addRemoveLinks: true,
+                $(this.element).children().andSelf().dropzone({
+                    url: "/admin/file/upload",
+                    paramName: 'file',
+                    clickable: !!this.clickable,
+                    dictDefaultMessage: '',
+                    maxFilesize: 10,
+                    addRemoveLinks: true,
 
-                dictCancelUpload: '取消上传',
-                dictCancelUploadConfirmation: '确定要取消上传吗?',
-                dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
-                init: function init() {
-                    this.on("sending", function (file, xhr, formData) {});
-                    this.on("success", function (file, data) {
-                        if (data.success) {
+                    dictCancelUpload: '取消上传',
+                    dictCancelUploadConfirmation: '确定要取消上传吗?',
+                    dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
+                    init: function init() {
+                        this.on("sending", function (file, xhr, formData) {});
+                        this.on("success", function (file, data) {
+                            if (data.success) {
 
-                            $.each(data.data, function (index, item) {
-                                if (item.type == 'Image') {
-                                    $(target).insertAtCaret('![{name}]({baseURL}{path}{uuidName}) '.replace(/\{name\}/g, item.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, item.path).replace(/\{uuidName\}/g, item.uuidName));
-                                } else {
-                                    $(target).insertAtCaret('[{name}]({baseURL}{path}{uuidName}) '.replace(/\{name\}/g, item.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, "admin/file/download/").replace(/\{uuidName\}/g, item.id));
-                                }
-                            });
-                            toastr.success('上传成功!');
-                        } else {
-                            toastr.error(data.data, '上传失败!');
-                        }
-                    });
-                    this.on("error", function (file, errorMessage, xhr) {
-                        toastr.error(errorMessage, '上传失败!');
-                    });
-                    this.on("complete", function (file) {
-                        this.removeFile(file);
-                    });
-                }
-            });
-        };
-
-        AttrDropzone.prototype.bind = function bind(bindingContext) {
-            this.valueChanged(this.value);
-        };
+                                $.each(data.data, function (index, item) {
+                                    if (item.type == 'Image') {
+                                        $(target).insertAtCaret('![{name}]({baseURL}{path}{uuidName}) '.replace(/\{name\}/g, item.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, item.path).replace(/\{uuidName\}/g, item.uuidName));
+                                    } else {
+                                        $(target).insertAtCaret('[{name}]({baseURL}{path}{uuidName}) '.replace(/\{name\}/g, item.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, "admin/file/download/").replace(/\{uuidName\}/g, item.id));
+                                    }
+                                });
+                                toastr.success('上传成功!');
+                            } else {
+                                toastr.error(data.data, '上传失败!');
+                            }
+                        });
+                        this.on("error", function (file, errorMessage, xhr) {
+                            toastr.error(errorMessage, '上传失败!');
+                        });
+                        this.on("complete", function (file) {
+                            this.removeFile(file);
+                        });
+                    }
+                });
+            }
+        }, {
+            key: 'bind',
+            value: function bind(bindingContext) {
+                this.valueChanged(this.value);
+            }
+        }]);
 
         return AttrDropzone;
     }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'clickable', [_aureliaFramework.bindable], {
@@ -1855,6 +2526,24 @@ define('resources/attributes/attr-pastable',['exports', 'aurelia-framework', 'au
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     var _dec, _dec2, _class;
 
     var AttrPastable = exports.AttrPastable = (_dec = (0, _aureliaTemplating.customAttribute)('pastable'), _dec2 = (0, _aureliaFramework.inject)(Element), _dec(_class = _dec2(_class = function () {
@@ -1864,27 +2553,31 @@ define('resources/attributes/attr-pastable',['exports', 'aurelia-framework', 'au
             this.element = element;
         }
 
-        AttrPastable.prototype.valueChanged = function valueChanged(newValue, oldValue) {
-            var _this = this;
+        _createClass(AttrPastable, [{
+            key: 'valueChanged',
+            value: function valueChanged(newValue, oldValue) {
+                var _this = this;
 
-            $(this.element).pastableTextarea().on('pasteImage', function (ev, data) {
+                $(this.element).pastableTextarea().on('pasteImage', function (ev, data) {
 
-                $.post('/admin/file/base64', {
-                    dataURL: data.dataURL,
-                    type: data.blob.type
-                }, function (data, textStatus, xhr) {
-                    if (data.success) {
-                        $(_this.element).insertAtCaret('![{name}]({baseURL}{path}{uuidName})'.replace(/\{name\}/g, data.data.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, data.data.path).replace(/\{uuidName\}/g, data.data.uuidName));
-                    }
+                    $.post('/admin/file/base64', {
+                        dataURL: data.dataURL,
+                        type: data.blob.type
+                    }, function (data, textStatus, xhr) {
+                        if (data.success) {
+                            $(_this.element).insertAtCaret('![{name}]({baseURL}{path}{uuidName})'.replace(/\{name\}/g, data.data.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, data.data.path).replace(/\{uuidName\}/g, data.data.uuidName));
+                        }
+                    });
+                }).on('pasteImageError', function (ev, data) {
+                    toastr.error(data.message, '剪贴板粘贴图片错误!');
                 });
-            }).on('pasteImageError', function (ev, data) {
-                toastr.error(data.message, '剪贴板粘贴图片错误!');
-            });
-        };
-
-        AttrPastable.prototype.bind = function bind(bindingContext) {
-            this.valueChanged(this.value);
-        };
+            }
+        }, {
+            key: 'bind',
+            value: function bind(bindingContext) {
+                this.valueChanged(this.value);
+            }
+        }]);
 
         return AttrPastable;
     }()) || _class) || _class);
@@ -1903,6 +2596,24 @@ define('resources/attributes/attr-swipebox',['exports', 'aurelia-framework', 'au
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     var _dec, _dec2, _class;
 
     var AttrSwipebox = exports.AttrSwipebox = (_dec = (0, _aureliaTemplating.customAttribute)('swipebox'), _dec2 = (0, _aureliaFramework.inject)(Element), _dec(_class = _dec2(_class = function () {
@@ -1912,38 +2623,42 @@ define('resources/attributes/attr-swipebox',['exports', 'aurelia-framework', 'au
             this.element = element;
         }
 
-        AttrSwipebox.prototype.valueChanged = function valueChanged(newValue, oldValue) {
-            var _this = this;
+        _createClass(AttrSwipebox, [{
+            key: 'valueChanged',
+            value: function valueChanged(newValue, oldValue) {
+                var _this = this;
 
-            $(this.element).on('click', 'img', function (event) {
-                event.preventDefault();
-                var $img = $(event.target);
-                var imgs = [];
-                var initialIndexOnArray = 0;
-                $(_this.element).find('img').each(function (index, img) {
-                    imgs.push({ href: $(img).attr('src'), title: $(img).attr('alt') });
-                    if (event.target == img) {
-                        initialIndexOnArray = index;
-                    }
+                $(this.element).on('click', 'img', function (event) {
+                    event.preventDefault();
+                    var $img = $(event.target);
+                    var imgs = [];
+                    var initialIndexOnArray = 0;
+                    $(_this.element).find('img').each(function (index, img) {
+                        imgs.push({ href: $(img).attr('src'), title: $(img).attr('alt') });
+                        if (event.target == img) {
+                            initialIndexOnArray = index;
+                        }
+                    });
+                    $.swipebox(imgs, {
+                        useCSS: true,
+                        useSVG: true,
+                        initialIndexOnArray: initialIndexOnArray,
+                        hideCloseButtonOnMobile: false,
+                        removeBarsOnMobile: true,
+                        hideBarsDelay: 3000,
+                        videoMaxWidth: 1140,
+                        beforeOpen: function beforeOpen() {},
+                        afterOpen: null,
+                        afterClose: function afterClose() {},
+                        loopAtEnd: !!newValue });
                 });
-                $.swipebox(imgs, {
-                    useCSS: true,
-                    useSVG: true,
-                    initialIndexOnArray: initialIndexOnArray,
-                    hideCloseButtonOnMobile: false,
-                    removeBarsOnMobile: true,
-                    hideBarsDelay: 3000,
-                    videoMaxWidth: 1140,
-                    beforeOpen: function beforeOpen() {},
-                    afterOpen: null,
-                    afterClose: function afterClose() {},
-                    loopAtEnd: !!newValue });
-            });
-        };
-
-        AttrSwipebox.prototype.bind = function bind(bindingContext) {
-            this.valueChanged(this.value);
-        };
+            }
+        }, {
+            key: 'bind',
+            value: function bind(bindingContext) {
+                this.valueChanged(this.value);
+            }
+        }]);
 
         return AttrSwipebox;
     }()) || _class) || _class);
@@ -1962,6 +2677,24 @@ define('resources/attributes/attr-task',['exports', 'aurelia-dependency-injectio
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     var _dec, _dec2, _class;
 
     var AttrTask = exports.AttrTask = (_dec = (0, _aureliaTemplating.customAttribute)('task'), _dec2 = (0, _aureliaDependencyInjection.inject)(Element), _dec(_class = _dec2(_class = function () {
@@ -1974,34 +2707,39 @@ define('resources/attributes/attr-task',['exports', 'aurelia-dependency-injectio
             this.element = element;
         }
 
-        AttrTask.prototype.valueChanged = function valueChanged(newValue) {
-            this.task = newValue;
-            if (_.isFunction(this.task)) {
-                _.bind(this.task, this.bindingCtx, this.element)();
+        _createClass(AttrTask, [{
+            key: 'valueChanged',
+            value: function valueChanged(newValue) {
+                this.task = newValue;
+                if (_.isFunction(this.task)) {
+                    _.bind(this.task, this.bindingCtx, this.element)();
+                }
             }
-        };
-
-        AttrTask.prototype.bind = function bind(bindingContext) {
-            this.bindingCtx = bindingContext;
-            this.valueChanged(this.value);
-        };
-
-        AttrTask.prototype.unbind = function unbind() {
-            this.element = null;
-            this.task = null;
-            this.bindingCtx = null;
-        };
+        }, {
+            key: 'bind',
+            value: function bind(bindingContext) {
+                this.bindingCtx = bindingContext;
+                this.valueChanged(this.value);
+            }
+        }, {
+            key: 'unbind',
+            value: function unbind() {
+                this.element = null;
+                this.task = null;
+                this.bindingCtx = null;
+            }
+        }]);
 
         return AttrTask;
     }()) || _class) || _class);
 });
-define('resources/value-converters/vc-common',['exports', 'jquery-format', 'timeago'], function (exports) {
+define('resources/attributes/attr-ui-dropdown',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
-    exports.TimeagoValueConverter = exports.NumberValueConverter = exports.DateValueConverter = exports.LowerValueConverter = exports.UpperValueConverter = undefined;
+    exports.AttrUiDropdownCustomAttribute = undefined;
 
     function _classCallCheck(instance, Constructor) {
         if (!(instance instanceof Constructor)) {
@@ -2009,91 +2747,224 @@ define('resources/value-converters/vc-common',['exports', 'jquery-format', 'time
         }
     }
 
-    var tg = timeago();
-
-    var UpperValueConverter = exports.UpperValueConverter = function () {
-        function UpperValueConverter() {
-            _classCallCheck(this, UpperValueConverter);
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
         }
 
-        UpperValueConverter.prototype.toView = function toView(value) {
-            return value && value.toUpperCase();
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
         };
-
-        return UpperValueConverter;
     }();
 
-    var LowerValueConverter = exports.LowerValueConverter = function () {
-        function LowerValueConverter() {
-            _classCallCheck(this, LowerValueConverter);
+    var _dec, _dec2, _class;
+
+    var AttrUiDropdownCustomAttribute = exports.AttrUiDropdownCustomAttribute = (_dec = (0, _aureliaFramework.customAttribute)('ui-dropdown'), _dec2 = (0, _aureliaFramework.inject)(Element), _dec(_class = _dec2(_class = function () {
+        function AttrUiDropdownCustomAttribute(element) {
+            _classCallCheck(this, AttrUiDropdownCustomAttribute);
+
+            this.element = element;
         }
 
-        LowerValueConverter.prototype.toView = function toView(value) {
-            return value && value.toLowerCase();
-        };
+        _createClass(AttrUiDropdownCustomAttribute, [{
+            key: 'valueChanged',
+            value: function valueChanged(newValue, oldValue) {}
+        }, {
+            key: '_init',
+            value: function _init(action) {
+                var _this = this;
 
-        return LowerValueConverter;
-    }();
+                _.defer(function () {
+                    $(_this.element).dropdown({
+                        action: action
+                    });
+                });
+            }
+        }, {
+            key: 'bind',
+            value: function bind() {
+                this._init(this.value ? this.value : 'hide');
+            }
+        }]);
 
-    var DateValueConverter = exports.DateValueConverter = function () {
-        function DateValueConverter() {
-            _classCallCheck(this, DateValueConverter);
-        }
-
-        DateValueConverter.prototype.toView = function toView(value) {
-            var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'yyyy-MM-dd hh:mm:ss';
-
-            return _.isInteger(_.toNumber(value)) ? $.format.date(new Date(value), format) : value ? value : '';
-        };
-
-        return DateValueConverter;
-    }();
-
-    var NumberValueConverter = exports.NumberValueConverter = function () {
-        function NumberValueConverter() {
-            _classCallCheck(this, NumberValueConverter);
-        }
-
-        NumberValueConverter.prototype.toView = function toView(value) {
-            var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '#,##0.00';
-
-            return _.isNumber(_.toNumber(value)) ? $.format.number(value, format) : value ? value : '';
-        };
-
-        return NumberValueConverter;
-    }();
-
-    var TimeagoValueConverter = exports.TimeagoValueConverter = function () {
-        function TimeagoValueConverter() {
-            _classCallCheck(this, TimeagoValueConverter);
-        }
-
-        TimeagoValueConverter.prototype.toView = function toView(value) {
-            return value ? tg.format(value, 'zh_CN') : '';
-        };
-
-        return TimeagoValueConverter;
-    }();
+        return AttrUiDropdownCustomAttribute;
+    }()) || _class) || _class);
 });
-define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'common/common-tips', 'simplemde', 'marked', 'aurelia-event-aggregator', 'textcomplete'], function (exports, _aureliaFramework, _commonTips, _simplemde, _marked, _aureliaEventAggregator) {
+define('resources/attributes/attr-ui-tab',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
-    exports.EmChatInput = undefined;
+    exports.AttrUiTabCustomAttribute = undefined;
 
-    var _commonTips2 = _interopRequireDefault(_commonTips);
-
-    var _simplemde2 = _interopRequireDefault(_simplemde);
-
-    var _marked2 = _interopRequireDefault(_marked);
-
-    function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-            default: obj
-        };
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
     }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var _dec, _dec2, _class;
+
+    var AttrUiTabCustomAttribute = exports.AttrUiTabCustomAttribute = (_dec = (0, _aureliaFramework.customAttribute)('ui-tab'), _dec2 = (0, _aureliaFramework.inject)(Element), _dec(_class = _dec2(_class = function () {
+        function AttrUiTabCustomAttribute(element) {
+            _classCallCheck(this, AttrUiTabCustomAttribute);
+
+            this.element = element;
+        }
+
+        _createClass(AttrUiTabCustomAttribute, [{
+            key: 'valueChanged',
+            value: function valueChanged(newValue, oldValue) {}
+        }, {
+            key: '_init',
+            value: function _init() {
+                var _this = this;
+
+                _.defer(function () {
+                    $(_this.element).find('.item').tab();
+                });
+            }
+        }, {
+            key: 'bind',
+            value: function bind() {
+                this._init();
+            }
+        }]);
+
+        return AttrUiTabCustomAttribute;
+    }()) || _class) || _class);
+});
+define('resources/binding-behaviors/bb-key',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var keyCodes = {
+        'esc': 27,
+        'tab': 9,
+        'enter': 13,
+        'space': 32,
+        'up': 38,
+        'left': 37,
+        'right': 39,
+        'down': 40,
+        'backspace': 8,
+        'delete': 46
+    };
+
+    function keyHandler(event) {
+
+        if (event && event.ctrlKey == this.keyState.ctrl && event.altKey == this.keyState.alt && event.shiftKey == this.keyState.shift && event.keyCode == this.keyState.keyCode) {
+            this.originalMethod(event);
+        } else {}
+
+        return true;
+    }
+
+    var KeyBindingBehavior = exports.KeyBindingBehavior = function () {
+        function KeyBindingBehavior() {
+            _classCallCheck(this, KeyBindingBehavior);
+        }
+
+        _createClass(KeyBindingBehavior, [{
+            key: 'bind',
+            value: function bind(binding, source) {
+                var key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 13;
+                var metaKeys = arguments[3];
+
+                var methodName = 'updateTarget';
+                if (binding.callSource) {
+                    methodName = 'callSource';
+                } else if (binding.updateSource && binding.mode === bindingMode.twoWay) {
+                    methodName = 'updateSource';
+                }
+
+                binding.originalMethod = binding[methodName];
+                binding.originalMethod.originalName = methodName;
+
+                binding[methodName] = keyHandler;
+                var keyCode = _.isInteger(key) ? key : key.length === 1 ? key.charCodeAt(0) : keyCodes[key];
+                if (_.isUndefined(keyCode)) {
+                    console.warn('Unmapping keyCode for KeyBindingBehavior!');
+                }
+                binding.keyState = {
+                    ctrl: _.includes(metaKeys, 'ctrl'),
+                    alt: _.includes(metaKeys, 'alt'),
+                    shift: _.includes(metaKeys, 'shift'),
+                    keyCode: keyCode
+                };
+            }
+        }, {
+            key: 'unbind',
+            value: function unbind(binding, source) {
+                binding[binding.originalMethod.originalName] = binding.originalMethod;
+                binding.originalMethod = null;
+            }
+        }]);
+
+        return KeyBindingBehavior;
+    }();
+});
+define('resources/elements/em-chat-channel-create',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmChatChannelCreate = undefined;
 
     function _initDefineProp(target, property, descriptor, context) {
         if (!descriptor) return;
@@ -2110,6 +2981,151 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
             throw new TypeError("Cannot call a class as a function");
         }
     }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+        var desc = {};
+        Object['ke' + 'ys'](descriptor).forEach(function (key) {
+            desc[key] = descriptor[key];
+        });
+        desc.enumerable = !!desc.enumerable;
+        desc.configurable = !!desc.configurable;
+
+        if ('value' in desc || desc.initializer) {
+            desc.writable = true;
+        }
+
+        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+            return decorator(target, property, desc) || desc;
+        }, desc);
+
+        if (context && desc.initializer !== void 0) {
+            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+            desc.initializer = undefined;
+        }
+
+        if (desc.initializer === void 0) {
+            Object['define' + 'Property'](target, property, desc);
+            desc = null;
+        }
+
+        return desc;
+    }
+
+    function _initializerWarningHelper(descriptor, context) {
+        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+    }
+
+    var _class, _desc, _value, _class2, _descriptor;
+
+    var EmChatChannelCreate = exports.EmChatChannelCreate = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
+        function EmChatChannelCreate() {
+            _classCallCheck(this, EmChatChannelCreate);
+
+            _initDefineProp(this, 'trigger', _descriptor, this);
+        }
+
+        _createClass(EmChatChannelCreate, [{
+            key: 'triggerChanged',
+            value: function triggerChanged(newValue, oldValue) {
+                var _this = this;
+
+                $(this.trigger).click(function () {
+                    _this.emModal.show({
+                        hideOnApprove: false,
+                        autoDimmer: true
+                    });
+                });
+            }
+        }, {
+            key: 'showHandler',
+            value: function showHandler() {}
+        }, {
+            key: 'approveHandler',
+            value: function approveHandler(modal) {
+
+                $.post('/admin/channel/create', {
+                    name: this.name,
+                    title: this.title,
+                    desc: this.desc
+                }, function (data) {
+                    modal.hide();
+                    if (data.success) {
+                        toastr.success('创建频道成功!');
+                        ea.publish(nsCons.EVENT_CHAT_CHANNEL_CREATED, {
+                            channel: data.data
+                        });
+                    } else {
+                        toastr.error(data.data, '创建频道失败!');
+                    }
+                });
+            }
+        }]);
+
+        return EmChatChannelCreate;
+    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'trigger', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    })), _class2)) || _class;
+});
+define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmChatContentItem = undefined;
+
+    function _initDefineProp(target, property, descriptor, context) {
+        if (!descriptor) return;
+        Object.defineProperty(target, property, {
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+            writable: descriptor.writable,
+            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+        });
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
 
     function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
         var desc = {};
@@ -2146,281 +3162,141 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
 
     var _dec, _class, _desc, _value, _class2, _descriptor, _descriptor2;
 
-    var EmChatInput = exports.EmChatInput = (_dec = (0, _aureliaFramework.inject)(_aureliaEventAggregator.EventAggregator), (0, _aureliaFramework.containerless)(_class = _dec(_class = (_class2 = function () {
-        function EmChatInput(ea) {
-            var _this2 = this;
+    var EmChatContentItem = exports.EmChatContentItem = (_dec = (0, _aureliaFramework.bindable)({ defaultBindingMode: _aureliaFramework.bindingMode.twoWay }), (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
+        function EmChatContentItem() {
+            _classCallCheck(this, EmChatContentItem);
 
-            _classCallCheck(this, EmChatInput);
+            _initDefineProp(this, 'chats', _descriptor, this);
 
-            _initDefineProp(this, 'chatTo', _descriptor, this);
+            _initDefineProp(this, 'loginUser', _descriptor2, this);
 
-            _initDefineProp(this, 'poll', _descriptor2, this);
-
-            this.eventAggregator = ea;
-
-            this.subscribe = this.eventAggregator.subscribe(nsCons.HOTKEY, function (payload) {
-                var key = payload.key;
-                if (key == 'ctrl+i') {
-                    _this2.simplemde.codemirror.focus();
-                }
-            });
+            this.selfLink = utils.getBaseUrl() + wurl('path') + '#' + utils.getHash();
         }
 
-        EmChatInput.prototype.unbind = function unbind() {
-            this.subscribe.dispose();
-        };
+        _createClass(EmChatContentItem, [{
+            key: 'deleteHandler',
+            value: function deleteHandler(item) {
+                var _this = this;
 
-        EmChatInput.prototype.attached = function attached() {
-            this.initSimpleMDE(this.chatInputRef);
-            this.initDropzone();
-            this.initPaste();
-        };
-
-        EmChatInput.prototype.initPaste = function initPaste() {
-            var _this3 = this;
-
-            $(this.$chatMsgInputRef).pastableTextarea().on('pasteImage', function (ev, data) {
-
-                $.post('/admin/file/base64', {
-                    dataURL: data.dataURL,
-                    type: data.blob.type
-                }, function (data, textStatus, xhr) {
-                    if (data.success) {
-                        _this3.insertContent('![{name}]({baseURL}{path}{uuidName})'.replace(/\{name\}/g, data.data.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, data.data.path).replace(/\{uuidName\}/g, data.data.uuidName));
+                this.emConfirmModal.show({
+                    onapprove: function onapprove() {
+                        $.post('/admin/chat/direct/delete', {
+                            id: item.id
+                        }, function (data, textStatus, xhr) {
+                            if (data.success) {
+                                _this.chats = _.reject(_this.chats, {
+                                    id: item.id
+                                });
+                                toastr.success('删除消息成功!');
+                            } else {
+                                toastr.error(data.data, '删除消息失败!');
+                            }
+                        });
                     }
                 });
-            }).on('pasteImageError', function (ev, data) {
-                toastr.error(data.message, '剪贴板粘贴图片错误!');
-            });
-        };
-
-        EmChatInput.prototype.initDropzone = function initDropzone() {
-            var _this4 = this;
-
-            this.initUploadDropzone($('.CodeMirror-wrap', this.inputRef), function () {
-                return _this4.$chatMsgInputRef;
-            }, false);
-            this.initUploadDropzone($(this.btnItemUploadRef).children().andSelf(), function () {
-                return _this4.$chatMsgInputRef;
-            }, true);
-
-            $(this.chatBtnRef).popup({
-                inline: true,
-                hoverable: true,
-                position: 'bottom left',
-                delay: {
-                    show: 300,
-                    hide: 300
-                }
-            });
-        };
-
-        EmChatInput.prototype.initUploadDropzone = function initUploadDropzone(domRef, getInputTargetCb, clickable) {
-
-            var _this = this;
-
-            $(domRef).dropzone({
-                url: "/admin/file/upload",
-                paramName: 'file',
-                clickable: !!clickable,
-                dictDefaultMessage: '',
-                maxFilesize: 10,
-                addRemoveLinks: true,
-                previewsContainer: this.chatStatusBarRef,
-                previewTemplate: this.previewTemplateRef.innerHTML,
-                dictCancelUpload: '取消上传',
-                dictCancelUploadConfirmation: '确定要取消上传吗?',
-                dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
-                init: function init() {
-                    this.on("sending", function (file, xhr, formData) {
-                        if (!getInputTargetCb()) {
-                            this.removeAllFiles(true);
-                        }
-                    });
-                    this.on("success", function (file, data) {
-                        if (data.success) {
-
-                            $.each(data.data, function (index, item) {
-                                if (item.type == 'Image') {
-                                    _this.insertContent('![{name}]({baseURL}{path}{uuidName}) '.replace(/\{name\}/g, item.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, item.path).replace(/\{uuidName\}/g, item.uuidName));
-                                } else {
-                                    _this.insertContent('[{name}]({baseURL}{path}{uuidName}) '.replace(/\{name\}/g, item.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, "admin/file/download/").replace(/\{uuidName\}/g, item.id));
-                                }
-                            });
-                            toastr.success('上传成功!');
-                        } else {
-                            toastr.error(data.data, '上传失败!');
-                        }
-                    });
-                    this.on("error", function (file, errorMessage, xhr) {
-                        toastr.error(errorMessage, '上传失败!');
-                    });
-                    this.on("complete", function (file) {
-                        this.removeFile(file);
-                    });
-                }
-            });
-        };
-
-        EmChatInput.prototype.initSimpleMDE = function initSimpleMDE(textareaDom) {
-            this.simplemde = new _simplemde2.default({
-                element: textareaDom,
-                spellChecker: false,
-                status: false,
-                autofocus: true,
-                toolbar: false,
-                forceSync: true,
-                autoDownloadFontAwesome: false,
-                insertTexts: {
-                    table: ["", "\n\n| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n\n"]
-                }
-            });
-
-            this.$chatMsgInputRef = $(this.inputRef).find('.textareaWrapper .CodeMirror textarea');
-            this.initTextcomplete();
-        };
-
-        EmChatInput.prototype.initTextcomplete = function initTextcomplete() {
-            var _this5 = this;
-
-            $(this.$chatMsgInputRef).textcomplete([{
-                match: /(|\b)(\/.*)$/,
-                search: function search(term, callback) {
-                    var keys = _.keys(_commonTips2.default);
-                    callback($.map(keys, function (key) {
-                        return key.indexOf(term) === 0 ? key : null;
-                    }));
-                },
-                template: function template(value, term) {
-                    return _commonTips2.default[value].label;
-                },
-                replace: function replace(value) {
-                    _this5.tipsActionHandler(value);
-                    return '';
-                }
-            }], {
-                appendTo: '.tms-chat-status-bar',
-                maxCount: 20
-            });
-
-            this.simplemde.codemirror.on('keydown', function (cm, e) {
-                if (e.keyCode === 13 && _this5.isTipsShow()) {
-                    e.preventDefault();
-                } else if (e.ctrlKey && e.keyCode === 13) {
-                    _this5.sendChatMsg();
-                } else if (e.keyCode === 27) {
-                    _this5.simplemde.value('');
-                } else if (e.ctrlKey && e.keyCode == 85) {
-                    $(_this5.btnItemUploadRef).find('.content').click();
-                } else if (e.ctrlKey && e.keyCode == 191) {
-                    _this5.emHotkeysModal.show();
-                }
-            });
-        };
-
-        EmChatInput.prototype.sendChatMsg = function sendChatMsg() {
-            var _this6 = this;
-
-            var content = this.simplemde.value();
-
-            if (!$.trim(content)) {
-                this.simplemde.value('');
-                return;
             }
-
-            if (this.sending) {
-                return;
+        }, {
+            key: 'editHandler',
+            value: function editHandler(item, editTxtRef) {
+                item.isEditing = true;
+                item.contentOld = item.content;
+                _.defer(function () {
+                    $(editTxtRef).focus().select();
+                    autosize.update(editTxtRef);
+                });
             }
+        }, {
+            key: 'editOkHandler',
+            value: function editOkHandler(evt, item, txtRef) {
+                this.editSave(item, txtRef);
+                item.isEditing = false;
+            }
+        }, {
+            key: 'editCancelHandler',
+            value: function editCancelHandler(evt, item, txtRef) {
+                item.content = item.contentOld;
+                $(txtRef).val(item.content);
+                item.isEditing = false;
+            }
+        }, {
+            key: 'editSave',
+            value: function editSave(item, txtRef) {
+                var _this2 = this;
 
-            this.sending = true;
+                this.sending = true;
 
-            var html = $('<div class="markdown-body"/>').html('<style>.markdown-body{font-size:14px;line-height:1.6}.markdown-body>:first-child{margin-top:0!important}.markdown-body>:last-child{margin-bottom:0!important}.markdown-body a.absent{color:#C00}.markdown-body a.anchor{bottom:0;cursor:pointer;display:block;left:0;margin-left:-30px;padding-left:30px;position:absolute;top:0}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{cursor:text;font-weight:700;margin:20px 0 10px;padding:0;position:relative}.markdown-body h1 .mini-icon-link,.markdown-body h2 .mini-icon-link,.markdown-body h3 .mini-icon-link,.markdown-body h4 .mini-icon-link,.markdown-body h5 .mini-icon-link,.markdown-body h6 .mini-icon-link{color:#000;display:none}.markdown-body h1:hover a.anchor,.markdown-body h2:hover a.anchor,.markdown-body h3:hover a.anchor,.markdown-body h4:hover a.anchor,.markdown-body h5:hover a.anchor,.markdown-body h6:hover a.anchor{line-height:1;margin-left:-22px;padding-left:0;text-decoration:none;top:15%}.markdown-body h1:hover a.anchor .mini-icon-link,.markdown-body h2:hover a.anchor .mini-icon-link,.markdown-body h3:hover a.anchor .mini-icon-link,.markdown-body h4:hover a.anchor .mini-icon-link,.markdown-body h5:hover a.anchor .mini-icon-link,.markdown-body h6:hover a.anchor .mini-icon-link{display:inline-block}.markdown-body hr:after,.markdown-body hr:before{display:table;content:""}.markdown-body h1 code,.markdown-body h1 tt,.markdown-body h2 code,.markdown-body h2 tt,.markdown-body h3 code,.markdown-body h3 tt,.markdown-body h4 code,.markdown-body h4 tt,.markdown-body h5 code,.markdown-body h5 tt,.markdown-body h6 code,.markdown-body h6 tt{font-size:inherit}.markdown-body h1{color:#000;font-size:28px}.markdown-body h2{border-bottom:1px solid #CCC;color:#000;font-size:24px}.markdown-body h3{font-size:18px}.markdown-body h4{font-size:16px}.markdown-body h5{font-size:14px}.markdown-body h6{color:#777;font-size:14px}.markdown-body blockquote,.markdown-body dl,.markdown-body ol,.markdown-body p,.markdown-body pre,.markdown-body table,.markdown-body ul{margin:15px 0}.markdown-body hr{overflow:hidden;background:#e7e7e7;height:4px;padding:0;margin:16px 0;border:0;-moz-box-sizing:content-box;box-sizing:content-box}.markdown-body h1+p,.markdown-body h2+p,.markdown-body h3+p,.markdown-body h4+p,.markdown-body h5+p,.markdown-body h6+p,.markdown-body ol li>:first-child,.markdown-body ul li>:first-child{margin-top:0}.markdown-body hr:after{clear:both}.markdown-body a:first-child h1,.markdown-body a:first-child h2,.markdown-body a:first-child h3,.markdown-body a:first-child h4,.markdown-body a:first-child h5,.markdown-body a:first-child h6,.markdown-body>h1:first-child,.markdown-body>h1:first-child+h2,.markdown-body>h2:first-child,.markdown-body>h3:first-child,.markdown-body>h4:first-child,.markdown-body>h5:first-child,.markdown-body>h6:first-child{margin-top:0;padding-top:0}.markdown-body li p.first{display:inline-block}.markdown-body ol,.markdown-body ul{padding-left:30px}.markdown-body ol.no-list,.markdown-body ul.no-list{list-style-type:none;padding:0}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-bottom:0}.markdown-body dl{padding:0}.markdown-body dl dt{font-size:14px;font-style:italic;font-weight:700;margin:15px 0 5px;padding:0}.markdown-body dl dt:first-child{padding:0}.markdown-body dl dt>:first-child{margin-top:0}.markdown-body dl dt>:last-child{margin-bottom:0}.markdown-body dl dd{margin:0 0 15px;padding:0 15px}.markdown-body blockquote>:first-child,.markdown-body dl dd>:first-child{margin-top:0}.markdown-body blockquote>:last-child,.markdown-body dl dd>:last-child{margin-bottom:0}.markdown-body blockquote{border-left:4px solid #DDD;color:#777;padding:0 15px}.markdown-body table th{font-weight:700}.markdown-body table td,.markdown-body table th{border:1px solid #CCC;padding:6px 13px}.markdown-body table tr{background-color:#FFF;border-top:1px solid #CCC}.markdown-body table tr:nth-child(2n){background-color:#F8F8F8}.markdown-body img{max-width:100%}.markdown-body span.frame{display:block;overflow:hidden}.markdown-body span.frame>span{border:1px solid #DDD;display:block;float:left;margin:13px 0 0;overflow:hidden;padding:7px;width:auto}.markdown-body span.frame span img{display:block;float:left}.markdown-body span.frame span span{clear:both;color:#333;display:block;padding:5px 0 0}.markdown-body span.align-center{clear:both;display:block;overflow:hidden}.markdown-body span.align-center>span{display:block;margin:13px auto 0;overflow:hidden;text-align:center}.markdown-body span.align-center span img{margin:0 auto;text-align:center}.markdown-body span.align-right{clear:both;display:block;overflow:hidden}.markdown-body span.align-right>span{display:block;margin:13px 0 0;overflow:hidden;text-align:right}.markdown-body span.align-right span img{margin:0;text-align:right}.markdown-body span.float-left{display:block;float:left;margin-right:13px;overflow:hidden}.markdown-body span.float-left span{margin:13px 0 0}.markdown-body span.float-right{display:block;float:right;margin-left:13px;overflow:hidden}.markdown-body span.float-right>span{display:block;margin:13px auto 0;overflow:hidden;text-align:right}.markdown-body code,.markdown-body tt{background-color:#F8F8F8;border:1px solid #EAEAEA;border-radius:3px;margin:0 2px;padding:0 5px;white-space:nowrap}.markdown-body pre>code{background:none;border:none;margin:0;padding:0;white-space:pre}.markdown-body .highlight pre,.markdown-body pre{background-color:#F8F8F8;border:1px solid #CCC;border-radius:3px;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px}.markdown-body pre code,.markdown-body pre tt{background-color:transparent;border:none}</style>' + (0, _marked2.default)(content)).wrap('<div/>').parent().html();
+                item.content = $(txtRef).val();
 
-            $.post('/admin/chat/direct/create', {
-                baseUrl: utils.getBaseUrl(),
-                path: wurl('path'),
-                chatTo: this.chatTo,
-                content: content,
-                contentHtml: html
-            }, function (data, textStatus, xhr) {
-                if (data.success) {
-                    _this6.poll.reset();
-                    _this6.simplemde.value('');
-                    _this6.eventAggregator.publish(nsCons.EVENT_CHAT_MSG_SENDED, {
-                        data: data
-                    });
-                } else {
-                    toastr.error(data.data, '发送消息失败!');
+                var html = $('<div class="markdown-body"/>').html('<style>.markdown-body{font-size:14px;line-height:1.6}.markdown-body>:first-child{margin-top:0!important}.markdown-body>:last-child{margin-bottom:0!important}.markdown-body a.absent{color:#C00}.markdown-body a.anchor{bottom:0;cursor:pointer;display:block;left:0;margin-left:-30px;padding-left:30px;position:absolute;top:0}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{cursor:text;font-weight:700;margin:20px 0 10px;padding:0;position:relative}.markdown-body h1 .mini-icon-link,.markdown-body h2 .mini-icon-link,.markdown-body h3 .mini-icon-link,.markdown-body h4 .mini-icon-link,.markdown-body h5 .mini-icon-link,.markdown-body h6 .mini-icon-link{color:#000;display:none}.markdown-body h1:hover a.anchor,.markdown-body h2:hover a.anchor,.markdown-body h3:hover a.anchor,.markdown-body h4:hover a.anchor,.markdown-body h5:hover a.anchor,.markdown-body h6:hover a.anchor{line-height:1;margin-left:-22px;padding-left:0;text-decoration:none;top:15%}.markdown-body h1:hover a.anchor .mini-icon-link,.markdown-body h2:hover a.anchor .mini-icon-link,.markdown-body h3:hover a.anchor .mini-icon-link,.markdown-body h4:hover a.anchor .mini-icon-link,.markdown-body h5:hover a.anchor .mini-icon-link,.markdown-body h6:hover a.anchor .mini-icon-link{display:inline-block}.markdown-body hr:after,.markdown-body hr:before{display:table;content:""}.markdown-body h1 code,.markdown-body h1 tt,.markdown-body h2 code,.markdown-body h2 tt,.markdown-body h3 code,.markdown-body h3 tt,.markdown-body h4 code,.markdown-body h4 tt,.markdown-body h5 code,.markdown-body h5 tt,.markdown-body h6 code,.markdown-body h6 tt{font-size:inherit}.markdown-body h1{color:#000;font-size:28px}.markdown-body h2{border-bottom:1px solid #CCC;color:#000;font-size:24px}.markdown-body h3{font-size:18px}.markdown-body h4{font-size:16px}.markdown-body h5{font-size:14px}.markdown-body h6{color:#777;font-size:14px}.markdown-body blockquote,.markdown-body dl,.markdown-body ol,.markdown-body p,.markdown-body pre,.markdown-body table,.markdown-body ul{margin:15px 0}.markdown-body hr{overflow:hidden;background:#e7e7e7;height:4px;padding:0;margin:16px 0;border:0;-moz-box-sizing:content-box;box-sizing:content-box}.markdown-body h1+p,.markdown-body h2+p,.markdown-body h3+p,.markdown-body h4+p,.markdown-body h5+p,.markdown-body h6+p,.markdown-body ol li>:first-child,.markdown-body ul li>:first-child{margin-top:0}.markdown-body hr:after{clear:both}.markdown-body a:first-child h1,.markdown-body a:first-child h2,.markdown-body a:first-child h3,.markdown-body a:first-child h4,.markdown-body a:first-child h5,.markdown-body a:first-child h6,.markdown-body>h1:first-child,.markdown-body>h1:first-child+h2,.markdown-body>h2:first-child,.markdown-body>h3:first-child,.markdown-body>h4:first-child,.markdown-body>h5:first-child,.markdown-body>h6:first-child{margin-top:0;padding-top:0}.markdown-body li p.first{display:inline-block}.markdown-body ol,.markdown-body ul{padding-left:30px}.markdown-body ol.no-list,.markdown-body ul.no-list{list-style-type:none;padding:0}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-bottom:0}.markdown-body dl{padding:0}.markdown-body dl dt{font-size:14px;font-style:italic;font-weight:700;margin:15px 0 5px;padding:0}.markdown-body dl dt:first-child{padding:0}.markdown-body dl dt>:first-child{margin-top:0}.markdown-body dl dt>:last-child{margin-bottom:0}.markdown-body dl dd{margin:0 0 15px;padding:0 15px}.markdown-body blockquote>:first-child,.markdown-body dl dd>:first-child{margin-top:0}.markdown-body blockquote>:last-child,.markdown-body dl dd>:last-child{margin-bottom:0}.markdown-body blockquote{border-left:4px solid #DDD;color:#777;padding:0 15px}.markdown-body table th{font-weight:700}.markdown-body table td,.markdown-body table th{border:1px solid #CCC;padding:6px 13px}.markdown-body table tr{background-color:#FFF;border-top:1px solid #CCC}.markdown-body table tr:nth-child(2n){background-color:#F8F8F8}.markdown-body img{max-width:100%}.markdown-body span.frame{display:block;overflow:hidden}.markdown-body span.frame>span{border:1px solid #DDD;display:block;float:left;margin:13px 0 0;overflow:hidden;padding:7px;width:auto}.markdown-body span.frame span img{display:block;float:left}.markdown-body span.frame span span{clear:both;color:#333;display:block;padding:5px 0 0}.markdown-body span.align-center{clear:both;display:block;overflow:hidden}.markdown-body span.align-center>span{display:block;margin:13px auto 0;overflow:hidden;text-align:center}.markdown-body span.align-center span img{margin:0 auto;text-align:center}.markdown-body span.align-right{clear:both;display:block;overflow:hidden}.markdown-body span.align-right>span{display:block;margin:13px 0 0;overflow:hidden;text-align:right}.markdown-body span.align-right span img{margin:0;text-align:right}.markdown-body span.float-left{display:block;float:left;margin-right:13px;overflow:hidden}.markdown-body span.float-left span{margin:13px 0 0}.markdown-body span.float-right{display:block;float:right;margin-left:13px;overflow:hidden}.markdown-body span.float-right>span{display:block;margin:13px auto 0;overflow:hidden;text-align:right}.markdown-body code,.markdown-body tt{background-color:#F8F8F8;border:1px solid #EAEAEA;border-radius:3px;margin:0 2px;padding:0 5px;white-space:nowrap}.markdown-body pre>code{background:none;border:none;margin:0;padding:0;white-space:pre}.markdown-body .highlight pre,.markdown-body pre{background-color:#F8F8F8;border:1px solid #CCC;border-radius:3px;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px}.markdown-body pre code,.markdown-body pre tt{background-color:transparent;border:none}</style>' + marked(item.content)).wrap('<div/>').parent().html();
+
+                $.post('/admin/chat/direct/update', {
+                    baseUrl: utils.getBaseUrl(),
+                    path: wurl('path'),
+                    id: item.id,
+                    content: item.content,
+                    contentHtml: html
+                }, function (data, textStatus, xhr) {
+                    if (data.success) {
+                        toastr.success('更新消息成功!');
+                        item.contentMd = marked(item.content);
+                        item.isEditing = false;
+                    } else {
+                        toastr.error(data.data, '更新消息失败!');
+                    }
+                }).always(function () {
+                    _this2.sending = false;
+                });
+            }
+        }, {
+            key: 'eidtKeydownHandler',
+            value: function eidtKeydownHandler(evt, item, txtRef) {
+
+                if (this.sending) {
+                    return false;
                 }
-            }).always(function () {
-                _this6.sending = false;
-            });
-        };
 
-        EmChatInput.prototype.sendChatMsgHandler = function sendChatMsgHandler() {
-            this.sendChatMsg();
-        };
+                if (evt.ctrlKey && evt.keyCode === 13) {
 
-        EmChatInput.prototype.isTipsShow = function isTipsShow() {
-            return $(this.chatStatusBarRef).find('.textcomplete-dropdown:visible').size() === 1;
-        };
+                    this.editSave(item, txtRef);
 
-        EmChatInput.prototype.insertTipContent = function insertTipContent(tip, mde) {
-            var cm = mde ? mde.codemirror : this.simplemde.codemirror;
-            var cursor = cm.getCursor();
-            var line = cm.getLine(cursor.line);
-            var indexSlash = _.lastIndexOf(line, '/', cursor.ch);
-            if (cursor) {
-                cm.replaceRange(tip.value, {
-                    ch: indexSlash,
-                    line: cursor.line
-                }, cursor);
-                cm.focus();
-
-                if (tip.ch || tip.line) {
-                    cm.setCursor({
-                        line: tip.line ? cursor.line + tip.line : cm.getCursor().line,
-                        ch: tip.ch ? indexSlash + tip.ch : 0
-                    });
+                    return false;
+                } else if (evt.ctrlKey && evt.keyCode === 85) {
+                    $(txtRef).next('.tms-edit-actions').find('.upload').click();
+                    return false;
+                } else if (evt.keyCode === 27) {
+                    this.editCancelHandler(evt, item, txtRef);
                 }
-            }
-        };
 
-        EmChatInput.prototype.insertContent = function insertContent(content, mde) {
-            var cm = mde ? mde.codemirror : this.simplemde.codemirror;
-            var cursor = cm.getCursor();
-            if (cursor) {
-                cm.replaceRange(content, cursor, cursor);
-                cm.focus();
+                return true;
             }
-        };
+        }]);
 
-        EmChatInput.prototype.tipsActionHandler = function tipsActionHandler(value) {
-            if (value == '/upload') {
-                $(this.btnItemUploadRef).find('.content').click();
-            } else if (value == '/shortcuts') {
-                this.emHotkeysModal.show();
-            } else {
-                this.insertTipContent(_commonTips2.default[value]);
-            }
-        };
-
-        return EmChatInput;
-    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'chatTo', [_aureliaFramework.bindable], {
+        return EmChatContentItem;
+    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'chats', [_dec], {
         enumerable: true,
         initializer: null
-    }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'poll', [_aureliaFramework.bindable], {
+    }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'loginUser', [_aureliaFramework.bindable], {
         enumerable: true,
         initializer: null
-    })), _class2)) || _class) || _class);
+    })), _class2)) || _class);
 });
-define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'common/common-tips', 'simplemde', 'textcomplete'], function (exports, _aureliaFramework, _commonTips, _simplemde) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
-    exports.EmChatTopMenu = undefined;
+    exports.EmChatInput = undefined;
+
+    var _commonTips2 = _interopRequireDefault(_commonTips);
+
+    var _simplemde2 = _interopRequireDefault(_simplemde);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
 
     function _initDefineProp(target, property, descriptor, context) {
         if (!descriptor) return;
@@ -2437,6 +3313,24 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
             throw new TypeError("Cannot call a class as a function");
         }
     }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
 
     function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
         var desc = {};
@@ -2471,7 +3365,686 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
         throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
     }
 
-    var _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3;
+    var _class, _desc, _value, _class2, _descriptor, _descriptor2;
+
+    var EmChatInput = exports.EmChatInput = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
+        function EmChatInput() {
+            _classCallCheck(this, EmChatInput);
+
+            _initDefineProp(this, 'chatTo', _descriptor, this);
+
+            _initDefineProp(this, 'poll', _descriptor2, this);
+        }
+
+        _createClass(EmChatInput, [{
+            key: 'initHotkeys',
+            value: function initHotkeys() {
+                var _this2 = this;
+
+                $(document).bind('keydown', 'ctrl+i', function () {
+                    event.preventDefault();
+                    _this2.simplemde.codemirror.focus();
+                });
+            }
+        }, {
+            key: 'attached',
+            value: function attached() {
+                this.initSimpleMDE(this.chatInputRef);
+                this.initDropzone();
+                this.initPaste();
+                this.initHotkeys();
+            }
+        }, {
+            key: 'initPaste',
+            value: function initPaste() {
+                var _this3 = this;
+
+                $(this.$chatMsgInputRef).pastableTextarea().on('pasteImage', function (ev, data) {
+
+                    $.post('/admin/file/base64', {
+                        dataURL: data.dataURL,
+                        type: data.blob.type
+                    }, function (data, textStatus, xhr) {
+                        if (data.success) {
+                            _this3.insertContent('![{name}]({baseURL}{path}{uuidName})'.replace(/\{name\}/g, data.data.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, data.data.path).replace(/\{uuidName\}/g, data.data.uuidName));
+                        }
+                    });
+                }).on('pasteImageError', function (ev, data) {
+                    toastr.error(data.message, '剪贴板粘贴图片错误!');
+                });
+            }
+        }, {
+            key: 'initDropzone',
+            value: function initDropzone() {
+                var _this4 = this;
+
+                this.initUploadDropzone($('.CodeMirror-wrap', this.inputRef), function () {
+                    return _this4.$chatMsgInputRef;
+                }, false);
+                this.initUploadDropzone($(this.btnItemUploadRef).children().andSelf(), function () {
+                    return _this4.$chatMsgInputRef;
+                }, true);
+
+                $(this.chatBtnRef).popup({
+                    inline: true,
+                    hoverable: true,
+                    position: 'bottom left',
+                    delay: {
+                        show: 300,
+                        hide: 300
+                    }
+                });
+            }
+        }, {
+            key: 'initUploadDropzone',
+            value: function initUploadDropzone(domRef, getInputTargetCb, clickable) {
+
+                var _this = this;
+
+                $(domRef).dropzone({
+                    url: "/admin/file/upload",
+                    paramName: 'file',
+                    clickable: !!clickable,
+                    dictDefaultMessage: '',
+                    maxFilesize: 10,
+                    addRemoveLinks: true,
+                    previewsContainer: this.chatStatusBarRef,
+                    previewTemplate: this.previewTemplateRef.innerHTML,
+                    dictCancelUpload: '取消上传',
+                    dictCancelUploadConfirmation: '确定要取消上传吗?',
+                    dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
+                    init: function init() {
+                        this.on("sending", function (file, xhr, formData) {
+                            if (!getInputTargetCb()) {
+                                this.removeAllFiles(true);
+                            }
+                        });
+                        this.on("success", function (file, data) {
+                            if (data.success) {
+
+                                $.each(data.data, function (index, item) {
+                                    if (item.type == 'Image') {
+                                        _this.insertContent('![{name}]({baseURL}{path}{uuidName}) '.replace(/\{name\}/g, item.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, item.path).replace(/\{uuidName\}/g, item.uuidName));
+                                    } else {
+                                        _this.insertContent('[{name}]({baseURL}{path}{uuidName}) '.replace(/\{name\}/g, item.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, "admin/file/download/").replace(/\{uuidName\}/g, item.id));
+                                    }
+                                });
+                                toastr.success('上传成功!');
+                            } else {
+                                toastr.error(data.data, '上传失败!');
+                            }
+                        });
+                        this.on("error", function (file, errorMessage, xhr) {
+                            toastr.error(errorMessage, '上传失败!');
+                        });
+                        this.on("complete", function (file) {
+                            this.removeFile(file);
+                        });
+                    }
+                });
+            }
+        }, {
+            key: 'initSimpleMDE',
+            value: function initSimpleMDE(textareaDom) {
+                this.simplemde = new _simplemde2.default({
+                    element: textareaDom,
+                    spellChecker: false,
+                    status: false,
+                    autofocus: true,
+                    toolbar: false,
+                    forceSync: true,
+                    autoDownloadFontAwesome: false,
+                    insertTexts: {
+                        table: ["", "\n\n| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n\n"]
+                    }
+                });
+
+                this.$chatMsgInputRef = $(this.inputRef).find('.textareaWrapper .CodeMirror textarea');
+                this.initTextcomplete();
+            }
+        }, {
+            key: 'initTextcomplete',
+            value: function initTextcomplete() {
+                var _this5 = this;
+
+                $(this.$chatMsgInputRef).textcomplete([{
+                    match: /(|\b)(\/.*)$/,
+                    search: function search(term, callback) {
+                        var keys = _.keys(_commonTips2.default);
+                        callback($.map(keys, function (key) {
+                            return key.indexOf(term) === 0 ? key : null;
+                        }));
+                    },
+                    template: function template(value, term) {
+                        return _commonTips2.default[value].label;
+                    },
+                    replace: function replace(value) {
+                        _this5.tipsActionHandler(value);
+                        return '';
+                    }
+                }], {
+                    appendTo: '.tms-chat-status-bar',
+                    maxCount: 20
+                });
+
+                this.simplemde.codemirror.on('keydown', function (cm, e) {
+                    if (e.keyCode === 13 && _this5.isTipsShow()) {
+                        e.preventDefault();
+                    } else if (e.ctrlKey && e.keyCode === 13) {
+                        _this5.sendChatMsg();
+                    } else if (e.keyCode === 27) {
+                        _this5.simplemde.value('');
+                    } else if (e.ctrlKey && e.keyCode == 85) {
+                        $(_this5.btnItemUploadRef).find('.content').click();
+                    } else if (e.ctrlKey && e.keyCode == 191) {
+                        _this5.emHotkeysModal.show();
+                    }
+                });
+            }
+        }, {
+            key: 'sendChatMsg',
+            value: function sendChatMsg() {
+                var _this6 = this;
+
+                var content = this.simplemde.value();
+
+                if (!$.trim(content)) {
+                    this.simplemde.value('');
+                    return;
+                }
+
+                if (this.sending) {
+                    return;
+                }
+
+                this.sending = true;
+
+                var html = $('<div class="markdown-body"/>').html('<style>.markdown-body{font-size:14px;line-height:1.6}.markdown-body>:first-child{margin-top:0!important}.markdown-body>:last-child{margin-bottom:0!important}.markdown-body a.absent{color:#C00}.markdown-body a.anchor{bottom:0;cursor:pointer;display:block;left:0;margin-left:-30px;padding-left:30px;position:absolute;top:0}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{cursor:text;font-weight:700;margin:20px 0 10px;padding:0;position:relative}.markdown-body h1 .mini-icon-link,.markdown-body h2 .mini-icon-link,.markdown-body h3 .mini-icon-link,.markdown-body h4 .mini-icon-link,.markdown-body h5 .mini-icon-link,.markdown-body h6 .mini-icon-link{color:#000;display:none}.markdown-body h1:hover a.anchor,.markdown-body h2:hover a.anchor,.markdown-body h3:hover a.anchor,.markdown-body h4:hover a.anchor,.markdown-body h5:hover a.anchor,.markdown-body h6:hover a.anchor{line-height:1;margin-left:-22px;padding-left:0;text-decoration:none;top:15%}.markdown-body h1:hover a.anchor .mini-icon-link,.markdown-body h2:hover a.anchor .mini-icon-link,.markdown-body h3:hover a.anchor .mini-icon-link,.markdown-body h4:hover a.anchor .mini-icon-link,.markdown-body h5:hover a.anchor .mini-icon-link,.markdown-body h6:hover a.anchor .mini-icon-link{display:inline-block}.markdown-body hr:after,.markdown-body hr:before{display:table;content:""}.markdown-body h1 code,.markdown-body h1 tt,.markdown-body h2 code,.markdown-body h2 tt,.markdown-body h3 code,.markdown-body h3 tt,.markdown-body h4 code,.markdown-body h4 tt,.markdown-body h5 code,.markdown-body h5 tt,.markdown-body h6 code,.markdown-body h6 tt{font-size:inherit}.markdown-body h1{color:#000;font-size:28px}.markdown-body h2{border-bottom:1px solid #CCC;color:#000;font-size:24px}.markdown-body h3{font-size:18px}.markdown-body h4{font-size:16px}.markdown-body h5{font-size:14px}.markdown-body h6{color:#777;font-size:14px}.markdown-body blockquote,.markdown-body dl,.markdown-body ol,.markdown-body p,.markdown-body pre,.markdown-body table,.markdown-body ul{margin:15px 0}.markdown-body hr{overflow:hidden;background:#e7e7e7;height:4px;padding:0;margin:16px 0;border:0;-moz-box-sizing:content-box;box-sizing:content-box}.markdown-body h1+p,.markdown-body h2+p,.markdown-body h3+p,.markdown-body h4+p,.markdown-body h5+p,.markdown-body h6+p,.markdown-body ol li>:first-child,.markdown-body ul li>:first-child{margin-top:0}.markdown-body hr:after{clear:both}.markdown-body a:first-child h1,.markdown-body a:first-child h2,.markdown-body a:first-child h3,.markdown-body a:first-child h4,.markdown-body a:first-child h5,.markdown-body a:first-child h6,.markdown-body>h1:first-child,.markdown-body>h1:first-child+h2,.markdown-body>h2:first-child,.markdown-body>h3:first-child,.markdown-body>h4:first-child,.markdown-body>h5:first-child,.markdown-body>h6:first-child{margin-top:0;padding-top:0}.markdown-body li p.first{display:inline-block}.markdown-body ol,.markdown-body ul{padding-left:30px}.markdown-body ol.no-list,.markdown-body ul.no-list{list-style-type:none;padding:0}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-bottom:0}.markdown-body dl{padding:0}.markdown-body dl dt{font-size:14px;font-style:italic;font-weight:700;margin:15px 0 5px;padding:0}.markdown-body dl dt:first-child{padding:0}.markdown-body dl dt>:first-child{margin-top:0}.markdown-body dl dt>:last-child{margin-bottom:0}.markdown-body dl dd{margin:0 0 15px;padding:0 15px}.markdown-body blockquote>:first-child,.markdown-body dl dd>:first-child{margin-top:0}.markdown-body blockquote>:last-child,.markdown-body dl dd>:last-child{margin-bottom:0}.markdown-body blockquote{border-left:4px solid #DDD;color:#777;padding:0 15px}.markdown-body table th{font-weight:700}.markdown-body table td,.markdown-body table th{border:1px solid #CCC;padding:6px 13px}.markdown-body table tr{background-color:#FFF;border-top:1px solid #CCC}.markdown-body table tr:nth-child(2n){background-color:#F8F8F8}.markdown-body img{max-width:100%}.markdown-body span.frame{display:block;overflow:hidden}.markdown-body span.frame>span{border:1px solid #DDD;display:block;float:left;margin:13px 0 0;overflow:hidden;padding:7px;width:auto}.markdown-body span.frame span img{display:block;float:left}.markdown-body span.frame span span{clear:both;color:#333;display:block;padding:5px 0 0}.markdown-body span.align-center{clear:both;display:block;overflow:hidden}.markdown-body span.align-center>span{display:block;margin:13px auto 0;overflow:hidden;text-align:center}.markdown-body span.align-center span img{margin:0 auto;text-align:center}.markdown-body span.align-right{clear:both;display:block;overflow:hidden}.markdown-body span.align-right>span{display:block;margin:13px 0 0;overflow:hidden;text-align:right}.markdown-body span.align-right span img{margin:0;text-align:right}.markdown-body span.float-left{display:block;float:left;margin-right:13px;overflow:hidden}.markdown-body span.float-left span{margin:13px 0 0}.markdown-body span.float-right{display:block;float:right;margin-left:13px;overflow:hidden}.markdown-body span.float-right>span{display:block;margin:13px auto 0;overflow:hidden;text-align:right}.markdown-body code,.markdown-body tt{background-color:#F8F8F8;border:1px solid #EAEAEA;border-radius:3px;margin:0 2px;padding:0 5px;white-space:nowrap}.markdown-body pre>code{background:none;border:none;margin:0;padding:0;white-space:pre}.markdown-body .highlight pre,.markdown-body pre{background-color:#F8F8F8;border:1px solid #CCC;border-radius:3px;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px}.markdown-body pre code,.markdown-body pre tt{background-color:transparent;border:none}</style>' + marked(content)).wrap('<div/>').parent().html();
+
+                $.post('/admin/chat/direct/create', {
+                    baseUrl: utils.getBaseUrl(),
+                    path: wurl('path'),
+                    chatTo: this.chatTo,
+                    content: content,
+                    contentHtml: html
+                }, function (data, textStatus, xhr) {
+                    if (data.success) {
+                        _this6.poll.reset();
+                        _this6.simplemde.value('');
+                        ea.publish(nsCons.EVENT_CHAT_MSG_SENDED, {
+                            data: data
+                        });
+                    } else {
+                        toastr.error(data.data, '发送消息失败!');
+                    }
+                }).always(function () {
+                    _this6.sending = false;
+                });
+            }
+        }, {
+            key: 'sendChatMsgHandler',
+            value: function sendChatMsgHandler() {
+                this.sendChatMsg();
+            }
+        }, {
+            key: 'isTipsShow',
+            value: function isTipsShow() {
+                return $(this.chatStatusBarRef).find('.textcomplete-dropdown:visible').size() === 1;
+            }
+        }, {
+            key: 'insertTipContent',
+            value: function insertTipContent(tip, mde) {
+                var cm = mde ? mde.codemirror : this.simplemde.codemirror;
+                var cursor = cm.getCursor();
+                var line = cm.getLine(cursor.line);
+                var indexSlash = _.lastIndexOf(line, '/', cursor.ch);
+                if (cursor) {
+                    cm.replaceRange(tip.value, {
+                        ch: indexSlash,
+                        line: cursor.line
+                    }, cursor);
+                    cm.focus();
+
+                    if (tip.ch || tip.line) {
+                        cm.setCursor({
+                            line: tip.line ? cursor.line + tip.line : cm.getCursor().line,
+                            ch: tip.ch ? indexSlash + tip.ch : 0
+                        });
+                    }
+                }
+            }
+        }, {
+            key: 'insertContent',
+            value: function insertContent(content, mde) {
+                var cm = mde ? mde.codemirror : this.simplemde.codemirror;
+                var cursor = cm.getCursor();
+                if (cursor) {
+                    cm.replaceRange(content, cursor, cursor);
+                    cm.focus();
+                }
+            }
+        }, {
+            key: 'tipsActionHandler',
+            value: function tipsActionHandler(value) {
+                if (value == '/upload') {
+                    $(this.btnItemUploadRef).find('.content').click();
+                } else if (value == '/shortcuts') {
+                    this.emHotkeysModal.show();
+                } else {
+                    this.insertTipContent(_commonTips2.default[value]);
+                }
+            }
+        }]);
+
+        return EmChatInput;
+    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'chatTo', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'poll', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    })), _class2)) || _class;
+});
+define('resources/elements/em-chat-sidebar-left',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmChatSidebarLeft = undefined;
+
+    function _initDefineProp(target, property, descriptor, context) {
+        if (!descriptor) return;
+        Object.defineProperty(target, property, {
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+            writable: descriptor.writable,
+            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+        });
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+        var desc = {};
+        Object['ke' + 'ys'](descriptor).forEach(function (key) {
+            desc[key] = descriptor[key];
+        });
+        desc.enumerable = !!desc.enumerable;
+        desc.configurable = !!desc.configurable;
+
+        if ('value' in desc || desc.initializer) {
+            desc.writable = true;
+        }
+
+        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+            return decorator(target, property, desc) || desc;
+        }, desc);
+
+        if (context && desc.initializer !== void 0) {
+            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+            desc.initializer = undefined;
+        }
+
+        if (desc.initializer === void 0) {
+            Object['define' + 'Property'](target, property, desc);
+            desc = null;
+        }
+
+        return desc;
+    }
+
+    function _initializerWarningHelper(descriptor, context) {
+        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+    }
+
+    var _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4;
+
+    var EmChatSidebarLeft = exports.EmChatSidebarLeft = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
+        function EmChatSidebarLeft() {
+            _classCallCheck(this, EmChatSidebarLeft);
+
+            _initDefineProp(this, 'users', _descriptor, this);
+
+            _initDefineProp(this, 'channels', _descriptor2, this);
+
+            _initDefineProp(this, 'chatTo', _descriptor3, this);
+
+            _initDefineProp(this, 'isAt', _descriptor4, this);
+        }
+
+        _createClass(EmChatSidebarLeft, [{
+            key: 'chatToChanged',
+            value: function chatToChanged() {
+                var _this = this;
+
+                _.delay(function () {
+                    $(_this.userListRef).scrollTo('a.item[data-id="' + _this.chatTo + '"]');
+                }, 1000);
+            }
+        }, {
+            key: 'chatToUserFilerFocusinHanlder',
+            value: function chatToUserFilerFocusinHanlder() {
+                $(this.userListRef).scrollTo('a.item[data-id="' + this.chatTo + '"]');
+            }
+        }, {
+            key: 'chatToUserFilerKeyupHanlder',
+            value: function chatToUserFilerKeyupHanlder(evt) {
+                var _this2 = this;
+
+                _.each(this.users, function (item) {
+                    item.hidden = item.username.indexOf(_this2.filter) == -1;
+                });
+
+                if (evt.keyCode === 13) {
+                    var user = _.find(this.users, {
+                        hidden: false
+                    });
+
+                    if (user) {
+                        window.location = wurl('path') + ('#/chat/@' + user.username);
+                    }
+                }
+            }
+        }, {
+            key: 'clearFilterHandler',
+            value: function clearFilterHandler() {
+                var _this3 = this;
+
+                this.filter = '';
+                _.each(this.users, function (item) {
+                    item.hidden = item.username.indexOf(_this3.filter) == -1;
+                });
+            }
+        }]);
+
+        return EmChatSidebarLeft;
+    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'users', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'channels', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'chatTo', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'isAt', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    })), _class2)) || _class;
+});
+define('resources/elements/em-chat-sidebar-right',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmChatSidebarRight = undefined;
+
+    function _initDefineProp(target, property, descriptor, context) {
+        if (!descriptor) return;
+        Object.defineProperty(target, property, {
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+            writable: descriptor.writable,
+            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+        });
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+        var desc = {};
+        Object['ke' + 'ys'](descriptor).forEach(function (key) {
+            desc[key] = descriptor[key];
+        });
+        desc.enumerable = !!desc.enumerable;
+        desc.configurable = !!desc.configurable;
+
+        if ('value' in desc || desc.initializer) {
+            desc.writable = true;
+        }
+
+        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+            return decorator(target, property, desc) || desc;
+        }, desc);
+
+        if (context && desc.initializer !== void 0) {
+            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+            desc.initializer = undefined;
+        }
+
+        if (desc.initializer === void 0) {
+            Object['define' + 'Property'](target, property, desc);
+            desc = null;
+        }
+
+        return desc;
+    }
+
+    function _initializerWarningHelper(descriptor, context) {
+        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+    }
+
+    var _class, _desc, _value, _class2, _descriptor;
+
+    var EmChatSidebarRight = exports.EmChatSidebarRight = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
+        function EmChatSidebarRight() {
+            var _this = this;
+
+            _classCallCheck(this, EmChatSidebarRight);
+
+            _initDefineProp(this, 'value', _descriptor, this);
+
+            this.lastSearch = true;
+
+
+            this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_RESULT, function (payload) {
+
+                var result = payload.result;
+                _this.search = payload.search;
+                _this.searchPage = result;
+                _this.searchChats = result.content;
+                _.each(_this.searchChats, function (item) {
+                    item.contentMd = marked(item.content);
+                });
+                _this.lastSearch = result.last;
+                _this.moreSearchCnt = result.totalElements - (result.number + 1) * result.size;
+            });
+        }
+
+        _createClass(EmChatSidebarRight, [{
+            key: 'unbind',
+            value: function unbind() {
+
+                this.subscribe.dispose();
+            }
+        }, {
+            key: 'attached',
+            value: function attached() {
+                this.initHotkeys();
+            }
+        }, {
+            key: 'initHotkeys',
+            value: function initHotkeys() {
+                var _this2 = this;
+
+                $(document).bind('keydown', 'o', function () {
+                    event.preventDefault();
+                    var item = _.find(_this2.searchChats, { isHover: true });
+                    item && (item.isOpen = !item.isOpen);
+                });
+            }
+        }, {
+            key: 'searchItemMouseleaveHandler',
+            value: function searchItemMouseleaveHandler(item) {
+                item.isOpen = false;
+                item.isHover = false;
+            }
+        }, {
+            key: 'searchItemMouseenterHandler',
+            value: function searchItemMouseenterHandler(item) {
+                item.isHover = true;
+            }
+        }, {
+            key: 'gotoChatHandler',
+            value: function gotoChatHandler(item) {
+                ea.publish(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, { chatItem: item });
+            }
+        }, {
+            key: 'openSearchItemHandler',
+            value: function openSearchItemHandler(item) {
+                item.isOpen = !item.isOpen;
+            }
+        }, {
+            key: 'searchMoreHandler',
+            value: function searchMoreHandler() {
+                var _this3 = this;
+
+                this.searchMoreP = $.get('/admin/chat/direct/search', {
+                    search: this.search,
+                    size: this.searchPage.size,
+                    page: this.searchPage.number + 1
+                }, function (data) {
+                    if (data.success) {
+                        _.each(data.data.content, function (item) {
+                            item.contentMd = marked(item.content);
+                        });
+                        _this3.searchChats = _.concat(_this3.searchChats, data.data.content);
+
+                        _this3.lastSearch = data.data.last;
+                        _this3.moreSearchCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
+                    }
+                });
+            }
+        }]);
+
+        return EmChatSidebarRight;
+    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'value', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    })), _class2)) || _class;
+});
+define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmChatTopMenu = undefined;
+
+    function _initDefineProp(target, property, descriptor, context) {
+        if (!descriptor) return;
+        Object.defineProperty(target, property, {
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+            writable: descriptor.writable,
+            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+        });
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+        var desc = {};
+        Object['ke' + 'ys'](descriptor).forEach(function (key) {
+            desc[key] = descriptor[key];
+        });
+        desc.enumerable = !!desc.enumerable;
+        desc.configurable = !!desc.configurable;
+
+        if ('value' in desc || desc.initializer) {
+            desc.writable = true;
+        }
+
+        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+            return decorator(target, property, desc) || desc;
+        }, desc);
+
+        if (context && desc.initializer !== void 0) {
+            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+            desc.initializer = undefined;
+        }
+
+        if (desc.initializer === void 0) {
+            Object['define' + 'Property'](target, property, desc);
+            desc = null;
+        }
+
+        return desc;
+    }
+
+    function _initializerWarningHelper(descriptor, context) {
+        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+    }
+
+    var _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6;
 
     var EmChatTopMenu = exports.EmChatTopMenu = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
         function EmChatTopMenu() {
@@ -2479,167 +4052,196 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
 
             _initDefineProp(this, 'users', _descriptor, this);
 
-            _initDefineProp(this, 'loginUser', _descriptor2, this);
+            _initDefineProp(this, 'channels', _descriptor2, this);
 
-            _initDefineProp(this, 'chatTo', _descriptor3, this);
+            _initDefineProp(this, 'loginUser', _descriptor3, this);
+
+            _initDefineProp(this, 'chatId', _descriptor4, this);
+
+            _initDefineProp(this, 'chatTo', _descriptor5, this);
+
+            _initDefineProp(this, 'isAt', _descriptor6, this);
         }
 
-        EmChatTopMenu.prototype.chatToChanged = function chatToChanged() {
-            $(this.chatToDropdownRef).dropdown('set selected', this.chatTo);
-        };
-
-        EmChatTopMenu.prototype.attached = function attached() {
-            this.initHotkeys();
-            this.initSearch();
-        };
-
-        EmChatTopMenu.prototype.initSearch = function initSearch() {
-            var _this = this;
-
-            var source = [];
-            if (localStorage) {
-                var v = localStorage.getItem('tms/chat-direct:search');
-                source = v ? $.parseJSON(v) : [];
+        _createClass(EmChatTopMenu, [{
+            key: 'chatIdChanged',
+            value: function chatIdChanged() {
+                $(this.chatToDropdownRef).dropdown('set selected', this.chatId);
             }
-            this.searchSource = source;
-            $(this.searchRef).search({
-                source: source,
-                onSelect: function onSelect(result, response) {
-                    _this.searchHandler();
-                },
-                onResults: function onResults() {
-                    $(_this.searchRef).search('hide results');
-                }
-            });
-        };
-
-        EmChatTopMenu.prototype.searchHandler = function searchHandler() {
-            var _this2 = this;
-
-            $(this.searchRef).search('hide results');
-
-            var search = $(this.searchInputRef).val();
-
-            if (!search || search.length < 2) {
-                toastr.error('检索条件至少需要两个字符!');
-                return;
+        }, {
+            key: 'attached',
+            value: function attached() {
+                this.initHotkeys();
+                this.initSearch();
             }
+        }, {
+            key: 'initSearch',
+            value: function initSearch() {
+                var _this = this;
 
-            this.search = search;
-
-            var isExists = false;
-            $.each(this.searchSource, function (index, val) {
-                if (val.title == search) {
-                    isExists = true;
-                    return false;
+                var source = [];
+                if (localStorage) {
+                    var v = localStorage.getItem('tms/chat-direct:search');
+                    source = v ? $.parseJSON(v) : [];
                 }
-            });
-            if (!isExists) {
-                this.searchSource.splice(0, 0, {
-                    title: search
-                });
+                this.searchSource = source;
                 $(this.searchRef).search({
-                    source: _.clone(this.searchSource)
+                    source: source,
+                    onSelect: function onSelect(result, response) {
+                        _this.searchHandler();
+                    },
+                    onResults: function onResults() {
+                        $(_this.searchRef).search('hide results');
+                    }
                 });
             }
-            localStorage && localStorage.setItem('tms/chat-direct:search', JSON.stringify(this.searchSource));
+        }, {
+            key: 'searchHandler',
+            value: function searchHandler() {
+                var _this2 = this;
 
-            this.searchingP = $.get('/admin/chat/direct/search', {
-                search: this.search,
-                size: 20,
-                page: 0
-            }, function (data) {
-                if (data.success) {
-                    _this2.toggleRightSidebar(true);
+                $(this.searchRef).search('hide results');
 
-                    ea.publish(nsCons.EVENT_CHAT_SEARCH_RESULT, {
-                        result: data.data,
-                        search: _this2.search
+                var search = $(this.searchInputRef).val();
+
+                if (!search || search.length < 2) {
+                    toastr.error('检索条件至少需要两个字符!');
+                    return;
+                }
+
+                this.search = search;
+
+                var isExists = false;
+                $.each(this.searchSource, function (index, val) {
+                    if (val.title == search) {
+                        isExists = true;
+                        return false;
+                    }
+                });
+                if (!isExists) {
+                    this.searchSource.splice(0, 0, {
+                        title: search
+                    });
+                    $(this.searchRef).search({
+                        source: _.clone(this.searchSource)
                     });
                 }
-            });
-        };
+                localStorage && localStorage.setItem('tms/chat-direct:search', JSON.stringify(this.searchSource));
 
-        EmChatTopMenu.prototype.initHotkeys = function initHotkeys() {
-            var _this3 = this;
+                this.searchingP = $.get('/admin/chat/direct/search', {
+                    search: this.search,
+                    size: 20,
+                    page: 0
+                }, function (data) {
+                    if (data.success) {
+                        _this2.toggleRightSidebar(true);
 
-            $(document).bind('keydown', 'ctrl+.', function () {
-                event.preventDefault();
-                _this3.toggleRightSidebar();
-            }).bind('keydown', 'ctrl+k', function () {
-                event.preventDefault();
-                $(_this3.chatToDropdownRef).dropdown('toggle');
-            });
-
-            $(this.filterChatToUser).bind('keydown', 'ctrl+k', function () {
-                event.preventDefault();
-                $(_this3.chatToDropdownRef).dropdown('toggle');
-            });
-        };
-
-        EmChatTopMenu.prototype.initChatToDropdownHandler = function initChatToDropdownHandler(last) {
-            var _this4 = this;
-
-            if (last) {
-                _.defer(function () {
-                    $(_this4.chatToDropdownRef).dropdown().dropdown('set selected', _this4.chatTo).dropdown({
-                        onChange: function onChange(value, text, $choice) {
-                            window.location = wurl('path') + ('#/chat/@' + value);
-                        }
-                    });
+                        ea.publish(nsCons.EVENT_CHAT_SEARCH_RESULT, {
+                            result: data.data,
+                            search: _this2.search
+                        });
+                    }
                 });
             }
-        };
+        }, {
+            key: 'initHotkeys',
+            value: function initHotkeys() {
+                var _this3 = this;
 
-        EmChatTopMenu.prototype.searchFocusinHandler = function searchFocusinHandler() {
-            $(this.searchInputRef).css('width', 'auto');
-            $(this.searchRemoveRef).show();
-            this.isActiveSearch = true;
-        };
+                $(document).bind('keydown', 'ctrl+.', function () {
+                    event.preventDefault();
+                    _this3.toggleRightSidebar();
+                }).bind('keydown', 'ctrl+k', function () {
+                    event.preventDefault();
+                    $(_this3.chatToDropdownRef).dropdown('toggle');
+                });
 
-        EmChatTopMenu.prototype.searchFocusoutHandler = function searchFocusoutHandler() {
-            if (!$(this.searchInputRef).val()) {
-                $(this.searchInputRef).css('width', '100px');
-                $(this.searchRemoveRef).hide();
-                this.isActiveSearch = false;
+                $(this.filterChatToUser).bind('keydown', 'ctrl+k', function () {
+                    event.preventDefault();
+                    $(_this3.chatToDropdownRef).dropdown('toggle');
+                });
             }
-        };
+        }, {
+            key: 'initChatToDropdownHandler',
+            value: function initChatToDropdownHandler(last) {
+                var _this4 = this;
 
-        EmChatTopMenu.prototype.sibebarRightHandler = function sibebarRightHandler() {
-            this.toggleRightSidebar();
-        };
-
-        EmChatTopMenu.prototype.toggleRightSidebar = function toggleRightSidebar(asShow) {
-            if (_.isUndefined(asShow)) {
-                this.isRightSidebarShow = !this.isRightSidebarShow;
-            } else {
-                this.isRightSidebarShow = asShow;
+                if (last) {
+                    _.defer(function () {
+                        $(_this4.chatToDropdownRef).dropdown().dropdown('set selected', _this4.chatId).dropdown({
+                            onChange: function onChange(value, text, $choice) {
+                                window.location = wurl('path') + ('#/chat/' + value);
+                            }
+                        });
+                    });
+                }
             }
-
-            ea.publish(nsCons.EVENT_CHAT_SIDEBAR_TOGGLE, {
-                isShow: this.isRightSidebarShow
-            });
-        };
-
-        EmChatTopMenu.prototype.searchKeyupHandler = function searchKeyupHandler(evt) {
-            if (evt.keyCode === 13) {
-                this.searchHandler();
+        }, {
+            key: 'searchFocusinHandler',
+            value: function searchFocusinHandler() {
+                $(this.searchInputRef).css('width', 'auto');
+                $(this.searchRemoveRef).show();
+                this.isActiveSearch = true;
             }
-            return true;
-        };
+        }, {
+            key: 'searchFocusoutHandler',
+            value: function searchFocusoutHandler() {
+                if (!$(this.searchInputRef).val()) {
+                    $(this.searchInputRef).css('width', '100px');
+                    $(this.searchRemoveRef).hide();
+                    this.isActiveSearch = false;
+                }
+            }
+        }, {
+            key: 'sibebarRightHandler',
+            value: function sibebarRightHandler() {
+                this.toggleRightSidebar();
+            }
+        }, {
+            key: 'toggleRightSidebar',
+            value: function toggleRightSidebar(asShow) {
+                if (_.isUndefined(asShow)) {
+                    this.isRightSidebarShow = !this.isRightSidebarShow;
+                } else {
+                    this.isRightSidebarShow = asShow;
+                }
 
-        EmChatTopMenu.prototype.clearSearchHandler = function clearSearchHandler() {
-            $(this.searchInputRef).val('').focus();
-        };
+                ea.publish(nsCons.EVENT_CHAT_SIDEBAR_TOGGLE, {
+                    isShow: this.isRightSidebarShow
+                });
+            }
+        }, {
+            key: 'searchKeyupHandler',
+            value: function searchKeyupHandler(evt) {
+                if (evt.keyCode === 13) {
+                    this.searchHandler();
+                }
+                return true;
+            }
+        }, {
+            key: 'clearSearchHandler',
+            value: function clearSearchHandler() {
+                $(this.searchInputRef).val('').focus();
+            }
+        }]);
 
         return EmChatTopMenu;
     }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'users', [_aureliaFramework.bindable], {
         enumerable: true,
         initializer: null
-    }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'loginUser', [_aureliaFramework.bindable], {
+    }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'channels', [_aureliaFramework.bindable], {
         enumerable: true,
         initializer: null
-    }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'chatTo', [_aureliaFramework.bindable], {
+    }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'loginUser', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'chatId', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, 'chatTo', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, 'isAt', [_aureliaFramework.bindable], {
         enumerable: true,
         initializer: null
     })), _class2)) || _class;
@@ -2658,6 +4260,24 @@ define('resources/elements/em-confirm-modal',['exports', 'aurelia-framework'], f
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     var EmConfirmModal = exports.EmConfirmModal = function () {
         function EmConfirmModal() {
             _classCallCheck(this, EmConfirmModal);
@@ -2665,57 +4285,232 @@ define('resources/elements/em-confirm-modal',['exports', 'aurelia-framework'], f
             this.config = {};
         }
 
-        EmConfirmModal.prototype.detached = function detached() {
-            $(this.md).remove();
-        };
+        _createClass(EmConfirmModal, [{
+            key: 'detached',
+            value: function detached() {
+                $(this.md).remove();
+            }
+        }, {
+            key: 'attached',
+            value: function attached() {
+                var _this = this;
 
-        EmConfirmModal.prototype.attached = function attached() {
-            var _this = this;
+                $(this.md).modal({
+                    closable: false,
+                    onApprove: function onApprove() {
+                        _this.onapprove && _this.onapprove();
+                    },
+                    onDeny: function onDeny() {
+                        _this.ondeny && _this.ondeny();
+                    }
+                });
+            }
+        }, {
+            key: 'reset',
+            value: function reset() {
+                this.config = {
+                    title: '操作确认',
+                    content: '确定要执行该操作吗?',
+                    warning: false
+                };
+            }
+        }, {
+            key: 'show',
+            value: function show(config) {
 
-            $(this.md).modal({
-                closable: false,
-                onApprove: function onApprove() {
-                    _this.onapprove && _this.onapprove();
-                },
-                onDeny: function onDeny() {
-                    _this.ondeny && _this.ondeny();
+                this.reset();
+
+                if (config) {
+                    this.config = _.extend(this.config, config);
                 }
-            });
-        };
 
-        EmConfirmModal.prototype.reset = function reset() {
-            this.config = {
-                title: '操作确认',
-                content: '确定要执行该操作吗?',
-                warning: false
-            };
-        };
+                if (config && config.onapprove) {
+                    this.onapprove = config.onapprove;
+                }
 
-        EmConfirmModal.prototype.show = function show(config) {
+                if (config && config.ondeny) {
+                    this.ondeny = config.ondeny;
+                }
 
-            this.reset();
-
-            if (config) {
-                this.config = _.extend(this.config, config);
+                $(this.md).modal('show');
             }
-
-            if (config && config.onapprove) {
-                this.onapprove = config.onapprove;
+        }, {
+            key: 'hide',
+            value: function hide() {
+                $(this.md).modal('hide');
             }
-
-            if (config && config.ondeny) {
-                this.ondeny = config.ondeny;
-            }
-
-            $(this.md).modal('show');
-        };
-
-        EmConfirmModal.prototype.hide = function hide() {
-            $(this.md).modal('hide');
-        };
+        }]);
 
         return EmConfirmModal;
     }();
+});
+define('resources/elements/em-dropdown',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmDropdown = undefined;
+
+    function _initDefineProp(target, property, descriptor, context) {
+        if (!descriptor) return;
+        Object.defineProperty(target, property, {
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+            writable: descriptor.writable,
+            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+        });
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+        var desc = {};
+        Object['ke' + 'ys'](descriptor).forEach(function (key) {
+            desc[key] = descriptor[key];
+        });
+        desc.enumerable = !!desc.enumerable;
+        desc.configurable = !!desc.configurable;
+
+        if ('value' in desc || desc.initializer) {
+            desc.writable = true;
+        }
+
+        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+            return decorator(target, property, desc) || desc;
+        }, desc);
+
+        if (context && desc.initializer !== void 0) {
+            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+            desc.initializer = undefined;
+        }
+
+        if (desc.initializer === void 0) {
+            Object['define' + 'Property'](target, property, desc);
+            desc = null;
+        }
+
+        return desc;
+    }
+
+    function _initializerWarningHelper(descriptor, context) {
+        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+    }
+
+    var _dec, _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7;
+
+    var EmDropdown = exports.EmDropdown = (_dec = (0, _aureliaFramework.bindable)({ defaultBindingMode: _aureliaFramework.bindingMode.twoWay }), (_class = function () {
+        function EmDropdown() {
+            _classCallCheck(this, EmDropdown);
+
+            _initDefineProp(this, 'name', _descriptor, this);
+
+            _initDefineProp(this, 'text', _descriptor2, this);
+
+            _initDefineProp(this, 'labelProp', _descriptor3, this);
+
+            _initDefineProp(this, 'valueProp', _descriptor4, this);
+
+            _initDefineProp(this, 'selectedItem', _descriptor5, this);
+
+            _initDefineProp(this, 'menuItems', _descriptor6, this);
+
+            _initDefineProp(this, 'classes', _descriptor7, this);
+        }
+
+        _createClass(EmDropdown, [{
+            key: 'selectedItemChanged',
+            value: function selectedItemChanged(news, old) {
+                var _this = this;
+
+                if (news) {
+                    _.defer(function () {
+                        $(_this.dropdown).dropdown('set selected', news);
+                    });
+                }
+            }
+        }, {
+            key: 'menuItemsChanged',
+            value: function menuItemsChanged(news, old) {
+                if (_.isEmpty(news)) {
+                    $(this.dropdown).dropdown('clear');
+                    this.selectedItem = null;
+                }
+            }
+        }, {
+            key: 'initDropdownHandler',
+            value: function initDropdownHandler(last) {
+                var _this2 = this;
+
+                if (last) {
+                    _.defer(function () {
+                        $(_this2.dropdown).dropdown({
+                            onChange: function onChange(value, text, $choice) {
+                                _this2.selectedItem = value;
+                            }
+                        }).dropdown('set selected', _this2.selectedItem);
+                    });
+                }
+            }
+        }]);
+
+        return EmDropdown;
+    }(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'name', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: function initializer() {
+            return _.uniqueId('em-dropdown-');
+        }
+    }), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, 'text', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: function initializer() {
+            return '';
+        }
+    }), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, 'labelProp', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: function initializer() {
+            return 'label';
+        }
+    }), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, 'valueProp', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: function initializer() {
+            return 'value';
+        }
+    }), _descriptor5 = _applyDecoratedDescriptor(_class.prototype, 'selectedItem', [_dec], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor6 = _applyDecoratedDescriptor(_class.prototype, 'menuItems', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: function initializer() {
+            return [];
+        }
+    }), _descriptor7 = _applyDecoratedDescriptor(_class.prototype, 'classes', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: function initializer() {
+            return 'selection';
+        }
+    })), _class));
 });
 define('resources/elements/em-hotkeys-modal',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
     'use strict';
@@ -2731,21 +4526,2677 @@ define('resources/elements/em-hotkeys-modal',['exports', 'aurelia-framework'], f
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     var EmHotkeysModal = exports.EmHotkeysModal = function () {
         function EmHotkeysModal() {
             _classCallCheck(this, EmHotkeysModal);
         }
 
-        EmHotkeysModal.prototype.attached = function attached() {
-            $(this.md).modal();
-        };
-
-        EmHotkeysModal.prototype.show = function show() {
-            $(this.md).modal('show');
-        };
+        _createClass(EmHotkeysModal, [{
+            key: 'attached',
+            value: function attached() {
+                $(this.md).modal();
+            }
+        }, {
+            key: 'show',
+            value: function show() {
+                $(this.md).modal('show');
+            }
+        }]);
 
         return EmHotkeysModal;
     }();
+});
+define('resources/elements/em-modal',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmModal = undefined;
+
+    function _initDefineProp(target, property, descriptor, context) {
+        if (!descriptor) return;
+        Object.defineProperty(target, property, {
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+            writable: descriptor.writable,
+            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+        });
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+        var desc = {};
+        Object['ke' + 'ys'](descriptor).forEach(function (key) {
+            desc[key] = descriptor[key];
+        });
+        desc.enumerable = !!desc.enumerable;
+        desc.configurable = !!desc.configurable;
+
+        if ('value' in desc || desc.initializer) {
+            desc.writable = true;
+        }
+
+        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+            return decorator(target, property, desc) || desc;
+        }, desc);
+
+        if (context && desc.initializer !== void 0) {
+            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+            desc.initializer = undefined;
+        }
+
+        if (desc.initializer === void 0) {
+            Object['define' + 'Property'](target, property, desc);
+            desc = null;
+        }
+
+        return desc;
+    }
+
+    function _initializerWarningHelper(descriptor, context) {
+        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+    }
+
+    var _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8;
+
+    var EmModal = exports.EmModal = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
+        function EmModal() {
+            _classCallCheck(this, EmModal);
+
+            _initDefineProp(this, 'confirmLabel', _descriptor, this);
+
+            _initDefineProp(this, 'cancelLabel', _descriptor2, this);
+
+            _initDefineProp(this, 'onapprove', _descriptor3, this);
+
+            _initDefineProp(this, 'ondeny', _descriptor4, this);
+
+            _initDefineProp(this, 'onshow', _descriptor5, this);
+
+            _initDefineProp(this, 'onvisible', _descriptor6, this);
+
+            _initDefineProp(this, 'disabled', _descriptor7, this);
+
+            _initDefineProp(this, 'classes', _descriptor8, this);
+
+            this.options = {
+                hideOnApprove: true,
+                autoDimmer: true
+            };
+        }
+
+        _createClass(EmModal, [{
+            key: 'detached',
+            value: function detached() {
+                $(this.modal).remove();
+            }
+        }, {
+            key: 'attached',
+            value: function attached() {
+                var _this = this;
+
+                $(this.modal).modal({
+                    closable: false,
+                    autofocus: false,
+                    observeChanges: true,
+                    onShow: function onShow() {
+                        _this.onshow && _this.onshow(_this);
+                    },
+                    onVisible: function onVisible() {
+                        _this.onvisible && _this.onvisible(_this);
+                    },
+                    onApprove: function onApprove() {
+                        _this.options.autoDimmer && _this.showDimmer();
+                        _this.onapprove && _this.onapprove(_this);
+                        return _this.options.hideOnApprove;
+                    },
+                    onDeny: function onDeny() {
+                        _this.ondeny && _this.ondeny(_this);
+                    }
+                });
+            }
+        }, {
+            key: 'showDimmer',
+            value: function showDimmer() {
+                this.loading = true;
+                $(this.modal).find('.dimmer').dimmer('show');
+            }
+        }, {
+            key: 'hideDimmer',
+            value: function hideDimmer() {
+                this.loading = false;
+                $(this.modal).find('.dimmer').dimmer('hide');
+            }
+        }, {
+            key: 'show',
+            value: function show(options) {
+                _.extend(this.options, options);
+                $(this.modal).modal('show');
+            }
+        }, {
+            key: 'hide',
+            value: function hide() {
+                this.hideDimmer();
+                $(this.modal).modal('hide');
+            }
+        }, {
+            key: 'refresh',
+            value: function refresh() {
+                var _this2 = this;
+
+                _.defer(function () {
+                    $(_this2.modal).modal('refresh');
+                });
+            }
+        }]);
+
+        return EmModal;
+    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'confirmLabel', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: function initializer() {
+            return '确认';
+        }
+    }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'cancelLabel', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: function initializer() {
+            return '取消';
+        }
+    }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'onapprove', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'ondeny', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, 'onshow', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, 'onvisible', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, 'disabled', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: function initializer() {
+            return false;
+        }
+    }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, 'classes', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: function initializer() {
+            return 'small';
+        }
+    })), _class2)) || _class;
+});
+define('resources/value-converters/vc-common',['exports', 'jquery-format', 'timeago'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.TimeagoValueConverter = exports.NumberValueConverter = exports.DateValueConverter = exports.LowerValueConverter = exports.UpperValueConverter = undefined;
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var tg = timeago();
+
+    var UpperValueConverter = exports.UpperValueConverter = function () {
+        function UpperValueConverter() {
+            _classCallCheck(this, UpperValueConverter);
+        }
+
+        _createClass(UpperValueConverter, [{
+            key: 'toView',
+            value: function toView(value) {
+                return value && value.toUpperCase();
+            }
+        }]);
+
+        return UpperValueConverter;
+    }();
+
+    var LowerValueConverter = exports.LowerValueConverter = function () {
+        function LowerValueConverter() {
+            _classCallCheck(this, LowerValueConverter);
+        }
+
+        _createClass(LowerValueConverter, [{
+            key: 'toView',
+            value: function toView(value) {
+                return value && value.toLowerCase();
+            }
+        }]);
+
+        return LowerValueConverter;
+    }();
+
+    var DateValueConverter = exports.DateValueConverter = function () {
+        function DateValueConverter() {
+            _classCallCheck(this, DateValueConverter);
+        }
+
+        _createClass(DateValueConverter, [{
+            key: 'toView',
+            value: function toView(value) {
+                var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'yyyy-MM-dd hh:mm:ss';
+
+                return _.isInteger(_.toNumber(value)) ? $.format.date(new Date(value), format) : value ? value : '';
+            }
+        }]);
+
+        return DateValueConverter;
+    }();
+
+    var NumberValueConverter = exports.NumberValueConverter = function () {
+        function NumberValueConverter() {
+            _classCallCheck(this, NumberValueConverter);
+        }
+
+        _createClass(NumberValueConverter, [{
+            key: 'toView',
+            value: function toView(value) {
+                var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '#,##0.00';
+
+                return _.isNumber(_.toNumber(value)) ? $.format.number(value, format) : value ? value : '';
+            }
+        }]);
+
+        return NumberValueConverter;
+    }();
+
+    var TimeagoValueConverter = exports.TimeagoValueConverter = function () {
+        function TimeagoValueConverter() {
+            _classCallCheck(this, TimeagoValueConverter);
+        }
+
+        _createClass(TimeagoValueConverter, [{
+            key: 'toView',
+            value: function toView(value) {
+                return value ? tg.format(value, 'zh_CN') : '';
+            }
+        }]);
+
+        return TimeagoValueConverter;
+    }();
+});
+define('aurelia-templating-resources/compose',['exports', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-templating', 'aurelia-pal'], function (exports, _aureliaDependencyInjection, _aureliaTaskQueue, _aureliaTemplating, _aureliaPal) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.Compose = undefined;
+
+  function _initDefineProp(target, property, descriptor, context) {
+    if (!descriptor) return;
+    Object.defineProperty(target, property, {
+      enumerable: descriptor.enumerable,
+      configurable: descriptor.configurable,
+      writable: descriptor.writable,
+      value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+    });
+  }
+
+  
+
+  function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+    var desc = {};
+    Object['ke' + 'ys'](descriptor).forEach(function (key) {
+      desc[key] = descriptor[key];
+    });
+    desc.enumerable = !!desc.enumerable;
+    desc.configurable = !!desc.configurable;
+
+    if ('value' in desc || desc.initializer) {
+      desc.writable = true;
+    }
+
+    desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+      return decorator(target, property, desc) || desc;
+    }, desc);
+
+    if (context && desc.initializer !== void 0) {
+      desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+      desc.initializer = undefined;
+    }
+
+    if (desc.initializer === void 0) {
+      Object['define' + 'Property'](target, property, desc);
+      desc = null;
+    }
+
+    return desc;
+  }
+
+  function _initializerWarningHelper(descriptor, context) {
+    throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+  }
+
+  var _dec, _dec2, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3;
+
+  var Compose = exports.Compose = (_dec = (0, _aureliaTemplating.customElement)('compose'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaPal.DOM.Element, _aureliaDependencyInjection.Container, _aureliaTemplating.CompositionEngine, _aureliaTemplating.ViewSlot, _aureliaTemplating.ViewResources, _aureliaTaskQueue.TaskQueue), _dec(_class = (0, _aureliaTemplating.noView)(_class = _dec2(_class = (_class2 = function () {
+    function Compose(element, container, compositionEngine, viewSlot, viewResources, taskQueue) {
+      
+
+      _initDefineProp(this, 'model', _descriptor, this);
+
+      _initDefineProp(this, 'view', _descriptor2, this);
+
+      _initDefineProp(this, 'viewModel', _descriptor3, this);
+
+      this.element = element;
+      this.container = container;
+      this.compositionEngine = compositionEngine;
+      this.viewSlot = viewSlot;
+      this.viewResources = viewResources;
+      this.taskQueue = taskQueue;
+      this.currentController = null;
+      this.currentViewModel = null;
+    }
+
+    Compose.prototype.created = function created(owningView) {
+      this.owningView = owningView;
+    };
+
+    Compose.prototype.bind = function bind(bindingContext, overrideContext) {
+      this.bindingContext = bindingContext;
+      this.overrideContext = overrideContext;
+      processInstruction(this, createInstruction(this, {
+        view: this.view,
+        viewModel: this.viewModel,
+        model: this.model
+      }));
+    };
+
+    Compose.prototype.unbind = function unbind(bindingContext, overrideContext) {
+      this.bindingContext = null;
+      this.overrideContext = null;
+      var returnToCache = true;
+      var skipAnimation = true;
+      this.viewSlot.removeAll(returnToCache, skipAnimation);
+    };
+
+    Compose.prototype.modelChanged = function modelChanged(newValue, oldValue) {
+      var _this = this;
+
+      if (this.currentInstruction) {
+        this.currentInstruction.model = newValue;
+        return;
+      }
+
+      this.taskQueue.queueMicroTask(function () {
+        if (_this.currentInstruction) {
+          _this.currentInstruction.model = newValue;
+          return;
+        }
+
+        var vm = _this.currentViewModel;
+
+        if (vm && typeof vm.activate === 'function') {
+          vm.activate(newValue);
+        }
+      });
+    };
+
+    Compose.prototype.viewChanged = function viewChanged(newValue, oldValue) {
+      var _this2 = this;
+
+      var instruction = createInstruction(this, {
+        view: newValue,
+        viewModel: this.currentViewModel || this.viewModel,
+        model: this.model
+      });
+
+      if (this.currentInstruction) {
+        this.currentInstruction = instruction;
+        return;
+      }
+
+      this.currentInstruction = instruction;
+      this.taskQueue.queueMicroTask(function () {
+        return processInstruction(_this2, _this2.currentInstruction);
+      });
+    };
+
+    Compose.prototype.viewModelChanged = function viewModelChanged(newValue, oldValue) {
+      var _this3 = this;
+
+      var instruction = createInstruction(this, {
+        viewModel: newValue,
+        view: this.view,
+        model: this.model
+      });
+
+      if (this.currentInstruction) {
+        this.currentInstruction = instruction;
+        return;
+      }
+
+      this.currentInstruction = instruction;
+      this.taskQueue.queueMicroTask(function () {
+        return processInstruction(_this3, _this3.currentInstruction);
+      });
+    };
+
+    return Compose;
+  }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'model', [_aureliaTemplating.bindable], {
+    enumerable: true,
+    initializer: null
+  }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'view', [_aureliaTemplating.bindable], {
+    enumerable: true,
+    initializer: null
+  }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'viewModel', [_aureliaTemplating.bindable], {
+    enumerable: true,
+    initializer: null
+  })), _class2)) || _class) || _class) || _class);
+
+
+  function createInstruction(composer, instruction) {
+    return Object.assign(instruction, {
+      bindingContext: composer.bindingContext,
+      overrideContext: composer.overrideContext,
+      owningView: composer.owningView,
+      container: composer.container,
+      viewSlot: composer.viewSlot,
+      viewResources: composer.viewResources,
+      currentController: composer.currentController,
+      host: composer.element
+    });
+  }
+
+  function processInstruction(composer, instruction) {
+    composer.currentInstruction = null;
+    composer.compositionEngine.compose(instruction).then(function (controller) {
+      composer.currentController = controller;
+      composer.currentViewModel = controller ? controller.viewModel : null;
+    });
+  }
+});
+define('aurelia-templating-resources/if',['exports', 'aurelia-templating', 'aurelia-dependency-injection'], function (exports, _aureliaTemplating, _aureliaDependencyInjection) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.If = undefined;
+
+  
+
+  var _dec, _dec2, _class;
+
+  var If = exports.If = (_dec = (0, _aureliaTemplating.customAttribute)('if'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.BoundViewFactory, _aureliaTemplating.ViewSlot), _dec(_class = (0, _aureliaTemplating.templateController)(_class = _dec2(_class = function () {
+    function If(viewFactory, viewSlot) {
+      
+
+      this.viewFactory = viewFactory;
+      this.viewSlot = viewSlot;
+      this.showing = false;
+      this.view = null;
+      this.bindingContext = null;
+      this.overrideContext = null;
+    }
+
+    If.prototype.bind = function bind(bindingContext, overrideContext) {
+      this.bindingContext = bindingContext;
+      this.overrideContext = overrideContext;
+      this.valueChanged(this.value);
+    };
+
+    If.prototype.valueChanged = function valueChanged(newValue) {
+      var _this = this;
+
+      if (this.__queuedChanges) {
+        this.__queuedChanges.push(newValue);
+        return;
+      }
+
+      var maybePromise = this._runValueChanged(newValue);
+      if (maybePromise instanceof Promise) {
+        (function () {
+          var queuedChanges = _this.__queuedChanges = [];
+
+          var runQueuedChanges = function runQueuedChanges() {
+            if (!queuedChanges.length) {
+              _this.__queuedChanges = undefined;
+              return;
+            }
+
+            var nextPromise = _this._runValueChanged(queuedChanges.shift()) || Promise.resolve();
+            nextPromise.then(runQueuedChanges);
+          };
+
+          maybePromise.then(runQueuedChanges);
+        })();
+      }
+    };
+
+    If.prototype._runValueChanged = function _runValueChanged(newValue) {
+      var _this2 = this;
+
+      if (!newValue) {
+        var viewOrPromise = void 0;
+        if (this.view !== null && this.showing) {
+          viewOrPromise = this.viewSlot.remove(this.view);
+          if (viewOrPromise instanceof Promise) {
+            viewOrPromise.then(function () {
+              return _this2.view.unbind();
+            });
+          } else {
+            this.view.unbind();
+          }
+        }
+
+        this.showing = false;
+        return viewOrPromise;
+      }
+
+      if (this.view === null) {
+        this.view = this.viewFactory.create();
+      }
+
+      if (!this.view.isBound) {
+        this.view.bind(this.bindingContext, this.overrideContext);
+      }
+
+      if (!this.showing) {
+        this.showing = true;
+        return this.viewSlot.add(this.view);
+      }
+
+      return undefined;
+    };
+
+    If.prototype.unbind = function unbind() {
+      if (this.view === null) {
+        return;
+      }
+
+      this.view.unbind();
+
+      if (!this.viewFactory.isCaching) {
+        return;
+      }
+
+      if (this.showing) {
+        this.showing = false;
+        this.viewSlot.remove(this.view, true, true);
+      }
+      this.view.returnToCache();
+      this.view = null;
+    };
+
+    return If;
+  }()) || _class) || _class) || _class);
+});
+define('aurelia-templating-resources/with',['exports', 'aurelia-dependency-injection', 'aurelia-templating', 'aurelia-binding'], function (exports, _aureliaDependencyInjection, _aureliaTemplating, _aureliaBinding) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.With = undefined;
+
+  
+
+  var _dec, _dec2, _class;
+
+  var With = exports.With = (_dec = (0, _aureliaTemplating.customAttribute)('with'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.BoundViewFactory, _aureliaTemplating.ViewSlot), _dec(_class = (0, _aureliaTemplating.templateController)(_class = _dec2(_class = function () {
+    function With(viewFactory, viewSlot) {
+      
+
+      this.viewFactory = viewFactory;
+      this.viewSlot = viewSlot;
+      this.parentOverrideContext = null;
+      this.view = null;
+    }
+
+    With.prototype.bind = function bind(bindingContext, overrideContext) {
+      this.parentOverrideContext = overrideContext;
+      this.valueChanged(this.value);
+    };
+
+    With.prototype.valueChanged = function valueChanged(newValue) {
+      var overrideContext = (0, _aureliaBinding.createOverrideContext)(newValue, this.parentOverrideContext);
+      if (!this.view) {
+        this.view = this.viewFactory.create();
+        this.view.bind(newValue, overrideContext);
+        this.viewSlot.add(this.view);
+      } else {
+        this.view.bind(newValue, overrideContext);
+      }
+    };
+
+    With.prototype.unbind = function unbind() {
+      this.parentOverrideContext = null;
+
+      if (this.view) {
+        this.view.unbind();
+      }
+    };
+
+    return With;
+  }()) || _class) || _class) || _class);
+});
+define('aurelia-templating-resources/repeat',['exports', 'aurelia-dependency-injection', 'aurelia-binding', 'aurelia-templating', './repeat-strategy-locator', './repeat-utilities', './analyze-view-factory', './abstract-repeater'], function (exports, _aureliaDependencyInjection, _aureliaBinding, _aureliaTemplating, _repeatStrategyLocator, _repeatUtilities, _analyzeViewFactory, _abstractRepeater) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.Repeat = undefined;
+
+  function _initDefineProp(target, property, descriptor, context) {
+    if (!descriptor) return;
+    Object.defineProperty(target, property, {
+      enumerable: descriptor.enumerable,
+      configurable: descriptor.configurable,
+      writable: descriptor.writable,
+      value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+    });
+  }
+
+  
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+    var desc = {};
+    Object['ke' + 'ys'](descriptor).forEach(function (key) {
+      desc[key] = descriptor[key];
+    });
+    desc.enumerable = !!desc.enumerable;
+    desc.configurable = !!desc.configurable;
+
+    if ('value' in desc || desc.initializer) {
+      desc.writable = true;
+    }
+
+    desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+      return decorator(target, property, desc) || desc;
+    }, desc);
+
+    if (context && desc.initializer !== void 0) {
+      desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+      desc.initializer = undefined;
+    }
+
+    if (desc.initializer === void 0) {
+      Object['define' + 'Property'](target, property, desc);
+      desc = null;
+    }
+
+    return desc;
+  }
+
+  function _initializerWarningHelper(descriptor, context) {
+    throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+  }
+
+  var _dec, _dec2, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4;
+
+  var Repeat = exports.Repeat = (_dec = (0, _aureliaTemplating.customAttribute)('repeat'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.BoundViewFactory, _aureliaTemplating.TargetInstruction, _aureliaTemplating.ViewSlot, _aureliaTemplating.ViewResources, _aureliaBinding.ObserverLocator, _repeatStrategyLocator.RepeatStrategyLocator), _dec(_class = (0, _aureliaTemplating.templateController)(_class = _dec2(_class = (_class2 = function (_AbstractRepeater) {
+    _inherits(Repeat, _AbstractRepeater);
+
+    function Repeat(viewFactory, instruction, viewSlot, viewResources, observerLocator, strategyLocator) {
+      
+
+      var _this = _possibleConstructorReturn(this, _AbstractRepeater.call(this, {
+        local: 'item',
+        viewsRequireLifecycle: (0, _analyzeViewFactory.viewsRequireLifecycle)(viewFactory)
+      }));
+
+      _initDefineProp(_this, 'items', _descriptor, _this);
+
+      _initDefineProp(_this, 'local', _descriptor2, _this);
+
+      _initDefineProp(_this, 'key', _descriptor3, _this);
+
+      _initDefineProp(_this, 'value', _descriptor4, _this);
+
+      _this.viewFactory = viewFactory;
+      _this.instruction = instruction;
+      _this.viewSlot = viewSlot;
+      _this.lookupFunctions = viewResources.lookupFunctions;
+      _this.observerLocator = observerLocator;
+      _this.key = 'key';
+      _this.value = 'value';
+      _this.strategyLocator = strategyLocator;
+      _this.ignoreMutation = false;
+      _this.sourceExpression = (0, _repeatUtilities.getItemsSourceExpression)(_this.instruction, 'repeat.for');
+      _this.isOneTime = (0, _repeatUtilities.isOneTime)(_this.sourceExpression);
+      _this.viewsRequireLifecycle = (0, _analyzeViewFactory.viewsRequireLifecycle)(viewFactory);
+      return _this;
+    }
+
+    Repeat.prototype.call = function call(context, changes) {
+      this[context](this.items, changes);
+    };
+
+    Repeat.prototype.bind = function bind(bindingContext, overrideContext) {
+      this.scope = { bindingContext: bindingContext, overrideContext: overrideContext };
+      this.matcherBinding = this._captureAndRemoveMatcherBinding();
+      this.itemsChanged();
+    };
+
+    Repeat.prototype.unbind = function unbind() {
+      this.scope = null;
+      this.items = null;
+      this.matcherBinding = null;
+      this.viewSlot.removeAll(true);
+      this._unsubscribeCollection();
+    };
+
+    Repeat.prototype._unsubscribeCollection = function _unsubscribeCollection() {
+      if (this.collectionObserver) {
+        this.collectionObserver.unsubscribe(this.callContext, this);
+        this.collectionObserver = null;
+        this.callContext = null;
+      }
+    };
+
+    Repeat.prototype.itemsChanged = function itemsChanged() {
+      this._unsubscribeCollection();
+
+      if (!this.scope) {
+        return;
+      }
+
+      var items = this.items;
+      this.strategy = this.strategyLocator.getStrategy(items);
+      if (!this.strategy) {
+        throw new Error('Value for \'' + this.sourceExpression + '\' is non-repeatable');
+      }
+
+      if (!this.isOneTime && !this._observeInnerCollection()) {
+        this._observeCollection();
+      }
+      this.strategy.instanceChanged(this, items);
+    };
+
+    Repeat.prototype._getInnerCollection = function _getInnerCollection() {
+      var expression = (0, _repeatUtilities.unwrapExpression)(this.sourceExpression);
+      if (!expression) {
+        return null;
+      }
+      return expression.evaluate(this.scope, null);
+    };
+
+    Repeat.prototype.handleCollectionMutated = function handleCollectionMutated(collection, changes) {
+      if (!this.collectionObserver) {
+        return;
+      }
+      this.strategy.instanceMutated(this, collection, changes);
+    };
+
+    Repeat.prototype.handleInnerCollectionMutated = function handleInnerCollectionMutated(collection, changes) {
+      var _this2 = this;
+
+      if (!this.collectionObserver) {
+        return;
+      }
+
+      if (this.ignoreMutation) {
+        return;
+      }
+      this.ignoreMutation = true;
+      var newItems = this.sourceExpression.evaluate(this.scope, this.lookupFunctions);
+      this.observerLocator.taskQueue.queueMicroTask(function () {
+        return _this2.ignoreMutation = false;
+      });
+
+      if (newItems === this.items) {
+        this.itemsChanged();
+      } else {
+        this.items = newItems;
+      }
+    };
+
+    Repeat.prototype._observeInnerCollection = function _observeInnerCollection() {
+      var items = this._getInnerCollection();
+      var strategy = this.strategyLocator.getStrategy(items);
+      if (!strategy) {
+        return false;
+      }
+      this.collectionObserver = strategy.getCollectionObserver(this.observerLocator, items);
+      if (!this.collectionObserver) {
+        return false;
+      }
+      this.callContext = 'handleInnerCollectionMutated';
+      this.collectionObserver.subscribe(this.callContext, this);
+      return true;
+    };
+
+    Repeat.prototype._observeCollection = function _observeCollection() {
+      var items = this.items;
+      this.collectionObserver = this.strategy.getCollectionObserver(this.observerLocator, items);
+      if (this.collectionObserver) {
+        this.callContext = 'handleCollectionMutated';
+        this.collectionObserver.subscribe(this.callContext, this);
+      }
+    };
+
+    Repeat.prototype._captureAndRemoveMatcherBinding = function _captureAndRemoveMatcherBinding() {
+      if (this.viewFactory.viewFactory) {
+        var instructions = this.viewFactory.viewFactory.instructions;
+        var instructionIds = Object.keys(instructions);
+        for (var i = 0; i < instructionIds.length; i++) {
+          var expressions = instructions[instructionIds[i]].expressions;
+          if (expressions) {
+            for (var ii = 0; i < expressions.length; i++) {
+              if (expressions[ii].targetProperty === 'matcher') {
+                var matcherBinding = expressions[ii];
+                expressions.splice(ii, 1);
+                return matcherBinding;
+              }
+            }
+          }
+        }
+      }
+
+      return undefined;
+    };
+
+    Repeat.prototype.viewCount = function viewCount() {
+      return this.viewSlot.children.length;
+    };
+
+    Repeat.prototype.views = function views() {
+      return this.viewSlot.children;
+    };
+
+    Repeat.prototype.view = function view(index) {
+      return this.viewSlot.children[index];
+    };
+
+    Repeat.prototype.matcher = function matcher() {
+      return this.matcherBinding ? this.matcherBinding.sourceExpression.evaluate(this.scope, this.matcherBinding.lookupFunctions) : null;
+    };
+
+    Repeat.prototype.addView = function addView(bindingContext, overrideContext) {
+      var view = this.viewFactory.create();
+      view.bind(bindingContext, overrideContext);
+      this.viewSlot.add(view);
+    };
+
+    Repeat.prototype.insertView = function insertView(index, bindingContext, overrideContext) {
+      var view = this.viewFactory.create();
+      view.bind(bindingContext, overrideContext);
+      this.viewSlot.insert(index, view);
+    };
+
+    Repeat.prototype.moveView = function moveView(sourceIndex, targetIndex) {
+      this.viewSlot.move(sourceIndex, targetIndex);
+    };
+
+    Repeat.prototype.removeAllViews = function removeAllViews(returnToCache, skipAnimation) {
+      return this.viewSlot.removeAll(returnToCache, skipAnimation);
+    };
+
+    Repeat.prototype.removeViews = function removeViews(viewsToRemove, returnToCache, skipAnimation) {
+      return this.viewSlot.removeMany(viewsToRemove, returnToCache, skipAnimation);
+    };
+
+    Repeat.prototype.removeView = function removeView(index, returnToCache, skipAnimation) {
+      return this.viewSlot.removeAt(index, returnToCache, skipAnimation);
+    };
+
+    Repeat.prototype.updateBindings = function updateBindings(view) {
+      var j = view.bindings.length;
+      while (j--) {
+        (0, _repeatUtilities.updateOneTimeBinding)(view.bindings[j]);
+      }
+      j = view.controllers.length;
+      while (j--) {
+        var k = view.controllers[j].boundProperties.length;
+        while (k--) {
+          var binding = view.controllers[j].boundProperties[k].binding;
+          (0, _repeatUtilities.updateOneTimeBinding)(binding);
+        }
+      }
+    };
+
+    return Repeat;
+  }(_abstractRepeater.AbstractRepeater), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'items', [_aureliaTemplating.bindable], {
+    enumerable: true,
+    initializer: null
+  }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'local', [_aureliaTemplating.bindable], {
+    enumerable: true,
+    initializer: null
+  }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'key', [_aureliaTemplating.bindable], {
+    enumerable: true,
+    initializer: null
+  }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'value', [_aureliaTemplating.bindable], {
+    enumerable: true,
+    initializer: null
+  })), _class2)) || _class) || _class) || _class);
+});
+define('aurelia-templating-resources/repeat-strategy-locator',['exports', './null-repeat-strategy', './array-repeat-strategy', './map-repeat-strategy', './set-repeat-strategy', './number-repeat-strategy'], function (exports, _nullRepeatStrategy, _arrayRepeatStrategy, _mapRepeatStrategy, _setRepeatStrategy, _numberRepeatStrategy) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.RepeatStrategyLocator = undefined;
+
+  
+
+  var RepeatStrategyLocator = exports.RepeatStrategyLocator = function () {
+    function RepeatStrategyLocator() {
+      
+
+      this.matchers = [];
+      this.strategies = [];
+
+      this.addStrategy(function (items) {
+        return items === null || items === undefined;
+      }, new _nullRepeatStrategy.NullRepeatStrategy());
+      this.addStrategy(function (items) {
+        return items instanceof Array;
+      }, new _arrayRepeatStrategy.ArrayRepeatStrategy());
+      this.addStrategy(function (items) {
+        return items instanceof Map;
+      }, new _mapRepeatStrategy.MapRepeatStrategy());
+      this.addStrategy(function (items) {
+        return items instanceof Set;
+      }, new _setRepeatStrategy.SetRepeatStrategy());
+      this.addStrategy(function (items) {
+        return typeof items === 'number';
+      }, new _numberRepeatStrategy.NumberRepeatStrategy());
+    }
+
+    RepeatStrategyLocator.prototype.addStrategy = function addStrategy(matcher, strategy) {
+      this.matchers.push(matcher);
+      this.strategies.push(strategy);
+    };
+
+    RepeatStrategyLocator.prototype.getStrategy = function getStrategy(items) {
+      var matchers = this.matchers;
+
+      for (var i = 0, ii = matchers.length; i < ii; ++i) {
+        if (matchers[i](items)) {
+          return this.strategies[i];
+        }
+      }
+
+      return null;
+    };
+
+    return RepeatStrategyLocator;
+  }();
+});
+define('aurelia-templating-resources/null-repeat-strategy',["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  
+
+  var NullRepeatStrategy = exports.NullRepeatStrategy = function () {
+    function NullRepeatStrategy() {
+      
+    }
+
+    NullRepeatStrategy.prototype.instanceChanged = function instanceChanged(repeat, items) {
+      repeat.removeAllViews(true);
+    };
+
+    NullRepeatStrategy.prototype.getCollectionObserver = function getCollectionObserver(observerLocator, items) {};
+
+    return NullRepeatStrategy;
+  }();
+});
+define('aurelia-templating-resources/array-repeat-strategy',['exports', './repeat-utilities', 'aurelia-binding'], function (exports, _repeatUtilities, _aureliaBinding) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.ArrayRepeatStrategy = undefined;
+
+  
+
+  var ArrayRepeatStrategy = exports.ArrayRepeatStrategy = function () {
+    function ArrayRepeatStrategy() {
+      
+    }
+
+    ArrayRepeatStrategy.prototype.getCollectionObserver = function getCollectionObserver(observerLocator, items) {
+      return observerLocator.getArrayObserver(items);
+    };
+
+    ArrayRepeatStrategy.prototype.instanceChanged = function instanceChanged(repeat, items) {
+      var _this = this;
+
+      var itemsLength = items.length;
+
+      if (!items || itemsLength === 0) {
+        repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
+        return;
+      }
+
+      var children = repeat.views();
+      var viewsLength = children.length;
+
+      if (viewsLength === 0) {
+        this._standardProcessInstanceChanged(repeat, items);
+        return;
+      }
+
+      if (repeat.viewsRequireLifecycle) {
+        (function () {
+          var childrenSnapshot = children.slice(0);
+          var itemNameInBindingContext = repeat.local;
+          var matcher = repeat.matcher();
+
+          var itemsPreviouslyInViews = [];
+          var viewsToRemove = [];
+
+          for (var index = 0; index < viewsLength; index++) {
+            var view = childrenSnapshot[index];
+            var oldItem = view.bindingContext[itemNameInBindingContext];
+
+            if ((0, _repeatUtilities.indexOf)(items, oldItem, matcher) === -1) {
+              viewsToRemove.push(view);
+            } else {
+              itemsPreviouslyInViews.push(oldItem);
+            }
+          }
+
+          var updateViews = void 0;
+          var removePromise = void 0;
+
+          if (itemsPreviouslyInViews.length > 0) {
+            removePromise = repeat.removeViews(viewsToRemove, true, !repeat.viewsRequireLifecycle);
+            updateViews = function updateViews() {
+              for (var _index = 0; _index < itemsLength; _index++) {
+                var item = items[_index];
+                var indexOfView = (0, _repeatUtilities.indexOf)(itemsPreviouslyInViews, item, matcher, _index);
+                var _view = void 0;
+
+                if (indexOfView === -1) {
+                  var overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, items[_index], _index, itemsLength);
+                  repeat.insertView(_index, overrideContext.bindingContext, overrideContext);
+
+                  itemsPreviouslyInViews.splice(_index, 0, undefined);
+                } else if (indexOfView === _index) {
+                  _view = children[indexOfView];
+                  itemsPreviouslyInViews[indexOfView] = undefined;
+                } else {
+                  _view = children[indexOfView];
+                  repeat.moveView(indexOfView, _index);
+                  itemsPreviouslyInViews.splice(indexOfView, 1);
+                  itemsPreviouslyInViews.splice(_index, 0, undefined);
+                }
+
+                if (_view) {
+                  (0, _repeatUtilities.updateOverrideContext)(_view.overrideContext, _index, itemsLength);
+                }
+              }
+
+              _this._inPlaceProcessItems(repeat, items);
+            };
+          } else {
+            removePromise = repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
+            updateViews = function updateViews() {
+              return _this._standardProcessInstanceChanged(repeat, items);
+            };
+          }
+
+          if (removePromise instanceof Promise) {
+            removePromise.then(updateViews);
+          } else {
+            updateViews();
+          }
+        })();
+      } else {
+        this._inPlaceProcessItems(repeat, items);
+      }
+    };
+
+    ArrayRepeatStrategy.prototype._standardProcessInstanceChanged = function _standardProcessInstanceChanged(repeat, items) {
+      for (var i = 0, ii = items.length; i < ii; i++) {
+        var overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, items[i], i, ii);
+        repeat.addView(overrideContext.bindingContext, overrideContext);
+      }
+    };
+
+    ArrayRepeatStrategy.prototype._inPlaceProcessItems = function _inPlaceProcessItems(repeat, items) {
+      var itemsLength = items.length;
+      var viewsLength = repeat.viewCount();
+
+      while (viewsLength > itemsLength) {
+        viewsLength--;
+        repeat.removeView(viewsLength, true, !repeat.viewsRequireLifecycle);
+      }
+
+      var local = repeat.local;
+
+      for (var i = 0; i < viewsLength; i++) {
+        var view = repeat.view(i);
+        var last = i === itemsLength - 1;
+        var middle = i !== 0 && !last;
+
+        if (view.bindingContext[local] === items[i] && view.overrideContext.$middle === middle && view.overrideContext.$last === last) {
+          continue;
+        }
+
+        view.bindingContext[local] = items[i];
+        view.overrideContext.$middle = middle;
+        view.overrideContext.$last = last;
+        repeat.updateBindings(view);
+      }
+
+      for (var _i = viewsLength; _i < itemsLength; _i++) {
+        var overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, items[_i], _i, itemsLength);
+        repeat.addView(overrideContext.bindingContext, overrideContext);
+      }
+    };
+
+    ArrayRepeatStrategy.prototype.instanceMutated = function instanceMutated(repeat, array, splices) {
+      var _this2 = this;
+
+      if (repeat.__queuedSplices) {
+        for (var i = 0, ii = splices.length; i < ii; ++i) {
+          var _splices$i = splices[i];
+          var index = _splices$i.index;
+          var removed = _splices$i.removed;
+          var addedCount = _splices$i.addedCount;
+
+          (0, _aureliaBinding.mergeSplice)(repeat.__queuedSplices, index, removed, addedCount);
+        }
+
+        repeat.__array = array.slice(0);
+        return;
+      }
+
+      var maybePromise = this._runSplices(repeat, array.slice(0), splices);
+      if (maybePromise instanceof Promise) {
+        (function () {
+          var queuedSplices = repeat.__queuedSplices = [];
+
+          var runQueuedSplices = function runQueuedSplices() {
+            if (!queuedSplices.length) {
+              repeat.__queuedSplices = undefined;
+              repeat.__array = undefined;
+              return;
+            }
+
+            var nextPromise = _this2._runSplices(repeat, repeat.__array, queuedSplices) || Promise.resolve();
+            queuedSplices = repeat.__queuedSplices = [];
+            nextPromise.then(runQueuedSplices);
+          };
+
+          maybePromise.then(runQueuedSplices);
+        })();
+      }
+    };
+
+    ArrayRepeatStrategy.prototype._runSplices = function _runSplices(repeat, array, splices) {
+      var _this3 = this;
+
+      var removeDelta = 0;
+      var rmPromises = [];
+
+      for (var i = 0, ii = splices.length; i < ii; ++i) {
+        var splice = splices[i];
+        var removed = splice.removed;
+
+        for (var j = 0, jj = removed.length; j < jj; ++j) {
+          var viewOrPromise = repeat.removeView(splice.index + removeDelta + rmPromises.length, true);
+          if (viewOrPromise instanceof Promise) {
+            rmPromises.push(viewOrPromise);
+          }
+        }
+        removeDelta -= splice.addedCount;
+      }
+
+      if (rmPromises.length > 0) {
+        return Promise.all(rmPromises).then(function () {
+          var spliceIndexLow = _this3._handleAddedSplices(repeat, array, splices);
+          (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), spliceIndexLow);
+        });
+      }
+
+      var spliceIndexLow = this._handleAddedSplices(repeat, array, splices);
+      (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), spliceIndexLow);
+
+      return undefined;
+    };
+
+    ArrayRepeatStrategy.prototype._handleAddedSplices = function _handleAddedSplices(repeat, array, splices) {
+      var spliceIndex = void 0;
+      var spliceIndexLow = void 0;
+      var arrayLength = array.length;
+      for (var i = 0, ii = splices.length; i < ii; ++i) {
+        var splice = splices[i];
+        var addIndex = spliceIndex = splice.index;
+        var end = splice.index + splice.addedCount;
+
+        if (typeof spliceIndexLow === 'undefined' || spliceIndexLow === null || spliceIndexLow > splice.index) {
+          spliceIndexLow = spliceIndex;
+        }
+
+        for (; addIndex < end; ++addIndex) {
+          var overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, array[addIndex], addIndex, arrayLength);
+          repeat.insertView(addIndex, overrideContext.bindingContext, overrideContext);
+        }
+      }
+
+      return spliceIndexLow;
+    };
+
+    return ArrayRepeatStrategy;
+  }();
+});
+define('aurelia-templating-resources/repeat-utilities',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.updateOverrideContexts = updateOverrideContexts;
+  exports.createFullOverrideContext = createFullOverrideContext;
+  exports.updateOverrideContext = updateOverrideContext;
+  exports.getItemsSourceExpression = getItemsSourceExpression;
+  exports.unwrapExpression = unwrapExpression;
+  exports.isOneTime = isOneTime;
+  exports.updateOneTimeBinding = updateOneTimeBinding;
+  exports.indexOf = indexOf;
+
+
+  var oneTime = _aureliaBinding.bindingMode.oneTime;
+
+  function updateOverrideContexts(views, startIndex) {
+    var length = views.length;
+
+    if (startIndex > 0) {
+      startIndex = startIndex - 1;
+    }
+
+    for (; startIndex < length; ++startIndex) {
+      updateOverrideContext(views[startIndex].overrideContext, startIndex, length);
+    }
+  }
+
+  function createFullOverrideContext(repeat, data, index, length, key) {
+    var bindingContext = {};
+    var overrideContext = (0, _aureliaBinding.createOverrideContext)(bindingContext, repeat.scope.overrideContext);
+
+    if (typeof key !== 'undefined') {
+      bindingContext[repeat.key] = key;
+      bindingContext[repeat.value] = data;
+    } else {
+      bindingContext[repeat.local] = data;
+    }
+    updateOverrideContext(overrideContext, index, length);
+    return overrideContext;
+  }
+
+  function updateOverrideContext(overrideContext, index, length) {
+    var first = index === 0;
+    var last = index === length - 1;
+    var even = index % 2 === 0;
+
+    overrideContext.$index = index;
+    overrideContext.$first = first;
+    overrideContext.$last = last;
+    overrideContext.$middle = !(first || last);
+    overrideContext.$odd = !even;
+    overrideContext.$even = even;
+  }
+
+  function getItemsSourceExpression(instruction, attrName) {
+    return instruction.behaviorInstructions.filter(function (bi) {
+      return bi.originalAttrName === attrName;
+    })[0].attributes.items.sourceExpression;
+  }
+
+  function unwrapExpression(expression) {
+    var unwrapped = false;
+    while (expression instanceof _aureliaBinding.BindingBehavior) {
+      expression = expression.expression;
+    }
+    while (expression instanceof _aureliaBinding.ValueConverter) {
+      expression = expression.expression;
+      unwrapped = true;
+    }
+    return unwrapped ? expression : null;
+  }
+
+  function isOneTime(expression) {
+    while (expression instanceof _aureliaBinding.BindingBehavior) {
+      if (expression.name === 'oneTime') {
+        return true;
+      }
+      expression = expression.expression;
+    }
+    return false;
+  }
+
+  function updateOneTimeBinding(binding) {
+    if (binding.call && binding.mode === oneTime) {
+      binding.call(_aureliaBinding.sourceContext);
+    } else if (binding.updateOneTimeBindings) {
+      binding.updateOneTimeBindings();
+    }
+  }
+
+  function indexOf(array, item, matcher, startIndex) {
+    if (!matcher) {
+      return array.indexOf(item);
+    }
+    var length = array.length;
+    for (var index = startIndex || 0; index < length; index++) {
+      if (matcher(array[index], item)) {
+        return index;
+      }
+    }
+    return -1;
+  }
+});
+define('aurelia-templating-resources/map-repeat-strategy',['exports', './repeat-utilities'], function (exports, _repeatUtilities) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.MapRepeatStrategy = undefined;
+
+  
+
+  var MapRepeatStrategy = exports.MapRepeatStrategy = function () {
+    function MapRepeatStrategy() {
+      
+    }
+
+    MapRepeatStrategy.prototype.getCollectionObserver = function getCollectionObserver(observerLocator, items) {
+      return observerLocator.getMapObserver(items);
+    };
+
+    MapRepeatStrategy.prototype.instanceChanged = function instanceChanged(repeat, items) {
+      var _this = this;
+
+      var removePromise = repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
+      if (removePromise instanceof Promise) {
+        removePromise.then(function () {
+          return _this._standardProcessItems(repeat, items);
+        });
+        return;
+      }
+      this._standardProcessItems(repeat, items);
+    };
+
+    MapRepeatStrategy.prototype._standardProcessItems = function _standardProcessItems(repeat, items) {
+      var index = 0;
+      var overrideContext = void 0;
+
+      items.forEach(function (value, key) {
+        overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, value, index, items.size, key);
+        repeat.addView(overrideContext.bindingContext, overrideContext);
+        ++index;
+      });
+    };
+
+    MapRepeatStrategy.prototype.instanceMutated = function instanceMutated(repeat, map, records) {
+      var key = void 0;
+      var i = void 0;
+      var ii = void 0;
+      var overrideContext = void 0;
+      var removeIndex = void 0;
+      var record = void 0;
+      var rmPromises = [];
+      var viewOrPromise = void 0;
+
+      for (i = 0, ii = records.length; i < ii; ++i) {
+        record = records[i];
+        key = record.key;
+        switch (record.type) {
+          case 'update':
+            removeIndex = this._getViewIndexByKey(repeat, key);
+            viewOrPromise = repeat.removeView(removeIndex, true, !repeat.viewsRequireLifecycle);
+            if (viewOrPromise instanceof Promise) {
+              rmPromises.push(viewOrPromise);
+            }
+            overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, map.get(key), removeIndex, map.size, key);
+            repeat.insertView(removeIndex, overrideContext.bindingContext, overrideContext);
+            break;
+          case 'add':
+            overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, map.get(key), map.size - 1, map.size, key);
+            repeat.insertView(map.size - 1, overrideContext.bindingContext, overrideContext);
+            break;
+          case 'delete':
+            if (record.oldValue === undefined) {
+              return;
+            }
+            removeIndex = this._getViewIndexByKey(repeat, key);
+            viewOrPromise = repeat.removeView(removeIndex, true, !repeat.viewsRequireLifecycle);
+            if (viewOrPromise instanceof Promise) {
+              rmPromises.push(viewOrPromise);
+            }
+            break;
+          case 'clear':
+            repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
+            break;
+          default:
+            continue;
+        }
+      }
+
+      if (rmPromises.length > 0) {
+        Promise.all(rmPromises).then(function () {
+          (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), 0);
+        });
+      } else {
+        (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), 0);
+      }
+    };
+
+    MapRepeatStrategy.prototype._getViewIndexByKey = function _getViewIndexByKey(repeat, key) {
+      var i = void 0;
+      var ii = void 0;
+      var child = void 0;
+
+      for (i = 0, ii = repeat.viewCount(); i < ii; ++i) {
+        child = repeat.view(i);
+        if (child.bindingContext[repeat.key] === key) {
+          return i;
+        }
+      }
+
+      return undefined;
+    };
+
+    return MapRepeatStrategy;
+  }();
+});
+define('aurelia-templating-resources/set-repeat-strategy',['exports', './repeat-utilities'], function (exports, _repeatUtilities) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.SetRepeatStrategy = undefined;
+
+  
+
+  var SetRepeatStrategy = exports.SetRepeatStrategy = function () {
+    function SetRepeatStrategy() {
+      
+    }
+
+    SetRepeatStrategy.prototype.getCollectionObserver = function getCollectionObserver(observerLocator, items) {
+      return observerLocator.getSetObserver(items);
+    };
+
+    SetRepeatStrategy.prototype.instanceChanged = function instanceChanged(repeat, items) {
+      var _this = this;
+
+      var removePromise = repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
+      if (removePromise instanceof Promise) {
+        removePromise.then(function () {
+          return _this._standardProcessItems(repeat, items);
+        });
+        return;
+      }
+      this._standardProcessItems(repeat, items);
+    };
+
+    SetRepeatStrategy.prototype._standardProcessItems = function _standardProcessItems(repeat, items) {
+      var index = 0;
+      var overrideContext = void 0;
+
+      items.forEach(function (value) {
+        overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, value, index, items.size);
+        repeat.addView(overrideContext.bindingContext, overrideContext);
+        ++index;
+      });
+    };
+
+    SetRepeatStrategy.prototype.instanceMutated = function instanceMutated(repeat, set, records) {
+      var value = void 0;
+      var i = void 0;
+      var ii = void 0;
+      var overrideContext = void 0;
+      var removeIndex = void 0;
+      var record = void 0;
+      var rmPromises = [];
+      var viewOrPromise = void 0;
+
+      for (i = 0, ii = records.length; i < ii; ++i) {
+        record = records[i];
+        value = record.value;
+        switch (record.type) {
+          case 'add':
+            overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, value, set.size - 1, set.size);
+            repeat.insertView(set.size - 1, overrideContext.bindingContext, overrideContext);
+            break;
+          case 'delete':
+            removeIndex = this._getViewIndexByValue(repeat, value);
+            viewOrPromise = repeat.removeView(removeIndex, true, !repeat.viewsRequireLifecycle);
+            if (viewOrPromise instanceof Promise) {
+              rmPromises.push(viewOrPromise);
+            }
+            break;
+          case 'clear':
+            repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
+            break;
+          default:
+            continue;
+        }
+      }
+
+      if (rmPromises.length > 0) {
+        Promise.all(rmPromises).then(function () {
+          (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), 0);
+        });
+      } else {
+        (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), 0);
+      }
+    };
+
+    SetRepeatStrategy.prototype._getViewIndexByValue = function _getViewIndexByValue(repeat, value) {
+      var i = void 0;
+      var ii = void 0;
+      var child = void 0;
+
+      for (i = 0, ii = repeat.viewCount(); i < ii; ++i) {
+        child = repeat.view(i);
+        if (child.bindingContext[repeat.local] === value) {
+          return i;
+        }
+      }
+
+      return undefined;
+    };
+
+    return SetRepeatStrategy;
+  }();
+});
+define('aurelia-templating-resources/number-repeat-strategy',['exports', './repeat-utilities'], function (exports, _repeatUtilities) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.NumberRepeatStrategy = undefined;
+
+  
+
+  var NumberRepeatStrategy = exports.NumberRepeatStrategy = function () {
+    function NumberRepeatStrategy() {
+      
+    }
+
+    NumberRepeatStrategy.prototype.getCollectionObserver = function getCollectionObserver() {
+      return null;
+    };
+
+    NumberRepeatStrategy.prototype.instanceChanged = function instanceChanged(repeat, value) {
+      var _this = this;
+
+      var removePromise = repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
+      if (removePromise instanceof Promise) {
+        removePromise.then(function () {
+          return _this._standardProcessItems(repeat, value);
+        });
+        return;
+      }
+      this._standardProcessItems(repeat, value);
+    };
+
+    NumberRepeatStrategy.prototype._standardProcessItems = function _standardProcessItems(repeat, value) {
+      var childrenLength = repeat.viewCount();
+      var i = void 0;
+      var ii = void 0;
+      var overrideContext = void 0;
+      var viewsToRemove = void 0;
+
+      value = Math.floor(value);
+      viewsToRemove = childrenLength - value;
+
+      if (viewsToRemove > 0) {
+        if (viewsToRemove > childrenLength) {
+          viewsToRemove = childrenLength;
+        }
+
+        for (i = 0, ii = viewsToRemove; i < ii; ++i) {
+          repeat.removeView(childrenLength - (i + 1), true, !repeat.viewsRequireLifecycle);
+        }
+
+        return;
+      }
+
+      for (i = childrenLength, ii = value; i < ii; ++i) {
+        overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, i, i, ii);
+        repeat.addView(overrideContext.bindingContext, overrideContext);
+      }
+
+      (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), 0);
+    };
+
+    return NumberRepeatStrategy;
+  }();
+});
+define('aurelia-templating-resources/analyze-view-factory',['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.viewsRequireLifecycle = viewsRequireLifecycle;
+  var lifecycleOptionalBehaviors = exports.lifecycleOptionalBehaviors = ['focus', 'if', 'repeat', 'show', 'with'];
+
+  function behaviorRequiresLifecycle(instruction) {
+    var t = instruction.type;
+    var name = t.elementName !== null ? t.elementName : t.attributeName;
+    return lifecycleOptionalBehaviors.indexOf(name) === -1 && (t.handlesAttached || t.handlesBind || t.handlesCreated || t.handlesDetached || t.handlesUnbind) || t.viewFactory && viewsRequireLifecycle(t.viewFactory) || instruction.viewFactory && viewsRequireLifecycle(instruction.viewFactory);
+  }
+
+  function targetRequiresLifecycle(instruction) {
+    var behaviors = instruction.behaviorInstructions;
+    if (behaviors) {
+      var i = behaviors.length;
+      while (i--) {
+        if (behaviorRequiresLifecycle(behaviors[i])) {
+          return true;
+        }
+      }
+    }
+
+    return instruction.viewFactory && viewsRequireLifecycle(instruction.viewFactory);
+  }
+
+  function viewsRequireLifecycle(viewFactory) {
+    if ('_viewsRequireLifecycle' in viewFactory) {
+      return viewFactory._viewsRequireLifecycle;
+    }
+
+    viewFactory._viewsRequireLifecycle = false;
+
+    if (viewFactory.viewFactory) {
+      viewFactory._viewsRequireLifecycle = viewsRequireLifecycle(viewFactory.viewFactory);
+      return viewFactory._viewsRequireLifecycle;
+    }
+
+    if (viewFactory.template.querySelector('.au-animate')) {
+      viewFactory._viewsRequireLifecycle = true;
+      return true;
+    }
+
+    for (var id in viewFactory.instructions) {
+      if (targetRequiresLifecycle(viewFactory.instructions[id])) {
+        viewFactory._viewsRequireLifecycle = true;
+        return true;
+      }
+    }
+
+    viewFactory._viewsRequireLifecycle = false;
+    return false;
+  }
+});
+define('aurelia-templating-resources/abstract-repeater',['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  
+
+  var AbstractRepeater = exports.AbstractRepeater = function () {
+    function AbstractRepeater(options) {
+      
+
+      Object.assign(this, {
+        local: 'items',
+        viewsRequireLifecycle: true
+      }, options);
+    }
+
+    AbstractRepeater.prototype.viewCount = function viewCount() {
+      throw new Error('subclass must implement `viewCount`');
+    };
+
+    AbstractRepeater.prototype.views = function views() {
+      throw new Error('subclass must implement `views`');
+    };
+
+    AbstractRepeater.prototype.view = function view(index) {
+      throw new Error('subclass must implement `view`');
+    };
+
+    AbstractRepeater.prototype.matcher = function matcher() {
+      throw new Error('subclass must implement `matcher`');
+    };
+
+    AbstractRepeater.prototype.addView = function addView(bindingContext, overrideContext) {
+      throw new Error('subclass must implement `addView`');
+    };
+
+    AbstractRepeater.prototype.insertView = function insertView(index, bindingContext, overrideContext) {
+      throw new Error('subclass must implement `insertView`');
+    };
+
+    AbstractRepeater.prototype.moveView = function moveView(sourceIndex, targetIndex) {
+      throw new Error('subclass must implement `moveView`');
+    };
+
+    AbstractRepeater.prototype.removeAllViews = function removeAllViews(returnToCache, skipAnimation) {
+      throw new Error('subclass must implement `removeAllViews`');
+    };
+
+    AbstractRepeater.prototype.removeViews = function removeViews(viewsToRemove, returnToCache, skipAnimation) {
+      throw new Error('subclass must implement `removeView`');
+    };
+
+    AbstractRepeater.prototype.removeView = function removeView(index, returnToCache, skipAnimation) {
+      throw new Error('subclass must implement `removeView`');
+    };
+
+    AbstractRepeater.prototype.updateBindings = function updateBindings(view) {
+      throw new Error('subclass must implement `updateBindings`');
+    };
+
+    return AbstractRepeater;
+  }();
+});
+define('aurelia-templating-resources/show',['exports', 'aurelia-dependency-injection', 'aurelia-templating', 'aurelia-pal', './aurelia-hide-style'], function (exports, _aureliaDependencyInjection, _aureliaTemplating, _aureliaPal, _aureliaHideStyle) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.Show = undefined;
+
+  
+
+  var _dec, _dec2, _class;
+
+  var Show = exports.Show = (_dec = (0, _aureliaTemplating.customAttribute)('show'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaPal.DOM.Element, _aureliaTemplating.Animator, _aureliaDependencyInjection.Optional.of(_aureliaPal.DOM.boundary, true)), _dec(_class = _dec2(_class = function () {
+    function Show(element, animator, domBoundary) {
+      
+
+      this.element = element;
+      this.animator = animator;
+      this.domBoundary = domBoundary;
+    }
+
+    Show.prototype.created = function created() {
+      (0, _aureliaHideStyle.injectAureliaHideStyleAtBoundary)(this.domBoundary);
+    };
+
+    Show.prototype.valueChanged = function valueChanged(newValue) {
+      if (newValue) {
+        this.animator.removeClass(this.element, _aureliaHideStyle.aureliaHideClassName);
+      } else {
+        this.animator.addClass(this.element, _aureliaHideStyle.aureliaHideClassName);
+      }
+    };
+
+    Show.prototype.bind = function bind(bindingContext) {
+      this.valueChanged(this.value);
+    };
+
+    return Show;
+  }()) || _class) || _class);
+});
+define('aurelia-templating-resources/aurelia-hide-style',['exports', 'aurelia-pal'], function (exports, _aureliaPal) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.aureliaHideClassName = undefined;
+  exports.injectAureliaHideStyleAtHead = injectAureliaHideStyleAtHead;
+  exports.injectAureliaHideStyleAtBoundary = injectAureliaHideStyleAtBoundary;
+  var aureliaHideClassName = exports.aureliaHideClassName = 'aurelia-hide';
+
+  var aureliaHideClass = '.' + aureliaHideClassName + ' { display:none !important; }';
+
+  function injectAureliaHideStyleAtHead() {
+    _aureliaPal.DOM.injectStyles(aureliaHideClass);
+  }
+
+  function injectAureliaHideStyleAtBoundary(domBoundary) {
+    if (_aureliaPal.FEATURE.shadowDOM && domBoundary && !domBoundary.hasAureliaHideStyle) {
+      domBoundary.hasAureliaHideStyle = true;
+      _aureliaPal.DOM.injectStyles(aureliaHideClass, domBoundary);
+    }
+  }
+});
+define('aurelia-templating-resources/hide',['exports', 'aurelia-dependency-injection', 'aurelia-templating', 'aurelia-pal', './aurelia-hide-style'], function (exports, _aureliaDependencyInjection, _aureliaTemplating, _aureliaPal, _aureliaHideStyle) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.Hide = undefined;
+
+  
+
+  var _dec, _dec2, _class;
+
+  var Hide = exports.Hide = (_dec = (0, _aureliaTemplating.customAttribute)('hide'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaPal.DOM.Element, _aureliaTemplating.Animator, _aureliaDependencyInjection.Optional.of(_aureliaPal.DOM.boundary, true)), _dec(_class = _dec2(_class = function () {
+    function Hide(element, animator, domBoundary) {
+      
+
+      this.element = element;
+      this.animator = animator;
+      this.domBoundary = domBoundary;
+    }
+
+    Hide.prototype.created = function created() {
+      (0, _aureliaHideStyle.injectAureliaHideStyleAtBoundary)(this.domBoundary);
+    };
+
+    Hide.prototype.valueChanged = function valueChanged(newValue) {
+      if (newValue) {
+        this.animator.addClass(this.element, _aureliaHideStyle.aureliaHideClassName);
+      } else {
+        this.animator.removeClass(this.element, _aureliaHideStyle.aureliaHideClassName);
+      }
+    };
+
+    Hide.prototype.bind = function bind(bindingContext) {
+      this.valueChanged(this.value);
+    };
+
+    return Hide;
+  }()) || _class) || _class);
+});
+define('aurelia-templating-resources/sanitize-html',['exports', 'aurelia-binding', 'aurelia-dependency-injection', './html-sanitizer'], function (exports, _aureliaBinding, _aureliaDependencyInjection, _htmlSanitizer) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.SanitizeHTMLValueConverter = undefined;
+
+  
+
+  var _dec, _dec2, _class;
+
+  var SanitizeHTMLValueConverter = exports.SanitizeHTMLValueConverter = (_dec = (0, _aureliaBinding.valueConverter)('sanitizeHTML'), _dec2 = (0, _aureliaDependencyInjection.inject)(_htmlSanitizer.HTMLSanitizer), _dec(_class = _dec2(_class = function () {
+    function SanitizeHTMLValueConverter(sanitizer) {
+      
+
+      this.sanitizer = sanitizer;
+    }
+
+    SanitizeHTMLValueConverter.prototype.toView = function toView(untrustedMarkup) {
+      if (untrustedMarkup === null || untrustedMarkup === undefined) {
+        return null;
+      }
+
+      return this.sanitizer.sanitize(untrustedMarkup);
+    };
+
+    return SanitizeHTMLValueConverter;
+  }()) || _class) || _class);
+});
+define('aurelia-templating-resources/html-sanitizer',['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  
+
+  var SCRIPT_REGEX = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+
+  var HTMLSanitizer = exports.HTMLSanitizer = function () {
+    function HTMLSanitizer() {
+      
+    }
+
+    HTMLSanitizer.prototype.sanitize = function sanitize(input) {
+      return input.replace(SCRIPT_REGEX, '');
+    };
+
+    return HTMLSanitizer;
+  }();
+});
+define('aurelia-templating-resources/replaceable',['exports', 'aurelia-dependency-injection', 'aurelia-templating'], function (exports, _aureliaDependencyInjection, _aureliaTemplating) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.Replaceable = undefined;
+
+  
+
+  var _dec, _dec2, _class;
+
+  var Replaceable = exports.Replaceable = (_dec = (0, _aureliaTemplating.customAttribute)('replaceable'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.BoundViewFactory, _aureliaTemplating.ViewSlot), _dec(_class = (0, _aureliaTemplating.templateController)(_class = _dec2(_class = function () {
+    function Replaceable(viewFactory, viewSlot) {
+      
+
+      this.viewFactory = viewFactory;
+      this.viewSlot = viewSlot;
+      this.view = null;
+    }
+
+    Replaceable.prototype.bind = function bind(bindingContext, overrideContext) {
+      if (this.view === null) {
+        this.view = this.viewFactory.create();
+        this.viewSlot.add(this.view);
+      }
+
+      this.view.bind(bindingContext, overrideContext);
+    };
+
+    Replaceable.prototype.unbind = function unbind() {
+      this.view.unbind();
+    };
+
+    return Replaceable;
+  }()) || _class) || _class) || _class);
+});
+define('aurelia-templating-resources/focus',['exports', 'aurelia-templating', 'aurelia-binding', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-pal'], function (exports, _aureliaTemplating, _aureliaBinding, _aureliaDependencyInjection, _aureliaTaskQueue, _aureliaPal) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.Focus = undefined;
+
+  
+
+  var _dec, _dec2, _class;
+
+  var Focus = exports.Focus = (_dec = (0, _aureliaTemplating.customAttribute)('focus', _aureliaBinding.bindingMode.twoWay), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaPal.DOM.Element, _aureliaTaskQueue.TaskQueue), _dec(_class = _dec2(_class = function () {
+    function Focus(element, taskQueue) {
+      var _this = this;
+
+      
+
+      this.element = element;
+      this.taskQueue = taskQueue;
+      this.isAttached = false;
+      this.needsApply = false;
+
+      this.focusListener = function (e) {
+        _this.value = true;
+      };
+      this.blurListener = function (e) {
+        if (_aureliaPal.DOM.activeElement !== _this.element) {
+          _this.value = false;
+        }
+      };
+    }
+
+    Focus.prototype.valueChanged = function valueChanged(newValue) {
+      if (this.isAttached) {
+        this._apply();
+      } else {
+        this.needsApply = true;
+      }
+    };
+
+    Focus.prototype._apply = function _apply() {
+      var _this2 = this;
+
+      if (this.value) {
+        this.taskQueue.queueMicroTask(function () {
+          if (_this2.value) {
+            _this2.element.focus();
+          }
+        });
+      } else {
+        this.element.blur();
+      }
+    };
+
+    Focus.prototype.attached = function attached() {
+      this.isAttached = true;
+      if (this.needsApply) {
+        this.needsApply = false;
+        this._apply();
+      }
+      this.element.addEventListener('focus', this.focusListener);
+      this.element.addEventListener('blur', this.blurListener);
+    };
+
+    Focus.prototype.detached = function detached() {
+      this.isAttached = false;
+      this.element.removeEventListener('focus', this.focusListener);
+      this.element.removeEventListener('blur', this.blurListener);
+    };
+
+    return Focus;
+  }()) || _class) || _class);
+});
+define('aurelia-templating-resources/css-resource',['exports', 'aurelia-templating', 'aurelia-loader', 'aurelia-dependency-injection', 'aurelia-path', 'aurelia-pal'], function (exports, _aureliaTemplating, _aureliaLoader, _aureliaDependencyInjection, _aureliaPath, _aureliaPal) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports._createCSSResource = _createCSSResource;
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  
+
+  var cssUrlMatcher = /url\((?!['"]data)([^)]+)\)/gi;
+
+  function fixupCSSUrls(address, css) {
+    if (typeof css !== 'string') {
+      throw new Error('Failed loading required CSS file: ' + address);
+    }
+    return css.replace(cssUrlMatcher, function (match, p1) {
+      var quote = p1.charAt(0);
+      if (quote === '\'' || quote === '"') {
+        p1 = p1.substr(1, p1.length - 2);
+      }
+      return 'url(\'' + (0, _aureliaPath.relativeToFile)(p1, address) + '\')';
+    });
+  }
+
+  var CSSResource = function () {
+    function CSSResource(address) {
+      
+
+      this.address = address;
+      this._scoped = null;
+      this._global = false;
+      this._alreadyGloballyInjected = false;
+    }
+
+    CSSResource.prototype.initialize = function initialize(container, target) {
+      this._scoped = new target(this);
+    };
+
+    CSSResource.prototype.register = function register(registry, name) {
+      if (name === 'scoped') {
+        registry.registerViewEngineHooks(this._scoped);
+      } else {
+        this._global = true;
+      }
+    };
+
+    CSSResource.prototype.load = function load(container) {
+      var _this = this;
+
+      return container.get(_aureliaLoader.Loader).loadText(this.address).catch(function (err) {
+        return null;
+      }).then(function (text) {
+        text = fixupCSSUrls(_this.address, text);
+        _this._scoped.css = text;
+        if (_this._global) {
+          _this._alreadyGloballyInjected = true;
+          _aureliaPal.DOM.injectStyles(text);
+        }
+      });
+    };
+
+    return CSSResource;
+  }();
+
+  var CSSViewEngineHooks = function () {
+    function CSSViewEngineHooks(owner) {
+      
+
+      this.owner = owner;
+      this.css = null;
+    }
+
+    CSSViewEngineHooks.prototype.beforeCompile = function beforeCompile(content, resources, instruction) {
+      if (instruction.targetShadowDOM) {
+        _aureliaPal.DOM.injectStyles(this.css, content, true);
+      } else if (_aureliaPal.FEATURE.scopedCSS) {
+        var styleNode = _aureliaPal.DOM.injectStyles(this.css, content, true);
+        styleNode.setAttribute('scoped', 'scoped');
+      } else if (!this.owner._alreadyGloballyInjected) {
+        _aureliaPal.DOM.injectStyles(this.css);
+        this.owner._alreadyGloballyInjected = true;
+      }
+    };
+
+    return CSSViewEngineHooks;
+  }();
+
+  function _createCSSResource(address) {
+    var _dec, _class;
+
+    var ViewCSS = (_dec = (0, _aureliaTemplating.resource)(new CSSResource(address)), _dec(_class = function (_CSSViewEngineHooks) {
+      _inherits(ViewCSS, _CSSViewEngineHooks);
+
+      function ViewCSS() {
+        
+
+        return _possibleConstructorReturn(this, _CSSViewEngineHooks.apply(this, arguments));
+      }
+
+      return ViewCSS;
+    }(CSSViewEngineHooks)) || _class);
+
+    return ViewCSS;
+  }
+});
+define('aurelia-templating-resources/attr-binding-behavior',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.AttrBindingBehavior = undefined;
+
+  
+
+  var AttrBindingBehavior = exports.AttrBindingBehavior = function () {
+    function AttrBindingBehavior() {
+      
+    }
+
+    AttrBindingBehavior.prototype.bind = function bind(binding, source) {
+      binding.targetObserver = new _aureliaBinding.DataAttributeObserver(binding.target, binding.targetProperty);
+    };
+
+    AttrBindingBehavior.prototype.unbind = function unbind(binding, source) {};
+
+    return AttrBindingBehavior;
+  }();
+});
+define('aurelia-templating-resources/binding-mode-behaviors',['exports', 'aurelia-binding', 'aurelia-metadata'], function (exports, _aureliaBinding, _aureliaMetadata) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.TwoWayBindingBehavior = exports.OneWayBindingBehavior = exports.OneTimeBindingBehavior = undefined;
+
+  
+
+  var _dec, _class, _dec2, _class2, _dec3, _class3;
+
+  var modeBindingBehavior = {
+    bind: function bind(binding, source, lookupFunctions) {
+      binding.originalMode = binding.mode;
+      binding.mode = this.mode;
+    },
+    unbind: function unbind(binding, source) {
+      binding.mode = binding.originalMode;
+      binding.originalMode = null;
+    }
+  };
+
+  var OneTimeBindingBehavior = exports.OneTimeBindingBehavior = (_dec = (0, _aureliaMetadata.mixin)(modeBindingBehavior), _dec(_class = function OneTimeBindingBehavior() {
+    
+
+    this.mode = _aureliaBinding.bindingMode.oneTime;
+  }) || _class);
+  var OneWayBindingBehavior = exports.OneWayBindingBehavior = (_dec2 = (0, _aureliaMetadata.mixin)(modeBindingBehavior), _dec2(_class2 = function OneWayBindingBehavior() {
+    
+
+    this.mode = _aureliaBinding.bindingMode.oneWay;
+  }) || _class2);
+  var TwoWayBindingBehavior = exports.TwoWayBindingBehavior = (_dec3 = (0, _aureliaMetadata.mixin)(modeBindingBehavior), _dec3(_class3 = function TwoWayBindingBehavior() {
+    
+
+    this.mode = _aureliaBinding.bindingMode.twoWay;
+  }) || _class3);
+});
+define('aurelia-templating-resources/throttle-binding-behavior',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.ThrottleBindingBehavior = undefined;
+
+  
+
+  function throttle(newValue) {
+    var _this = this;
+
+    var state = this.throttleState;
+    var elapsed = +new Date() - state.last;
+    if (elapsed >= state.delay) {
+      clearTimeout(state.timeoutId);
+      state.timeoutId = null;
+      state.last = +new Date();
+      this.throttledMethod(newValue);
+      return;
+    }
+    state.newValue = newValue;
+    if (state.timeoutId === null) {
+      state.timeoutId = setTimeout(function () {
+        state.timeoutId = null;
+        state.last = +new Date();
+        _this.throttledMethod(state.newValue);
+      }, state.delay - elapsed);
+    }
+  }
+
+  var ThrottleBindingBehavior = exports.ThrottleBindingBehavior = function () {
+    function ThrottleBindingBehavior() {
+      
+    }
+
+    ThrottleBindingBehavior.prototype.bind = function bind(binding, source) {
+      var delay = arguments.length <= 2 || arguments[2] === undefined ? 200 : arguments[2];
+
+      var methodToThrottle = 'updateTarget';
+      if (binding.callSource) {
+        methodToThrottle = 'callSource';
+      } else if (binding.updateSource && binding.mode === _aureliaBinding.bindingMode.twoWay) {
+          methodToThrottle = 'updateSource';
+        }
+
+      binding.throttledMethod = binding[methodToThrottle];
+      binding.throttledMethod.originalName = methodToThrottle;
+
+      binding[methodToThrottle] = throttle;
+
+      binding.throttleState = {
+        delay: delay,
+        last: 0,
+        timeoutId: null
+      };
+    };
+
+    ThrottleBindingBehavior.prototype.unbind = function unbind(binding, source) {
+      var methodToRestore = binding.throttledMethod.originalName;
+      binding[methodToRestore] = binding.throttledMethod;
+      binding.throttledMethod = null;
+      clearTimeout(binding.throttleState.timeoutId);
+      binding.throttleState = null;
+    };
+
+    return ThrottleBindingBehavior;
+  }();
+});
+define('aurelia-templating-resources/debounce-binding-behavior',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.DebounceBindingBehavior = undefined;
+
+  
+
+  function debounce(newValue) {
+    var _this = this;
+
+    var state = this.debounceState;
+    if (state.immediate) {
+      state.immediate = false;
+      this.debouncedMethod(newValue);
+      return;
+    }
+    clearTimeout(state.timeoutId);
+    state.timeoutId = setTimeout(function () {
+      return _this.debouncedMethod(newValue);
+    }, state.delay);
+  }
+
+  var DebounceBindingBehavior = exports.DebounceBindingBehavior = function () {
+    function DebounceBindingBehavior() {
+      
+    }
+
+    DebounceBindingBehavior.prototype.bind = function bind(binding, source) {
+      var delay = arguments.length <= 2 || arguments[2] === undefined ? 200 : arguments[2];
+
+      var methodToDebounce = 'updateTarget';
+      if (binding.callSource) {
+        methodToDebounce = 'callSource';
+      } else if (binding.updateSource && binding.mode === _aureliaBinding.bindingMode.twoWay) {
+          methodToDebounce = 'updateSource';
+        }
+
+      binding.debouncedMethod = binding[methodToDebounce];
+      binding.debouncedMethod.originalName = methodToDebounce;
+
+      binding[methodToDebounce] = debounce;
+
+      binding.debounceState = {
+        delay: delay,
+        timeoutId: null,
+        immediate: methodToDebounce === 'updateTarget' };
+    };
+
+    DebounceBindingBehavior.prototype.unbind = function unbind(binding, source) {
+      var methodToRestore = binding.debouncedMethod.originalName;
+      binding[methodToRestore] = binding.debouncedMethod;
+      binding.debouncedMethod = null;
+      clearTimeout(binding.debounceState.timeoutId);
+      binding.debounceState = null;
+    };
+
+    return DebounceBindingBehavior;
+  }();
+});
+define('aurelia-templating-resources/signal-binding-behavior',['exports', './binding-signaler'], function (exports, _bindingSignaler) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.SignalBindingBehavior = undefined;
+
+  
+
+  var SignalBindingBehavior = exports.SignalBindingBehavior = function () {
+    SignalBindingBehavior.inject = function inject() {
+      return [_bindingSignaler.BindingSignaler];
+    };
+
+    function SignalBindingBehavior(bindingSignaler) {
+      
+
+      this.signals = bindingSignaler.signals;
+    }
+
+    SignalBindingBehavior.prototype.bind = function bind(binding, source) {
+      if (!binding.updateTarget) {
+        throw new Error('Only property bindings and string interpolation bindings can be signaled.  Trigger, delegate and call bindings cannot be signaled.');
+      }
+      if (arguments.length === 3) {
+        var name = arguments[2];
+        var bindings = this.signals[name] || (this.signals[name] = []);
+        bindings.push(binding);
+        binding.signalName = name;
+      } else if (arguments.length > 3) {
+        var names = Array.prototype.slice.call(arguments, 2);
+        var i = names.length;
+        while (i--) {
+          var _name = names[i];
+          var _bindings = this.signals[_name] || (this.signals[_name] = []);
+          _bindings.push(binding);
+        }
+        binding.signalName = names;
+      } else {
+        throw new Error('Signal name is required.');
+      }
+    };
+
+    SignalBindingBehavior.prototype.unbind = function unbind(binding, source) {
+      var name = binding.signalName;
+      binding.signalName = null;
+      if (Array.isArray(name)) {
+        var names = name;
+        var i = names.length;
+        while (i--) {
+          var n = names[i];
+          var bindings = this.signals[n];
+          bindings.splice(bindings.indexOf(binding), 1);
+        }
+      } else {
+        var _bindings2 = this.signals[name];
+        _bindings2.splice(_bindings2.indexOf(binding), 1);
+      }
+    };
+
+    return SignalBindingBehavior;
+  }();
+});
+define('aurelia-templating-resources/binding-signaler',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.BindingSignaler = undefined;
+
+  
+
+  var BindingSignaler = exports.BindingSignaler = function () {
+    function BindingSignaler() {
+      
+
+      this.signals = {};
+    }
+
+    BindingSignaler.prototype.signal = function signal(name) {
+      var bindings = this.signals[name];
+      if (!bindings) {
+        return;
+      }
+      var i = bindings.length;
+      while (i--) {
+        bindings[i].call(_aureliaBinding.sourceContext);
+      }
+    };
+
+    return BindingSignaler;
+  }();
+});
+define('aurelia-templating-resources/update-trigger-binding-behavior',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.UpdateTriggerBindingBehavior = undefined;
+
+  
+
+  var _class, _temp;
+
+  var eventNamesRequired = 'The updateTrigger binding behavior requires at least one event name argument: eg <input value.bind="firstName & updateTrigger:\'blur\'">';
+  var notApplicableMessage = 'The updateTrigger binding behavior can only be applied to two-way bindings on input/select elements.';
+
+  var UpdateTriggerBindingBehavior = exports.UpdateTriggerBindingBehavior = (_temp = _class = function () {
+    function UpdateTriggerBindingBehavior(eventManager) {
+      
+
+      this.eventManager = eventManager;
+    }
+
+    UpdateTriggerBindingBehavior.prototype.bind = function bind(binding, source) {
+      for (var _len = arguments.length, events = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+        events[_key - 2] = arguments[_key];
+      }
+
+      if (events.length === 0) {
+        throw new Error(eventNamesRequired);
+      }
+      if (binding.mode !== _aureliaBinding.bindingMode.twoWay) {
+        throw new Error(notApplicableMessage);
+      }
+
+      var targetObserver = binding.observerLocator.getObserver(binding.target, binding.targetProperty);
+      if (!targetObserver.handler) {
+        throw new Error(notApplicableMessage);
+      }
+      binding.targetObserver = targetObserver;
+
+      targetObserver.originalHandler = binding.targetObserver.handler;
+
+      var handler = this.eventManager.createElementHandler(events);
+      targetObserver.handler = handler;
+    };
+
+    UpdateTriggerBindingBehavior.prototype.unbind = function unbind(binding, source) {
+      binding.targetObserver.handler = binding.targetObserver.originalHandler;
+      binding.targetObserver.originalHandler = null;
+    };
+
+    return UpdateTriggerBindingBehavior;
+  }(), _class.inject = [_aureliaBinding.EventManager], _temp);
+});
+define('aurelia-templating-resources/html-resource-plugin',['exports', 'aurelia-templating', './dynamic-element'], function (exports, _aureliaTemplating, _dynamicElement) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.getElementName = getElementName;
+  exports.configure = configure;
+  function getElementName(address) {
+    return (/([^\/^\?]+)\.html/i.exec(address)[1].toLowerCase()
+    );
+  }
+
+  function configure(config) {
+    var viewEngine = config.container.get(_aureliaTemplating.ViewEngine);
+    var loader = config.aurelia.loader;
+
+    viewEngine.addResourcePlugin('.html', {
+      'fetch': function fetch(address) {
+        return loader.loadTemplate(address).then(function (registryEntry) {
+          var _ref;
+
+          var bindable = registryEntry.template.getAttribute('bindable');
+          var elementName = getElementName(address);
+
+          if (bindable) {
+            bindable = bindable.split(',').map(function (x) {
+              return x.trim();
+            });
+            registryEntry.template.removeAttribute('bindable');
+          } else {
+            bindable = [];
+          }
+
+          return _ref = {}, _ref[elementName] = (0, _dynamicElement._createDynamicElement)(elementName, address, bindable), _ref;
+        });
+      }
+    });
+  }
+});
+define('aurelia-templating-resources/dynamic-element',['exports', 'aurelia-templating'], function (exports, _aureliaTemplating) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports._createDynamicElement = _createDynamicElement;
+
+  
+
+  function _createDynamicElement(name, viewUrl, bindableNames) {
+    var _dec, _dec2, _class;
+
+    var DynamicElement = (_dec = (0, _aureliaTemplating.customElement)(name), _dec2 = (0, _aureliaTemplating.useView)(viewUrl), _dec(_class = _dec2(_class = function () {
+      function DynamicElement() {
+        
+      }
+
+      DynamicElement.prototype.bind = function bind(bindingContext) {
+        this.$parent = bindingContext;
+      };
+
+      return DynamicElement;
+    }()) || _class) || _class);
+
+    for (var i = 0, ii = bindableNames.length; i < ii; ++i) {
+      (0, _aureliaTemplating.bindable)(bindableNames[i])(DynamicElement);
+    }
+    return DynamicElement;
+  }
 });
 /*
 Syntax highlighting with language autodetection.
@@ -18512,2774 +22963,30 @@ define('highlight/lib/languages/zephir',['require','exports','module'],function 
 };
 });
 
-define('aurelia-templating-resources/compose',['exports', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-templating', 'aurelia-pal'], function (exports, _aureliaDependencyInjection, _aureliaTaskQueue, _aureliaTemplating, _aureliaPal) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.Compose = undefined;
-
-  function _initDefineProp(target, property, descriptor, context) {
-    if (!descriptor) return;
-    Object.defineProperty(target, property, {
-      enumerable: descriptor.enumerable,
-      configurable: descriptor.configurable,
-      writable: descriptor.writable,
-      value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
-    });
-  }
-
-  
-
-  function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
-    var desc = {};
-    Object['ke' + 'ys'](descriptor).forEach(function (key) {
-      desc[key] = descriptor[key];
-    });
-    desc.enumerable = !!desc.enumerable;
-    desc.configurable = !!desc.configurable;
-
-    if ('value' in desc || desc.initializer) {
-      desc.writable = true;
-    }
-
-    desc = decorators.slice().reverse().reduce(function (desc, decorator) {
-      return decorator(target, property, desc) || desc;
-    }, desc);
-
-    if (context && desc.initializer !== void 0) {
-      desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
-      desc.initializer = undefined;
-    }
-
-    if (desc.initializer === void 0) {
-      Object['define' + 'Property'](target, property, desc);
-      desc = null;
-    }
-
-    return desc;
-  }
-
-  function _initializerWarningHelper(descriptor, context) {
-    throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
-  }
-
-  var _dec, _dec2, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3;
-
-  var Compose = exports.Compose = (_dec = (0, _aureliaTemplating.customElement)('compose'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaPal.DOM.Element, _aureliaDependencyInjection.Container, _aureliaTemplating.CompositionEngine, _aureliaTemplating.ViewSlot, _aureliaTemplating.ViewResources, _aureliaTaskQueue.TaskQueue), _dec(_class = (0, _aureliaTemplating.noView)(_class = _dec2(_class = (_class2 = function () {
-    function Compose(element, container, compositionEngine, viewSlot, viewResources, taskQueue) {
-      
-
-      _initDefineProp(this, 'model', _descriptor, this);
-
-      _initDefineProp(this, 'view', _descriptor2, this);
-
-      _initDefineProp(this, 'viewModel', _descriptor3, this);
-
-      this.element = element;
-      this.container = container;
-      this.compositionEngine = compositionEngine;
-      this.viewSlot = viewSlot;
-      this.viewResources = viewResources;
-      this.taskQueue = taskQueue;
-      this.currentController = null;
-      this.currentViewModel = null;
-    }
-
-    Compose.prototype.created = function created(owningView) {
-      this.owningView = owningView;
-    };
-
-    Compose.prototype.bind = function bind(bindingContext, overrideContext) {
-      this.bindingContext = bindingContext;
-      this.overrideContext = overrideContext;
-      processInstruction(this, createInstruction(this, {
-        view: this.view,
-        viewModel: this.viewModel,
-        model: this.model
-      }));
-    };
-
-    Compose.prototype.unbind = function unbind(bindingContext, overrideContext) {
-      this.bindingContext = null;
-      this.overrideContext = null;
-      var returnToCache = true;
-      var skipAnimation = true;
-      this.viewSlot.removeAll(returnToCache, skipAnimation);
-    };
-
-    Compose.prototype.modelChanged = function modelChanged(newValue, oldValue) {
-      var _this = this;
-
-      if (this.currentInstruction) {
-        this.currentInstruction.model = newValue;
-        return;
-      }
-
-      this.taskQueue.queueMicroTask(function () {
-        if (_this.currentInstruction) {
-          _this.currentInstruction.model = newValue;
-          return;
-        }
-
-        var vm = _this.currentViewModel;
-
-        if (vm && typeof vm.activate === 'function') {
-          vm.activate(newValue);
-        }
-      });
-    };
-
-    Compose.prototype.viewChanged = function viewChanged(newValue, oldValue) {
-      var _this2 = this;
-
-      var instruction = createInstruction(this, {
-        view: newValue,
-        viewModel: this.currentViewModel || this.viewModel,
-        model: this.model
-      });
-
-      if (this.currentInstruction) {
-        this.currentInstruction = instruction;
-        return;
-      }
-
-      this.currentInstruction = instruction;
-      this.taskQueue.queueMicroTask(function () {
-        return processInstruction(_this2, _this2.currentInstruction);
-      });
-    };
-
-    Compose.prototype.viewModelChanged = function viewModelChanged(newValue, oldValue) {
-      var _this3 = this;
-
-      var instruction = createInstruction(this, {
-        viewModel: newValue,
-        view: this.view,
-        model: this.model
-      });
-
-      if (this.currentInstruction) {
-        this.currentInstruction = instruction;
-        return;
-      }
-
-      this.currentInstruction = instruction;
-      this.taskQueue.queueMicroTask(function () {
-        return processInstruction(_this3, _this3.currentInstruction);
-      });
-    };
-
-    return Compose;
-  }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'model', [_aureliaTemplating.bindable], {
-    enumerable: true,
-    initializer: null
-  }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'view', [_aureliaTemplating.bindable], {
-    enumerable: true,
-    initializer: null
-  }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'viewModel', [_aureliaTemplating.bindable], {
-    enumerable: true,
-    initializer: null
-  })), _class2)) || _class) || _class) || _class);
-
-
-  function createInstruction(composer, instruction) {
-    return Object.assign(instruction, {
-      bindingContext: composer.bindingContext,
-      overrideContext: composer.overrideContext,
-      owningView: composer.owningView,
-      container: composer.container,
-      viewSlot: composer.viewSlot,
-      viewResources: composer.viewResources,
-      currentController: composer.currentController,
-      host: composer.element
-    });
-  }
-
-  function processInstruction(composer, instruction) {
-    composer.currentInstruction = null;
-    composer.compositionEngine.compose(instruction).then(function (controller) {
-      composer.currentController = controller;
-      composer.currentViewModel = controller ? controller.viewModel : null;
-    });
-  }
-});
-define('aurelia-templating-resources/if',['exports', 'aurelia-templating', 'aurelia-dependency-injection'], function (exports, _aureliaTemplating, _aureliaDependencyInjection) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.If = undefined;
-
-  
-
-  var _dec, _dec2, _class;
-
-  var If = exports.If = (_dec = (0, _aureliaTemplating.customAttribute)('if'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.BoundViewFactory, _aureliaTemplating.ViewSlot), _dec(_class = (0, _aureliaTemplating.templateController)(_class = _dec2(_class = function () {
-    function If(viewFactory, viewSlot) {
-      
-
-      this.viewFactory = viewFactory;
-      this.viewSlot = viewSlot;
-      this.showing = false;
-      this.view = null;
-      this.bindingContext = null;
-      this.overrideContext = null;
-    }
-
-    If.prototype.bind = function bind(bindingContext, overrideContext) {
-      this.bindingContext = bindingContext;
-      this.overrideContext = overrideContext;
-      this.valueChanged(this.value);
-    };
-
-    If.prototype.valueChanged = function valueChanged(newValue) {
-      var _this = this;
-
-      if (this.__queuedChanges) {
-        this.__queuedChanges.push(newValue);
-        return;
-      }
-
-      var maybePromise = this._runValueChanged(newValue);
-      if (maybePromise instanceof Promise) {
-        (function () {
-          var queuedChanges = _this.__queuedChanges = [];
-
-          var runQueuedChanges = function runQueuedChanges() {
-            if (!queuedChanges.length) {
-              _this.__queuedChanges = undefined;
-              return;
-            }
-
-            var nextPromise = _this._runValueChanged(queuedChanges.shift()) || Promise.resolve();
-            nextPromise.then(runQueuedChanges);
-          };
-
-          maybePromise.then(runQueuedChanges);
-        })();
-      }
-    };
-
-    If.prototype._runValueChanged = function _runValueChanged(newValue) {
-      var _this2 = this;
-
-      if (!newValue) {
-        var viewOrPromise = void 0;
-        if (this.view !== null && this.showing) {
-          viewOrPromise = this.viewSlot.remove(this.view);
-          if (viewOrPromise instanceof Promise) {
-            viewOrPromise.then(function () {
-              return _this2.view.unbind();
-            });
-          } else {
-            this.view.unbind();
-          }
-        }
-
-        this.showing = false;
-        return viewOrPromise;
-      }
-
-      if (this.view === null) {
-        this.view = this.viewFactory.create();
-      }
-
-      if (!this.view.isBound) {
-        this.view.bind(this.bindingContext, this.overrideContext);
-      }
-
-      if (!this.showing) {
-        this.showing = true;
-        return this.viewSlot.add(this.view);
-      }
-
-      return undefined;
-    };
-
-    If.prototype.unbind = function unbind() {
-      if (this.view === null) {
-        return;
-      }
-
-      this.view.unbind();
-
-      if (!this.viewFactory.isCaching) {
-        return;
-      }
-
-      if (this.showing) {
-        this.showing = false;
-        this.viewSlot.remove(this.view, true, true);
-      }
-      this.view.returnToCache();
-      this.view = null;
-    };
-
-    return If;
-  }()) || _class) || _class) || _class);
-});
-define('aurelia-templating-resources/with',['exports', 'aurelia-dependency-injection', 'aurelia-templating', 'aurelia-binding'], function (exports, _aureliaDependencyInjection, _aureliaTemplating, _aureliaBinding) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.With = undefined;
-
-  
-
-  var _dec, _dec2, _class;
-
-  var With = exports.With = (_dec = (0, _aureliaTemplating.customAttribute)('with'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.BoundViewFactory, _aureliaTemplating.ViewSlot), _dec(_class = (0, _aureliaTemplating.templateController)(_class = _dec2(_class = function () {
-    function With(viewFactory, viewSlot) {
-      
-
-      this.viewFactory = viewFactory;
-      this.viewSlot = viewSlot;
-      this.parentOverrideContext = null;
-      this.view = null;
-    }
-
-    With.prototype.bind = function bind(bindingContext, overrideContext) {
-      this.parentOverrideContext = overrideContext;
-      this.valueChanged(this.value);
-    };
-
-    With.prototype.valueChanged = function valueChanged(newValue) {
-      var overrideContext = (0, _aureliaBinding.createOverrideContext)(newValue, this.parentOverrideContext);
-      if (!this.view) {
-        this.view = this.viewFactory.create();
-        this.view.bind(newValue, overrideContext);
-        this.viewSlot.add(this.view);
-      } else {
-        this.view.bind(newValue, overrideContext);
-      }
-    };
-
-    With.prototype.unbind = function unbind() {
-      this.parentOverrideContext = null;
-
-      if (this.view) {
-        this.view.unbind();
-      }
-    };
-
-    return With;
-  }()) || _class) || _class) || _class);
-});
-define('aurelia-templating-resources/repeat',['exports', 'aurelia-dependency-injection', 'aurelia-binding', 'aurelia-templating', './repeat-strategy-locator', './repeat-utilities', './analyze-view-factory', './abstract-repeater'], function (exports, _aureliaDependencyInjection, _aureliaBinding, _aureliaTemplating, _repeatStrategyLocator, _repeatUtilities, _analyzeViewFactory, _abstractRepeater) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.Repeat = undefined;
-
-  function _initDefineProp(target, property, descriptor, context) {
-    if (!descriptor) return;
-    Object.defineProperty(target, property, {
-      enumerable: descriptor.enumerable,
-      configurable: descriptor.configurable,
-      writable: descriptor.writable,
-      value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
-    });
-  }
-
-  
-
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
-
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  }
-
-  function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
-    var desc = {};
-    Object['ke' + 'ys'](descriptor).forEach(function (key) {
-      desc[key] = descriptor[key];
-    });
-    desc.enumerable = !!desc.enumerable;
-    desc.configurable = !!desc.configurable;
-
-    if ('value' in desc || desc.initializer) {
-      desc.writable = true;
-    }
-
-    desc = decorators.slice().reverse().reduce(function (desc, decorator) {
-      return decorator(target, property, desc) || desc;
-    }, desc);
-
-    if (context && desc.initializer !== void 0) {
-      desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
-      desc.initializer = undefined;
-    }
-
-    if (desc.initializer === void 0) {
-      Object['define' + 'Property'](target, property, desc);
-      desc = null;
-    }
-
-    return desc;
-  }
-
-  function _initializerWarningHelper(descriptor, context) {
-    throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
-  }
-
-  var _dec, _dec2, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4;
-
-  var Repeat = exports.Repeat = (_dec = (0, _aureliaTemplating.customAttribute)('repeat'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.BoundViewFactory, _aureliaTemplating.TargetInstruction, _aureliaTemplating.ViewSlot, _aureliaTemplating.ViewResources, _aureliaBinding.ObserverLocator, _repeatStrategyLocator.RepeatStrategyLocator), _dec(_class = (0, _aureliaTemplating.templateController)(_class = _dec2(_class = (_class2 = function (_AbstractRepeater) {
-    _inherits(Repeat, _AbstractRepeater);
-
-    function Repeat(viewFactory, instruction, viewSlot, viewResources, observerLocator, strategyLocator) {
-      
-
-      var _this = _possibleConstructorReturn(this, _AbstractRepeater.call(this, {
-        local: 'item',
-        viewsRequireLifecycle: (0, _analyzeViewFactory.viewsRequireLifecycle)(viewFactory)
-      }));
-
-      _initDefineProp(_this, 'items', _descriptor, _this);
-
-      _initDefineProp(_this, 'local', _descriptor2, _this);
-
-      _initDefineProp(_this, 'key', _descriptor3, _this);
-
-      _initDefineProp(_this, 'value', _descriptor4, _this);
-
-      _this.viewFactory = viewFactory;
-      _this.instruction = instruction;
-      _this.viewSlot = viewSlot;
-      _this.lookupFunctions = viewResources.lookupFunctions;
-      _this.observerLocator = observerLocator;
-      _this.key = 'key';
-      _this.value = 'value';
-      _this.strategyLocator = strategyLocator;
-      _this.ignoreMutation = false;
-      _this.sourceExpression = (0, _repeatUtilities.getItemsSourceExpression)(_this.instruction, 'repeat.for');
-      _this.isOneTime = (0, _repeatUtilities.isOneTime)(_this.sourceExpression);
-      _this.viewsRequireLifecycle = (0, _analyzeViewFactory.viewsRequireLifecycle)(viewFactory);
-      return _this;
-    }
-
-    Repeat.prototype.call = function call(context, changes) {
-      this[context](this.items, changes);
-    };
-
-    Repeat.prototype.bind = function bind(bindingContext, overrideContext) {
-      this.scope = { bindingContext: bindingContext, overrideContext: overrideContext };
-      this.matcherBinding = this._captureAndRemoveMatcherBinding();
-      this.itemsChanged();
-    };
-
-    Repeat.prototype.unbind = function unbind() {
-      this.scope = null;
-      this.items = null;
-      this.matcherBinding = null;
-      this.viewSlot.removeAll(true);
-      this._unsubscribeCollection();
-    };
-
-    Repeat.prototype._unsubscribeCollection = function _unsubscribeCollection() {
-      if (this.collectionObserver) {
-        this.collectionObserver.unsubscribe(this.callContext, this);
-        this.collectionObserver = null;
-        this.callContext = null;
-      }
-    };
-
-    Repeat.prototype.itemsChanged = function itemsChanged() {
-      this._unsubscribeCollection();
-
-      if (!this.scope) {
-        return;
-      }
-
-      var items = this.items;
-      this.strategy = this.strategyLocator.getStrategy(items);
-      if (!this.strategy) {
-        throw new Error('Value for \'' + this.sourceExpression + '\' is non-repeatable');
-      }
-
-      if (!this.isOneTime && !this._observeInnerCollection()) {
-        this._observeCollection();
-      }
-      this.strategy.instanceChanged(this, items);
-    };
-
-    Repeat.prototype._getInnerCollection = function _getInnerCollection() {
-      var expression = (0, _repeatUtilities.unwrapExpression)(this.sourceExpression);
-      if (!expression) {
-        return null;
-      }
-      return expression.evaluate(this.scope, null);
-    };
-
-    Repeat.prototype.handleCollectionMutated = function handleCollectionMutated(collection, changes) {
-      if (!this.collectionObserver) {
-        return;
-      }
-      this.strategy.instanceMutated(this, collection, changes);
-    };
-
-    Repeat.prototype.handleInnerCollectionMutated = function handleInnerCollectionMutated(collection, changes) {
-      var _this2 = this;
-
-      if (!this.collectionObserver) {
-        return;
-      }
-
-      if (this.ignoreMutation) {
-        return;
-      }
-      this.ignoreMutation = true;
-      var newItems = this.sourceExpression.evaluate(this.scope, this.lookupFunctions);
-      this.observerLocator.taskQueue.queueMicroTask(function () {
-        return _this2.ignoreMutation = false;
-      });
-
-      if (newItems === this.items) {
-        this.itemsChanged();
-      } else {
-        this.items = newItems;
-      }
-    };
-
-    Repeat.prototype._observeInnerCollection = function _observeInnerCollection() {
-      var items = this._getInnerCollection();
-      var strategy = this.strategyLocator.getStrategy(items);
-      if (!strategy) {
-        return false;
-      }
-      this.collectionObserver = strategy.getCollectionObserver(this.observerLocator, items);
-      if (!this.collectionObserver) {
-        return false;
-      }
-      this.callContext = 'handleInnerCollectionMutated';
-      this.collectionObserver.subscribe(this.callContext, this);
-      return true;
-    };
-
-    Repeat.prototype._observeCollection = function _observeCollection() {
-      var items = this.items;
-      this.collectionObserver = this.strategy.getCollectionObserver(this.observerLocator, items);
-      if (this.collectionObserver) {
-        this.callContext = 'handleCollectionMutated';
-        this.collectionObserver.subscribe(this.callContext, this);
-      }
-    };
-
-    Repeat.prototype._captureAndRemoveMatcherBinding = function _captureAndRemoveMatcherBinding() {
-      if (this.viewFactory.viewFactory) {
-        var instructions = this.viewFactory.viewFactory.instructions;
-        var instructionIds = Object.keys(instructions);
-        for (var i = 0; i < instructionIds.length; i++) {
-          var expressions = instructions[instructionIds[i]].expressions;
-          if (expressions) {
-            for (var ii = 0; i < expressions.length; i++) {
-              if (expressions[ii].targetProperty === 'matcher') {
-                var matcherBinding = expressions[ii];
-                expressions.splice(ii, 1);
-                return matcherBinding;
-              }
-            }
-          }
-        }
-      }
-
-      return undefined;
-    };
-
-    Repeat.prototype.viewCount = function viewCount() {
-      return this.viewSlot.children.length;
-    };
-
-    Repeat.prototype.views = function views() {
-      return this.viewSlot.children;
-    };
-
-    Repeat.prototype.view = function view(index) {
-      return this.viewSlot.children[index];
-    };
-
-    Repeat.prototype.matcher = function matcher() {
-      return this.matcherBinding ? this.matcherBinding.sourceExpression.evaluate(this.scope, this.matcherBinding.lookupFunctions) : null;
-    };
-
-    Repeat.prototype.addView = function addView(bindingContext, overrideContext) {
-      var view = this.viewFactory.create();
-      view.bind(bindingContext, overrideContext);
-      this.viewSlot.add(view);
-    };
-
-    Repeat.prototype.insertView = function insertView(index, bindingContext, overrideContext) {
-      var view = this.viewFactory.create();
-      view.bind(bindingContext, overrideContext);
-      this.viewSlot.insert(index, view);
-    };
-
-    Repeat.prototype.moveView = function moveView(sourceIndex, targetIndex) {
-      this.viewSlot.move(sourceIndex, targetIndex);
-    };
-
-    Repeat.prototype.removeAllViews = function removeAllViews(returnToCache, skipAnimation) {
-      return this.viewSlot.removeAll(returnToCache, skipAnimation);
-    };
-
-    Repeat.prototype.removeViews = function removeViews(viewsToRemove, returnToCache, skipAnimation) {
-      return this.viewSlot.removeMany(viewsToRemove, returnToCache, skipAnimation);
-    };
-
-    Repeat.prototype.removeView = function removeView(index, returnToCache, skipAnimation) {
-      return this.viewSlot.removeAt(index, returnToCache, skipAnimation);
-    };
-
-    Repeat.prototype.updateBindings = function updateBindings(view) {
-      var j = view.bindings.length;
-      while (j--) {
-        (0, _repeatUtilities.updateOneTimeBinding)(view.bindings[j]);
-      }
-      j = view.controllers.length;
-      while (j--) {
-        var k = view.controllers[j].boundProperties.length;
-        while (k--) {
-          var binding = view.controllers[j].boundProperties[k].binding;
-          (0, _repeatUtilities.updateOneTimeBinding)(binding);
-        }
-      }
-    };
-
-    return Repeat;
-  }(_abstractRepeater.AbstractRepeater), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'items', [_aureliaTemplating.bindable], {
-    enumerable: true,
-    initializer: null
-  }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'local', [_aureliaTemplating.bindable], {
-    enumerable: true,
-    initializer: null
-  }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'key', [_aureliaTemplating.bindable], {
-    enumerable: true,
-    initializer: null
-  }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'value', [_aureliaTemplating.bindable], {
-    enumerable: true,
-    initializer: null
-  })), _class2)) || _class) || _class) || _class);
-});
-define('aurelia-templating-resources/repeat-strategy-locator',['exports', './null-repeat-strategy', './array-repeat-strategy', './map-repeat-strategy', './set-repeat-strategy', './number-repeat-strategy'], function (exports, _nullRepeatStrategy, _arrayRepeatStrategy, _mapRepeatStrategy, _setRepeatStrategy, _numberRepeatStrategy) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.RepeatStrategyLocator = undefined;
-
-  
-
-  var RepeatStrategyLocator = exports.RepeatStrategyLocator = function () {
-    function RepeatStrategyLocator() {
-      
-
-      this.matchers = [];
-      this.strategies = [];
-
-      this.addStrategy(function (items) {
-        return items === null || items === undefined;
-      }, new _nullRepeatStrategy.NullRepeatStrategy());
-      this.addStrategy(function (items) {
-        return items instanceof Array;
-      }, new _arrayRepeatStrategy.ArrayRepeatStrategy());
-      this.addStrategy(function (items) {
-        return items instanceof Map;
-      }, new _mapRepeatStrategy.MapRepeatStrategy());
-      this.addStrategy(function (items) {
-        return items instanceof Set;
-      }, new _setRepeatStrategy.SetRepeatStrategy());
-      this.addStrategy(function (items) {
-        return typeof items === 'number';
-      }, new _numberRepeatStrategy.NumberRepeatStrategy());
-    }
-
-    RepeatStrategyLocator.prototype.addStrategy = function addStrategy(matcher, strategy) {
-      this.matchers.push(matcher);
-      this.strategies.push(strategy);
-    };
-
-    RepeatStrategyLocator.prototype.getStrategy = function getStrategy(items) {
-      var matchers = this.matchers;
-
-      for (var i = 0, ii = matchers.length; i < ii; ++i) {
-        if (matchers[i](items)) {
-          return this.strategies[i];
-        }
-      }
-
-      return null;
-    };
-
-    return RepeatStrategyLocator;
-  }();
-});
-define('aurelia-templating-resources/null-repeat-strategy',["exports"], function (exports) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-
-  
-
-  var NullRepeatStrategy = exports.NullRepeatStrategy = function () {
-    function NullRepeatStrategy() {
-      
-    }
-
-    NullRepeatStrategy.prototype.instanceChanged = function instanceChanged(repeat, items) {
-      repeat.removeAllViews(true);
-    };
-
-    NullRepeatStrategy.prototype.getCollectionObserver = function getCollectionObserver(observerLocator, items) {};
-
-    return NullRepeatStrategy;
-  }();
-});
-define('aurelia-templating-resources/array-repeat-strategy',['exports', './repeat-utilities', 'aurelia-binding'], function (exports, _repeatUtilities, _aureliaBinding) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.ArrayRepeatStrategy = undefined;
-
-  
-
-  var ArrayRepeatStrategy = exports.ArrayRepeatStrategy = function () {
-    function ArrayRepeatStrategy() {
-      
-    }
-
-    ArrayRepeatStrategy.prototype.getCollectionObserver = function getCollectionObserver(observerLocator, items) {
-      return observerLocator.getArrayObserver(items);
-    };
-
-    ArrayRepeatStrategy.prototype.instanceChanged = function instanceChanged(repeat, items) {
-      var _this = this;
-
-      var itemsLength = items.length;
-
-      if (!items || itemsLength === 0) {
-        repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
-        return;
-      }
-
-      var children = repeat.views();
-      var viewsLength = children.length;
-
-      if (viewsLength === 0) {
-        this._standardProcessInstanceChanged(repeat, items);
-        return;
-      }
-
-      if (repeat.viewsRequireLifecycle) {
-        (function () {
-          var childrenSnapshot = children.slice(0);
-          var itemNameInBindingContext = repeat.local;
-          var matcher = repeat.matcher();
-
-          var itemsPreviouslyInViews = [];
-          var viewsToRemove = [];
-
-          for (var index = 0; index < viewsLength; index++) {
-            var view = childrenSnapshot[index];
-            var oldItem = view.bindingContext[itemNameInBindingContext];
-
-            if ((0, _repeatUtilities.indexOf)(items, oldItem, matcher) === -1) {
-              viewsToRemove.push(view);
-            } else {
-              itemsPreviouslyInViews.push(oldItem);
-            }
-          }
-
-          var updateViews = void 0;
-          var removePromise = void 0;
-
-          if (itemsPreviouslyInViews.length > 0) {
-            removePromise = repeat.removeViews(viewsToRemove, true, !repeat.viewsRequireLifecycle);
-            updateViews = function updateViews() {
-              for (var _index = 0; _index < itemsLength; _index++) {
-                var item = items[_index];
-                var indexOfView = (0, _repeatUtilities.indexOf)(itemsPreviouslyInViews, item, matcher, _index);
-                var _view = void 0;
-
-                if (indexOfView === -1) {
-                  var overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, items[_index], _index, itemsLength);
-                  repeat.insertView(_index, overrideContext.bindingContext, overrideContext);
-
-                  itemsPreviouslyInViews.splice(_index, 0, undefined);
-                } else if (indexOfView === _index) {
-                  _view = children[indexOfView];
-                  itemsPreviouslyInViews[indexOfView] = undefined;
-                } else {
-                  _view = children[indexOfView];
-                  repeat.moveView(indexOfView, _index);
-                  itemsPreviouslyInViews.splice(indexOfView, 1);
-                  itemsPreviouslyInViews.splice(_index, 0, undefined);
-                }
-
-                if (_view) {
-                  (0, _repeatUtilities.updateOverrideContext)(_view.overrideContext, _index, itemsLength);
-                }
-              }
-
-              _this._inPlaceProcessItems(repeat, items);
-            };
-          } else {
-            removePromise = repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
-            updateViews = function updateViews() {
-              return _this._standardProcessInstanceChanged(repeat, items);
-            };
-          }
-
-          if (removePromise instanceof Promise) {
-            removePromise.then(updateViews);
-          } else {
-            updateViews();
-          }
-        })();
-      } else {
-        this._inPlaceProcessItems(repeat, items);
-      }
-    };
-
-    ArrayRepeatStrategy.prototype._standardProcessInstanceChanged = function _standardProcessInstanceChanged(repeat, items) {
-      for (var i = 0, ii = items.length; i < ii; i++) {
-        var overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, items[i], i, ii);
-        repeat.addView(overrideContext.bindingContext, overrideContext);
-      }
-    };
-
-    ArrayRepeatStrategy.prototype._inPlaceProcessItems = function _inPlaceProcessItems(repeat, items) {
-      var itemsLength = items.length;
-      var viewsLength = repeat.viewCount();
-
-      while (viewsLength > itemsLength) {
-        viewsLength--;
-        repeat.removeView(viewsLength, true, !repeat.viewsRequireLifecycle);
-      }
-
-      var local = repeat.local;
-
-      for (var i = 0; i < viewsLength; i++) {
-        var view = repeat.view(i);
-        var last = i === itemsLength - 1;
-        var middle = i !== 0 && !last;
-
-        if (view.bindingContext[local] === items[i] && view.overrideContext.$middle === middle && view.overrideContext.$last === last) {
-          continue;
-        }
-
-        view.bindingContext[local] = items[i];
-        view.overrideContext.$middle = middle;
-        view.overrideContext.$last = last;
-        repeat.updateBindings(view);
-      }
-
-      for (var _i = viewsLength; _i < itemsLength; _i++) {
-        var overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, items[_i], _i, itemsLength);
-        repeat.addView(overrideContext.bindingContext, overrideContext);
-      }
-    };
-
-    ArrayRepeatStrategy.prototype.instanceMutated = function instanceMutated(repeat, array, splices) {
-      var _this2 = this;
-
-      if (repeat.__queuedSplices) {
-        for (var i = 0, ii = splices.length; i < ii; ++i) {
-          var _splices$i = splices[i];
-          var index = _splices$i.index;
-          var removed = _splices$i.removed;
-          var addedCount = _splices$i.addedCount;
-
-          (0, _aureliaBinding.mergeSplice)(repeat.__queuedSplices, index, removed, addedCount);
-        }
-
-        repeat.__array = array.slice(0);
-        return;
-      }
-
-      var maybePromise = this._runSplices(repeat, array.slice(0), splices);
-      if (maybePromise instanceof Promise) {
-        (function () {
-          var queuedSplices = repeat.__queuedSplices = [];
-
-          var runQueuedSplices = function runQueuedSplices() {
-            if (!queuedSplices.length) {
-              repeat.__queuedSplices = undefined;
-              repeat.__array = undefined;
-              return;
-            }
-
-            var nextPromise = _this2._runSplices(repeat, repeat.__array, queuedSplices) || Promise.resolve();
-            queuedSplices = repeat.__queuedSplices = [];
-            nextPromise.then(runQueuedSplices);
-          };
-
-          maybePromise.then(runQueuedSplices);
-        })();
-      }
-    };
-
-    ArrayRepeatStrategy.prototype._runSplices = function _runSplices(repeat, array, splices) {
-      var _this3 = this;
-
-      var removeDelta = 0;
-      var rmPromises = [];
-
-      for (var i = 0, ii = splices.length; i < ii; ++i) {
-        var splice = splices[i];
-        var removed = splice.removed;
-
-        for (var j = 0, jj = removed.length; j < jj; ++j) {
-          var viewOrPromise = repeat.removeView(splice.index + removeDelta + rmPromises.length, true);
-          if (viewOrPromise instanceof Promise) {
-            rmPromises.push(viewOrPromise);
-          }
-        }
-        removeDelta -= splice.addedCount;
-      }
-
-      if (rmPromises.length > 0) {
-        return Promise.all(rmPromises).then(function () {
-          var spliceIndexLow = _this3._handleAddedSplices(repeat, array, splices);
-          (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), spliceIndexLow);
-        });
-      }
-
-      var spliceIndexLow = this._handleAddedSplices(repeat, array, splices);
-      (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), spliceIndexLow);
-
-      return undefined;
-    };
-
-    ArrayRepeatStrategy.prototype._handleAddedSplices = function _handleAddedSplices(repeat, array, splices) {
-      var spliceIndex = void 0;
-      var spliceIndexLow = void 0;
-      var arrayLength = array.length;
-      for (var i = 0, ii = splices.length; i < ii; ++i) {
-        var splice = splices[i];
-        var addIndex = spliceIndex = splice.index;
-        var end = splice.index + splice.addedCount;
-
-        if (typeof spliceIndexLow === 'undefined' || spliceIndexLow === null || spliceIndexLow > splice.index) {
-          spliceIndexLow = spliceIndex;
-        }
-
-        for (; addIndex < end; ++addIndex) {
-          var overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, array[addIndex], addIndex, arrayLength);
-          repeat.insertView(addIndex, overrideContext.bindingContext, overrideContext);
-        }
-      }
-
-      return spliceIndexLow;
-    };
-
-    return ArrayRepeatStrategy;
-  }();
-});
-define('aurelia-templating-resources/repeat-utilities',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.updateOverrideContexts = updateOverrideContexts;
-  exports.createFullOverrideContext = createFullOverrideContext;
-  exports.updateOverrideContext = updateOverrideContext;
-  exports.getItemsSourceExpression = getItemsSourceExpression;
-  exports.unwrapExpression = unwrapExpression;
-  exports.isOneTime = isOneTime;
-  exports.updateOneTimeBinding = updateOneTimeBinding;
-  exports.indexOf = indexOf;
-
-
-  var oneTime = _aureliaBinding.bindingMode.oneTime;
-
-  function updateOverrideContexts(views, startIndex) {
-    var length = views.length;
-
-    if (startIndex > 0) {
-      startIndex = startIndex - 1;
-    }
-
-    for (; startIndex < length; ++startIndex) {
-      updateOverrideContext(views[startIndex].overrideContext, startIndex, length);
-    }
-  }
-
-  function createFullOverrideContext(repeat, data, index, length, key) {
-    var bindingContext = {};
-    var overrideContext = (0, _aureliaBinding.createOverrideContext)(bindingContext, repeat.scope.overrideContext);
-
-    if (typeof key !== 'undefined') {
-      bindingContext[repeat.key] = key;
-      bindingContext[repeat.value] = data;
-    } else {
-      bindingContext[repeat.local] = data;
-    }
-    updateOverrideContext(overrideContext, index, length);
-    return overrideContext;
-  }
-
-  function updateOverrideContext(overrideContext, index, length) {
-    var first = index === 0;
-    var last = index === length - 1;
-    var even = index % 2 === 0;
-
-    overrideContext.$index = index;
-    overrideContext.$first = first;
-    overrideContext.$last = last;
-    overrideContext.$middle = !(first || last);
-    overrideContext.$odd = !even;
-    overrideContext.$even = even;
-  }
-
-  function getItemsSourceExpression(instruction, attrName) {
-    return instruction.behaviorInstructions.filter(function (bi) {
-      return bi.originalAttrName === attrName;
-    })[0].attributes.items.sourceExpression;
-  }
-
-  function unwrapExpression(expression) {
-    var unwrapped = false;
-    while (expression instanceof _aureliaBinding.BindingBehavior) {
-      expression = expression.expression;
-    }
-    while (expression instanceof _aureliaBinding.ValueConverter) {
-      expression = expression.expression;
-      unwrapped = true;
-    }
-    return unwrapped ? expression : null;
-  }
-
-  function isOneTime(expression) {
-    while (expression instanceof _aureliaBinding.BindingBehavior) {
-      if (expression.name === 'oneTime') {
-        return true;
-      }
-      expression = expression.expression;
-    }
-    return false;
-  }
-
-  function updateOneTimeBinding(binding) {
-    if (binding.call && binding.mode === oneTime) {
-      binding.call(_aureliaBinding.sourceContext);
-    } else if (binding.updateOneTimeBindings) {
-      binding.updateOneTimeBindings();
-    }
-  }
-
-  function indexOf(array, item, matcher, startIndex) {
-    if (!matcher) {
-      return array.indexOf(item);
-    }
-    var length = array.length;
-    for (var index = startIndex || 0; index < length; index++) {
-      if (matcher(array[index], item)) {
-        return index;
-      }
-    }
-    return -1;
-  }
-});
-define('aurelia-templating-resources/map-repeat-strategy',['exports', './repeat-utilities'], function (exports, _repeatUtilities) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.MapRepeatStrategy = undefined;
-
-  
-
-  var MapRepeatStrategy = exports.MapRepeatStrategy = function () {
-    function MapRepeatStrategy() {
-      
-    }
-
-    MapRepeatStrategy.prototype.getCollectionObserver = function getCollectionObserver(observerLocator, items) {
-      return observerLocator.getMapObserver(items);
-    };
-
-    MapRepeatStrategy.prototype.instanceChanged = function instanceChanged(repeat, items) {
-      var _this = this;
-
-      var removePromise = repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
-      if (removePromise instanceof Promise) {
-        removePromise.then(function () {
-          return _this._standardProcessItems(repeat, items);
-        });
-        return;
-      }
-      this._standardProcessItems(repeat, items);
-    };
-
-    MapRepeatStrategy.prototype._standardProcessItems = function _standardProcessItems(repeat, items) {
-      var index = 0;
-      var overrideContext = void 0;
-
-      items.forEach(function (value, key) {
-        overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, value, index, items.size, key);
-        repeat.addView(overrideContext.bindingContext, overrideContext);
-        ++index;
-      });
-    };
-
-    MapRepeatStrategy.prototype.instanceMutated = function instanceMutated(repeat, map, records) {
-      var key = void 0;
-      var i = void 0;
-      var ii = void 0;
-      var overrideContext = void 0;
-      var removeIndex = void 0;
-      var record = void 0;
-      var rmPromises = [];
-      var viewOrPromise = void 0;
-
-      for (i = 0, ii = records.length; i < ii; ++i) {
-        record = records[i];
-        key = record.key;
-        switch (record.type) {
-          case 'update':
-            removeIndex = this._getViewIndexByKey(repeat, key);
-            viewOrPromise = repeat.removeView(removeIndex, true, !repeat.viewsRequireLifecycle);
-            if (viewOrPromise instanceof Promise) {
-              rmPromises.push(viewOrPromise);
-            }
-            overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, map.get(key), removeIndex, map.size, key);
-            repeat.insertView(removeIndex, overrideContext.bindingContext, overrideContext);
-            break;
-          case 'add':
-            overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, map.get(key), map.size - 1, map.size, key);
-            repeat.insertView(map.size - 1, overrideContext.bindingContext, overrideContext);
-            break;
-          case 'delete':
-            if (record.oldValue === undefined) {
-              return;
-            }
-            removeIndex = this._getViewIndexByKey(repeat, key);
-            viewOrPromise = repeat.removeView(removeIndex, true, !repeat.viewsRequireLifecycle);
-            if (viewOrPromise instanceof Promise) {
-              rmPromises.push(viewOrPromise);
-            }
-            break;
-          case 'clear':
-            repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
-            break;
-          default:
-            continue;
-        }
-      }
-
-      if (rmPromises.length > 0) {
-        Promise.all(rmPromises).then(function () {
-          (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), 0);
-        });
-      } else {
-        (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), 0);
-      }
-    };
-
-    MapRepeatStrategy.prototype._getViewIndexByKey = function _getViewIndexByKey(repeat, key) {
-      var i = void 0;
-      var ii = void 0;
-      var child = void 0;
-
-      for (i = 0, ii = repeat.viewCount(); i < ii; ++i) {
-        child = repeat.view(i);
-        if (child.bindingContext[repeat.key] === key) {
-          return i;
-        }
-      }
-
-      return undefined;
-    };
-
-    return MapRepeatStrategy;
-  }();
-});
-define('aurelia-templating-resources/set-repeat-strategy',['exports', './repeat-utilities'], function (exports, _repeatUtilities) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.SetRepeatStrategy = undefined;
-
-  
-
-  var SetRepeatStrategy = exports.SetRepeatStrategy = function () {
-    function SetRepeatStrategy() {
-      
-    }
-
-    SetRepeatStrategy.prototype.getCollectionObserver = function getCollectionObserver(observerLocator, items) {
-      return observerLocator.getSetObserver(items);
-    };
-
-    SetRepeatStrategy.prototype.instanceChanged = function instanceChanged(repeat, items) {
-      var _this = this;
-
-      var removePromise = repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
-      if (removePromise instanceof Promise) {
-        removePromise.then(function () {
-          return _this._standardProcessItems(repeat, items);
-        });
-        return;
-      }
-      this._standardProcessItems(repeat, items);
-    };
-
-    SetRepeatStrategy.prototype._standardProcessItems = function _standardProcessItems(repeat, items) {
-      var index = 0;
-      var overrideContext = void 0;
-
-      items.forEach(function (value) {
-        overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, value, index, items.size);
-        repeat.addView(overrideContext.bindingContext, overrideContext);
-        ++index;
-      });
-    };
-
-    SetRepeatStrategy.prototype.instanceMutated = function instanceMutated(repeat, set, records) {
-      var value = void 0;
-      var i = void 0;
-      var ii = void 0;
-      var overrideContext = void 0;
-      var removeIndex = void 0;
-      var record = void 0;
-      var rmPromises = [];
-      var viewOrPromise = void 0;
-
-      for (i = 0, ii = records.length; i < ii; ++i) {
-        record = records[i];
-        value = record.value;
-        switch (record.type) {
-          case 'add':
-            overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, value, set.size - 1, set.size);
-            repeat.insertView(set.size - 1, overrideContext.bindingContext, overrideContext);
-            break;
-          case 'delete':
-            removeIndex = this._getViewIndexByValue(repeat, value);
-            viewOrPromise = repeat.removeView(removeIndex, true, !repeat.viewsRequireLifecycle);
-            if (viewOrPromise instanceof Promise) {
-              rmPromises.push(viewOrPromise);
-            }
-            break;
-          case 'clear':
-            repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
-            break;
-          default:
-            continue;
-        }
-      }
-
-      if (rmPromises.length > 0) {
-        Promise.all(rmPromises).then(function () {
-          (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), 0);
-        });
-      } else {
-        (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), 0);
-      }
-    };
-
-    SetRepeatStrategy.prototype._getViewIndexByValue = function _getViewIndexByValue(repeat, value) {
-      var i = void 0;
-      var ii = void 0;
-      var child = void 0;
-
-      for (i = 0, ii = repeat.viewCount(); i < ii; ++i) {
-        child = repeat.view(i);
-        if (child.bindingContext[repeat.local] === value) {
-          return i;
-        }
-      }
-
-      return undefined;
-    };
-
-    return SetRepeatStrategy;
-  }();
-});
-define('aurelia-templating-resources/number-repeat-strategy',['exports', './repeat-utilities'], function (exports, _repeatUtilities) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.NumberRepeatStrategy = undefined;
-
-  
-
-  var NumberRepeatStrategy = exports.NumberRepeatStrategy = function () {
-    function NumberRepeatStrategy() {
-      
-    }
-
-    NumberRepeatStrategy.prototype.getCollectionObserver = function getCollectionObserver() {
-      return null;
-    };
-
-    NumberRepeatStrategy.prototype.instanceChanged = function instanceChanged(repeat, value) {
-      var _this = this;
-
-      var removePromise = repeat.removeAllViews(true, !repeat.viewsRequireLifecycle);
-      if (removePromise instanceof Promise) {
-        removePromise.then(function () {
-          return _this._standardProcessItems(repeat, value);
-        });
-        return;
-      }
-      this._standardProcessItems(repeat, value);
-    };
-
-    NumberRepeatStrategy.prototype._standardProcessItems = function _standardProcessItems(repeat, value) {
-      var childrenLength = repeat.viewCount();
-      var i = void 0;
-      var ii = void 0;
-      var overrideContext = void 0;
-      var viewsToRemove = void 0;
-
-      value = Math.floor(value);
-      viewsToRemove = childrenLength - value;
-
-      if (viewsToRemove > 0) {
-        if (viewsToRemove > childrenLength) {
-          viewsToRemove = childrenLength;
-        }
-
-        for (i = 0, ii = viewsToRemove; i < ii; ++i) {
-          repeat.removeView(childrenLength - (i + 1), true, !repeat.viewsRequireLifecycle);
-        }
-
-        return;
-      }
-
-      for (i = childrenLength, ii = value; i < ii; ++i) {
-        overrideContext = (0, _repeatUtilities.createFullOverrideContext)(repeat, i, i, ii);
-        repeat.addView(overrideContext.bindingContext, overrideContext);
-      }
-
-      (0, _repeatUtilities.updateOverrideContexts)(repeat.views(), 0);
-    };
-
-    return NumberRepeatStrategy;
-  }();
-});
-define('aurelia-templating-resources/analyze-view-factory',['exports'], function (exports) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.viewsRequireLifecycle = viewsRequireLifecycle;
-  var lifecycleOptionalBehaviors = exports.lifecycleOptionalBehaviors = ['focus', 'if', 'repeat', 'show', 'with'];
-
-  function behaviorRequiresLifecycle(instruction) {
-    var t = instruction.type;
-    var name = t.elementName !== null ? t.elementName : t.attributeName;
-    return lifecycleOptionalBehaviors.indexOf(name) === -1 && (t.handlesAttached || t.handlesBind || t.handlesCreated || t.handlesDetached || t.handlesUnbind) || t.viewFactory && viewsRequireLifecycle(t.viewFactory) || instruction.viewFactory && viewsRequireLifecycle(instruction.viewFactory);
-  }
-
-  function targetRequiresLifecycle(instruction) {
-    var behaviors = instruction.behaviorInstructions;
-    if (behaviors) {
-      var i = behaviors.length;
-      while (i--) {
-        if (behaviorRequiresLifecycle(behaviors[i])) {
-          return true;
-        }
-      }
-    }
-
-    return instruction.viewFactory && viewsRequireLifecycle(instruction.viewFactory);
-  }
-
-  function viewsRequireLifecycle(viewFactory) {
-    if ('_viewsRequireLifecycle' in viewFactory) {
-      return viewFactory._viewsRequireLifecycle;
-    }
-
-    viewFactory._viewsRequireLifecycle = false;
-
-    if (viewFactory.viewFactory) {
-      viewFactory._viewsRequireLifecycle = viewsRequireLifecycle(viewFactory.viewFactory);
-      return viewFactory._viewsRequireLifecycle;
-    }
-
-    if (viewFactory.template.querySelector('.au-animate')) {
-      viewFactory._viewsRequireLifecycle = true;
-      return true;
-    }
-
-    for (var id in viewFactory.instructions) {
-      if (targetRequiresLifecycle(viewFactory.instructions[id])) {
-        viewFactory._viewsRequireLifecycle = true;
-        return true;
-      }
-    }
-
-    viewFactory._viewsRequireLifecycle = false;
-    return false;
-  }
-});
-define('aurelia-templating-resources/abstract-repeater',['exports'], function (exports) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-
-  
-
-  var AbstractRepeater = exports.AbstractRepeater = function () {
-    function AbstractRepeater(options) {
-      
-
-      Object.assign(this, {
-        local: 'items',
-        viewsRequireLifecycle: true
-      }, options);
-    }
-
-    AbstractRepeater.prototype.viewCount = function viewCount() {
-      throw new Error('subclass must implement `viewCount`');
-    };
-
-    AbstractRepeater.prototype.views = function views() {
-      throw new Error('subclass must implement `views`');
-    };
-
-    AbstractRepeater.prototype.view = function view(index) {
-      throw new Error('subclass must implement `view`');
-    };
-
-    AbstractRepeater.prototype.matcher = function matcher() {
-      throw new Error('subclass must implement `matcher`');
-    };
-
-    AbstractRepeater.prototype.addView = function addView(bindingContext, overrideContext) {
-      throw new Error('subclass must implement `addView`');
-    };
-
-    AbstractRepeater.prototype.insertView = function insertView(index, bindingContext, overrideContext) {
-      throw new Error('subclass must implement `insertView`');
-    };
-
-    AbstractRepeater.prototype.moveView = function moveView(sourceIndex, targetIndex) {
-      throw new Error('subclass must implement `moveView`');
-    };
-
-    AbstractRepeater.prototype.removeAllViews = function removeAllViews(returnToCache, skipAnimation) {
-      throw new Error('subclass must implement `removeAllViews`');
-    };
-
-    AbstractRepeater.prototype.removeViews = function removeViews(viewsToRemove, returnToCache, skipAnimation) {
-      throw new Error('subclass must implement `removeView`');
-    };
-
-    AbstractRepeater.prototype.removeView = function removeView(index, returnToCache, skipAnimation) {
-      throw new Error('subclass must implement `removeView`');
-    };
-
-    AbstractRepeater.prototype.updateBindings = function updateBindings(view) {
-      throw new Error('subclass must implement `updateBindings`');
-    };
-
-    return AbstractRepeater;
-  }();
-});
-define('aurelia-templating-resources/show',['exports', 'aurelia-dependency-injection', 'aurelia-templating', 'aurelia-pal', './aurelia-hide-style'], function (exports, _aureliaDependencyInjection, _aureliaTemplating, _aureliaPal, _aureliaHideStyle) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.Show = undefined;
-
-  
-
-  var _dec, _dec2, _class;
-
-  var Show = exports.Show = (_dec = (0, _aureliaTemplating.customAttribute)('show'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaPal.DOM.Element, _aureliaTemplating.Animator, _aureliaDependencyInjection.Optional.of(_aureliaPal.DOM.boundary, true)), _dec(_class = _dec2(_class = function () {
-    function Show(element, animator, domBoundary) {
-      
-
-      this.element = element;
-      this.animator = animator;
-      this.domBoundary = domBoundary;
-    }
-
-    Show.prototype.created = function created() {
-      (0, _aureliaHideStyle.injectAureliaHideStyleAtBoundary)(this.domBoundary);
-    };
-
-    Show.prototype.valueChanged = function valueChanged(newValue) {
-      if (newValue) {
-        this.animator.removeClass(this.element, _aureliaHideStyle.aureliaHideClassName);
-      } else {
-        this.animator.addClass(this.element, _aureliaHideStyle.aureliaHideClassName);
-      }
-    };
-
-    Show.prototype.bind = function bind(bindingContext) {
-      this.valueChanged(this.value);
-    };
-
-    return Show;
-  }()) || _class) || _class);
-});
-define('aurelia-templating-resources/aurelia-hide-style',['exports', 'aurelia-pal'], function (exports, _aureliaPal) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.aureliaHideClassName = undefined;
-  exports.injectAureliaHideStyleAtHead = injectAureliaHideStyleAtHead;
-  exports.injectAureliaHideStyleAtBoundary = injectAureliaHideStyleAtBoundary;
-  var aureliaHideClassName = exports.aureliaHideClassName = 'aurelia-hide';
-
-  var aureliaHideClass = '.' + aureliaHideClassName + ' { display:none !important; }';
-
-  function injectAureliaHideStyleAtHead() {
-    _aureliaPal.DOM.injectStyles(aureliaHideClass);
-  }
-
-  function injectAureliaHideStyleAtBoundary(domBoundary) {
-    if (_aureliaPal.FEATURE.shadowDOM && domBoundary && !domBoundary.hasAureliaHideStyle) {
-      domBoundary.hasAureliaHideStyle = true;
-      _aureliaPal.DOM.injectStyles(aureliaHideClass, domBoundary);
-    }
-  }
-});
-define('aurelia-templating-resources/hide',['exports', 'aurelia-dependency-injection', 'aurelia-templating', 'aurelia-pal', './aurelia-hide-style'], function (exports, _aureliaDependencyInjection, _aureliaTemplating, _aureliaPal, _aureliaHideStyle) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.Hide = undefined;
-
-  
-
-  var _dec, _dec2, _class;
-
-  var Hide = exports.Hide = (_dec = (0, _aureliaTemplating.customAttribute)('hide'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaPal.DOM.Element, _aureliaTemplating.Animator, _aureliaDependencyInjection.Optional.of(_aureliaPal.DOM.boundary, true)), _dec(_class = _dec2(_class = function () {
-    function Hide(element, animator, domBoundary) {
-      
-
-      this.element = element;
-      this.animator = animator;
-      this.domBoundary = domBoundary;
-    }
-
-    Hide.prototype.created = function created() {
-      (0, _aureliaHideStyle.injectAureliaHideStyleAtBoundary)(this.domBoundary);
-    };
-
-    Hide.prototype.valueChanged = function valueChanged(newValue) {
-      if (newValue) {
-        this.animator.addClass(this.element, _aureliaHideStyle.aureliaHideClassName);
-      } else {
-        this.animator.removeClass(this.element, _aureliaHideStyle.aureliaHideClassName);
-      }
-    };
-
-    Hide.prototype.bind = function bind(bindingContext) {
-      this.valueChanged(this.value);
-    };
-
-    return Hide;
-  }()) || _class) || _class);
-});
-define('aurelia-templating-resources/sanitize-html',['exports', 'aurelia-binding', 'aurelia-dependency-injection', './html-sanitizer'], function (exports, _aureliaBinding, _aureliaDependencyInjection, _htmlSanitizer) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.SanitizeHTMLValueConverter = undefined;
-
-  
-
-  var _dec, _dec2, _class;
-
-  var SanitizeHTMLValueConverter = exports.SanitizeHTMLValueConverter = (_dec = (0, _aureliaBinding.valueConverter)('sanitizeHTML'), _dec2 = (0, _aureliaDependencyInjection.inject)(_htmlSanitizer.HTMLSanitizer), _dec(_class = _dec2(_class = function () {
-    function SanitizeHTMLValueConverter(sanitizer) {
-      
-
-      this.sanitizer = sanitizer;
-    }
-
-    SanitizeHTMLValueConverter.prototype.toView = function toView(untrustedMarkup) {
-      if (untrustedMarkup === null || untrustedMarkup === undefined) {
-        return null;
-      }
-
-      return this.sanitizer.sanitize(untrustedMarkup);
-    };
-
-    return SanitizeHTMLValueConverter;
-  }()) || _class) || _class);
-});
-define('aurelia-templating-resources/html-sanitizer',['exports'], function (exports) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-
-  
-
-  var SCRIPT_REGEX = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
-
-  var HTMLSanitizer = exports.HTMLSanitizer = function () {
-    function HTMLSanitizer() {
-      
-    }
-
-    HTMLSanitizer.prototype.sanitize = function sanitize(input) {
-      return input.replace(SCRIPT_REGEX, '');
-    };
-
-    return HTMLSanitizer;
-  }();
-});
-define('aurelia-templating-resources/replaceable',['exports', 'aurelia-dependency-injection', 'aurelia-templating'], function (exports, _aureliaDependencyInjection, _aureliaTemplating) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.Replaceable = undefined;
-
-  
-
-  var _dec, _dec2, _class;
-
-  var Replaceable = exports.Replaceable = (_dec = (0, _aureliaTemplating.customAttribute)('replaceable'), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.BoundViewFactory, _aureliaTemplating.ViewSlot), _dec(_class = (0, _aureliaTemplating.templateController)(_class = _dec2(_class = function () {
-    function Replaceable(viewFactory, viewSlot) {
-      
-
-      this.viewFactory = viewFactory;
-      this.viewSlot = viewSlot;
-      this.view = null;
-    }
-
-    Replaceable.prototype.bind = function bind(bindingContext, overrideContext) {
-      if (this.view === null) {
-        this.view = this.viewFactory.create();
-        this.viewSlot.add(this.view);
-      }
-
-      this.view.bind(bindingContext, overrideContext);
-    };
-
-    Replaceable.prototype.unbind = function unbind() {
-      this.view.unbind();
-    };
-
-    return Replaceable;
-  }()) || _class) || _class) || _class);
-});
-define('aurelia-templating-resources/focus',['exports', 'aurelia-templating', 'aurelia-binding', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-pal'], function (exports, _aureliaTemplating, _aureliaBinding, _aureliaDependencyInjection, _aureliaTaskQueue, _aureliaPal) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.Focus = undefined;
-
-  
-
-  var _dec, _dec2, _class;
-
-  var Focus = exports.Focus = (_dec = (0, _aureliaTemplating.customAttribute)('focus', _aureliaBinding.bindingMode.twoWay), _dec2 = (0, _aureliaDependencyInjection.inject)(_aureliaPal.DOM.Element, _aureliaTaskQueue.TaskQueue), _dec(_class = _dec2(_class = function () {
-    function Focus(element, taskQueue) {
-      var _this = this;
-
-      
-
-      this.element = element;
-      this.taskQueue = taskQueue;
-      this.isAttached = false;
-      this.needsApply = false;
-
-      this.focusListener = function (e) {
-        _this.value = true;
-      };
-      this.blurListener = function (e) {
-        if (_aureliaPal.DOM.activeElement !== _this.element) {
-          _this.value = false;
-        }
-      };
-    }
-
-    Focus.prototype.valueChanged = function valueChanged(newValue) {
-      if (this.isAttached) {
-        this._apply();
-      } else {
-        this.needsApply = true;
-      }
-    };
-
-    Focus.prototype._apply = function _apply() {
-      var _this2 = this;
-
-      if (this.value) {
-        this.taskQueue.queueMicroTask(function () {
-          if (_this2.value) {
-            _this2.element.focus();
-          }
-        });
-      } else {
-        this.element.blur();
-      }
-    };
-
-    Focus.prototype.attached = function attached() {
-      this.isAttached = true;
-      if (this.needsApply) {
-        this.needsApply = false;
-        this._apply();
-      }
-      this.element.addEventListener('focus', this.focusListener);
-      this.element.addEventListener('blur', this.blurListener);
-    };
-
-    Focus.prototype.detached = function detached() {
-      this.isAttached = false;
-      this.element.removeEventListener('focus', this.focusListener);
-      this.element.removeEventListener('blur', this.blurListener);
-    };
-
-    return Focus;
-  }()) || _class) || _class);
-});
-define('aurelia-templating-resources/css-resource',['exports', 'aurelia-templating', 'aurelia-loader', 'aurelia-dependency-injection', 'aurelia-path', 'aurelia-pal'], function (exports, _aureliaTemplating, _aureliaLoader, _aureliaDependencyInjection, _aureliaPath, _aureliaPal) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports._createCSSResource = _createCSSResource;
-
-  function _possibleConstructorReturn(self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  }
-
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  }
-
-  
-
-  var cssUrlMatcher = /url\((?!['"]data)([^)]+)\)/gi;
-
-  function fixupCSSUrls(address, css) {
-    if (typeof css !== 'string') {
-      throw new Error('Failed loading required CSS file: ' + address);
-    }
-    return css.replace(cssUrlMatcher, function (match, p1) {
-      var quote = p1.charAt(0);
-      if (quote === '\'' || quote === '"') {
-        p1 = p1.substr(1, p1.length - 2);
-      }
-      return 'url(\'' + (0, _aureliaPath.relativeToFile)(p1, address) + '\')';
-    });
-  }
-
-  var CSSResource = function () {
-    function CSSResource(address) {
-      
-
-      this.address = address;
-      this._scoped = null;
-      this._global = false;
-      this._alreadyGloballyInjected = false;
-    }
-
-    CSSResource.prototype.initialize = function initialize(container, target) {
-      this._scoped = new target(this);
-    };
-
-    CSSResource.prototype.register = function register(registry, name) {
-      if (name === 'scoped') {
-        registry.registerViewEngineHooks(this._scoped);
-      } else {
-        this._global = true;
-      }
-    };
-
-    CSSResource.prototype.load = function load(container) {
-      var _this = this;
-
-      return container.get(_aureliaLoader.Loader).loadText(this.address).catch(function (err) {
-        return null;
-      }).then(function (text) {
-        text = fixupCSSUrls(_this.address, text);
-        _this._scoped.css = text;
-        if (_this._global) {
-          _this._alreadyGloballyInjected = true;
-          _aureliaPal.DOM.injectStyles(text);
-        }
-      });
-    };
-
-    return CSSResource;
-  }();
-
-  var CSSViewEngineHooks = function () {
-    function CSSViewEngineHooks(owner) {
-      
-
-      this.owner = owner;
-      this.css = null;
-    }
-
-    CSSViewEngineHooks.prototype.beforeCompile = function beforeCompile(content, resources, instruction) {
-      if (instruction.targetShadowDOM) {
-        _aureliaPal.DOM.injectStyles(this.css, content, true);
-      } else if (_aureliaPal.FEATURE.scopedCSS) {
-        var styleNode = _aureliaPal.DOM.injectStyles(this.css, content, true);
-        styleNode.setAttribute('scoped', 'scoped');
-      } else if (!this.owner._alreadyGloballyInjected) {
-        _aureliaPal.DOM.injectStyles(this.css);
-        this.owner._alreadyGloballyInjected = true;
-      }
-    };
-
-    return CSSViewEngineHooks;
-  }();
-
-  function _createCSSResource(address) {
-    var _dec, _class;
-
-    var ViewCSS = (_dec = (0, _aureliaTemplating.resource)(new CSSResource(address)), _dec(_class = function (_CSSViewEngineHooks) {
-      _inherits(ViewCSS, _CSSViewEngineHooks);
-
-      function ViewCSS() {
-        
-
-        return _possibleConstructorReturn(this, _CSSViewEngineHooks.apply(this, arguments));
-      }
-
-      return ViewCSS;
-    }(CSSViewEngineHooks)) || _class);
-
-    return ViewCSS;
-  }
-});
-define('aurelia-templating-resources/attr-binding-behavior',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.AttrBindingBehavior = undefined;
-
-  
-
-  var AttrBindingBehavior = exports.AttrBindingBehavior = function () {
-    function AttrBindingBehavior() {
-      
-    }
-
-    AttrBindingBehavior.prototype.bind = function bind(binding, source) {
-      binding.targetObserver = new _aureliaBinding.DataAttributeObserver(binding.target, binding.targetProperty);
-    };
-
-    AttrBindingBehavior.prototype.unbind = function unbind(binding, source) {};
-
-    return AttrBindingBehavior;
-  }();
-});
-define('aurelia-templating-resources/binding-mode-behaviors',['exports', 'aurelia-binding', 'aurelia-metadata'], function (exports, _aureliaBinding, _aureliaMetadata) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.TwoWayBindingBehavior = exports.OneWayBindingBehavior = exports.OneTimeBindingBehavior = undefined;
-
-  
-
-  var _dec, _class, _dec2, _class2, _dec3, _class3;
-
-  var modeBindingBehavior = {
-    bind: function bind(binding, source, lookupFunctions) {
-      binding.originalMode = binding.mode;
-      binding.mode = this.mode;
-    },
-    unbind: function unbind(binding, source) {
-      binding.mode = binding.originalMode;
-      binding.originalMode = null;
-    }
-  };
-
-  var OneTimeBindingBehavior = exports.OneTimeBindingBehavior = (_dec = (0, _aureliaMetadata.mixin)(modeBindingBehavior), _dec(_class = function OneTimeBindingBehavior() {
-    
-
-    this.mode = _aureliaBinding.bindingMode.oneTime;
-  }) || _class);
-  var OneWayBindingBehavior = exports.OneWayBindingBehavior = (_dec2 = (0, _aureliaMetadata.mixin)(modeBindingBehavior), _dec2(_class2 = function OneWayBindingBehavior() {
-    
-
-    this.mode = _aureliaBinding.bindingMode.oneWay;
-  }) || _class2);
-  var TwoWayBindingBehavior = exports.TwoWayBindingBehavior = (_dec3 = (0, _aureliaMetadata.mixin)(modeBindingBehavior), _dec3(_class3 = function TwoWayBindingBehavior() {
-    
-
-    this.mode = _aureliaBinding.bindingMode.twoWay;
-  }) || _class3);
-});
-define('aurelia-templating-resources/throttle-binding-behavior',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.ThrottleBindingBehavior = undefined;
-
-  
-
-  function throttle(newValue) {
-    var _this = this;
-
-    var state = this.throttleState;
-    var elapsed = +new Date() - state.last;
-    if (elapsed >= state.delay) {
-      clearTimeout(state.timeoutId);
-      state.timeoutId = null;
-      state.last = +new Date();
-      this.throttledMethod(newValue);
-      return;
-    }
-    state.newValue = newValue;
-    if (state.timeoutId === null) {
-      state.timeoutId = setTimeout(function () {
-        state.timeoutId = null;
-        state.last = +new Date();
-        _this.throttledMethod(state.newValue);
-      }, state.delay - elapsed);
-    }
-  }
-
-  var ThrottleBindingBehavior = exports.ThrottleBindingBehavior = function () {
-    function ThrottleBindingBehavior() {
-      
-    }
-
-    ThrottleBindingBehavior.prototype.bind = function bind(binding, source) {
-      var delay = arguments.length <= 2 || arguments[2] === undefined ? 200 : arguments[2];
-
-      var methodToThrottle = 'updateTarget';
-      if (binding.callSource) {
-        methodToThrottle = 'callSource';
-      } else if (binding.updateSource && binding.mode === _aureliaBinding.bindingMode.twoWay) {
-          methodToThrottle = 'updateSource';
-        }
-
-      binding.throttledMethod = binding[methodToThrottle];
-      binding.throttledMethod.originalName = methodToThrottle;
-
-      binding[methodToThrottle] = throttle;
-
-      binding.throttleState = {
-        delay: delay,
-        last: 0,
-        timeoutId: null
-      };
-    };
-
-    ThrottleBindingBehavior.prototype.unbind = function unbind(binding, source) {
-      var methodToRestore = binding.throttledMethod.originalName;
-      binding[methodToRestore] = binding.throttledMethod;
-      binding.throttledMethod = null;
-      clearTimeout(binding.throttleState.timeoutId);
-      binding.throttleState = null;
-    };
-
-    return ThrottleBindingBehavior;
-  }();
-});
-define('aurelia-templating-resources/debounce-binding-behavior',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.DebounceBindingBehavior = undefined;
-
-  
-
-  function debounce(newValue) {
-    var _this = this;
-
-    var state = this.debounceState;
-    if (state.immediate) {
-      state.immediate = false;
-      this.debouncedMethod(newValue);
-      return;
-    }
-    clearTimeout(state.timeoutId);
-    state.timeoutId = setTimeout(function () {
-      return _this.debouncedMethod(newValue);
-    }, state.delay);
-  }
-
-  var DebounceBindingBehavior = exports.DebounceBindingBehavior = function () {
-    function DebounceBindingBehavior() {
-      
-    }
-
-    DebounceBindingBehavior.prototype.bind = function bind(binding, source) {
-      var delay = arguments.length <= 2 || arguments[2] === undefined ? 200 : arguments[2];
-
-      var methodToDebounce = 'updateTarget';
-      if (binding.callSource) {
-        methodToDebounce = 'callSource';
-      } else if (binding.updateSource && binding.mode === _aureliaBinding.bindingMode.twoWay) {
-          methodToDebounce = 'updateSource';
-        }
-
-      binding.debouncedMethod = binding[methodToDebounce];
-      binding.debouncedMethod.originalName = methodToDebounce;
-
-      binding[methodToDebounce] = debounce;
-
-      binding.debounceState = {
-        delay: delay,
-        timeoutId: null,
-        immediate: methodToDebounce === 'updateTarget' };
-    };
-
-    DebounceBindingBehavior.prototype.unbind = function unbind(binding, source) {
-      var methodToRestore = binding.debouncedMethod.originalName;
-      binding[methodToRestore] = binding.debouncedMethod;
-      binding.debouncedMethod = null;
-      clearTimeout(binding.debounceState.timeoutId);
-      binding.debounceState = null;
-    };
-
-    return DebounceBindingBehavior;
-  }();
-});
-define('aurelia-templating-resources/signal-binding-behavior',['exports', './binding-signaler'], function (exports, _bindingSignaler) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.SignalBindingBehavior = undefined;
-
-  
-
-  var SignalBindingBehavior = exports.SignalBindingBehavior = function () {
-    SignalBindingBehavior.inject = function inject() {
-      return [_bindingSignaler.BindingSignaler];
-    };
-
-    function SignalBindingBehavior(bindingSignaler) {
-      
-
-      this.signals = bindingSignaler.signals;
-    }
-
-    SignalBindingBehavior.prototype.bind = function bind(binding, source) {
-      if (!binding.updateTarget) {
-        throw new Error('Only property bindings and string interpolation bindings can be signaled.  Trigger, delegate and call bindings cannot be signaled.');
-      }
-      if (arguments.length === 3) {
-        var name = arguments[2];
-        var bindings = this.signals[name] || (this.signals[name] = []);
-        bindings.push(binding);
-        binding.signalName = name;
-      } else if (arguments.length > 3) {
-        var names = Array.prototype.slice.call(arguments, 2);
-        var i = names.length;
-        while (i--) {
-          var _name = names[i];
-          var _bindings = this.signals[_name] || (this.signals[_name] = []);
-          _bindings.push(binding);
-        }
-        binding.signalName = names;
-      } else {
-        throw new Error('Signal name is required.');
-      }
-    };
-
-    SignalBindingBehavior.prototype.unbind = function unbind(binding, source) {
-      var name = binding.signalName;
-      binding.signalName = null;
-      if (Array.isArray(name)) {
-        var names = name;
-        var i = names.length;
-        while (i--) {
-          var n = names[i];
-          var bindings = this.signals[n];
-          bindings.splice(bindings.indexOf(binding), 1);
-        }
-      } else {
-        var _bindings2 = this.signals[name];
-        _bindings2.splice(_bindings2.indexOf(binding), 1);
-      }
-    };
-
-    return SignalBindingBehavior;
-  }();
-});
-define('aurelia-templating-resources/binding-signaler',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.BindingSignaler = undefined;
-
-  
-
-  var BindingSignaler = exports.BindingSignaler = function () {
-    function BindingSignaler() {
-      
-
-      this.signals = {};
-    }
-
-    BindingSignaler.prototype.signal = function signal(name) {
-      var bindings = this.signals[name];
-      if (!bindings) {
-        return;
-      }
-      var i = bindings.length;
-      while (i--) {
-        bindings[i].call(_aureliaBinding.sourceContext);
-      }
-    };
-
-    return BindingSignaler;
-  }();
-});
-define('aurelia-templating-resources/update-trigger-binding-behavior',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.UpdateTriggerBindingBehavior = undefined;
-
-  
-
-  var _class, _temp;
-
-  var eventNamesRequired = 'The updateTrigger binding behavior requires at least one event name argument: eg <input value.bind="firstName & updateTrigger:\'blur\'">';
-  var notApplicableMessage = 'The updateTrigger binding behavior can only be applied to two-way bindings on input/select elements.';
-
-  var UpdateTriggerBindingBehavior = exports.UpdateTriggerBindingBehavior = (_temp = _class = function () {
-    function UpdateTriggerBindingBehavior(eventManager) {
-      
-
-      this.eventManager = eventManager;
-    }
-
-    UpdateTriggerBindingBehavior.prototype.bind = function bind(binding, source) {
-      for (var _len = arguments.length, events = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-        events[_key - 2] = arguments[_key];
-      }
-
-      if (events.length === 0) {
-        throw new Error(eventNamesRequired);
-      }
-      if (binding.mode !== _aureliaBinding.bindingMode.twoWay) {
-        throw new Error(notApplicableMessage);
-      }
-
-      var targetObserver = binding.observerLocator.getObserver(binding.target, binding.targetProperty);
-      if (!targetObserver.handler) {
-        throw new Error(notApplicableMessage);
-      }
-      binding.targetObserver = targetObserver;
-
-      targetObserver.originalHandler = binding.targetObserver.handler;
-
-      var handler = this.eventManager.createElementHandler(events);
-      targetObserver.handler = handler;
-    };
-
-    UpdateTriggerBindingBehavior.prototype.unbind = function unbind(binding, source) {
-      binding.targetObserver.handler = binding.targetObserver.originalHandler;
-      binding.targetObserver.originalHandler = null;
-    };
-
-    return UpdateTriggerBindingBehavior;
-  }(), _class.inject = [_aureliaBinding.EventManager], _temp);
-});
-define('aurelia-templating-resources/html-resource-plugin',['exports', 'aurelia-templating', './dynamic-element'], function (exports, _aureliaTemplating, _dynamicElement) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.getElementName = getElementName;
-  exports.configure = configure;
-  function getElementName(address) {
-    return (/([^\/^\?]+)\.html/i.exec(address)[1].toLowerCase()
-    );
-  }
-
-  function configure(config) {
-    var viewEngine = config.container.get(_aureliaTemplating.ViewEngine);
-    var loader = config.aurelia.loader;
-
-    viewEngine.addResourcePlugin('.html', {
-      'fetch': function fetch(address) {
-        return loader.loadTemplate(address).then(function (registryEntry) {
-          var _ref;
-
-          var bindable = registryEntry.template.getAttribute('bindable');
-          var elementName = getElementName(address);
-
-          if (bindable) {
-            bindable = bindable.split(',').map(function (x) {
-              return x.trim();
-            });
-            registryEntry.template.removeAttribute('bindable');
-          } else {
-            bindable = [];
-          }
-
-          return _ref = {}, _ref[elementName] = (0, _dynamicElement._createDynamicElement)(elementName, address, bindable), _ref;
-        });
-      }
-    });
-  }
-});
-define('aurelia-templating-resources/dynamic-element',['exports', 'aurelia-templating'], function (exports, _aureliaTemplating) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports._createDynamicElement = _createDynamicElement;
-
-  
-
-  function _createDynamicElement(name, viewUrl, bindableNames) {
-    var _dec, _dec2, _class;
-
-    var DynamicElement = (_dec = (0, _aureliaTemplating.customElement)(name), _dec2 = (0, _aureliaTemplating.useView)(viewUrl), _dec(_class = _dec2(_class = function () {
-      function DynamicElement() {
-        
-      }
-
-      DynamicElement.prototype.bind = function bind(bindingContext) {
-        this.$parent = bindingContext;
-      };
-
-      return DynamicElement;
-    }()) || _class) || _class);
-
-    for (var i = 0, ii = bindableNames.length; i < ii; ++i) {
-      (0, _aureliaTemplating.bindable)(bindableNames[i])(DynamicElement);
-    }
-    return DynamicElement;
-  }
-});
-define('resources/elements/em-chat-sidebar-left',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.EmChatSidebarLeft = undefined;
-
-    function _initDefineProp(target, property, descriptor, context) {
-        if (!descriptor) return;
-        Object.defineProperty(target, property, {
-            enumerable: descriptor.enumerable,
-            configurable: descriptor.configurable,
-            writable: descriptor.writable,
-            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
-        });
-    }
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
-        var desc = {};
-        Object['ke' + 'ys'](descriptor).forEach(function (key) {
-            desc[key] = descriptor[key];
-        });
-        desc.enumerable = !!desc.enumerable;
-        desc.configurable = !!desc.configurable;
-
-        if ('value' in desc || desc.initializer) {
-            desc.writable = true;
-        }
-
-        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
-            return decorator(target, property, desc) || desc;
-        }, desc);
-
-        if (context && desc.initializer !== void 0) {
-            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
-            desc.initializer = undefined;
-        }
-
-        if (desc.initializer === void 0) {
-            Object['define' + 'Property'](target, property, desc);
-            desc = null;
-        }
-
-        return desc;
-    }
-
-    function _initializerWarningHelper(descriptor, context) {
-        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
-    }
-
-    var _class, _desc, _value, _class2, _descriptor, _descriptor2;
-
-    var EmChatSidebarLeft = exports.EmChatSidebarLeft = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
-        function EmChatSidebarLeft() {
-            _classCallCheck(this, EmChatSidebarLeft);
-
-            _initDefineProp(this, 'users', _descriptor, this);
-
-            _initDefineProp(this, 'chatTo', _descriptor2, this);
-        }
-
-        EmChatSidebarLeft.prototype.chatToChanged = function chatToChanged() {
-            var _this = this;
-
-            _.delay(function () {
-                $(_this.userListRef).scrollTo('a.item[data-id="' + _this.chatTo + '"]');
-            }, 1000);
-        };
-
-        EmChatSidebarLeft.prototype.chatToUserFilerFocusinHanlder = function chatToUserFilerFocusinHanlder() {
-            $(this.userListRef).scrollTo('a.item[data-id="' + this.chatTo + '"]');
-        };
-
-        EmChatSidebarLeft.prototype.chatToUserFilerKeyupHanlder = function chatToUserFilerKeyupHanlder(evt) {
-            var _this2 = this;
-
-            _.each(this.users, function (item) {
-                item.hidden = item.username.indexOf(_this2.filter) == -1;
-            });
-
-            if (evt.keyCode === 13) {
-                var user = _.find(this.users, {
-                    hidden: false
-                });
-
-                if (user) {
-                    window.location = wurl('path') + ('#/chat/@' + user.username);
-                }
-            }
-        };
-
-        EmChatSidebarLeft.prototype.clearFilterHandler = function clearFilterHandler() {
-            var _this3 = this;
-
-            this.filter = '';
-            _.each(this.users, function (item) {
-                item.hidden = item.username.indexOf(_this3.filter) == -1;
-            });
-        };
-
-        return EmChatSidebarLeft;
-    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'users', [_aureliaFramework.bindable], {
-        enumerable: true,
-        initializer: null
-    }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'chatTo', [_aureliaFramework.bindable], {
-        enumerable: true,
-        initializer: null
-    })), _class2)) || _class;
-});
-define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.EmChatContentItem = undefined;
-
-    function _initDefineProp(target, property, descriptor, context) {
-        if (!descriptor) return;
-        Object.defineProperty(target, property, {
-            enumerable: descriptor.enumerable,
-            configurable: descriptor.configurable,
-            writable: descriptor.writable,
-            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
-        });
-    }
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
-        var desc = {};
-        Object['ke' + 'ys'](descriptor).forEach(function (key) {
-            desc[key] = descriptor[key];
-        });
-        desc.enumerable = !!desc.enumerable;
-        desc.configurable = !!desc.configurable;
-
-        if ('value' in desc || desc.initializer) {
-            desc.writable = true;
-        }
-
-        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
-            return decorator(target, property, desc) || desc;
-        }, desc);
-
-        if (context && desc.initializer !== void 0) {
-            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
-            desc.initializer = undefined;
-        }
-
-        if (desc.initializer === void 0) {
-            Object['define' + 'Property'](target, property, desc);
-            desc = null;
-        }
-
-        return desc;
-    }
-
-    function _initializerWarningHelper(descriptor, context) {
-        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
-    }
-
-    var _dec, _class, _desc, _value, _class2, _descriptor, _descriptor2;
-
-    var EmChatContentItem = exports.EmChatContentItem = (_dec = (0, _aureliaFramework.bindable)({ defaultBindingMode: _aureliaFramework.bindingMode.twoWay }), (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
-        function EmChatContentItem() {
-            _classCallCheck(this, EmChatContentItem);
-
-            _initDefineProp(this, 'chats', _descriptor, this);
-
-            _initDefineProp(this, 'loginUser', _descriptor2, this);
-
-            this.selfLink = utils.getBaseUrl() + wurl('path') + '#' + utils.getHash();
-        }
-
-        EmChatContentItem.prototype.deleteHandler = function deleteHandler(item) {
-            var _this = this;
-
-            this.emConfirmModal.show({
-                onapprove: function onapprove() {
-                    $.post('/admin/chat/direct/delete', {
-                        id: item.id
-                    }, function (data, textStatus, xhr) {
-                        if (data.success) {
-                            _this.chats = _.reject(_this.chats, {
-                                id: item.id
-                            });
-                            toastr.success('删除消息成功!');
-                        } else {
-                            toastr.error(data.data, '删除消息失败!');
-                        }
-                    });
-                }
-            });
-        };
-
-        EmChatContentItem.prototype.editHandler = function editHandler(item, editTxtRef) {
-            item.isEditing = true;
-            item.contentOld = item.content;
-            _.defer(function () {
-                $(editTxtRef).focus().select();
-                autosize.update(editTxtRef);
-            });
-        };
-
-        EmChatContentItem.prototype.editOkHandler = function editOkHandler(evt, item, txtRef) {
-            this.editSave(item, txtRef);
-            item.isEditing = false;
-        };
-
-        EmChatContentItem.prototype.editCancelHandler = function editCancelHandler(evt, item, txtRef) {
-            item.content = item.contentOld;
-            $(txtRef).val(item.content);
-            item.isEditing = false;
-        };
-
-        EmChatContentItem.prototype.editSave = function editSave(item, txtRef) {
-            var _this2 = this;
-
-            this.sending = true;
-
-            item.content = $(txtRef).val();
-
-            var html = $('<div class="markdown-body"/>').html('<style>.markdown-body{font-size:14px;line-height:1.6}.markdown-body>:first-child{margin-top:0!important}.markdown-body>:last-child{margin-bottom:0!important}.markdown-body a.absent{color:#C00}.markdown-body a.anchor{bottom:0;cursor:pointer;display:block;left:0;margin-left:-30px;padding-left:30px;position:absolute;top:0}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{cursor:text;font-weight:700;margin:20px 0 10px;padding:0;position:relative}.markdown-body h1 .mini-icon-link,.markdown-body h2 .mini-icon-link,.markdown-body h3 .mini-icon-link,.markdown-body h4 .mini-icon-link,.markdown-body h5 .mini-icon-link,.markdown-body h6 .mini-icon-link{color:#000;display:none}.markdown-body h1:hover a.anchor,.markdown-body h2:hover a.anchor,.markdown-body h3:hover a.anchor,.markdown-body h4:hover a.anchor,.markdown-body h5:hover a.anchor,.markdown-body h6:hover a.anchor{line-height:1;margin-left:-22px;padding-left:0;text-decoration:none;top:15%}.markdown-body h1:hover a.anchor .mini-icon-link,.markdown-body h2:hover a.anchor .mini-icon-link,.markdown-body h3:hover a.anchor .mini-icon-link,.markdown-body h4:hover a.anchor .mini-icon-link,.markdown-body h5:hover a.anchor .mini-icon-link,.markdown-body h6:hover a.anchor .mini-icon-link{display:inline-block}.markdown-body hr:after,.markdown-body hr:before{display:table;content:""}.markdown-body h1 code,.markdown-body h1 tt,.markdown-body h2 code,.markdown-body h2 tt,.markdown-body h3 code,.markdown-body h3 tt,.markdown-body h4 code,.markdown-body h4 tt,.markdown-body h5 code,.markdown-body h5 tt,.markdown-body h6 code,.markdown-body h6 tt{font-size:inherit}.markdown-body h1{color:#000;font-size:28px}.markdown-body h2{border-bottom:1px solid #CCC;color:#000;font-size:24px}.markdown-body h3{font-size:18px}.markdown-body h4{font-size:16px}.markdown-body h5{font-size:14px}.markdown-body h6{color:#777;font-size:14px}.markdown-body blockquote,.markdown-body dl,.markdown-body ol,.markdown-body p,.markdown-body pre,.markdown-body table,.markdown-body ul{margin:15px 0}.markdown-body hr{overflow:hidden;background:#e7e7e7;height:4px;padding:0;margin:16px 0;border:0;-moz-box-sizing:content-box;box-sizing:content-box}.markdown-body h1+p,.markdown-body h2+p,.markdown-body h3+p,.markdown-body h4+p,.markdown-body h5+p,.markdown-body h6+p,.markdown-body ol li>:first-child,.markdown-body ul li>:first-child{margin-top:0}.markdown-body hr:after{clear:both}.markdown-body a:first-child h1,.markdown-body a:first-child h2,.markdown-body a:first-child h3,.markdown-body a:first-child h4,.markdown-body a:first-child h5,.markdown-body a:first-child h6,.markdown-body>h1:first-child,.markdown-body>h1:first-child+h2,.markdown-body>h2:first-child,.markdown-body>h3:first-child,.markdown-body>h4:first-child,.markdown-body>h5:first-child,.markdown-body>h6:first-child{margin-top:0;padding-top:0}.markdown-body li p.first{display:inline-block}.markdown-body ol,.markdown-body ul{padding-left:30px}.markdown-body ol.no-list,.markdown-body ul.no-list{list-style-type:none;padding:0}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-bottom:0}.markdown-body dl{padding:0}.markdown-body dl dt{font-size:14px;font-style:italic;font-weight:700;margin:15px 0 5px;padding:0}.markdown-body dl dt:first-child{padding:0}.markdown-body dl dt>:first-child{margin-top:0}.markdown-body dl dt>:last-child{margin-bottom:0}.markdown-body dl dd{margin:0 0 15px;padding:0 15px}.markdown-body blockquote>:first-child,.markdown-body dl dd>:first-child{margin-top:0}.markdown-body blockquote>:last-child,.markdown-body dl dd>:last-child{margin-bottom:0}.markdown-body blockquote{border-left:4px solid #DDD;color:#777;padding:0 15px}.markdown-body table th{font-weight:700}.markdown-body table td,.markdown-body table th{border:1px solid #CCC;padding:6px 13px}.markdown-body table tr{background-color:#FFF;border-top:1px solid #CCC}.markdown-body table tr:nth-child(2n){background-color:#F8F8F8}.markdown-body img{max-width:100%}.markdown-body span.frame{display:block;overflow:hidden}.markdown-body span.frame>span{border:1px solid #DDD;display:block;float:left;margin:13px 0 0;overflow:hidden;padding:7px;width:auto}.markdown-body span.frame span img{display:block;float:left}.markdown-body span.frame span span{clear:both;color:#333;display:block;padding:5px 0 0}.markdown-body span.align-center{clear:both;display:block;overflow:hidden}.markdown-body span.align-center>span{display:block;margin:13px auto 0;overflow:hidden;text-align:center}.markdown-body span.align-center span img{margin:0 auto;text-align:center}.markdown-body span.align-right{clear:both;display:block;overflow:hidden}.markdown-body span.align-right>span{display:block;margin:13px 0 0;overflow:hidden;text-align:right}.markdown-body span.align-right span img{margin:0;text-align:right}.markdown-body span.float-left{display:block;float:left;margin-right:13px;overflow:hidden}.markdown-body span.float-left span{margin:13px 0 0}.markdown-body span.float-right{display:block;float:right;margin-left:13px;overflow:hidden}.markdown-body span.float-right>span{display:block;margin:13px auto 0;overflow:hidden;text-align:right}.markdown-body code,.markdown-body tt{background-color:#F8F8F8;border:1px solid #EAEAEA;border-radius:3px;margin:0 2px;padding:0 5px;white-space:nowrap}.markdown-body pre>code{background:none;border:none;margin:0;padding:0;white-space:pre}.markdown-body .highlight pre,.markdown-body pre{background-color:#F8F8F8;border:1px solid #CCC;border-radius:3px;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px}.markdown-body pre code,.markdown-body pre tt{background-color:transparent;border:none}</style>' + marked(item.content)).wrap('<div/>').parent().html();
-
-            $.post('/admin/chat/direct/update', {
-                baseUrl: utils.getBaseUrl(),
-                path: wurl('path'),
-                id: item.id,
-                content: item.content,
-                contentHtml: html
-            }, function (data, textStatus, xhr) {
-                if (data.success) {
-                    toastr.success('更新消息成功!');
-                    item.contentMd = marked(item.content);
-                    item.isEditing = false;
-                } else {
-                    toastr.error(data.data, '更新消息失败!');
-                }
-            }).always(function () {
-                _this2.sending = false;
-            });
-        };
-
-        EmChatContentItem.prototype.eidtKeydownHandler = function eidtKeydownHandler(evt, item, txtRef) {
-
-            if (this.sending) {
-                return false;
-            }
-
-            if (evt.ctrlKey && evt.keyCode === 13) {
-
-                this.editSave(item, txtRef);
-
-                return false;
-            } else if (evt.ctrlKey && evt.keyCode === 85) {
-                $(txtRef).next('.tms-edit-actions').find('.upload').click();
-                return false;
-            } else if (evt.keyCode === 27) {
-                this.editCancelHandler(evt, item, txtRef);
-            }
-
-            return true;
-        };
-
-        return EmChatContentItem;
-    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'chats', [_dec], {
-        enumerable: true,
-        initializer: null
-    }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'loginUser', [_aureliaFramework.bindable], {
-        enumerable: true,
-        initializer: null
-    })), _class2)) || _class);
-});
-define('resources/elements/em-chat-sidebar-right',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.EmChatSidebarRight = undefined;
-
-    function _initDefineProp(target, property, descriptor, context) {
-        if (!descriptor) return;
-        Object.defineProperty(target, property, {
-            enumerable: descriptor.enumerable,
-            configurable: descriptor.configurable,
-            writable: descriptor.writable,
-            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
-        });
-    }
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
-        var desc = {};
-        Object['ke' + 'ys'](descriptor).forEach(function (key) {
-            desc[key] = descriptor[key];
-        });
-        desc.enumerable = !!desc.enumerable;
-        desc.configurable = !!desc.configurable;
-
-        if ('value' in desc || desc.initializer) {
-            desc.writable = true;
-        }
-
-        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
-            return decorator(target, property, desc) || desc;
-        }, desc);
-
-        if (context && desc.initializer !== void 0) {
-            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
-            desc.initializer = undefined;
-        }
-
-        if (desc.initializer === void 0) {
-            Object['define' + 'Property'](target, property, desc);
-            desc = null;
-        }
-
-        return desc;
-    }
-
-    function _initializerWarningHelper(descriptor, context) {
-        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
-    }
-
-    var _class, _desc, _value, _class2, _descriptor;
-
-    var EmChatSidebarRight = exports.EmChatSidebarRight = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
-        function EmChatSidebarRight() {
-            var _this = this;
-
-            _classCallCheck(this, EmChatSidebarRight);
-
-            _initDefineProp(this, 'value', _descriptor, this);
-
-            this.lastSearch = true;
-
-
-            this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_RESULT, function (payload) {
-
-                var result = payload.result;
-                _this.search = payload.search;
-                _this.searchPage = result;
-                _this.searchChats = result.content;
-                _.each(_this.searchChats, function (item) {
-                    item.contentMd = marked(item.content);
-                });
-                _this.lastSearch = result.last;
-                _this.moreSearchCnt = result.totalElements - (result.number + 1) * result.size;
-            });
-        }
-
-        EmChatSidebarRight.prototype.unbind = function unbind() {
-
-            this.subscribe.dispose();
-        };
-
-        EmChatSidebarRight.prototype.attached = function attached() {
-            this.initHotkeys();
-        };
-
-        EmChatSidebarRight.prototype.initHotkeys = function initHotkeys() {
-            var _this2 = this;
-
-            $(document).bind('keydown', 'o', function () {
-                event.preventDefault();
-                var item = _.find(_this2.searchChats, { isHover: true });
-                item && (item.isOpen = !item.isOpen);
-            });
-        };
-
-        EmChatSidebarRight.prototype.searchItemMouseleaveHandler = function searchItemMouseleaveHandler(item) {
-            item.isOpen = false;
-            item.isHover = false;
-        };
-
-        EmChatSidebarRight.prototype.searchItemMouseenterHandler = function searchItemMouseenterHandler(item) {
-            item.isHover = true;
-        };
-
-        EmChatSidebarRight.prototype.gotoChatHandler = function gotoChatHandler(item) {
-            ea.publish(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, { chatItem: item });
-        };
-
-        EmChatSidebarRight.prototype.openSearchItemHandler = function openSearchItemHandler(item) {
-            item.isOpen = !item.isOpen;
-        };
-
-        EmChatSidebarRight.prototype.searchMoreHandler = function searchMoreHandler() {
-            var _this3 = this;
-
-            this.searchMoreP = $.get('/admin/chat/direct/search', {
-                search: this.search,
-                size: this.searchPage.size,
-                page: this.searchPage.number + 1
-            }, function (data) {
-                if (data.success) {
-                    _.each(data.data.content, function (item) {
-                        item.contentMd = marked(item.content);
-                    });
-                    _this3.searchChats = _.concat(_this3.searchChats, data.data.content);
-
-                    _this3.lastSearch = data.data.last;
-                    _this3.moreSearchCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
-                }
-            });
-        };
-
-        return EmChatSidebarRight;
-    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'value', [_aureliaFramework.bindable], {
-        enumerable: true,
-        initializer: null
-    })), _class2)) || _class;
-});
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\r\n\t<require from=\"./app.css\"></require>\r\n\t<require from=\"nprogress/nprogress.css\"></require>\r\n\t<require from=\"toastr/build/toastr.css\"></require>\r\n    <require from=\"tms-semantic-ui/semantic.min.css\"></require>\r\n    <router-view></router-view>\r\n</template>\r\n"; });
-define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <require from=\"./md-github.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" login-user.bind=\"loginUser\" chat-to.bind=\"chatTo\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" chat-to.bind=\"chatTo\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                    <button if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"fluid basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</button>\r\n                    <em-chat-content-item chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                    <button if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"fluid basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})</button>\r\n                </div>\r\n                <em-chat-input chat-to.bind=\"chatTo\" poll.bind=\"poll\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <require from=\"./md-github.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" channels.bind=\"channels\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                    <button if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"fluid basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</button>\r\n                    <em-chat-content-item chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                    <button if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"fluid basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})</button>\r\n                </div>\r\n                <em-chat-input chat-to.bind=\"chatTo\" poll.bind=\"poll\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n.ui.dimmer {\n  background-color: rgba(0, 0, 0, 0.5) !important;\n}\n"; });
 define('text!test/test-lifecycle.html', ['module'], function(module) { module.exports = "<template>\r\n    <!-- <require from=\"\"></require> -->\r\n    <div class=\"ui container\">\r\n        <h1 class=\"ui header\">Aurelia框架模块生命周期钩子函数调用顺序测试(看console输出)</h1>\r\n    </div>\r\n</template>\r\n"; });
-define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n"; });
-define('text!chat/chat-direct.css', ['module'], function(module) { module.exports = ".tms-chat-direct {\n  height: 100%;\n}\n.tms-chat-direct .top.fixed.menu {\n  padding-left: 220px;\n  height: 60px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .top.fixed.menu .tms-chat-at.tms-hide {\n    display: none;\n  }\n}\n.tms-chat-direct .ui.left.sidebar {\n  background-color: #4d394b;\n  width: 220px;\n}\n.tms-chat-direct .ui.left.sidebar * {\n  color: #4183c4!important;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header > input {\n  background-color: transparent;\n  border: 1px #676868 solid;\n  font-size: 12px;\n  padding: 4px;\n  width: 190px;\n  outline: none;\n  margin-top: 10px;\n  border-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .ui.list {\n  position: absolute;\n  bottom: 0;\n  top: 80px;\n  overflow-y: auto;\n  width: 190px;\n}\n.tms-chat-direct .ui.left.sidebar .ui.list a > i.circular.icon {\n  box-shadow: 0 0 0 0.1em #4183c4 inset;\n}\n.tms-chat-direct .ui.left.sidebar .ui.list::-webkit-scrollbar-thumb {\n  background-color: #475a81;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header {\n  height: 40px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header i.close.icon {\n  position: absolute;\n  right: 11px;\n  top: 55px;\n  box-shadow: 0 0 0 0.1em #676868 inset;\n  border-top-right-radius: 2px;\n  border-bottom-right-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header .ui.header {\n  margin-bottom: 0;\n}\n.tms-chat-direct .tms-edit-textarea {\n  width: 100%;\n}\n.tms-chat-direct .ui.selection.list > .item {\n  cursor: default;\n}\n.tms-chat-direct .ui.search .prompt {\n  border-radius: .28571429rem;\n}\n.tms-chat-direct .tms-content {\n  position: absolute;\n  top: 60px;\n  left: 220px;\n  bottom: 0;\n  right: 0;\n  display: flex;\n  align-items: stretch;\n}\n.tms-chat-direct .tms-content.tms-sidebar-show .tms-right-sidebar {\n  width: 388px;\n  border-left: 1px #e9e9e9 solid;\n  transition: width 0.15s ease-out 0s;\n  margin: 4px;\n  margin-right: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content {\n    left: 0;\n  }\n}\n.tms-chat-direct .tms-content-body {\n  width: 100%;\n  max-width: 100%;\n  flex: 1 1 0;\n  display: flex;\n  align-items: stretch;\n  padding-bottom: 73px;\n}\n.tms-chat-direct .tms-content-body .ui.comments {\n  overflow-y: auto;\n  flex: 1 1 0;\n  max-width: none;\n  margin-bottom: 12px;\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-pre-more {\n  margin-bottom: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-next-more {\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-right-sidebar {\n  width: 0;\n  overflow-y: auto;\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body {\n  max-height: 65px;\n  overflow-y: hidden;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body.tms-open {\n  max-height: none;\n  overflow-y: auto;\n  padding-bottom: 20px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .tms-btn-open-search-item {\n  display: none;\n  height: 25px;\n  background-color: rgba(0, 0, 0, 0.1);\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  text-align: center;\n  padding-top: 2px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment:hover .tms-btn-open-search-item {\n  display: block;\n}\n.tms-chat-direct .ui.top.menu .item.tms-item:before {\n  display: none;\n}\n.tms-chat-direct .ui.top.menu > .ui.dropdown.item > .text > .icon {\n  display: none;\n}\n.tms-chat-direct .ui.top.menu .right.menu .item.tms-item {\n  padding-left: 5px;\n  padding-right: 5px;\n}\n.tms-chat-direct .ui.top.menu .right.menu .ui.search input {\n  width: 100px;\n  transition: width 0.15s ease-out 0s;\n}\n.tms-chat-direct .ui.top.menu .right.menu .ui.search i.remove.icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .ui.top.menu {\n    padding-left: 0;\n  }\n}\n.tms-chat-direct .ui.top.menu .ui.basic.button {\n  box-shadow: none;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-left-sidebar {\n    display: none;\n  }\n  .tms-chat-direct .tms-right-sidebar {\n    position: fixed;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 59px;\n    background-color: white;\n    margin-left: 0!important;\n  }\n  .tms-chat-direct .tms-right-sidebar .panel-search .ui.basic.segment.minimal.selection.list.segment.comments {\n    padding-left: 0;\n    padding-right: 0;\n  }\n  .tms-chat-direct .tms-sidebar-show .tms-right-sidebar {\n    width: 100%!important;\n  }\n  .tms-chat-direct .tms-login-user {\n    display: none!important;\n  }\n}\n.tms-chat-direct .tms-edit-actions .left.button {\n  border-top-left-radius: 0;\n}\n.tms-chat-direct .tms-edit-actions .right.button {\n  border-top-right-radius: 0;\n}\n"; });
+define('text!chat/chat-direct.css', ['module'], function(module) { module.exports = ".tms-chat-direct {\n  height: 100%;\n}\n.tms-chat-direct .ui.left.sidebar {\n  background-color: #4d394b;\n  width: 220px;\n}\n.tms-chat-direct .ui.left.sidebar * {\n  color: #4183c4!important;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header > input {\n  background-color: transparent;\n  border: 1px #676868 solid;\n  font-size: 12px;\n  padding: 4px;\n  width: 190px;\n  outline: none;\n  margin-top: 10px;\n  border-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header {\n  height: 40px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header i.close.icon {\n  position: absolute;\n  right: 11px;\n  top: 55px;\n  box-shadow: 0 0 0 0.1em #676868 inset;\n  border-top-right-radius: 2px;\n  border-bottom-right-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header .ui.header {\n  margin-bottom: 0;\n}\n.tms-chat-direct .tms-edit-textarea {\n  width: 100%;\n}\n.tms-chat-direct .ui.selection.list > .item {\n  cursor: default;\n}\n.tms-chat-direct .ui.search .prompt {\n  border-radius: .28571429rem;\n}\n.tms-chat-direct .tms-content {\n  position: absolute;\n  top: 60px;\n  left: 220px;\n  bottom: 0;\n  right: 0;\n  display: flex;\n  align-items: stretch;\n}\n.tms-chat-direct .tms-content.tms-sidebar-show .tms-right-sidebar {\n  width: 388px;\n  border-left: 1px #e9e9e9 solid;\n  transition: width 0.15s ease-out 0s;\n  margin: 4px;\n  margin-right: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content {\n    left: 0;\n  }\n}\n.tms-chat-direct .tms-content-body {\n  width: 100%;\n  max-width: 100%;\n  flex: 1 1 0;\n  display: flex;\n  align-items: stretch;\n  padding-bottom: 73px;\n}\n.tms-chat-direct .tms-content-body .ui.comments {\n  overflow-y: auto;\n  flex: 1 1 0;\n  max-width: none;\n  margin-bottom: 12px;\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-pre-more {\n  margin-bottom: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-next-more {\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-right-sidebar {\n  width: 0;\n  overflow-y: auto;\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body {\n  max-height: 65px;\n  overflow-y: hidden;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body.tms-open {\n  max-height: none;\n  overflow-y: auto;\n  padding-bottom: 20px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .tms-btn-open-search-item {\n  display: none;\n  height: 25px;\n  background-color: rgba(0, 0, 0, 0.1);\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  text-align: center;\n  padding-top: 2px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment:hover .tms-btn-open-search-item {\n  display: block;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-left-sidebar {\n    display: none;\n  }\n  .tms-chat-direct .tms-right-sidebar {\n    position: fixed;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 59px;\n    background-color: white;\n    margin-left: 0!important;\n  }\n  .tms-chat-direct .tms-right-sidebar .panel-search .ui.basic.segment.minimal.selection.list.segment.comments {\n    padding-left: 0;\n    padding-right: 0;\n  }\n  .tms-chat-direct .tms-sidebar-show .tms-right-sidebar {\n    width: 100%!important;\n  }\n  .tms-chat-direct .tms-login-user {\n    display: none!important;\n  }\n}\n.tms-chat-direct .tms-edit-actions .left.button {\n  border-top-left-radius: 0;\n}\n.tms-chat-direct .tms-edit-actions .right.button {\n  border-top-right-radius: 0;\n}\n"; });
 define('text!user/user-login.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-login.css\"></require>\r\n    <div class=\"tms-user-login\">\r\n        <div class=\"container\">\r\n            <h2 class=\"ui center aligned icon header\">\r\n            <i class=\"circular users icon\"></i> 用户登录\r\n            </h2>\r\n            <form class=\"ui form segment\">\r\n                <div class=\"field\">\r\n                    <div class=\"ui left icon input\">\r\n                        <i class=\"user icon\"></i>\r\n                        <input type=\"text\" name=\"username\" value.bind=\"username\" placeholder=\"用户名\" />\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div class=\"ui left icon input\">\r\n                        <i class=\"lock icon\"></i>\r\n                        <input type=\"password\" name=\"password\" keydown.trigger=\"kdHandler($event)\" value.bind=\"password\" placeholder=\"密码\" />\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"rememberMeRef\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" name=\"remember-me\" />\r\n                        <label>记住我在此计算机的登录(2周)</label>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui center aligned header\">\r\n                    <button type=\"submit\" click.delegate=\"loginHandler()\" class=\"ui submit fluid button ${isReq ? 'disabled' : ''}\">登录</button>\r\n                </div>\r\n                <div style=\"text-align: center; font-size:12px;\">\r\n                    <a href=\"#/pwd-reset\">忘记密码</a> &nbsp;&nbsp;\r\n                    <a href=\"#/register\">注册用户</a>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!chat/md-github.css', ['module'], function(module) { module.exports = ".markdown-body {\n  font-size: 14px;\n  line-height: 1.6;\n}\n.markdown-body > br,\n.markdown-body ul br .markdown-body ol br {\n  display: none;\n}\n.markdown-body > *:first-child {\n  margin-top: 0 !important;\n}\n.markdown-body > *:last-child {\n  margin-bottom: 0 !important;\n}\n.markdown-body a.absent {\n  color: #CC0000;\n}\n.markdown-body a.anchor {\n  bottom: 0;\n  cursor: pointer;\n  display: block;\n  left: 0;\n  margin-left: -30px;\n  padding-left: 30px;\n  position: absolute;\n  top: 0;\n}\n.markdown-body h1,\n.markdown-body h2,\n.markdown-body h3,\n.markdown-body h4,\n.markdown-body h5,\n.markdown-body h6 {\n  cursor: text;\n  font-weight: bold;\n  margin: 20px 0 10px;\n  padding: 0;\n  position: relative;\n}\n.markdown-body h1 .mini-icon-link,\n.markdown-body h2 .mini-icon-link,\n.markdown-body h3 .mini-icon-link,\n.markdown-body h4 .mini-icon-link,\n.markdown-body h5 .mini-icon-link,\n.markdown-body h6 .mini-icon-link {\n  color: #000000;\n  display: none;\n}\n.markdown-body h1:hover a.anchor,\n.markdown-body h2:hover a.anchor,\n.markdown-body h3:hover a.anchor,\n.markdown-body h4:hover a.anchor,\n.markdown-body h5:hover a.anchor,\n.markdown-body h6:hover a.anchor {\n  line-height: 1;\n  margin-left: -22px;\n  padding-left: 0;\n  text-decoration: none;\n  top: 15%;\n}\n.markdown-body h1:hover a.anchor .mini-icon-link,\n.markdown-body h2:hover a.anchor .mini-icon-link,\n.markdown-body h3:hover a.anchor .mini-icon-link,\n.markdown-body h4:hover a.anchor .mini-icon-link,\n.markdown-body h5:hover a.anchor .mini-icon-link,\n.markdown-body h6:hover a.anchor .mini-icon-link {\n  display: inline-block;\n}\n.markdown-body h1 tt,\n.markdown-body h1 code,\n.markdown-body h2 tt,\n.markdown-body h2 code,\n.markdown-body h3 tt,\n.markdown-body h3 code,\n.markdown-body h4 tt,\n.markdown-body h4 code,\n.markdown-body h5 tt,\n.markdown-body h5 code,\n.markdown-body h6 tt,\n.markdown-body h6 code {\n  font-size: inherit;\n}\n.markdown-body h1 {\n  color: #000000;\n  font-size: 28px;\n}\n.markdown-body h2 {\n  border-bottom: 1px solid #CCCCCC;\n  color: #000000;\n  font-size: 24px;\n}\n.markdown-body h3 {\n  font-size: 18px;\n}\n.markdown-body h4 {\n  font-size: 16px;\n}\n.markdown-body h5 {\n  font-size: 14px;\n}\n.markdown-body h6 {\n  color: #777777;\n  font-size: 14px;\n}\n.markdown-body p,\n.markdown-body blockquote,\n.markdown-body ul,\n.markdown-body ol,\n.markdown-body dl,\n.markdown-body table,\n.markdown-body pre {\n  margin: 15px 0;\n}\n.markdown-body hr {\n  overflow: hidden;\n  background: 0 0;\n}\n.markdown-body hr:before {\n  display: table;\n  content: \"\";\n}\n.markdown-body hr:after {\n  display: table;\n  clear: both;\n  content: \"\";\n}\n.markdown-body hr {\n  height: 4px;\n  padding: 0;\n  margin: 16px 0;\n  background-color: #e7e7e7;\n  border: 0;\n}\n.markdown-body hr {\n  -moz-box-sizing: content-box;\n  box-sizing: content-box;\n}\n.markdown-body > h2:first-child,\n.markdown-body > h1:first-child,\n.markdown-body > h1:first-child + h2,\n.markdown-body > h3:first-child,\n.markdown-body > h4:first-child,\n.markdown-body > h5:first-child,\n.markdown-body > h6:first-child {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body a:first-child h1,\n.markdown-body a:first-child h2,\n.markdown-body a:first-child h3,\n.markdown-body a:first-child h4,\n.markdown-body a:first-child h5,\n.markdown-body a:first-child h6 {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body h1 + p,\n.markdown-body h2 + p,\n.markdown-body h3 + p,\n.markdown-body h4 + p,\n.markdown-body h5 + p,\n.markdown-body h6 + p {\n  margin-top: 0;\n}\n.markdown-body li p.first {\n  display: inline-block;\n}\n.markdown-body ul,\n.markdown-body ol {\n  padding-left: 30px;\n}\n.markdown-body ul.no-list,\n.markdown-body ol.no-list {\n  list-style-type: none;\n  padding: 0;\n}\n.markdown-body ul li > *:first-child,\n.markdown-body ol li > *:first-child {\n  margin-top: 0;\n}\n.markdown-body ul ul,\n.markdown-body ul ol,\n.markdown-body ol ol,\n.markdown-body ol ul {\n  margin-bottom: 0;\n}\n.markdown-body dl {\n  padding: 0;\n}\n.markdown-body dl dt {\n  font-size: 14px;\n  font-style: italic;\n  font-weight: bold;\n  margin: 15px 0 5px;\n  padding: 0;\n}\n.markdown-body dl dt:first-child {\n  padding: 0;\n}\n.markdown-body dl dt > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dt > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body dl dd {\n  margin: 0 0 15px;\n  padding: 0 15px;\n}\n.markdown-body dl dd > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dd > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body blockquote {\n  border-left: 4px solid #DDDDDD;\n  color: #777777;\n  padding: 0 15px;\n}\n.markdown-body blockquote > *:first-child {\n  margin-top: 0;\n}\n.markdown-body blockquote > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body table th {\n  font-weight: bold;\n}\n.markdown-body table th,\n.markdown-body table td {\n  border: 1px solid #CCCCCC;\n  padding: 6px 13px;\n}\n.markdown-body table tr {\n  background-color: #FFFFFF;\n  border-top: 1px solid #CCCCCC;\n}\n.markdown-body table tr:nth-child(2n) {\n  background-color: #F8F8F8;\n}\n.markdown-body img {\n  max-width: 100%;\n}\n.markdown-body span.frame {\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.frame > span {\n  border: 1px solid #DDDDDD;\n  display: block;\n  float: left;\n  margin: 13px 0 0;\n  overflow: hidden;\n  padding: 7px;\n  width: auto;\n}\n.markdown-body span.frame span img {\n  display: block;\n  float: left;\n}\n.markdown-body span.frame span span {\n  clear: both;\n  color: #333333;\n  display: block;\n  padding: 5px 0 0;\n}\n.markdown-body span.align-center {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-center > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: center;\n}\n.markdown-body span.align-center span img {\n  margin: 0 auto;\n  text-align: center;\n}\n.markdown-body span.align-right {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-right > span {\n  display: block;\n  margin: 13px 0 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body span.align-right span img {\n  margin: 0;\n  text-align: right;\n}\n.markdown-body span.float-left {\n  display: block;\n  float: left;\n  margin-right: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-left span {\n  margin: 13px 0 0;\n}\n.markdown-body span.float-right {\n  display: block;\n  float: right;\n  margin-left: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-right > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body code,\n.markdown-body tt {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  /* white-space: nowrap; */\n  white-space: normal;\n  word-break: break-all;\n}\n.markdown-body pre > code {\n  background: none repeat scroll 0 0 transparent;\n  border: medium none;\n  margin: 0;\n  padding: 0;\n  white-space: pre;\n}\n.markdown-body .highlight pre,\n.markdown-body pre {\n  background-color: #F8F8F8;\n  border: 1px solid #CCCCCC;\n  border-radius: 3px 3px 3px 3px;\n  font-size: 13px;\n  line-height: 19px;\n  overflow: auto;\n  padding: 6px 10px;\n}\n.markdown-body pre code,\n.markdown-body pre tt {\n  background-color: transparent;\n  border: medium none;\n}\n"; });
 define('text!user/user-pwd-reset.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-pwd-reset.css\"></require>\r\n    <div class=\"ui container tms-user-pwd-reset\">\r\n        <div class=\"tms-flex\">\r\n            <div if.bind=\"!token\" ref=\"fm\" class=\"ui form segment\" style=\"width: 260px;\">\r\n                <div class=\"ui message\">输入您的邮箱地址,我们会发送密码重置链接到您的邮箱!</div>\r\n                <div class=\"field\">\r\n                    <label style=\"display:none;\">邮件地址</label>\r\n                    <input type=\"text\" name=\"mail\" autofocus=\"\" value.bind=\"mail\" placeholder=\"输入您的邮件地址\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"resetPwdHandler()\">发送密码重置邮件</div>\r\n            </div>\r\n            <div if.bind=\"token\" ref=\"fm2\" class=\"ui form segment\" style=\"width: 260px;\">\r\n                <div class=\"ui message\">设置您的新密码,密码长度要求至少8位字符!</div>\r\n                <div class=\"field\">\r\n                    <label style=\"display:none;\">新密码</label>\r\n                    <input type=\"password\" name=\"mail\" autofocus=\"\" value.bind=\"pwd\" placeholder=\"设置您的新密码\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"newPwdHandler()\">确认</div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!user/user-login.css', ['module'], function(module) { module.exports = ".tms-user-login {\n  width: 100%;\n  min-height: 100%;\n  background-color: #5a3636;\n  overflow: hidden;\n}\n.tms-user-login .container {\n  width: 300px;\n  top: 50px;\n  margin-left: auto;\n  margin-right: auto;\n  position: relative;\n}\n.tms-user-login h2 {\n  color: rgba(197, 164, 164, 0.8) !important;\n}\n.tms-user-login .ui.form {\n  background-color: #353131;\n}\n.tms-user-login .ui.error.message {\n  background-color: #5a3636;\n}\n.tms-user-login .ui.error.message .header {\n  color: #e0b4b4;\n}\n.tms-user-login .ui.checkbox label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox input:focus ~ label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox label:hover {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.button {\n  background-color: #5a3636;\n  color: #ad8b75;\n}\n"; });
 define('text!user/user-register.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-register.css\"></require>\r\n    <div class=\"ui container tms-user-register\">\r\n        <div class=\"tms-flex\">\r\n            <div if.bind=\"!token\" ref=\"fm\" class=\"ui form segment\" style=\"width: 280px;\">\r\n                <div class=\"ui message\">提交账户注册信息成功后,我们会向您的注册邮箱发送一封账户激活邮件,激活账户后即可登录!</div>\r\n                <div class=\"required field\">\r\n                    <label>用户名</label>\r\n                    <input type=\"text\" name=\"username\" autofocus=\"\" value.bind=\"username\" placeholder=\"输入您的登录用户名\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>密码</label>\r\n                    <input type=\"password\" name=\"pwd\" autofocus=\"\" value.bind=\"pwd\" placeholder=\"输入您的登录密码\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>姓名</label>\r\n                    <input type=\"text\" name=\"name\" autofocus=\"\" value.bind=\"name\" placeholder=\"输入您的显示名称\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>邮箱</label>\r\n                    <input type=\"text\" name=\"mail\" autofocus=\"\" value.bind=\"mail\" placeholder=\"输入您的账户激活邮箱\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"okHandler()\">确认</div>\r\n            </div>\r\n            <div if.bind=\"token\" class=\"ui center aligned very padded segment\" style=\"width: 320px;\">\r\n            \t<h1 class=\"ui header\">${header}</h1>\r\n            \t<a href=\"/admin/login\" class=\"ui green button\">返回登录页面</a>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!user/user-pwd-reset.css', ['module'], function(module) { module.exports = ".tms-user-pwd-reset {\n  height: 100%;\n}\n.tms-user-pwd-reset .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
-define('text!resources/elements/em-chat-input.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-input.css\"></require>\r\n    <require from=\"./em-hotkeys-modal\"></require>\r\n    <div class=\"ui basic segment tms-msg-input tms-em-chat-input dropzone\">\r\n        <div ref=\"chatStatusBarRef\" class=\"tms-chat-status-bar dropzone-previews\"></div>\r\n        <div ref=\"inputRef\" class=\"ui left action fluid icon input dropzone\">\r\n            <div ref=\"chatBtnRef\" class=\"ui icon button\">\r\n                <i class=\"plus icon\"></i>\r\n            </div>\r\n            <div class=\"ui flowing popup bottom left transition hidden\">\r\n                <div class=\"ui middle aligned selection list\">\r\n                    <div ref=\"btnItemUploadRef\" class=\"item\">\r\n                        <i class=\"upload icon\"></i>\r\n                        <div class=\"content\">\r\n                            上传文件\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"textareaWrapper\">\r\n                <textarea ref=\"chatInputRef\" placeholder=\"/ 键提示,Ctrl+Enter发送,Esc清空\"></textarea>\r\n            </div>\r\n            <i click.delegate=\"sendChatMsgHandler()\" title=\"发送消息(Enter)\" class=\"send link icon\"></i>\r\n        </div>\r\n    </div>\r\n    <div ref=\"previewTemplateRef\" style=\"display: none;\">\r\n        <div class=\"dz-preview dz-file-preview\">\r\n            <div class=\"dz-details\">\r\n                <div class=\"dz-filename\"><span data-dz-name></span></div>\r\n                <div class=\"dz-size\" data-dz-size></div>\r\n                <img data-dz-thumbnail />\r\n            </div>\r\n            <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            <div class=\"dz-success-mark\"><span>✔</span></div>\r\n            <div class=\"dz-error-mark\"><span>✘</span></div>\r\n            <div class=\"dz-error-message\"><span data-dz-errormessage></span></div>\r\n        </div>\r\n    </div>\r\n    <em-hotkeys-modal em-hotkeys-modal.ref=\"emHotkeysModal\"></em-hotkeys-modal>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-channel-create.html', ['module'], function(module) { module.exports = "<template>\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"创建\">\n        <div slot=\"header\">创建频道</div>\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\n            <div ref=\"frm\" class=\"ui form\">\n                <div class=\"required field\">\n                    <label>标识</label>\n                    <input type=\"text\" name=\"name\" value.bind=\"name\" placeholder=\"\">\n                </div>\n                <div class=\"required field\">\n                    <label>名称</label>\n                    <input type=\"text\" name=\"title\" value.bind=\"title\" placeholder=\"\">\n                </div>\n                <div class=\"field\">\n                    <label>描述</label>\n                    <textarea name=\"desc\" value.bind=\"desc\" placeholder=\"\" rows=\"5\"></textarea>\n                </div>\n            </div>\n        </div>\n    </em-modal>\n</template>\n"; });
 define('text!user/user-register.css', ['module'], function(module) { module.exports = ".tms-user-register {\n  height: 100%;\n}\n.tms-user-register .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
-define('text!resources/elements/em-chat-top-menu.html', ['module'], function(module) { module.exports = "<template>\n    <div class=\"ui top fixed menu\">\n        <div ref=\"chatToDropdownRef\" class=\"ui dropdown link item ${isActiveSearch ? 'tms-hide' : ''} tms-chat-at\">\n            <i class=\"big loading at icon\"></i>\n            <span class=\"text\"></span>\n            <i class=\"dropdown icon\"></i>\n            <div class=\"menu\">\n                <div class=\"ui icon search input\">\n                    <i class=\"search icon\"></i>\n                    <input ref=\"filterChatToUser\" type=\"text\" placeholder=\"过滤私聊对象\">\n                </div>\n                <div class=\"divider\"></div>\n                <div class=\"header\">\n                    <i class=\"user icon\"></i> 切换私聊对象(Ctrl+k)\n                </div>\n                <div class=\"scrolling menu\">\n                    <a repeat.for=\"item of users\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/@${item.username}\" class=\"item\" title=\"${item.username}\" data-value=\"${item.username}\">\n                        <i class=\"circular icon user\"></i> ${item.name}\n                    </a>\n                </div>\n            </div>\n        </div>\n        <div class=\"right menu\">\n            <div class=\"item tms-item\">\n                <button click.delegate=\"sibebarRightHandler()\" title=\"右侧边栏(Ctrl+.)\" class=\"basic ${isRightSidebarShow ? 'active' : ''} ui icon button\">\n                    <i class=\"columns icon\"></i>\n                </button>\n            </div>\n            <div class=\"item\">\n                <div ref=\"searchRef\" class=\"ui search\">\n                    <div class=\"ui left icon input\">\n                        <input ref=\"searchInputRef\" keyup.trigger=\"searchKeyupHandler($event)\" focusout.trigger=\"searchFocusoutHandler()\" focusin.trigger=\"searchFocusinHandler()\" class=\"prompt\" type=\"text\" placeholder=\"搜索...\">\n                        <i class=\"${(searchingP && searchingP.readyState != 4) ? 'spinner loading' : 'search'} icon\"></i>\n                        <i ref=\"searchRemoveRef\" click.delegate=\"clearSearchHandler()\" class=\"remove link icon\"></i>\n                    </div>\n                </div>\n            </div>\n            <a class=\"item tms-login-user\">\n                <i class=\"circular user icon\"></i> ${loginUser.name}\n            </a>\n        </div>\n    </div>\n</template>\n"; });
-define('text!resources/elements/em-chat-input.css', ['module'], function(module) { module.exports = ".tms-em-chat-input.ui.segment {\n  margin: 0;\n  position: fixed;\n  bottom: 0;\n  left: 220px;\n  right: 0;\n  background-color: white;\n  padding-bottom: 22px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-input.ui.segment {\n    left: 0;\n  }\n}\n.tms-em-chat-input.ui.segment .tms-chat-status-bar .dz-preview {\n  display: block!important;\n  width: auto!important;\n  background: #e0e1e2;\n  margin: 0;\n  padding: 7px;\n}\n.tms-em-chat-input.ui.segment .ui[class*=\"left action\"].input > textarea {\n  border-top-left-radius: 0!important;\n  border-bottom-left-radius: 0!important;\n  border-left-color: transparent!important;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper {\n  width: calc(100% - 35px);\n  /* max-width: 100%;\n            -webkit-box-flex: 1;\n            -webkit-flex: 1 0 auto;\n            -ms-flex: 1 0 auto;\n            flex: 1 0 auto; */\n  border: 1px solid rgba(34, 36, 38, 0.15);\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror,\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  min-height: 0;\n  border: none;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  max-height: 300px;\n}\n.tms-em-chat-input.ui.segment .ui.input i.send.icon {\n  z-index: 1;\n}\n.tms-em-chat-input.ui.segment .ui.input textarea {\n  resize: none;\n  width: 100%;\n  padding-right: 2.67142857em!important;\n  margin: 0;\n  max-width: 100%;\n  outline: 0;\n  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);\n  text-align: left;\n  display: block;\n  padding: .67861429em 1em;\n  background: #FFF;\n  border: none;\n  color: rgba(0, 0, 0, 0.87);\n  box-shadow: none;\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n@media only screen and (min-width: 768px) {\n  .tms-chat-direct .tms-content.tms-sidebar-show .tms-em-chat-input {\n    right: 392px;\n  }\n}\n.textcomplete-dropdown {\n  position: static!important;\n  border: 1px solid #ddd;\n  background-color: white;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  border-radius: 5px;\n}\n.textcomplete-dropdown li {\n  /* border-top: 1px solid #ddd; */\n  padding: 2px 5px;\n}\n.textcomplete-dropdown li:first-child {\n  border-top: none;\n  border-top-left-radius: 5px;\n  border-top-right-radius: 5px;\n}\n.textcomplete-dropdown li:last-child {\n  border-bottom-left-radius: 5px;\n  border-bottom-right-radius: 5px;\n}\n.textcomplete-dropdown li:hover,\n.textcomplete-dropdown .active {\n  background-color: #439fe0;\n}\n.textcomplete-dropdown a:hover {\n  cursor: pointer;\n}\n.textcomplete-dropdown li.textcomplete-item a {\n  color: black;\n}\n.textcomplete-dropdown li.textcomplete-item:hover a,\n.textcomplete-dropdown li.textcomplete-item.active a {\n  color: white;\n}\n"; });
-define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(module) { module.exports = ".tms-em-hotkeys-modal ul {\n  padding-left: 30px;\n}\n.tms-em-hotkeys-modal ul.no_bullets {\n  margin: 0 0 2rem;\n}\n.tms-em-hotkeys-modal ul.no_bullets li {\n  line-height: 2rem;\n  list-style-type: none;\n  padding: 0;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.tms-em-hotkeys-modal > .content {\n  background-color: rgba(11, 7, 11, 0.78) !important;\n}\n.tms-em-hotkeys-modal .keyboard i.icon {\n  margin-right: 0px!important;\n}\n.tms-em-hotkeys-modal .subtle_silver {\n  color: #9e9ea6!important;\n}\n.tms-em-hotkeys-modal .ui.grid .column {\n  padding: 0!important;\n}\n"; });
-define('text!resources/elements/em-confirm-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"md\" class=\"ui small modal nx-ui-confirm tms-md450\">\r\n        <div class=\"header\">\r\n            ${config.title}\r\n        </div>\r\n        <div class=\"content\">\r\n            <i if.bind=\"config.warning\" class=\"large yellow warning sign icon\" style=\"float: left;\"></i>\r\n            <i if.bind=\"!config.warning\" class=\"large blue info circle icon\" style=\"float: left;\"></i>\r\n            <p style=\"margin-left: 20px;\">\r\n                <span innerhtml.bind=\"config.content\"></span>\r\n            </p>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <div class=\"ui cancel basic blue left floated button\">取消</div>\r\n            <div class=\"ui ok blue button\">确认</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!resources/elements/em-hotkeys-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-hotkeys-modal.css\"></require>\r\n    <div ref=\"md\" class=\"ui basic modal tms-em-hotkeys-modal\">\r\n        <i class=\"close icon\"></i>\r\n        <!-- <div class=\"header\">\r\n            Archive Old Messages\r\n        </div> -->\r\n        <div class=\"content\">\r\n            <h1 class=\"ui center inverted aligned header\">键盘快捷键\r\n\t\t\t\t<span style=\"position: relative; top: -0.375rem; left: 1rem;\" aria-hidden=\"true\">\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Control\">Ctrl</span>\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Question mark\">/</span>\r\n\t\t\t\t</span>\r\n            </h1>\r\n            <div class=\"ui grid\">\r\n                <div class=\"three column row\">\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>上一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>下一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>第一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>最后一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>历史回退: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow left icon\" aria-label=\"Left arrow\"></i></span></li>\r\n                            <li>历史向前: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow right icon\" aria-label=\"Right arrow\"></i></span></li>\r\n                            <li>标记已读: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                            <li>全部标记已读: <span class=\"keyboard\">Shift</span><span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                            <li>快速切换: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">k</span></li>\r\n                            <li>Browse DMs: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">k</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>\r\n                                自动补全\r\n                                <ul>\r\n                                    <li>名称: <span class=\"subtle_silver\">[a-z]</span><span class=\"keyboard\">Tab</span> <span class=\"subtle_silver\">or</span> <span class=\"keyboard\">@</span><span class=\"keyboard\">Tab</span></li>\r\n                                    <li>频道: <span class=\"keyboard\" aria-label=\"Number symbol\">#</span><span class=\"keyboard\">Tab</span></li>\r\n                                    <li>表情: <span class=\"keyboard\" aria-label=\"Colon\">:</span><span class=\"keyboard\">Tab</span></li>\r\n                                </ul>\r\n                            </li>\r\n                            <li>换行: <span class=\"keyboard\">Shift</span><span class=\"keyboard\">Enter</span></li>\r\n                            <li>输入聚焦: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">i</span></li>\r\n                            <li>编辑: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">DblClick</span></li>\r\n                            <li>编辑上一条: <span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span> <span class=\"subtle_silver\">in input</span></li>\r\n                            <li>响应最后一条: <span class=\"keyboard\" aria-label=\"control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">\\</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>切换边栏: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">.</span></li>\r\n                            <ul>\r\n                                <li>团队: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">e</span></li>\r\n                                <li>标星: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">s</span></li>\r\n                            </ul>\r\n                            <li>粘贴代码片段: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">Enter</span></li>\r\n                            <li>上传文件: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">u</span></li>\r\n                            <li>关闭对话框: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                        </ul>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <!-- <div class=\"image\">\r\n                <i class=\"archive icon\"></i>\r\n            </div>\r\n            <div class=\"description\">\r\n                <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>\r\n            </div> -->\r\n        </div>\r\n        <!-- <div class=\"actions\">\r\n            <div class=\"two fluid ui inverted buttons\">\r\n                <div class=\"ui cancel red basic inverted button\">\r\n                    <i class=\"remove icon\"></i> No\r\n                </div>\r\n                <div class=\"ui ok green basic inverted button\">\r\n                    <i class=\"checkmark icon\"></i> Yes\r\n                </div>\r\n            </div>\r\n        </div> -->\r\n    </div>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-sidebar-left.html', ['module'], function(module) { module.exports = "<template>\n    <div class=\"ui left visible segment sidebar tms-left-sidebar\">\n        <div class=\"tms-header\">\n            <h1 class=\"ui header\"><a href=\"/admin/dynamic?scroll=1\">私聊频道</a></h1>\n            <input value.bind=\"filter\" focusin.trigger=\"chatToUserFilerFocusinHanlder()\" keyup.trigger=\"chatToUserFilerKeyupHanlder($event)\" type=\"text\" placeholder=\"私聊对象查找\">\n            <i title=\"清空过滤输入\" click.delegate=\"clearFilterHandler()\" class=\"bordered close icon link small\"></i>\n        </div>\n        <div ref=\"userListRef\" class=\"ui middle aligned selection list\">\n            <a repeat.for=\"item of users\" title=\"${item.username}\" show.bind=\"!item.hidden\" href=\"#/chat/@${item.username}\" class=\"item ${item.username == chatTo ? 'active' : ''}\" data-id=\"${item.username}\">\n                <i class=\"circular icon user\"></i>\n                <div class=\"content\">\n                    <div style=\"color: black;\">${item.name ? item.name : item.username}</div>\n                </div>\n            </a>\n        </div>\n    </div>\n</template>\n"; });
 define('text!resources/elements/em-chat-content-item.html', ['module'], function(module) { module.exports = "<template>\n    <div repeat.for=\"item of chats\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\n        <a class=\"avatar\">\n            <i class=\"circular icon large user\"></i>\n        </a>\n        <div class=\"content\">\n            <a class=\"author\">${item.creator.name}</a>\n            <div class=\"metadata\">\n                <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\n            </div>\n            <div show.bind=\"!item.isEditing\" class=\"text markdown-body\" innerhtml.bind=\"item.contentMd\"></div>\n            <textarea ref=\"editTxtRef\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content\" class=\"tms-edit-textarea\" rows=\"1\"></textarea>\n            <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-edit-actions\">\n                <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\n                    <i class=\"checkmark icon\"></i>\n                </button>\n                <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\n                    <i class=\"remove icon\"></i>\n                </button>\n                <button dropzone=\"clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\n                    <i class=\"upload icon\"></i>\n                </button>\n            </div>\n            <div class=\"actions\">\n                <a if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"editHandler(item, editTxtRef)\" class=\"tms-edit\">编辑</a>\n                <a if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"deleteHandler(item)\" class=\"tms-delete\">删除</a>\n                <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\">复制</a>\n                <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${selfLink + '?id=' + item.id}\">分享</a>\n            </div>\n        </div>\n    </div>\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\n</template>\n"; });
+define('text!resources/elements/em-chat-input.css', ['module'], function(module) { module.exports = ".tms-em-chat-input.ui.segment {\n  margin: 0;\n  position: fixed;\n  bottom: 0;\n  left: 220px;\n  right: 0;\n  background-color: white;\n  padding-bottom: 22px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-input.ui.segment {\n    left: 0;\n  }\n}\n.tms-em-chat-input.ui.segment .tms-chat-status-bar .dz-preview {\n  display: block!important;\n  width: auto!important;\n  background: #e0e1e2;\n  margin: 0;\n  padding: 7px;\n}\n.tms-em-chat-input.ui.segment .ui[class*=\"left action\"].input > textarea {\n  border-top-left-radius: 0!important;\n  border-bottom-left-radius: 0!important;\n  border-left-color: transparent!important;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper {\n  width: calc(100% - 35px);\n  /* max-width: 100%;\n            -webkit-box-flex: 1;\n            -webkit-flex: 1 0 auto;\n            -ms-flex: 1 0 auto;\n            flex: 1 0 auto; */\n  border: 1px solid rgba(34, 36, 38, 0.15);\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror,\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  min-height: 0;\n  border: none;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  max-height: 300px;\n}\n.tms-em-chat-input.ui.segment .ui.input i.send.icon {\n  z-index: 1;\n}\n.tms-em-chat-input.ui.segment .ui.input textarea {\n  resize: none;\n  width: 100%;\n  padding-right: 2.67142857em!important;\n  margin: 0;\n  max-width: 100%;\n  outline: 0;\n  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);\n  text-align: left;\n  display: block;\n  padding: .67861429em 1em;\n  background: #FFF;\n  border: none;\n  color: rgba(0, 0, 0, 0.87);\n  box-shadow: none;\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n@media only screen and (min-width: 768px) {\n  .tms-chat-direct .tms-content.tms-sidebar-show .tms-em-chat-input {\n    right: 392px;\n  }\n}\n.textcomplete-dropdown {\n  position: static!important;\n  border: 1px solid #ddd;\n  background-color: white;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  border-radius: 5px;\n}\n.textcomplete-dropdown li {\n  /* border-top: 1px solid #ddd; */\n  padding: 2px 5px;\n}\n.textcomplete-dropdown li:first-child {\n  border-top: none;\n  border-top-left-radius: 5px;\n  border-top-right-radius: 5px;\n}\n.textcomplete-dropdown li:last-child {\n  border-bottom-left-radius: 5px;\n  border-bottom-right-radius: 5px;\n}\n.textcomplete-dropdown li:hover,\n.textcomplete-dropdown .active {\n  background-color: #439fe0;\n}\n.textcomplete-dropdown a:hover {\n  cursor: pointer;\n}\n.textcomplete-dropdown li.textcomplete-item a {\n  color: black;\n}\n.textcomplete-dropdown li.textcomplete-item:hover a,\n.textcomplete-dropdown li.textcomplete-item.active a {\n  color: white;\n}\n"; });
+define('text!resources/elements/em-chat-input.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-input.css\"></require>\r\n    <require from=\"./em-hotkeys-modal\"></require>\r\n    <div class=\"ui basic segment tms-msg-input tms-em-chat-input dropzone\">\r\n        <div ref=\"chatStatusBarRef\" class=\"tms-chat-status-bar dropzone-previews\"></div>\r\n        <div ref=\"inputRef\" class=\"ui left action fluid icon input dropzone\">\r\n            <div ref=\"chatBtnRef\" class=\"ui icon button\">\r\n                <i class=\"plus icon\"></i>\r\n            </div>\r\n            <div class=\"ui flowing popup bottom left transition hidden\">\r\n                <div class=\"ui middle aligned selection list\">\r\n                    <div ref=\"btnItemUploadRef\" class=\"item\">\r\n                        <i class=\"upload icon\"></i>\r\n                        <div class=\"content\">\r\n                            上传文件\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"textareaWrapper\">\r\n                <textarea ref=\"chatInputRef\" placeholder=\"/ 键提示,Ctrl+Enter发送,Esc清空\"></textarea>\r\n            </div>\r\n            <i click.delegate=\"sendChatMsgHandler()\" title=\"发送消息(Enter)\" class=\"send link icon\"></i>\r\n        </div>\r\n    </div>\r\n    <div ref=\"previewTemplateRef\" style=\"display: none;\">\r\n        <div class=\"dz-preview dz-file-preview\">\r\n            <div class=\"dz-details\">\r\n                <div class=\"dz-filename\"><span data-dz-name></span></div>\r\n                <div class=\"dz-size\" data-dz-size></div>\r\n                <img data-dz-thumbnail />\r\n            </div>\r\n            <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            <div class=\"dz-success-mark\"><span>✔</span></div>\r\n            <div class=\"dz-error-mark\"><span>✘</span></div>\r\n            <div class=\"dz-error-message\"><span data-dz-errormessage></span></div>\r\n        </div>\r\n    </div>\r\n    <em-hotkeys-modal em-hotkeys-modal.ref=\"emHotkeysModal\"></em-hotkeys-modal>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-sidebar-left.css', ['module'], function(module) { module.exports = ".tms-left-sidebar .tms-body {\n  position: absolute;\n  top: 98px;\n  width: 190px;\n  height: calc(100vh - 160px);\n  overflow-y: auto;\n}\n.tms-left-sidebar .tms-body::-webkit-scrollbar-thumb {\n  background-color: #475a81;\n}\n.tms-left-sidebar .tms-body i.circular.icon {\n  box-shadow: 0 0 0 0.1em #4183c4 inset;\n}\n.tms-left-sidebar .tms-body .tms-users .title {\n  position: relative;\n}\n.tms-left-sidebar .tms-body .tms-users .title h3 {\n  display: inline-block;\n  margin-top: 2px;\n  margin-bottom: 0;\n}\n.tms-left-sidebar .tms-body .tms-users .title i.plus.icon {\n  position: absolute;\n  right: 0;\n}\n.tms-left-sidebar .tms-body .tms-channels .title {\n  position: relative;\n}\n.tms-left-sidebar .tms-body .tms-channels .title h3 {\n  display: inline-block;\n  margin-top: 2px;\n  margin-bottom: 0;\n}\n.tms-left-sidebar .tms-body .tms-channels .title i.plus.icon {\n  position: absolute;\n  right: 0;\n}\n"; });
+define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(module) { module.exports = ".tms-em-hotkeys-modal ul {\n  padding-left: 30px;\n}\n.tms-em-hotkeys-modal ul.no_bullets {\n  margin: 0 0 2rem;\n}\n.tms-em-hotkeys-modal ul.no_bullets li {\n  line-height: 2rem;\n  list-style-type: none;\n  padding: 0;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.tms-em-hotkeys-modal > .content {\n  background-color: rgba(11, 7, 11, 0.78) !important;\n}\n.tms-em-hotkeys-modal .keyboard i.icon {\n  margin-right: 0px!important;\n}\n.tms-em-hotkeys-modal .subtle_silver {\n  color: #9e9ea6!important;\n}\n.tms-em-hotkeys-modal .ui.grid .column {\n  padding: 0!important;\n}\n"; });
+define('text!resources/elements/em-chat-sidebar-left.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-chat-sidebar-left.css\"></require>\n    <div class=\"ui left visible segment sidebar tms-left-sidebar\">\n        <div class=\"tms-header\">\n            <h1 class=\"ui header\"><a href=\"/admin/dynamic?scroll=1\">私聊频道</a></h1>\n            <input value.bind=\"filter\" focusin.trigger=\"chatToUserFilerFocusinHanlder()\" keyup.trigger=\"chatToUserFilerKeyupHanlder($event)\" type=\"text\" placeholder=\"私聊对象查找\">\n            <i title=\"清空过滤输入\" click.delegate=\"clearFilterHandler()\" class=\"bordered close icon link small\"></i>\n        </div>\n        <div class=\"tms-body\">\n            <div class=\"tms-channels\">\n                <div class=\"title\">\n                    <h3 class=\"ui header\">频道</h3>\n                    <i ref=\"createChannelRef\" class=\"plus link circular icon\"></i>\n                </div>\n                <div class=\"ui middle aligned selection list\">\n                    <a repeat.for=\"item of channels\" title=\"${item.title}(${item.name})\" show.bind=\"!item.hidden\" href=\"#/chat/${item.name}\" class=\"item ${(!isAt && item.name == chatTo) ? 'active' : ''}\">\n                        <i class=\"circular icon users\"></i>\n                        <div class=\"content\">\n                            <div style=\"color: black;\">${item.title}</div>\n                        </div>\n                    </a>\n                </div>\n            </div>\n            <div class=\"ui divider\"></div>\n            <div class=\"tms-users\">\n                <div class=\"title\">\n                    <h3 class=\"ui header\">用户</h3>\n                    <i class=\"plus link circular icon\"></i>\n                </div>\n                <div ref=\"userListRef\" class=\"ui middle aligned selection list\">\n                    <a repeat.for=\"item of users\" title=\"${item.username}\" show.bind=\"!item.hidden\" href=\"#/chat/@${item.username}\" class=\"item ${(isAt && item.username == chatTo) ? 'active' : ''}\" data-id=\"${item.username}\">\n                        <i class=\"circular icon user\"></i>\n                        <div class=\"content\">\n                            <div style=\"color: black;\">${item.name ? item.name : item.username}</div>\n                        </div>\n                    </a>\n                </div>\n            </div>\n        </div>\n    </div>\n    <em-chat-channel-create trigger.bind=\"createChannelRef\"></em-chat-channel-create>\n</template>\n"; });
 define('text!resources/elements/em-chat-sidebar-right.html', ['module'], function(module) { module.exports = "<template>\n    <div class=\"tms-right-sidebar\">\n        <div class=\"panel-search\">\n            <div class=\"ui basic segment minimal selection list segment comments\">\n                <h1 show.bind=\"!searchChats.length\" class=\"ui center aligned header\">无符合检索结果</h1>\n                <div repeat.for=\"item of searchChats\" mouseleave.trigger=\"searchItemMouseleaveHandler(item)\" mouseenter.trigger=\"searchItemMouseenterHandler(item)\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\n                    <a class=\"avatar\">\n                        <i class=\"circular icon large user\"></i>\n                    </a>\n                    <div class=\"content\">\n                        <a class=\"author\">${item.creator.name}</a>\n                        <div class=\"metadata\">\n                            <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\n                        </div>\n                        <div class=\"text markdown-body ${item.isOpen ? 'tms-open' : ''}\" innerhtml.bind=\"item.contentMd\"></div>\n                        <div class=\"actions\">\n                            <a click.delegate=\"gotoChatHandler(item)\" class=\"tms-goto\" href=\"\">定位</a>\n                            <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\">复制</a>\n                            <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${selfLink + '?id=' + item.id}\">分享</a>\n                        </div>\n                    </div>\n                    <div class=\"tms-btn-open-search-item\" click.delegate=\"openSearchItemHandler(item)\">\n                        <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\n                    </div>\n                </div>\n                <button if.bind=\"!lastSearch\" click.delegate=\"searchMoreHandler()\" class=\"fluid ui basic button tms-search-more\"><i show.bind=\"searchMoreP && searchMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreSearchCnt})</button>\n            </div>\n        </div>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-chat-top-menu.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-chat-top-menu.css\"></require>\n    <div class=\"ui top fixed menu tms-em-chat-top-menu\">\n        <div ref=\"chatToDropdownRef\" class=\"ui dropdown link item ${isActiveSearch ? 'tms-hide' : ''} tms-chat-at\">\n            <!-- <i class=\"big loading at icon\"></i> -->\n            <span class=\"text\"></span>\n            <i class=\"dropdown icon\"></i>\n            <div class=\"menu\">\n                <div class=\"ui icon search input\">\n                    <i class=\"search icon\"></i>\n                    <input ref=\"filterChatToUser\" type=\"text\" placeholder=\"过滤沟通对象\">\n                </div>\n                <div class=\"divider\"></div>\n                <div class=\"header\">\n                    <i class=\"filter icon\"></i> 切换沟通对象(Ctrl+k)\n                </div>\n                <div class=\"scrolling menu\">\n                    <div class=\"header\">\n                        <i class=\"users icon\"></i> 频道\n                    </div>\n                    <a repeat.for=\"item of channels\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/${item.name}\" class=\"item\" title=\"${item.name}\" data-value=\"${item.name}\">\n                        <i class=\"hashtag icon\"></i>${item.title}\n                    </a>\n                    <div class=\"header\">\n                        <i class=\"user icon\"></i> 用户\n                    </div>\n                    <a repeat.for=\"item of users\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/@${item.username}\" class=\"item\" title=\"${item.username}\" data-value=\"@${item.username}\">\n                        <i style=\"font-weight: bold;\" class=\"at icon\"></i>${item.name}\n                    </a>\n                </div>\n            </div>\n        </div>\n        <div class=\"right menu\">\n            <div class=\"item tms-item\">\n                <button click.delegate=\"sibebarRightHandler()\" title=\"右侧边栏(Ctrl+.)\" class=\"basic ${isRightSidebarShow ? 'active' : ''} ui icon button\">\n                    <i class=\"columns icon\"></i>\n                </button>\n            </div>\n            <div class=\"item\">\n                <div ref=\"searchRef\" class=\"ui search\">\n                    <div class=\"ui left icon input\">\n                        <input ref=\"searchInputRef\" keyup.trigger=\"searchKeyupHandler($event)\" focusout.trigger=\"searchFocusoutHandler()\" focusin.trigger=\"searchFocusinHandler()\" class=\"prompt\" type=\"text\" placeholder=\"搜索...\">\n                        <i class=\"${(searchingP && searchingP.readyState != 4) ? 'spinner loading' : 'search'} icon\"></i>\n                        <i ref=\"searchRemoveRef\" click.delegate=\"clearSearchHandler()\" class=\"remove link icon\"></i>\n                    </div>\n                </div>\n            </div>\n            <a class=\"item tms-login-user\">\n                <i class=\"circular user icon\"></i> ${loginUser.name}\n            </a>\n        </div>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-confirm-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"md\" class=\"ui small modal nx-ui-confirm tms-md450\">\r\n        <div class=\"header\">\r\n            ${config.title}\r\n        </div>\r\n        <div class=\"content\">\r\n            <i if.bind=\"config.warning\" class=\"large yellow warning sign icon\" style=\"float: left;\"></i>\r\n            <i if.bind=\"!config.warning\" class=\"large blue info circle icon\" style=\"float: left;\"></i>\r\n            <p style=\"margin-left: 20px;\">\r\n                <span innerhtml.bind=\"config.content\"></span>\r\n            </p>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <div class=\"ui cancel basic blue left floated button\">取消</div>\r\n            <div class=\"ui ok blue button\">确认</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-dropdown.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"dropdown\" class=\"ui dropdown ${classes}\">\r\n        <input type=\"hidden\" name=\"${name}\">\r\n        <i class=\"dropdown icon\"></i>\r\n        <div class=\"default text\">${text}</div>\r\n        <div class=\"menu\">\r\n            <div repeat.for=\"item of menuItems\" task.bind=\"initDropdownHandler($last)\" class=\"item\" data-value=\"${item[valueProp]}\">${item[labelProp]}</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-hotkeys-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-hotkeys-modal.css\"></require>\r\n    <div ref=\"md\" class=\"ui basic modal tms-em-hotkeys-modal\">\r\n        <i class=\"close icon\"></i>\r\n        <!-- <div class=\"header\">\r\n            Archive Old Messages\r\n        </div> -->\r\n        <div class=\"content\">\r\n            <h1 class=\"ui center inverted aligned header\">键盘快捷键\r\n\t\t\t\t<span style=\"position: relative; top: -0.375rem; left: 1rem;\" aria-hidden=\"true\">\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Control\">Ctrl</span>\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Question mark\">/</span>\r\n\t\t\t\t</span>\r\n            </h1>\r\n            <div class=\"ui grid\">\r\n                <div class=\"three column row\">\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>上一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>下一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>第一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>最后一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>历史回退: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow left icon\" aria-label=\"Left arrow\"></i></span></li>\r\n                            <li>历史向前: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow right icon\" aria-label=\"Right arrow\"></i></span></li>\r\n                            <li>标记已读: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                            <li>全部标记已读: <span class=\"keyboard\">Shift</span><span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                            <li>快速切换: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">k</span></li>\r\n                            <li>Browse DMs: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">k</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>\r\n                                自动补全\r\n                                <ul>\r\n                                    <li>名称: <span class=\"subtle_silver\">[a-z]</span><span class=\"keyboard\">Tab</span> <span class=\"subtle_silver\">or</span> <span class=\"keyboard\">@</span><span class=\"keyboard\">Tab</span></li>\r\n                                    <li>频道: <span class=\"keyboard\" aria-label=\"Number symbol\">#</span><span class=\"keyboard\">Tab</span></li>\r\n                                    <li>表情: <span class=\"keyboard\" aria-label=\"Colon\">:</span><span class=\"keyboard\">Tab</span></li>\r\n                                </ul>\r\n                            </li>\r\n                            <li>换行: <span class=\"keyboard\">Shift</span><span class=\"keyboard\">Enter</span></li>\r\n                            <li>输入聚焦: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">i</span></li>\r\n                            <li>编辑: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">DblClick</span></li>\r\n                            <li>编辑上一条: <span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span> <span class=\"subtle_silver\">in input</span></li>\r\n                            <li>响应最后一条: <span class=\"keyboard\" aria-label=\"control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">\\</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>切换边栏: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">.</span></li>\r\n                            <ul>\r\n                                <li>团队: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">e</span></li>\r\n                                <li>标星: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">s</span></li>\r\n                            </ul>\r\n                            <li>粘贴代码片段: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">Enter</span></li>\r\n                            <li>上传文件: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">u</span></li>\r\n                            <li>关闭对话框: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                        </ul>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <!-- <div class=\"image\">\r\n                <i class=\"archive icon\"></i>\r\n            </div>\r\n            <div class=\"description\">\r\n                <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>\r\n            </div> -->\r\n        </div>\r\n        <!-- <div class=\"actions\">\r\n            <div class=\"two fluid ui inverted buttons\">\r\n                <div class=\"ui cancel red basic inverted button\">\r\n                    <i class=\"remove icon\"></i> No\r\n                </div>\r\n                <div class=\"ui ok green basic inverted button\">\r\n                    <i class=\"checkmark icon\"></i> Yes\r\n                </div>\r\n            </div>\r\n        </div> -->\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"modal\" class=\"ui modal ${classes}\">\r\n        <!-- <i class=\"close icon\"></i> -->\r\n        <div class=\"header\">\r\n            <slot name=\"header\">modal header...</slot>\r\n        </div>\r\n        <div class=\"content\">\r\n            <div class=\"ui inverted dimmer\">\r\n                <div class=\"ui loader\"></div>\r\n            </div>\r\n            <slot name=\"content\">modal content...</slot>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <slot name=\"actions\">\r\n                <div style=\"margin-left: 3.5px;\" class=\"ui cancel basic blue left floated button\" textcontent.bind=\"cancelLabel\">取消</div>\r\n                <div class=\"ui ok blue button ${(loading || disabled) ? 'disabled' : ''}\" textcontent.bind=\"confirmLabel\">确认</div>\r\n            </slot>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-top-menu.css', ['module'], function(module) { module.exports = ".tms-em-chat-top-menu.ui.top.menu {\n  padding-left: 220px;\n  height: 60px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .tms-chat-at.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .item.tms-item:before {\n  display: none;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item {\n  padding-left: 5px;\n  padding-right: 5px;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search input {\n  width: 100px;\n  transition: width 0.15s ease-out 0s;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search i.remove.icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu {\n    padding-left: 0;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .ui.basic.button {\n  box-shadow: none;\n}\n"; });
 //# sourceMappingURL=app-bundle.js.map

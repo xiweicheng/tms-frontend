@@ -1,0 +1,21 @@
+<template>
+    <em-modal classes="small" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)" confirm-label="创建">
+        <div slot="header">创建频道</div>
+        <div slot="content" class="tms-em-chat-channel-create">
+            <div ref="frm" class="ui form">
+                <div class="required field">
+                    <label>标识</label>
+                    <input type="text" name="name" value.bind="name" placeholder="">
+                </div>
+                <div class="required field">
+                    <label>名称</label>
+                    <input type="text" name="title" value.bind="title" placeholder="">
+                </div>
+                <div class="field">
+                    <label>描述</label>
+                    <textarea name="desc" value.bind="desc" placeholder="" rows="5"></textarea>
+                </div>
+            </div>
+        </div>
+    </em-modal>
+</template>

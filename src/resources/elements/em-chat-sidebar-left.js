@@ -4,7 +4,9 @@ import { bindable, containerless } from 'aurelia-framework';
 export class EmChatSidebarLeft {
 
     @bindable users;
+    @bindable channels;
     @bindable chatTo;
+    @bindable isAt;
 
     chatToChanged() {
         _.delay(() => {

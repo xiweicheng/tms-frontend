@@ -7,9 +7,9 @@ import {
     default as Dropzone
 } from 'dropzone';
 
-export class ChatDirect {
+import chatService from './chat-service';
 
-    @bindable content = '';
+export class ChatDirect {
 
     offset = 0;
 
@@ -18,12 +18,14 @@ export class ChatDirect {
 
     originalHref = wurl();
 
+    users = [];
+    channels = [];
     chatTo = null;
 
     /**
      * 构造函数
      */
-    constructor(ea) {
+    constructor() {
 
         Dropzone.autoDiscover = false;
         this.poll = poll;
@@ -43,7 +45,7 @@ export class ChatDirect {
         this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_MSG_SENDED, (payload) => {
 
             if (!this.first) {
-                this._init(false);
+                this.listChatDirect(false);
             }
         });
 
@@ -53,6 +55,10 @@ export class ChatDirect {
             if (this.isRightSidebarShow) {
                 $(this.contentBodyRef).width($(this.contentRef).width() - 392);
             }
+        });
+
+        this.subscribe3 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_CREATED, (payload) => {
+            this.channels.splice(0, 0, payload.channel);
         });
 
         this.subscribe4 = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, (payload) => {
@@ -68,6 +74,7 @@ export class ChatDirect {
 
         this.subscribe.dispose();
         this.subscribe2.dispose();
+        this.subscribe3.dispose();
         this.subscribe4.dispose();
 
         clearInterval(this.timeagoTimer);
@@ -79,14 +86,6 @@ export class ChatDirect {
             item.contentMd = marked(item.content);
         });
         return chats;
-    }
-
-    getChatName(name) {
-        if (_.startsWith(name, '@')) {
-            return name.substr(1);
-        } else {
-            return name;
-        }
     }
 
     /**
@@ -101,24 +100,41 @@ export class ChatDirect {
         this.markId = params.id;
         this.routeConfig = routeConfig;
 
+        this.chatId = params.username;
         this.isAt = _.startsWith(params.username, '@');
-        this.chatName = this.getChatName(params.username);
+        this.chatTo = utils.getChatName(params.username);
 
-        this.user = _.find(this.users, {
-            username: this.chatName
+        chatService.loginUser(true).then((user) => {
+            this.loginUser = user;
         });
 
-        let name = this.user ? this.user.name : this.chatName;
-        routeConfig.navModel.setTitle(`${name} | 私聊 | TMS`);
+        chatService.listUsers(true).then((users) => {
+            this.users = users;
+            if (this.isAt) {
+                this.user = _.find(this.users, {
+                    username: this.chatTo
+                });
+                let name = this.user ? this.user.name : this.chatTo;
+                routeConfig.navModel.setTitle(`${name} | 私聊 | TMS`);
 
-        this.init(this.chatName);
+                this.listChatDirect(true);
+            }
+        });
+
+        chatService.listChannels(true).then((channels) => {
+            this.channels = channels;
+            if (!this.isAt) {
+                this.channel = _.find(this.channels, {
+                    name: this.chatTo
+                });
+                routeConfig.navModel.setTitle(`${this.channel.name} | 私聊 | TMS`);
+
+                this.listChatChannel();
+            }
+        });
 
         if (this.markId) {
-            if ('pushState' in history) {
-                history.replaceState(null, '', utils.removeUrlQuery('id'));
-            } else {
-                window.location.href = utils.removeUrlQuery('id');
-            }
+            history.replaceState(null, '', utils.removeUrlQuery('id'));
         }
 
     }
@@ -171,87 +187,60 @@ export class ChatDirect {
         });
     }
 
-    _init(isCareMarkId) {
+    // 获取频道消息
+    listChatChannel() {
 
-        if (!this.chatTo) {
-            toastr.error('聊天对象未指定!');
-            return;
-        }
+        $.get('/admin/chat/channel/listBy', {
+            channelId: this.channel.id,
+            size: 20
+        }, (data) => {
+            this.processChats(data);
+        });
+    }
+
+    // 获取私聊消息
+    listChatDirect(isCareMarkId) {
 
         var data = {
             size: 20,
             chatTo: this.chatTo
         };
 
+        // 如果设定了获取消息界限
         if (this.markId && isCareMarkId) {
             data.id = this.markId;
         }
-
         $.get('/admin/chat/direct/list', data, (data) => {
-            if (data.success) {
-                this.chats = _.reverse(this.convertMd(data.data.content));
-                this.last = data.data.last;
-                this.first = data.data.first;
-                !this.last && (this.lastCnt = data.data.totalElements - data.data.numberOfElements);
-                !this.first && (this.firstCnt = data.data.size * data.data.number);
-
-                _.defer(() => {
-
-                    utils.imgLoaded($(this.commentsRef).find('.comment img'), () => {
-                        if (this.markId) {
-                            $(this.commentsRef).scrollTo(`.comment[data-id=${this.markId}]`, {
-                                offset: this.offset
-                            });
-                        } else {
-                            $(this.commentsRef).scrollTo('max');
-                        }
-                    });
-
-                });
-            } else {
-                toastr.error(data.data, '获取消息失败!');
-                utils.redirect2Login(this.originalHref);
-            }
-        }).always((xhr, sts, error) => {
-            if (sts == 'error') { // for loal dev & debug.
-                utils.redirect2Login(this.originalHref);
-            }
+            this.processChats(data);
         });
     }
 
-    init(chatTo) {
+    // 共同返回消息处理
+    processChats(data) {
+        if (data.success) {
+            this.chats = _.reverse(this.convertMd(data.data.content));
+            this.last = data.data.last;
+            this.first = data.data.first;
+            !this.last && (this.lastCnt = data.data.totalElements - data.data.numberOfElements);
+            !this.first && (this.firstCnt = data.data.size * data.data.number);
 
-        this.chatTo = chatTo;
-        this._init(true);
+            _.defer(() => {
+
+                utils.imgLoaded($(this.commentsRef).find('.comment img'), () => {
+                    if (this.markId) {
+                        $(this.commentsRef).scrollTo(`.comment[data-id=${this.markId}]`, {
+                            offset: this.offset
+                        });
+                    } else {
+                        $(this.commentsRef).scrollTo('max');
+                    }
+                });
+
+            });
+        }
     }
 
-    /**
-     * 当数据绑定引擎绑定到视图时被调用
-     * @param  {[object]} ctx 视图绑定上下文环境对象
-     */
-    bind(ctx) {
-
-        $.get('/admin/user/loginUser', (data) => {
-            if (data.success) {
-                this.loginUser = data.data;
-            } else {
-                toastr.error(data.data, '获取当前登录用户失败!');
-            }
-        });
-
-        $.get('/admin/user/all', {
-            enabled: true
-        }, (data) => {
-            if (data.success) {
-                this.users = data.data;
-                this.user = _.find(this.users, {
-                    username: this.chatTo
-                });
-                this.user && this.routeConfig.navModel.setTitle(`${this.user.name} | 私聊 | TMS`);
-            } else {
-                toastr.error(data.data, '获取全部用户失败!');
-            }
-        });
+    pollChats() {
 
         poll.start((resetCb, stopCb) => {
 
@@ -278,15 +267,20 @@ export class ChatDirect {
                 }
             }).fail((xhr, sts) => {
                 stopCb();
-                if (xhr && xhr.status == 401) {
-                    utils.redirect2Login(this.originalHref);
-                } else {
-                    utils.errorAutoTry(() => {
-                        resetCb();
-                    });
-                }
+                utils.errorAutoTry(() => {
+                    resetCb();
+                });
             });
         });
+    }
+
+    /**
+     * 当数据绑定引擎绑定到视图时被调用
+     * @param  {[object]} ctx 视图绑定上下文环境对象
+     */
+    bind(ctx) {
+
+        // this.pollChats();
     }
 
     /**

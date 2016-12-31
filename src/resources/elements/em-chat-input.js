@@ -4,40 +4,18 @@ import tips from 'common/common-tips';
 import {
     default as SimpleMDE
 } from 'simplemde';
-import {
-    default as marked
-} from 'marked'; // https://github.com/chjj/marked
-import {
-    EventAggregator
-}
-from 'aurelia-event-aggregator';
 
 @containerless
-@inject(EventAggregator)
 export class EmChatInput {
 
     @bindable chatTo;
     @bindable poll;
 
-    /**
-     * 构造函数
-     */
-    constructor(ea) {
-        this.eventAggregator = ea;
-
-        this.subscribe = this.eventAggregator.subscribe(nsCons.HOTKEY, (payload) => {
-            let key = payload.key;
-            if (key == 'ctrl+i') {
-                this.simplemde.codemirror.focus();
-            }
+    initHotkeys() {
+        $(document).bind('keydown', 'ctrl+i', () => {
+            event.preventDefault();
+            this.simplemde.codemirror.focus();
         });
-    }
-
-    /**
-     * 当数据绑定引擎从视图解除绑定时被调用
-     */
-    unbind() {
-        this.subscribe.dispose();
     }
 
     /**
@@ -47,6 +25,7 @@ export class EmChatInput {
         this.initSimpleMDE(this.chatInputRef);
         this.initDropzone();
         this.initPaste();
+        this.initHotkeys();
     }
 
     initPaste() {
@@ -227,7 +206,7 @@ export class EmChatInput {
             if (data.success) {
                 this.poll.reset();
                 this.simplemde.value('');
-                this.eventAggregator.publish(nsCons.EVENT_CHAT_MSG_SENDED, {
+                ea.publish(nsCons.EVENT_CHAT_MSG_SENDED, {
                     data: data
                 });
             } else {

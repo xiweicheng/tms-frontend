@@ -4,11 +4,14 @@ import { bindable, containerless } from 'aurelia-framework';
 export class EmChatTopMenu {
 
     @bindable users;
+    @bindable channels;
     @bindable loginUser;
+    @bindable chatId;
     @bindable chatTo;
+    @bindable isAt;
 
-    chatToChanged() {
-        $(this.chatToDropdownRef).dropdown('set selected', this.chatTo);
+    chatIdChanged() {
+        $(this.chatToDropdownRef).dropdown('set selected', this.chatId);
     }
 
     /**
@@ -103,9 +106,9 @@ export class EmChatTopMenu {
     initChatToDropdownHandler(last) {
         if (last) {
             _.defer(() => {
-                $(this.chatToDropdownRef).dropdown().dropdown('set selected', this.chatTo).dropdown({
+                $(this.chatToDropdownRef).dropdown().dropdown('set selected', this.chatId).dropdown({
                     onChange: (value, text, $choice) => {
-                        window.location = wurl('path') + `#/chat/@${value}`;
+                        window.location = wurl('path') + `#/chat/${value}`;
                     }
                 });
             });
