@@ -10,8 +10,8 @@ export class EmChatTopMenu {
     @bindable chatTo;
     @bindable isAt;
 
-    chatIdChanged() {
-        $(this.chatToDropdownRef).dropdown('set selected', this.chatId);
+    chatToChanged() {
+        $(this.chatToDropdownRef).dropdown('set selected', this.chatTo);
     }
 
     /**
@@ -106,9 +106,9 @@ export class EmChatTopMenu {
     initChatToDropdownHandler(last) {
         if (last) {
             _.defer(() => {
-                $(this.chatToDropdownRef).dropdown().dropdown('set selected', this.chatId).dropdown({
+                $(this.chatToDropdownRef).dropdown().dropdown('set selected', this.chatTo).dropdown({
                     onChange: (value, text, $choice) => {
-                        window.location = wurl('path') + `#/chat/${value}`;
+                        window.location = wurl('path') + `#/chat/${$choice.attr('data-id')}`;
                     }
                 });
             });

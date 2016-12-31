@@ -9,12 +9,12 @@
         <div class="tms-body">
             <div class="tms-channels">
                 <div class="title">
-                    <h3 class="ui header">频道</h3>
+                    <h4 class="ui header"><i class="users icon"></i>频道</h4>
                     <i ref="createChannelRef" class="plus link circular icon"></i>
                 </div>
                 <div class="ui middle aligned selection list">
                     <a repeat.for="item of channels" title="${item.title}(${item.name})" show.bind="!item.hidden" href="#/chat/${item.name}" class="item ${(!isAt && item.name == chatTo) ? 'active' : ''}">
-                        <i class="circular icon users"></i>
+                        <i class="hashtag icon"></i>
                         <div class="content">
                             <div style="color: black;">${item.title}</div>
                         </div>
@@ -24,12 +24,12 @@
             <div class="ui divider"></div>
             <div class="tms-users">
                 <div class="title">
-                    <h3 class="ui header">用户</h3>
+                    <h4 class="ui header"><i class="user icon"></i>用户</h4>
                     <i class="plus link circular icon"></i>
                 </div>
                 <div ref="userListRef" class="ui middle aligned selection list">
                     <a repeat.for="item of users" title="${item.username}" show.bind="!item.hidden" href="#/chat/@${item.username}" class="item ${(isAt && item.username == chatTo) ? 'active' : ''}" data-id="${item.username}">
-                        <i class="circular icon user"></i>
+                        <i style="font-weight: bold;" class="at icon"></i>
                         <div class="content">
                             <div style="color: black;">${item.name ? item.name : item.username}</div>
                         </div>

@@ -18,13 +18,13 @@
                     <div class="header">
                         <i class="users icon"></i> 频道
                     </div>
-                    <a repeat.for="item of channels" task.bind="initChatToDropdownHandler($last)" href="#/chat/${item.name}" class="item" title="${item.name}" data-value="${item.name}">
+                    <a repeat.for="item of channels" task.bind="initChatToDropdownHandler($last)" href="#/chat/${item.name}" class="item" title="${item.name}" data-value="${item.name}" data-id="${item.name}">
                         <i class="hashtag icon"></i>${item.title}
                     </a>
                     <div class="header">
                         <i class="user icon"></i> 用户
                     </div>
-                    <a repeat.for="item of users" task.bind="initChatToDropdownHandler($last)" href="#/chat/@${item.username}" class="item" title="${item.username}" data-value="@${item.username}">
+                    <a repeat.for="item of users" task.bind="initChatToDropdownHandler($last)" href="#/chat/@${item.username}" class="item" title="${item.username}" data-value="${item.username}" data-id="@${item.username}">
                         <i style="font-weight: bold;" class="at icon"></i>${item.name}
                     </a>
                 </div>

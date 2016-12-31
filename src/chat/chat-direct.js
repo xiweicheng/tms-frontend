@@ -13,8 +13,8 @@ export class ChatDirect {
 
     offset = 0;
 
-    first = true;
-    last = true;
+    first = true; // 第一页
+    last = true; // 最后一页
 
     originalHref = wurl();
 
@@ -44,7 +44,9 @@ export class ChatDirect {
 
         this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_MSG_SENDED, (payload) => {
 
-            if (!this.first) {
+            poll.reset();
+
+            if (!this.first) { // 不是第一页
                 this.listChatDirect(false);
             }
         });
@@ -240,6 +242,7 @@ export class ChatDirect {
         }
     }
 
+    // 消息轮询处理
     pollChats() {
 
         poll.start((resetCb, stopCb) => {
@@ -250,10 +253,24 @@ export class ChatDirect {
 
             let lastChat = _.last(this.chats);
 
-            $.get('/admin/chat/direct/latest', {
-                id: lastChat ? lastChat.id : 0,
-                chatTo: this.chatTo
-            }, (data) => {
+            let url;
+            let data;
+
+            if (this.isAt) {
+                url = `/admin/chat/direct/latest`;
+                data = {
+                    id: lastChat ? lastChat.id : 0,
+                    chatTo: this.chatTo
+                };
+            } else {
+                url = `/admin/chat/channel/latest`;
+                data = {
+                    id: lastChat ? lastChat.id : 0,
+                    channelId: this.channel.id
+                };
+            }
+
+            $.get(url, data, (data) => {
                 if (data.success) {
                     if (data.data.length == 0) {
                         return;
@@ -280,7 +297,7 @@ export class ChatDirect {
      */
     bind(ctx) {
 
-        // this.pollChats();
+        this.pollChats();
     }
 
     /**
