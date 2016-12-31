@@ -5,8 +5,6 @@
     <require from="swipebox/src/css/swipebox.min.css"></require>
     <require from="simplemde/dist/simplemde.min.css"></require>
     <require from="highlight/styles/github.css"></require>
-    <require from="resources/elements/em-confirm-modal"></require>
-    <require from="resources/elements/em-chat-input"></require>
     <div ref="chatContainerRef" class="tms-chat-direct">
         <em-chat-top-menu users.bind="users" login-user.bind="loginUser" chat-to.bind="chatTo"></em-chat-top-menu>
         <em-chat-sidebar-left users.bind="users" chat-to.bind="chatTo"></em-chat-sidebar-left>
@@ -14,69 +12,12 @@
             <div ref="contentBodyRef" class="tms-content-body">
                 <div ref="commentsRef" class="ui basic segment minimal selection list segment comments">
                     <button if.bind="!last" click.delegate="lastMoreHandler()" class="fluid basic ui button tms-pre-more"><i show.bind="lastMoreP && lastMoreP.readyState != 4" class="spinner loading icon"></i> 加载更多(${lastCnt})</button>
-                    <div repeat.for="item of chats" swipebox class="comment item ${item.id == markId ? 'active' : ''}" data-id="${item.id}">
-                        <a class="avatar">
-                            <i class="circular icon large user"></i>
-                        </a>
-                        <div class="content">
-                            <a class="author">${item.creator.name}</a>
-                            <div class="metadata">
-                                <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
-                            </div>
-                            <div show.bind="!item.isEditing" class="text markdown-body" innerhtml.bind="item.contentMd"></div>
-                            <textarea ref="editTxtRef" pastable autosize dropzone keydown.trigger="eidtKeydownHandler($event, item, editTxtRef)" show.bind="item.isEditing" value.bind="item.content" class="tms-edit-textarea" rows="1"></textarea>
-                            <div show.bind="item.isEditing" class="ui compact icon buttons tms-edit-actions">
-                                <button click.delegate="editOkHandler($event, item, editTxtRef)" title="保存 (ctrl+enter)" class="ui left attached compact icon button">
-                                    <i class="checkmark icon"></i>
-                                </button>
-                                <button click.delegate="editCancelHandler($event, item, editTxtRef)" title="取消 (esc)" class="ui attached compact icon button">
-                                    <i class="remove icon"></i>
-                                </button>
-                                <button dropzone="clickable.bind: !0; target.bind: editTxtRef" title="上传 (ctrl+u)" class="ui right attached compact icon button">
-                                    <i class="upload icon"></i>
-                                </button>
-                            </div>
-                            <div class="actions">
-                                <a if.bind="item.creator.username == loginUser.username" click.delegate="editHandler(item, editTxtRef)" class="tms-edit">编辑</a>
-                                <a if.bind="item.creator.username == loginUser.username" click.delegate="deleteHandler(item)" class="tms-delete">删除</a>
-                                <a class="tms-copy tms-clipboard" data-clipboard-text="${item.content}">复制</a>
-                                <a class="tms-share tms-clipboard" data-clipboard-text="${selfLink + '?id=' + item.id}">分享</a>
-                            </div>
-                        </div>
-                    </div>
+                    <em-chat-content-item chats.bind="chats" login-user.bind="loginUser"></em-chat-content-item>
                     <button if.bind="!first" click.delegate="firstMoreHandler()" class="fluid basic ui button tms-next-more"><i show.bind="nextMoreP && nextMoreP.readyState != 4" class="spinner loading icon"></i> 加载更多(${firstCnt})</button>
                 </div>
                 <em-chat-input chat-to.bind="chatTo" poll.bind="poll" em-chat-input.ref="emChatInputRef"></em-chat-input>
             </div>
-            <div ref="rightSidebarRef" class="tms-right-sidebar">
-                <div class="panel-search">
-                    <div class="ui basic segment minimal selection list segment comments">
-                        <h1 show.bind="!searchChats.length" class="ui center aligned header">无符合检索结果</h1>
-                        <div repeat.for="item of searchChats" mouseleave.trigger="searchItemMouseleaveHandler(item)" mouseenter.trigger="searchItemMouseenterHandler(item)" swipebox class="comment item ${item.id == markId ? 'active' : ''}" data-id="${item.id}">
-                            <a class="avatar">
-                                <i class="circular icon large user"></i>
-                            </a>
-                            <div class="content">
-                                <a class="author">${item.creator.name}</a>
-                                <div class="metadata">
-                                    <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
-                                </div>
-                                <div class="text markdown-body ${item.isOpen ? 'tms-open' : ''}" innerhtml.bind="item.contentMd"></div>
-                                <div class="actions">
-                                    <a click.delegate="gotoChatHandler(item)" class="tms-goto" href="">定位</a>
-                                    <a class="tms-copy tms-clipboard" data-clipboard-text="${item.content}">复制</a>
-                                    <a class="tms-share tms-clipboard" data-clipboard-text="${selfLink + '?id=' + item.id}">分享</a>
-                                </div>
-                            </div>
-                            <div class="tms-btn-open-search-item" click.delegate="openSearchItemHandler(item)">
-                                <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
-                            </div>
-                        </div>
-                        <button if.bind="!lastSearch" click.delegate="searchMoreHandler()" class="fluid ui basic button tms-search-more"><i show.bind="searchMoreP && searchMoreP.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreSearchCnt})</button>
-                    </div>
-                </div>
-            </div>
+            <em-chat-sidebar-right></em-chat-sidebar-right>
         </div>
     </div>
-    <em-confirm-modal em-confirm-modal.ref="emConfirmModal"></em-confirm-modal>
 </template>

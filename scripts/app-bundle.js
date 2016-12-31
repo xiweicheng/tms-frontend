@@ -220,10 +220,8 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             _initDefineProp(this, 'content', _descriptor, this);
 
             this.offset = 0;
-            this.selfLink = utils.getBaseUrl() + wurl('path') + '#' + utils.getHash();
             this.first = true;
             this.last = true;
-            this.lastSearch = true;
             this.originalHref = wurl();
             this.chatTo = null;
 
@@ -258,15 +256,9 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                 }
             });
 
-            this.subscribe3 = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_RESULT, function (payload) {
+            this.subscribe4 = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, function (payload) {
 
-                var result = payload.result;
-                _this.searchChats = result.content;
-                _.each(_this.searchChats, function (item) {
-                    item.contentMd = marked(item.content);
-                });
-                _this.lastSearch = result.last;
-                _this.moreSearchCnt = result.totalElements - (result.number + 1) * result.size;
+                _this.gotoChatItem(payload.chatItem);
             });
         };
 
@@ -274,7 +266,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
 
             this.subscribe.dispose();
             this.subscribe2.dispose();
-            this.subscribe3.dispose();
+            this.subscribe4.dispose();
 
             clearInterval(this.timeagoTimer);
             _commonPoll2.default.stop();
@@ -486,102 +478,12 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             });
         };
 
-        ChatDirect.prototype.deleteHandler = function deleteHandler(item) {
-            var _this6 = this;
-
-            this.emConfirmModal.show({
-                onapprove: function onapprove() {
-                    $.post('/admin/chat/direct/delete', {
-                        id: item.id
-                    }, function (data, textStatus, xhr) {
-                        if (data.success) {
-                            _this6.chats = _.reject(_this6.chats, {
-                                id: item.id
-                            });
-                            toastr.success('删除消息成功!');
-                        } else {
-                            toastr.error(data.data, '删除消息失败!');
-                        }
-                    });
-                }
-            });
-        };
-
-        ChatDirect.prototype.editHandler = function editHandler(item, editTxtRef) {
-            item.isEditing = true;
-            item.contentOld = item.content;
-            _.defer(function () {
-                $(editTxtRef).focus().select();
-                autosize.update(editTxtRef);
-            });
-        };
-
-        ChatDirect.prototype.editOkHandler = function editOkHandler(evt, item, txtRef) {
-            this.editSave(item, txtRef);
-            item.isEditing = false;
-        };
-
-        ChatDirect.prototype.editCancelHandler = function editCancelHandler(evt, item, txtRef) {
-            item.content = item.contentOld;
-            $(txtRef).val(item.content);
-            item.isEditing = false;
-        };
-
-        ChatDirect.prototype.editSave = function editSave(item, txtRef) {
-            var _this7 = this;
-
-            this.sending = true;
-
-            item.content = $(txtRef).val();
-
-            var html = $('<div class="markdown-body"/>').html('<style>.markdown-body{font-size:14px;line-height:1.6}.markdown-body>:first-child{margin-top:0!important}.markdown-body>:last-child{margin-bottom:0!important}.markdown-body a.absent{color:#C00}.markdown-body a.anchor{bottom:0;cursor:pointer;display:block;left:0;margin-left:-30px;padding-left:30px;position:absolute;top:0}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{cursor:text;font-weight:700;margin:20px 0 10px;padding:0;position:relative}.markdown-body h1 .mini-icon-link,.markdown-body h2 .mini-icon-link,.markdown-body h3 .mini-icon-link,.markdown-body h4 .mini-icon-link,.markdown-body h5 .mini-icon-link,.markdown-body h6 .mini-icon-link{color:#000;display:none}.markdown-body h1:hover a.anchor,.markdown-body h2:hover a.anchor,.markdown-body h3:hover a.anchor,.markdown-body h4:hover a.anchor,.markdown-body h5:hover a.anchor,.markdown-body h6:hover a.anchor{line-height:1;margin-left:-22px;padding-left:0;text-decoration:none;top:15%}.markdown-body h1:hover a.anchor .mini-icon-link,.markdown-body h2:hover a.anchor .mini-icon-link,.markdown-body h3:hover a.anchor .mini-icon-link,.markdown-body h4:hover a.anchor .mini-icon-link,.markdown-body h5:hover a.anchor .mini-icon-link,.markdown-body h6:hover a.anchor .mini-icon-link{display:inline-block}.markdown-body hr:after,.markdown-body hr:before{display:table;content:""}.markdown-body h1 code,.markdown-body h1 tt,.markdown-body h2 code,.markdown-body h2 tt,.markdown-body h3 code,.markdown-body h3 tt,.markdown-body h4 code,.markdown-body h4 tt,.markdown-body h5 code,.markdown-body h5 tt,.markdown-body h6 code,.markdown-body h6 tt{font-size:inherit}.markdown-body h1{color:#000;font-size:28px}.markdown-body h2{border-bottom:1px solid #CCC;color:#000;font-size:24px}.markdown-body h3{font-size:18px}.markdown-body h4{font-size:16px}.markdown-body h5{font-size:14px}.markdown-body h6{color:#777;font-size:14px}.markdown-body blockquote,.markdown-body dl,.markdown-body ol,.markdown-body p,.markdown-body pre,.markdown-body table,.markdown-body ul{margin:15px 0}.markdown-body hr{overflow:hidden;background:#e7e7e7;height:4px;padding:0;margin:16px 0;border:0;-moz-box-sizing:content-box;box-sizing:content-box}.markdown-body h1+p,.markdown-body h2+p,.markdown-body h3+p,.markdown-body h4+p,.markdown-body h5+p,.markdown-body h6+p,.markdown-body ol li>:first-child,.markdown-body ul li>:first-child{margin-top:0}.markdown-body hr:after{clear:both}.markdown-body a:first-child h1,.markdown-body a:first-child h2,.markdown-body a:first-child h3,.markdown-body a:first-child h4,.markdown-body a:first-child h5,.markdown-body a:first-child h6,.markdown-body>h1:first-child,.markdown-body>h1:first-child+h2,.markdown-body>h2:first-child,.markdown-body>h3:first-child,.markdown-body>h4:first-child,.markdown-body>h5:first-child,.markdown-body>h6:first-child{margin-top:0;padding-top:0}.markdown-body li p.first{display:inline-block}.markdown-body ol,.markdown-body ul{padding-left:30px}.markdown-body ol.no-list,.markdown-body ul.no-list{list-style-type:none;padding:0}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-bottom:0}.markdown-body dl{padding:0}.markdown-body dl dt{font-size:14px;font-style:italic;font-weight:700;margin:15px 0 5px;padding:0}.markdown-body dl dt:first-child{padding:0}.markdown-body dl dt>:first-child{margin-top:0}.markdown-body dl dt>:last-child{margin-bottom:0}.markdown-body dl dd{margin:0 0 15px;padding:0 15px}.markdown-body blockquote>:first-child,.markdown-body dl dd>:first-child{margin-top:0}.markdown-body blockquote>:last-child,.markdown-body dl dd>:last-child{margin-bottom:0}.markdown-body blockquote{border-left:4px solid #DDD;color:#777;padding:0 15px}.markdown-body table th{font-weight:700}.markdown-body table td,.markdown-body table th{border:1px solid #CCC;padding:6px 13px}.markdown-body table tr{background-color:#FFF;border-top:1px solid #CCC}.markdown-body table tr:nth-child(2n){background-color:#F8F8F8}.markdown-body img{max-width:100%}.markdown-body span.frame{display:block;overflow:hidden}.markdown-body span.frame>span{border:1px solid #DDD;display:block;float:left;margin:13px 0 0;overflow:hidden;padding:7px;width:auto}.markdown-body span.frame span img{display:block;float:left}.markdown-body span.frame span span{clear:both;color:#333;display:block;padding:5px 0 0}.markdown-body span.align-center{clear:both;display:block;overflow:hidden}.markdown-body span.align-center>span{display:block;margin:13px auto 0;overflow:hidden;text-align:center}.markdown-body span.align-center span img{margin:0 auto;text-align:center}.markdown-body span.align-right{clear:both;display:block;overflow:hidden}.markdown-body span.align-right>span{display:block;margin:13px 0 0;overflow:hidden;text-align:right}.markdown-body span.align-right span img{margin:0;text-align:right}.markdown-body span.float-left{display:block;float:left;margin-right:13px;overflow:hidden}.markdown-body span.float-left span{margin:13px 0 0}.markdown-body span.float-right{display:block;float:right;margin-left:13px;overflow:hidden}.markdown-body span.float-right>span{display:block;margin:13px auto 0;overflow:hidden;text-align:right}.markdown-body code,.markdown-body tt{background-color:#F8F8F8;border:1px solid #EAEAEA;border-radius:3px;margin:0 2px;padding:0 5px;white-space:nowrap}.markdown-body pre>code{background:none;border:none;margin:0;padding:0;white-space:pre}.markdown-body .highlight pre,.markdown-body pre{background-color:#F8F8F8;border:1px solid #CCC;border-radius:3px;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px}.markdown-body pre code,.markdown-body pre tt{background-color:transparent;border:none}</style>' + marked(item.content)).wrap('<div/>').parent().html();
-
-            $.post('/admin/chat/direct/update', {
-                baseUrl: utils.getBaseUrl(),
-                path: wurl('path'),
-                id: item.id,
-                content: item.content,
-                contentHtml: html
-            }, function (data, textStatus, xhr) {
-                if (data.success) {
-                    toastr.success('更新消息成功!');
-                    item.contentMd = marked(item.content);
-                    item.isEditing = false;
-                } else {
-                    toastr.error(data.data, '更新消息失败!');
-                }
-            }).always(function () {
-                _this7.sending = false;
-            });
-        };
-
-        ChatDirect.prototype.eidtKeydownHandler = function eidtKeydownHandler(evt, item, txtRef) {
-
-            if (this.sending) {
-                return false;
-            }
-
-            if (evt.ctrlKey && evt.keyCode === 13) {
-
-                this.editSave(item, txtRef);
-
-                return false;
-            } else if (evt.ctrlKey && evt.keyCode === 85) {
-                $(txtRef).next('.tms-edit-actions').find('.upload').click();
-                return false;
-            } else if (evt.keyCode === 27) {
-                this.editCancelHandler(evt, item, txtRef);
-            }
-
-            return true;
-        };
-
         ChatDirect.prototype.attached = function attached() {
-            var _this8 = this;
+            var _this6 = this;
 
             var tg = timeago();
             this.timeagoTimer = setInterval(function () {
-                $(_this8.chatContainerRef).find('[data-timeago]').each(function (index, el) {
+                $(_this6.chatContainerRef).find('[data-timeago]').each(function (index, el) {
                     $(el).text(tg.format($(el).attr('data-timeago'), 'zh_CN'));
                 });
             }, 5000);
@@ -591,16 +493,16 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
         };
 
         ChatDirect.prototype.initFocusedComment = function initFocusedComment() {
-            var _this9 = this;
+            var _this7 = this;
 
             $(this.commentsRef).on('click', '.comment.item', function (event) {
-                _this9.focusedComment = $(event.currentTarget);
+                _this7.focusedComment = $(event.currentTarget);
             }).on('dblclick', '.comment.item', function (event) {
                 if (event.ctrlKey) {
                     (function () {
                         var chatId = $(event.currentTarget).attr('data-id');
                         var $t = $(event.currentTarget).find('.content > textarea');
-                        var item = _.find(_this9.chats, { id: Number.parseInt(chatId) });
+                        var item = _.find(_this7.chats, { id: Number.parseInt(chatId) });
 
                         item.isEditing = true;
                         item.contentOld = item.content;
@@ -609,26 +511,6 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                             autosize.update($t.get(0));
                         });
                     })();
-                }
-            });
-        };
-
-        ChatDirect.prototype.searchMoreHandler = function searchMoreHandler() {
-            var _this10 = this;
-
-            this.searchMoreP = $.get('/admin/chat/direct/search', {
-                search: this.search,
-                size: this.searchPage.size,
-                page: this.searchPage.number + 1
-            }, function (data) {
-                if (data.success) {
-                    _.each(data.data.content, function (item) {
-                        item.contentMd = marked(item.content);
-                    });
-                    _this10.searchChats = _.concat(_this10.searchChats, data.data.content);
-
-                    _this10.lastSearch = data.data.last;
-                    _this10.moreSearchCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
                 }
             });
         };
@@ -659,39 +541,35 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
         };
 
         ChatDirect.prototype.initHotkeys = function initHotkeys() {
-            var _this11 = this;
+            var _this8 = this;
 
             $(document).bind('keydown', 'ctrl+u', function (evt) {
                 evt.preventDefault();
-                $(_this11.emChatInputRef.btnItemUploadRef).find('.content').click();
+                $(_this8.emChatInputRef.btnItemUploadRef).find('.content').click();
             }).bind('keydown', 'ctrl+/', function (evt) {
                 evt.preventDefault();
-                _this11.emChatInputRef.emHotkeysModal.show();
+                _this8.emChatInputRef.emHotkeysModal.show();
             }).bind('keydown', 'alt+up', function (evt) {
                 evt.preventDefault();
-                _this11.scrollTo(_this11.getScrollTargetComment(true));
+                _this8.scrollTo(_this8.getScrollTargetComment(true));
             }).bind('keydown', 'alt+down', function (evt) {
                 evt.preventDefault();
-                _this11.scrollTo(_this11.getScrollTargetComment());
+                _this8.scrollTo(_this8.getScrollTargetComment());
             }).bind('keydown', 'alt+ctrl+up', function () {
                 event.preventDefault();
-                _this11.scrollTo($(_this11.commentsRef).children('.comment.item:first'));
+                _this8.scrollTo($(_this8.commentsRef).children('.comment.item:first'));
             }).bind('keydown', 'alt+ctrl+down', function () {
                 event.preventDefault();
-                _this11.scrollTo($(_this11.commentsRef).children('.comment.item:last'));
+                _this8.scrollTo($(_this8.commentsRef).children('.comment.item:last'));
             }).bind('keydown', 'ctrl+i', function () {
                 event.preventDefault();
                 ea.publish(nsCons.HOTKEY, {
                     key: 'ctrl+i'
                 });
-            }).bind('keydown', 'o', function () {
-                event.preventDefault();
-                var item = _.find(_this11.searchChats, { isHover: true });
-                item && (item.isOpen = !item.isOpen);
             });
         };
 
-        ChatDirect.prototype.gotoChatHandler = function gotoChatHandler(item) {
+        ChatDirect.prototype.gotoChatItem = function gotoChatItem(item) {
 
             var chat = _.find(this.chats, { id: item.id });
             if (chat) {
@@ -713,19 +591,6 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             }
         };
 
-        ChatDirect.prototype.openSearchItemHandler = function openSearchItemHandler(item) {
-            item.isOpen = !item.isOpen;
-        };
-
-        ChatDirect.prototype.searchItemMouseleaveHandler = function searchItemMouseleaveHandler(item) {
-            item.isOpen = false;
-            item.isHover = false;
-        };
-
-        ChatDirect.prototype.searchItemMouseenterHandler = function searchItemMouseenterHandler(item) {
-            item.isHover = true;
-        };
-
         return ChatDirect;
     }(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'content', [_aureliaFramework.bindable], {
         enumerable: true,
@@ -742,7 +607,8 @@ define('common/common-constant',[], function () {
         EVENT_CHAT_MSG_SENDED: 'event_chat_msg_sended',
         EVENT_CHAT_MSG_EDIT_UPLOAD: 'event_chat_msg_edit_upload',
         EVENT_CHAT_SIDEBAR_TOGGLE: 'event_chat_sidebar_toggle',
-        EVENT_CHAT_SEARCH_RESULT: 'event_chat_search_result'
+        EVENT_CHAT_SEARCH_RESULT: 'event_chat_search_result',
+        EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM: 'event_chat_search_goto_chat_item'
     };
 });
 define('common/common-plugin',[], function () {
@@ -1374,7 +1240,7 @@ define('resources/index',['exports', './config'], function (exports, _config) {
 
         _config2.default.context(aurelia).initHttp().initToastr().initAjax();
 
-        aurelia.globalResources(['resources/value-converters/vc-common', 'resources/attributes/attr-task', 'resources/attributes/attr-swipebox', 'resources/attributes/attr-pastable', 'resources/attributes/attr-autosize', 'resources/attributes/attr-dropzone', 'resources/elements/em-chat-top-menu', 'resources/elements/em-chat-sidebar-left']);
+        aurelia.globalResources(['resources/value-converters/vc-common', 'resources/attributes/attr-task', 'resources/attributes/attr-swipebox', 'resources/attributes/attr-pastable', 'resources/attributes/attr-autosize', 'resources/attributes/attr-dropzone', 'resources/elements/em-confirm-modal', 'resources/elements/em-hotkeys-modal', 'resources/elements/em-chat-input', 'resources/elements/em-chat-top-menu', 'resources/elements/em-chat-sidebar-left', 'resources/elements/em-chat-content-item', 'resources/elements/em-chat-sidebar-right']);
     }
 });
 define('test/test-lifecycle',['exports', 'aurelia-framework', 'aurelia-event-aggregator'], function (exports, _aureliaFramework, _aureliaEventAggregator) {
@@ -2687,7 +2553,8 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
                     _this2.toggleRightSidebar(true);
 
                     ea.publish(nsCons.EVENT_CHAT_SEARCH_RESULT, {
-                        result: data.data
+                        result: data.data,
+                        search: _this2.search
                     });
                 }
             });
@@ -21079,8 +20946,323 @@ define('resources/elements/em-chat-sidebar-left',['exports', 'aurelia-framework'
         initializer: null
     })), _class2)) || _class;
 });
+define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmChatContentItem = undefined;
+
+    function _initDefineProp(target, property, descriptor, context) {
+        if (!descriptor) return;
+        Object.defineProperty(target, property, {
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+            writable: descriptor.writable,
+            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+        });
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+        var desc = {};
+        Object['ke' + 'ys'](descriptor).forEach(function (key) {
+            desc[key] = descriptor[key];
+        });
+        desc.enumerable = !!desc.enumerable;
+        desc.configurable = !!desc.configurable;
+
+        if ('value' in desc || desc.initializer) {
+            desc.writable = true;
+        }
+
+        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+            return decorator(target, property, desc) || desc;
+        }, desc);
+
+        if (context && desc.initializer !== void 0) {
+            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+            desc.initializer = undefined;
+        }
+
+        if (desc.initializer === void 0) {
+            Object['define' + 'Property'](target, property, desc);
+            desc = null;
+        }
+
+        return desc;
+    }
+
+    function _initializerWarningHelper(descriptor, context) {
+        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+    }
+
+    var _dec, _class, _desc, _value, _class2, _descriptor, _descriptor2;
+
+    var EmChatContentItem = exports.EmChatContentItem = (_dec = (0, _aureliaFramework.bindable)({ defaultBindingMode: _aureliaFramework.bindingMode.twoWay }), (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
+        function EmChatContentItem() {
+            _classCallCheck(this, EmChatContentItem);
+
+            _initDefineProp(this, 'chats', _descriptor, this);
+
+            _initDefineProp(this, 'loginUser', _descriptor2, this);
+
+            this.selfLink = utils.getBaseUrl() + wurl('path') + '#' + utils.getHash();
+        }
+
+        EmChatContentItem.prototype.deleteHandler = function deleteHandler(item) {
+            var _this = this;
+
+            this.emConfirmModal.show({
+                onapprove: function onapprove() {
+                    $.post('/admin/chat/direct/delete', {
+                        id: item.id
+                    }, function (data, textStatus, xhr) {
+                        if (data.success) {
+                            _this.chats = _.reject(_this.chats, {
+                                id: item.id
+                            });
+                            toastr.success('删除消息成功!');
+                        } else {
+                            toastr.error(data.data, '删除消息失败!');
+                        }
+                    });
+                }
+            });
+        };
+
+        EmChatContentItem.prototype.editHandler = function editHandler(item, editTxtRef) {
+            item.isEditing = true;
+            item.contentOld = item.content;
+            _.defer(function () {
+                $(editTxtRef).focus().select();
+                autosize.update(editTxtRef);
+            });
+        };
+
+        EmChatContentItem.prototype.editOkHandler = function editOkHandler(evt, item, txtRef) {
+            this.editSave(item, txtRef);
+            item.isEditing = false;
+        };
+
+        EmChatContentItem.prototype.editCancelHandler = function editCancelHandler(evt, item, txtRef) {
+            item.content = item.contentOld;
+            $(txtRef).val(item.content);
+            item.isEditing = false;
+        };
+
+        EmChatContentItem.prototype.editSave = function editSave(item, txtRef) {
+            var _this2 = this;
+
+            this.sending = true;
+
+            item.content = $(txtRef).val();
+
+            var html = $('<div class="markdown-body"/>').html('<style>.markdown-body{font-size:14px;line-height:1.6}.markdown-body>:first-child{margin-top:0!important}.markdown-body>:last-child{margin-bottom:0!important}.markdown-body a.absent{color:#C00}.markdown-body a.anchor{bottom:0;cursor:pointer;display:block;left:0;margin-left:-30px;padding-left:30px;position:absolute;top:0}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{cursor:text;font-weight:700;margin:20px 0 10px;padding:0;position:relative}.markdown-body h1 .mini-icon-link,.markdown-body h2 .mini-icon-link,.markdown-body h3 .mini-icon-link,.markdown-body h4 .mini-icon-link,.markdown-body h5 .mini-icon-link,.markdown-body h6 .mini-icon-link{color:#000;display:none}.markdown-body h1:hover a.anchor,.markdown-body h2:hover a.anchor,.markdown-body h3:hover a.anchor,.markdown-body h4:hover a.anchor,.markdown-body h5:hover a.anchor,.markdown-body h6:hover a.anchor{line-height:1;margin-left:-22px;padding-left:0;text-decoration:none;top:15%}.markdown-body h1:hover a.anchor .mini-icon-link,.markdown-body h2:hover a.anchor .mini-icon-link,.markdown-body h3:hover a.anchor .mini-icon-link,.markdown-body h4:hover a.anchor .mini-icon-link,.markdown-body h5:hover a.anchor .mini-icon-link,.markdown-body h6:hover a.anchor .mini-icon-link{display:inline-block}.markdown-body hr:after,.markdown-body hr:before{display:table;content:""}.markdown-body h1 code,.markdown-body h1 tt,.markdown-body h2 code,.markdown-body h2 tt,.markdown-body h3 code,.markdown-body h3 tt,.markdown-body h4 code,.markdown-body h4 tt,.markdown-body h5 code,.markdown-body h5 tt,.markdown-body h6 code,.markdown-body h6 tt{font-size:inherit}.markdown-body h1{color:#000;font-size:28px}.markdown-body h2{border-bottom:1px solid #CCC;color:#000;font-size:24px}.markdown-body h3{font-size:18px}.markdown-body h4{font-size:16px}.markdown-body h5{font-size:14px}.markdown-body h6{color:#777;font-size:14px}.markdown-body blockquote,.markdown-body dl,.markdown-body ol,.markdown-body p,.markdown-body pre,.markdown-body table,.markdown-body ul{margin:15px 0}.markdown-body hr{overflow:hidden;background:#e7e7e7;height:4px;padding:0;margin:16px 0;border:0;-moz-box-sizing:content-box;box-sizing:content-box}.markdown-body h1+p,.markdown-body h2+p,.markdown-body h3+p,.markdown-body h4+p,.markdown-body h5+p,.markdown-body h6+p,.markdown-body ol li>:first-child,.markdown-body ul li>:first-child{margin-top:0}.markdown-body hr:after{clear:both}.markdown-body a:first-child h1,.markdown-body a:first-child h2,.markdown-body a:first-child h3,.markdown-body a:first-child h4,.markdown-body a:first-child h5,.markdown-body a:first-child h6,.markdown-body>h1:first-child,.markdown-body>h1:first-child+h2,.markdown-body>h2:first-child,.markdown-body>h3:first-child,.markdown-body>h4:first-child,.markdown-body>h5:first-child,.markdown-body>h6:first-child{margin-top:0;padding-top:0}.markdown-body li p.first{display:inline-block}.markdown-body ol,.markdown-body ul{padding-left:30px}.markdown-body ol.no-list,.markdown-body ul.no-list{list-style-type:none;padding:0}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-bottom:0}.markdown-body dl{padding:0}.markdown-body dl dt{font-size:14px;font-style:italic;font-weight:700;margin:15px 0 5px;padding:0}.markdown-body dl dt:first-child{padding:0}.markdown-body dl dt>:first-child{margin-top:0}.markdown-body dl dt>:last-child{margin-bottom:0}.markdown-body dl dd{margin:0 0 15px;padding:0 15px}.markdown-body blockquote>:first-child,.markdown-body dl dd>:first-child{margin-top:0}.markdown-body blockquote>:last-child,.markdown-body dl dd>:last-child{margin-bottom:0}.markdown-body blockquote{border-left:4px solid #DDD;color:#777;padding:0 15px}.markdown-body table th{font-weight:700}.markdown-body table td,.markdown-body table th{border:1px solid #CCC;padding:6px 13px}.markdown-body table tr{background-color:#FFF;border-top:1px solid #CCC}.markdown-body table tr:nth-child(2n){background-color:#F8F8F8}.markdown-body img{max-width:100%}.markdown-body span.frame{display:block;overflow:hidden}.markdown-body span.frame>span{border:1px solid #DDD;display:block;float:left;margin:13px 0 0;overflow:hidden;padding:7px;width:auto}.markdown-body span.frame span img{display:block;float:left}.markdown-body span.frame span span{clear:both;color:#333;display:block;padding:5px 0 0}.markdown-body span.align-center{clear:both;display:block;overflow:hidden}.markdown-body span.align-center>span{display:block;margin:13px auto 0;overflow:hidden;text-align:center}.markdown-body span.align-center span img{margin:0 auto;text-align:center}.markdown-body span.align-right{clear:both;display:block;overflow:hidden}.markdown-body span.align-right>span{display:block;margin:13px 0 0;overflow:hidden;text-align:right}.markdown-body span.align-right span img{margin:0;text-align:right}.markdown-body span.float-left{display:block;float:left;margin-right:13px;overflow:hidden}.markdown-body span.float-left span{margin:13px 0 0}.markdown-body span.float-right{display:block;float:right;margin-left:13px;overflow:hidden}.markdown-body span.float-right>span{display:block;margin:13px auto 0;overflow:hidden;text-align:right}.markdown-body code,.markdown-body tt{background-color:#F8F8F8;border:1px solid #EAEAEA;border-radius:3px;margin:0 2px;padding:0 5px;white-space:nowrap}.markdown-body pre>code{background:none;border:none;margin:0;padding:0;white-space:pre}.markdown-body .highlight pre,.markdown-body pre{background-color:#F8F8F8;border:1px solid #CCC;border-radius:3px;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px}.markdown-body pre code,.markdown-body pre tt{background-color:transparent;border:none}</style>' + marked(item.content)).wrap('<div/>').parent().html();
+
+            $.post('/admin/chat/direct/update', {
+                baseUrl: utils.getBaseUrl(),
+                path: wurl('path'),
+                id: item.id,
+                content: item.content,
+                contentHtml: html
+            }, function (data, textStatus, xhr) {
+                if (data.success) {
+                    toastr.success('更新消息成功!');
+                    item.contentMd = marked(item.content);
+                    item.isEditing = false;
+                } else {
+                    toastr.error(data.data, '更新消息失败!');
+                }
+            }).always(function () {
+                _this2.sending = false;
+            });
+        };
+
+        EmChatContentItem.prototype.eidtKeydownHandler = function eidtKeydownHandler(evt, item, txtRef) {
+
+            if (this.sending) {
+                return false;
+            }
+
+            if (evt.ctrlKey && evt.keyCode === 13) {
+
+                this.editSave(item, txtRef);
+
+                return false;
+            } else if (evt.ctrlKey && evt.keyCode === 85) {
+                $(txtRef).next('.tms-edit-actions').find('.upload').click();
+                return false;
+            } else if (evt.keyCode === 27) {
+                this.editCancelHandler(evt, item, txtRef);
+            }
+
+            return true;
+        };
+
+        return EmChatContentItem;
+    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'chats', [_dec], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'loginUser', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    })), _class2)) || _class);
+});
+define('resources/elements/em-chat-sidebar-right',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmChatSidebarRight = undefined;
+
+    function _initDefineProp(target, property, descriptor, context) {
+        if (!descriptor) return;
+        Object.defineProperty(target, property, {
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+            writable: descriptor.writable,
+            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+        });
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+        var desc = {};
+        Object['ke' + 'ys'](descriptor).forEach(function (key) {
+            desc[key] = descriptor[key];
+        });
+        desc.enumerable = !!desc.enumerable;
+        desc.configurable = !!desc.configurable;
+
+        if ('value' in desc || desc.initializer) {
+            desc.writable = true;
+        }
+
+        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+            return decorator(target, property, desc) || desc;
+        }, desc);
+
+        if (context && desc.initializer !== void 0) {
+            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+            desc.initializer = undefined;
+        }
+
+        if (desc.initializer === void 0) {
+            Object['define' + 'Property'](target, property, desc);
+            desc = null;
+        }
+
+        return desc;
+    }
+
+    function _initializerWarningHelper(descriptor, context) {
+        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+    }
+
+    var _class, _desc, _value, _class2, _descriptor;
+
+    var EmChatSidebarRight = exports.EmChatSidebarRight = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
+        function EmChatSidebarRight() {
+            var _this = this;
+
+            _classCallCheck(this, EmChatSidebarRight);
+
+            _initDefineProp(this, 'value', _descriptor, this);
+
+            this.lastSearch = true;
+
+
+            this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_RESULT, function (payload) {
+
+                var result = payload.result;
+                _this.search = payload.search;
+                _this.searchPage = result;
+                _this.searchChats = result.content;
+                _.each(_this.searchChats, function (item) {
+                    item.contentMd = marked(item.content);
+                });
+                _this.lastSearch = result.last;
+                _this.moreSearchCnt = result.totalElements - (result.number + 1) * result.size;
+            });
+        }
+
+        EmChatSidebarRight.prototype.unbind = function unbind() {
+
+            this.subscribe.dispose();
+        };
+
+        EmChatSidebarRight.prototype.attached = function attached() {
+            this.initHotkeys();
+        };
+
+        EmChatSidebarRight.prototype.initHotkeys = function initHotkeys() {
+            var _this2 = this;
+
+            $(document).bind('keydown', 'o', function () {
+                event.preventDefault();
+                var item = _.find(_this2.searchChats, { isHover: true });
+                item && (item.isOpen = !item.isOpen);
+            });
+        };
+
+        EmChatSidebarRight.prototype.searchItemMouseleaveHandler = function searchItemMouseleaveHandler(item) {
+            item.isOpen = false;
+            item.isHover = false;
+        };
+
+        EmChatSidebarRight.prototype.searchItemMouseenterHandler = function searchItemMouseenterHandler(item) {
+            item.isHover = true;
+        };
+
+        EmChatSidebarRight.prototype.gotoChatHandler = function gotoChatHandler(item) {
+            ea.publish(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, { chatItem: item });
+        };
+
+        EmChatSidebarRight.prototype.openSearchItemHandler = function openSearchItemHandler(item) {
+            item.isOpen = !item.isOpen;
+        };
+
+        EmChatSidebarRight.prototype.searchMoreHandler = function searchMoreHandler() {
+            var _this3 = this;
+
+            this.searchMoreP = $.get('/admin/chat/direct/search', {
+                search: this.search,
+                size: this.searchPage.size,
+                page: this.searchPage.number + 1
+            }, function (data) {
+                if (data.success) {
+                    _.each(data.data.content, function (item) {
+                        item.contentMd = marked(item.content);
+                    });
+                    _this3.searchChats = _.concat(_this3.searchChats, data.data.content);
+
+                    _this3.lastSearch = data.data.last;
+                    _this3.moreSearchCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
+                }
+            });
+        };
+
+        return EmChatSidebarRight;
+    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'value', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    })), _class2)) || _class;
+});
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\r\n\t<require from=\"./app.css\"></require>\r\n\t<require from=\"nprogress/nprogress.css\"></require>\r\n\t<require from=\"toastr/build/toastr.css\"></require>\r\n    <require from=\"tms-semantic-ui/semantic.min.css\"></require>\r\n    <router-view></router-view>\r\n</template>\r\n"; });
-define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <require from=\"./md-github.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <require from=\"resources/elements/em-confirm-modal\"></require>\r\n    <require from=\"resources/elements/em-chat-input\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" login-user.bind=\"loginUser\" chat-to.bind=\"chatTo\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" chat-to.bind=\"chatTo\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                    <button if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"fluid basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</button>\r\n                    <div repeat.for=\"item of chats\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\r\n                        <a class=\"avatar\">\r\n                            <i class=\"circular icon large user\"></i>\r\n                        </a>\r\n                        <div class=\"content\">\r\n                            <a class=\"author\">${item.creator.name}</a>\r\n                            <div class=\"metadata\">\r\n                                <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\r\n                            </div>\r\n                            <div show.bind=\"!item.isEditing\" class=\"text markdown-body\" innerhtml.bind=\"item.contentMd\"></div>\r\n                            <textarea ref=\"editTxtRef\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content\" class=\"tms-edit-textarea\" rows=\"1\"></textarea>\r\n                            <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-edit-actions\">\r\n                                <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\r\n                                    <i class=\"checkmark icon\"></i>\r\n                                </button>\r\n                                <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\r\n                                    <i class=\"remove icon\"></i>\r\n                                </button>\r\n                                <button dropzone=\"clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\r\n                                    <i class=\"upload icon\"></i>\r\n                                </button>\r\n                            </div>\r\n                            <div class=\"actions\">\r\n                                <a if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"editHandler(item, editTxtRef)\" class=\"tms-edit\">编辑</a>\r\n                                <a if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"deleteHandler(item)\" class=\"tms-delete\">删除</a>\r\n                                <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\">复制</a>\r\n                                <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${selfLink + '?id=' + item.id}\">分享</a>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <button if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"fluid basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})</button>\r\n                </div>\r\n                <em-chat-input chat-to.bind=\"chatTo\" poll.bind=\"poll\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <div ref=\"rightSidebarRef\" class=\"tms-right-sidebar\">\r\n                <div class=\"panel-search\">\r\n                    <div class=\"ui basic segment minimal selection list segment comments\">\r\n                        <h1 show.bind=\"!searchChats.length\" class=\"ui center aligned header\">无符合检索结果</h1>\r\n                        <div repeat.for=\"item of searchChats\" mouseleave.trigger=\"searchItemMouseleaveHandler(item)\" mouseenter.trigger=\"searchItemMouseenterHandler(item)\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\r\n                            <a class=\"avatar\">\r\n                                <i class=\"circular icon large user\"></i>\r\n                            </a>\r\n                            <div class=\"content\">\r\n                                <a class=\"author\">${item.creator.name}</a>\r\n                                <div class=\"metadata\">\r\n                                    <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\r\n                                </div>\r\n                                <div class=\"text markdown-body ${item.isOpen ? 'tms-open' : ''}\" innerhtml.bind=\"item.contentMd\"></div>\r\n                                <div class=\"actions\">\r\n                                    <a click.delegate=\"gotoChatHandler(item)\" class=\"tms-goto\" href=\"\">定位</a>\r\n                                    <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\">复制</a>\r\n                                    <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${selfLink + '?id=' + item.id}\">分享</a>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"tms-btn-open-search-item\" click.delegate=\"openSearchItemHandler(item)\">\r\n                                <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                            </div>\r\n                        </div>\r\n                        <button if.bind=\"!lastSearch\" click.delegate=\"searchMoreHandler()\" class=\"fluid ui basic button tms-search-more\"><i show.bind=\"searchMoreP && searchMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreSearchCnt})</button>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\r\n</template>\r\n"; });
+define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <require from=\"./md-github.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" login-user.bind=\"loginUser\" chat-to.bind=\"chatTo\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" chat-to.bind=\"chatTo\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                    <button if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"fluid basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</button>\r\n                    <em-chat-content-item chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                    <button if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"fluid basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})</button>\r\n                </div>\r\n                <em-chat-input chat-to.bind=\"chatTo\" poll.bind=\"poll\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!test/test-lifecycle.html', ['module'], function(module) { module.exports = "<template>\r\n    <!-- <require from=\"\"></require> -->\r\n    <div class=\"ui container\">\r\n        <h1 class=\"ui header\">Aurelia框架模块生命周期钩子函数调用顺序测试(看console输出)</h1>\r\n    </div>\r\n</template>\r\n"; });
 define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n"; });
 define('text!chat/chat-direct.css', ['module'], function(module) { module.exports = ".tms-chat-direct {\n  height: 100%;\n}\n.tms-chat-direct .top.fixed.menu {\n  padding-left: 220px;\n  height: 60px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .top.fixed.menu .tms-chat-at.tms-hide {\n    display: none;\n  }\n}\n.tms-chat-direct .ui.left.sidebar {\n  background-color: #4d394b;\n  width: 220px;\n}\n.tms-chat-direct .ui.left.sidebar * {\n  color: #4183c4!important;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header > input {\n  background-color: transparent;\n  border: 1px #676868 solid;\n  font-size: 12px;\n  padding: 4px;\n  width: 190px;\n  outline: none;\n  margin-top: 10px;\n  border-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .ui.list {\n  position: absolute;\n  bottom: 0;\n  top: 80px;\n  overflow-y: auto;\n  width: 190px;\n}\n.tms-chat-direct .ui.left.sidebar .ui.list a > i.circular.icon {\n  box-shadow: 0 0 0 0.1em #4183c4 inset;\n}\n.tms-chat-direct .ui.left.sidebar .ui.list::-webkit-scrollbar-thumb {\n  background-color: #475a81;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header {\n  height: 40px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header i.close.icon {\n  position: absolute;\n  right: 11px;\n  top: 55px;\n  box-shadow: 0 0 0 0.1em #676868 inset;\n  border-top-right-radius: 2px;\n  border-bottom-right-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header .ui.header {\n  margin-bottom: 0;\n}\n.tms-chat-direct .tms-edit-textarea {\n  width: 100%;\n}\n.tms-chat-direct .ui.selection.list > .item {\n  cursor: default;\n}\n.tms-chat-direct .ui.search .prompt {\n  border-radius: .28571429rem;\n}\n.tms-chat-direct .tms-content {\n  position: absolute;\n  top: 60px;\n  left: 220px;\n  bottom: 0;\n  right: 0;\n  display: flex;\n  align-items: stretch;\n}\n.tms-chat-direct .tms-content.tms-sidebar-show .tms-right-sidebar {\n  width: 388px;\n  border-left: 1px #e9e9e9 solid;\n  transition: width 0.15s ease-out 0s;\n  margin: 4px;\n  margin-right: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content {\n    left: 0;\n  }\n}\n.tms-chat-direct .tms-content-body {\n  width: 100%;\n  max-width: 100%;\n  flex: 1 1 0;\n  display: flex;\n  align-items: stretch;\n  padding-bottom: 73px;\n}\n.tms-chat-direct .tms-content-body .ui.comments {\n  overflow-y: auto;\n  flex: 1 1 0;\n  max-width: none;\n  margin-bottom: 12px;\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-pre-more {\n  margin-bottom: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-next-more {\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-right-sidebar {\n  width: 0;\n  overflow-y: auto;\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body {\n  max-height: 65px;\n  overflow-y: hidden;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body.tms-open {\n  max-height: none;\n  overflow-y: auto;\n  padding-bottom: 20px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .tms-btn-open-search-item {\n  display: none;\n  height: 25px;\n  background-color: rgba(0, 0, 0, 0.1);\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  text-align: center;\n  padding-top: 2px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment:hover .tms-btn-open-search-item {\n  display: block;\n}\n.tms-chat-direct .ui.top.menu .item.tms-item:before {\n  display: none;\n}\n.tms-chat-direct .ui.top.menu > .ui.dropdown.item > .text > .icon {\n  display: none;\n}\n.tms-chat-direct .ui.top.menu .right.menu .item.tms-item {\n  padding-left: 5px;\n  padding-right: 5px;\n}\n.tms-chat-direct .ui.top.menu .right.menu .ui.search input {\n  width: 100px;\n  transition: width 0.15s ease-out 0s;\n}\n.tms-chat-direct .ui.top.menu .right.menu .ui.search i.remove.icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .ui.top.menu {\n    padding-left: 0;\n  }\n}\n.tms-chat-direct .ui.top.menu .ui.basic.button {\n  box-shadow: none;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-left-sidebar {\n    display: none;\n  }\n  .tms-chat-direct .tms-right-sidebar {\n    position: fixed;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 59px;\n    background-color: white;\n    margin-left: 0!important;\n  }\n  .tms-chat-direct .tms-right-sidebar .panel-search .ui.basic.segment.minimal.selection.list.segment.comments {\n    padding-left: 0;\n    padding-right: 0;\n  }\n  .tms-chat-direct .tms-sidebar-show .tms-right-sidebar {\n    width: 100%!important;\n  }\n  .tms-chat-direct .tms-login-user {\n    display: none!important;\n  }\n}\n.tms-chat-direct .tms-edit-actions .left.button {\n  border-top-left-radius: 0;\n}\n.tms-chat-direct .tms-edit-actions .right.button {\n  border-top-right-radius: 0;\n}\n"; });
@@ -21098,4 +21280,6 @@ define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(modu
 define('text!resources/elements/em-confirm-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"md\" class=\"ui small modal nx-ui-confirm tms-md450\">\r\n        <div class=\"header\">\r\n            ${config.title}\r\n        </div>\r\n        <div class=\"content\">\r\n            <i if.bind=\"config.warning\" class=\"large yellow warning sign icon\" style=\"float: left;\"></i>\r\n            <i if.bind=\"!config.warning\" class=\"large blue info circle icon\" style=\"float: left;\"></i>\r\n            <p style=\"margin-left: 20px;\">\r\n                <span innerhtml.bind=\"config.content\"></span>\r\n            </p>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <div class=\"ui cancel basic blue left floated button\">取消</div>\r\n            <div class=\"ui ok blue button\">确认</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-hotkeys-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-hotkeys-modal.css\"></require>\r\n    <div ref=\"md\" class=\"ui basic modal tms-em-hotkeys-modal\">\r\n        <i class=\"close icon\"></i>\r\n        <!-- <div class=\"header\">\r\n            Archive Old Messages\r\n        </div> -->\r\n        <div class=\"content\">\r\n            <h1 class=\"ui center inverted aligned header\">键盘快捷键\r\n\t\t\t\t<span style=\"position: relative; top: -0.375rem; left: 1rem;\" aria-hidden=\"true\">\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Control\">Ctrl</span>\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Question mark\">/</span>\r\n\t\t\t\t</span>\r\n            </h1>\r\n            <div class=\"ui grid\">\r\n                <div class=\"three column row\">\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>上一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>下一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>第一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>最后一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>历史回退: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow left icon\" aria-label=\"Left arrow\"></i></span></li>\r\n                            <li>历史向前: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow right icon\" aria-label=\"Right arrow\"></i></span></li>\r\n                            <li>标记已读: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                            <li>全部标记已读: <span class=\"keyboard\">Shift</span><span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                            <li>快速切换: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">k</span></li>\r\n                            <li>Browse DMs: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">k</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>\r\n                                自动补全\r\n                                <ul>\r\n                                    <li>名称: <span class=\"subtle_silver\">[a-z]</span><span class=\"keyboard\">Tab</span> <span class=\"subtle_silver\">or</span> <span class=\"keyboard\">@</span><span class=\"keyboard\">Tab</span></li>\r\n                                    <li>频道: <span class=\"keyboard\" aria-label=\"Number symbol\">#</span><span class=\"keyboard\">Tab</span></li>\r\n                                    <li>表情: <span class=\"keyboard\" aria-label=\"Colon\">:</span><span class=\"keyboard\">Tab</span></li>\r\n                                </ul>\r\n                            </li>\r\n                            <li>换行: <span class=\"keyboard\">Shift</span><span class=\"keyboard\">Enter</span></li>\r\n                            <li>输入聚焦: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">i</span></li>\r\n                            <li>编辑: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">DblClick</span></li>\r\n                            <li>编辑上一条: <span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span> <span class=\"subtle_silver\">in input</span></li>\r\n                            <li>响应最后一条: <span class=\"keyboard\" aria-label=\"control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">\\</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>切换边栏: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">.</span></li>\r\n                            <ul>\r\n                                <li>团队: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">e</span></li>\r\n                                <li>标星: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">s</span></li>\r\n                            </ul>\r\n                            <li>粘贴代码片段: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">Enter</span></li>\r\n                            <li>上传文件: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">u</span></li>\r\n                            <li>关闭对话框: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                        </ul>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <!-- <div class=\"image\">\r\n                <i class=\"archive icon\"></i>\r\n            </div>\r\n            <div class=\"description\">\r\n                <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>\r\n            </div> -->\r\n        </div>\r\n        <!-- <div class=\"actions\">\r\n            <div class=\"two fluid ui inverted buttons\">\r\n                <div class=\"ui cancel red basic inverted button\">\r\n                    <i class=\"remove icon\"></i> No\r\n                </div>\r\n                <div class=\"ui ok green basic inverted button\">\r\n                    <i class=\"checkmark icon\"></i> Yes\r\n                </div>\r\n            </div>\r\n        </div> -->\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-sidebar-left.html', ['module'], function(module) { module.exports = "<template>\n    <div class=\"ui left visible segment sidebar tms-left-sidebar\">\n        <div class=\"tms-header\">\n            <h1 class=\"ui header\"><a href=\"/admin/dynamic?scroll=1\">私聊频道</a></h1>\n            <input value.bind=\"filter\" focusin.trigger=\"chatToUserFilerFocusinHanlder()\" keyup.trigger=\"chatToUserFilerKeyupHanlder($event)\" type=\"text\" placeholder=\"私聊对象查找\">\n            <i title=\"清空过滤输入\" click.delegate=\"clearFilterHandler()\" class=\"bordered close icon link small\"></i>\n        </div>\n        <div ref=\"userListRef\" class=\"ui middle aligned selection list\">\n            <a repeat.for=\"item of users\" title=\"${item.username}\" show.bind=\"!item.hidden\" href=\"#/chat/@${item.username}\" class=\"item ${item.username == chatTo ? 'active' : ''}\" data-id=\"${item.username}\">\n                <i class=\"circular icon user\"></i>\n                <div class=\"content\">\n                    <div style=\"color: black;\">${item.name ? item.name : item.username}</div>\n                </div>\n            </a>\n        </div>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-chat-content-item.html', ['module'], function(module) { module.exports = "<template>\n    <div repeat.for=\"item of chats\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\n        <a class=\"avatar\">\n            <i class=\"circular icon large user\"></i>\n        </a>\n        <div class=\"content\">\n            <a class=\"author\">${item.creator.name}</a>\n            <div class=\"metadata\">\n                <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\n            </div>\n            <div show.bind=\"!item.isEditing\" class=\"text markdown-body\" innerhtml.bind=\"item.contentMd\"></div>\n            <textarea ref=\"editTxtRef\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content\" class=\"tms-edit-textarea\" rows=\"1\"></textarea>\n            <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-edit-actions\">\n                <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\n                    <i class=\"checkmark icon\"></i>\n                </button>\n                <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\n                    <i class=\"remove icon\"></i>\n                </button>\n                <button dropzone=\"clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\n                    <i class=\"upload icon\"></i>\n                </button>\n            </div>\n            <div class=\"actions\">\n                <a if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"editHandler(item, editTxtRef)\" class=\"tms-edit\">编辑</a>\n                <a if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"deleteHandler(item)\" class=\"tms-delete\">删除</a>\n                <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\">复制</a>\n                <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${selfLink + '?id=' + item.id}\">分享</a>\n            </div>\n        </div>\n    </div>\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\n</template>\n"; });
+define('text!resources/elements/em-chat-sidebar-right.html', ['module'], function(module) { module.exports = "<template>\n    <div class=\"tms-right-sidebar\">\n        <div class=\"panel-search\">\n            <div class=\"ui basic segment minimal selection list segment comments\">\n                <h1 show.bind=\"!searchChats.length\" class=\"ui center aligned header\">无符合检索结果</h1>\n                <div repeat.for=\"item of searchChats\" mouseleave.trigger=\"searchItemMouseleaveHandler(item)\" mouseenter.trigger=\"searchItemMouseenterHandler(item)\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\n                    <a class=\"avatar\">\n                        <i class=\"circular icon large user\"></i>\n                    </a>\n                    <div class=\"content\">\n                        <a class=\"author\">${item.creator.name}</a>\n                        <div class=\"metadata\">\n                            <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\n                        </div>\n                        <div class=\"text markdown-body ${item.isOpen ? 'tms-open' : ''}\" innerhtml.bind=\"item.contentMd\"></div>\n                        <div class=\"actions\">\n                            <a click.delegate=\"gotoChatHandler(item)\" class=\"tms-goto\" href=\"\">定位</a>\n                            <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\">复制</a>\n                            <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${selfLink + '?id=' + item.id}\">分享</a>\n                        </div>\n                    </div>\n                    <div class=\"tms-btn-open-search-item\" click.delegate=\"openSearchItemHandler(item)\">\n                        <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\n                    </div>\n                </div>\n                <button if.bind=\"!lastSearch\" click.delegate=\"searchMoreHandler()\" class=\"fluid ui basic button tms-search-more\"><i show.bind=\"searchMoreP && searchMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreSearchCnt})</button>\n            </div>\n        </div>\n    </div>\n</template>\n"; });
 //# sourceMappingURL=app-bundle.js.map

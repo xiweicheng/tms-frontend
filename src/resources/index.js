@@ -21,7 +21,12 @@ export function configure(aurelia) {
         'resources/attributes/attr-pastable',
         'resources/attributes/attr-autosize',
         'resources/attributes/attr-dropzone',
+        'resources/elements/em-confirm-modal',
+        'resources/elements/em-hotkeys-modal',
+        'resources/elements/em-chat-input',
         'resources/elements/em-chat-top-menu',
         'resources/elements/em-chat-sidebar-left',
+        'resources/elements/em-chat-content-item',
+        'resources/elements/em-chat-sidebar-right',
     ]);
 }

@@ -78,7 +78,8 @@ export class EmChatTopMenu {
                 this.toggleRightSidebar(true);
 
                 ea.publish(nsCons.EVENT_CHAT_SEARCH_RESULT, {
-                    result: data.data
+                    result: data.data,
+                    search: this.search
                 });
             }
         });
