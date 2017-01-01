@@ -28,6 +28,23 @@
             }
         }
         .tms-users {}
-        .tms-channels {}
+        .tms-channels {
+            .ui.list {
+                a.item {
+                    position: relative;
+                    &:hover {
+                        .actions {
+                            display: inline-block;
+                        }
+                    }
+                }
+            }
+            .actions {
+                display: none;
+                position: absolute;
+                right: 0;
+                top: 5px;
+            }
+        }
     }
 }

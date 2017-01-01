@@ -18,6 +18,7 @@ export class ChatDirect {
 
     originalHref = wurl();
 
+    loginUser;
     users = [];
     channels = [];
     chatTo = null;
@@ -71,6 +72,16 @@ export class ChatDirect {
 
             this.gotoChatItem(payload.chatItem);
         });
+
+        this.subscribe5 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_DELETED, (payload) => {
+
+            if (payload.name == this.chatTo) {
+                window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
+            }
+
+            this.channels = [...this.channels];
+
+        });
     }
 
     /**
@@ -82,6 +93,7 @@ export class ChatDirect {
         this.subscribe2.dispose();
         this.subscribe3.dispose();
         this.subscribe4.dispose();
+        this.subscribe5.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();
@@ -120,10 +132,14 @@ export class ChatDirect {
                 this.user = _.find(this.users, {
                     username: this.chatTo
                 });
-                let name = this.user ? this.user.name : this.chatTo;
-                routeConfig.navModel.setTitle(`${name} | 私聊 | TMS`);
 
-                this.listChatDirect(true);
+                if (this.user) {
+                    let name = this.user ? this.user.name : this.chatTo;
+                    routeConfig.navModel.setTitle(`${name} | 私聊 | TMS`);
+
+                    this.listChatDirect(true);
+                }
+
             }
         });
 
@@ -133,9 +149,12 @@ export class ChatDirect {
                 this.channel = _.find(this.channels, {
                     name: this.chatTo
                 });
-                routeConfig.navModel.setTitle(`${this.channel.name} | 私聊 | TMS`);
 
-                this.listChatChannel(true);
+                if (this.channel) {
+                    routeConfig.navModel.setTitle(`${this.channel.name} | 私聊 | TMS`);
+
+                    this.listChatChannel(true);
+                }
             }
         });
 

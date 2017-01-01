@@ -4,6 +4,7 @@ import { bindable, containerless } from 'aurelia-framework';
 export class EmChatSidebarLeft {
 
     @bindable users;
+    @bindable loginUser;
     @bindable channels;
     @bindable chatTo;
     @bindable isAt;
@@ -38,6 +39,30 @@ export class EmChatSidebarLeft {
         this.filter = '';
         _.each(this.users, (item) => {
             item.hidden = item.username.indexOf(this.filter) == -1;
+        });
+    }
+
+    editHandler(item) {
+        this.selectedChannel = item;
+        this.channelEditMd.show();
+    }
+
+    delHandler(item) {
+        this.confirmMd.show({
+            onapprove: () => {
+                $.post('/admin/channel/delete', {
+                    id: item.id
+                }, (data) => {
+                    if (data.success) {
+                        toastr.success('删除频道成功!');
+                        _.remove(this.channels, { id: item.id });
+                        // this.channels = [...this.channels];
+                        ea.publish(nsCons.EVENT_CHAT_CHANNEL_DELETED, item);
+                    } else {
+                        toastr.error(data.data, '删除频道失败!');
+                    }
+                });
+            }
         });
     }
 

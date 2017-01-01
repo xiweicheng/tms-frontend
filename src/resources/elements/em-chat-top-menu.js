@@ -3,6 +3,7 @@ import { bindable, containerless } from 'aurelia-framework';
 @containerless
 export class EmChatTopMenu {
 
+    @bindable loginUser;
     @bindable users;
     @bindable channels;
     @bindable channel;
