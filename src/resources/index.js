@@ -34,5 +34,6 @@ export function configure(aurelia) {
         'resources/elements/em-chat-sidebar-right',
         'resources/elements/em-chat-channel-create',
         'resources/elements/em-chat-channel-edit',
+        'resources/elements/em-chat-channel-members-mgr',
     ]);
 }

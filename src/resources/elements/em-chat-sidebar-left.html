@@ -23,7 +23,7 @@
                                 <!-- <i class="ellipsis vertical icon"></i> -->
                                 <i class="large ellipsis horizontal icon"></i>
                                 <div class="menu">
-                                    <div class="item">添加成员</div>
+                                    <div class="item" click.delegate="membersMgrHandler(item)">成员管理</div>
                                     <div class="item" click.delegate="editHandler(item)">编辑</div>
                                     <div class="item" click.delegate="delHandler(item)">删除</div>
                                 </div>
@@ -52,4 +52,5 @@
     <em-confirm-modal em-confirm-modal.ref="confirmMd"></em-confirm-modal>
     <em-chat-channel-create trigger.bind="createChannelRef"></em-chat-channel-create>
     <em-chat-channel-edit channel.bind="selectedChannel" em-chat-channel-edit.ref="channelEditMd"></em-chat-channel-edit>
+    <em-chat-channel-members-mgr users.bind="users" channel.bind="selectedChannel" em-chat-channel-members-mgr.ref="channelMembersMgrMd"></em-chat-channel-members-mgr>
 </template>

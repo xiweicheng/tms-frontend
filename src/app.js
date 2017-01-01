@@ -7,6 +7,9 @@ export class App {
     }
 
     init() {
+
+        $.fn.dropdown.settings.forceSelection = false;
+
         // ui form 验证提示信息国际化
         _.extend($.fn.form.settings.prompt, {
             empty: '{name}不能为空',
@@ -69,7 +72,7 @@ export class App {
             moduleId: 'user/user-login',
             nav: false,
             title: '登录'
-        },  {
+        }, {
             route: ['test'],
             name: 'test',
             moduleId: 'test/test-lifecycle',
