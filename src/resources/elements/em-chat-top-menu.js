@@ -5,6 +5,7 @@ export class EmChatTopMenu {
 
     @bindable users;
     @bindable channels;
+    @bindable channel;
     @bindable loginUser;
     @bindable chatId;
     @bindable chatTo;
@@ -72,11 +73,26 @@ export class EmChatTopMenu {
         }
         localStorage && localStorage.setItem('tms/chat-direct:search', JSON.stringify(this.searchSource));
 
-        this.searchingP = $.get('/admin/chat/direct/search', {
-            search: this.search,
-            size: 20,
-            page: 0
-        }, (data) => {
+        let url;
+        let data;
+        if (this.isAt) {
+            url = `/admin/chat/direct/search`;
+            data = {
+                search: this.search,
+                size: 20,
+                page: 0
+            };
+        } else {
+            url = `/admin/chat/channel/search`;
+            data = {
+                search: this.search,
+                channelId: this.channel.id,
+                size: 20,
+                page: 0
+            };
+        }
+
+        this.searchingP = $.get(url, data, (data) => {
             if (data.success) {
                 this.toggleRightSidebar(true);
 

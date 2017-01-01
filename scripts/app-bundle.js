@@ -225,7 +225,11 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                 _commonPoll2.default.reset();
 
                 if (!_this.first) {
-                    _this.listChatDirect(false);
+                    if (_this.isAt) {
+                        _this.listChatDirect(false);
+                    } else {
+                        _this.listChatChannel(false);
+                    }
                 }
             });
 
@@ -300,7 +304,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                     });
                     routeConfig.navModel.setTitle(_this2.channel.name + ' | \u79C1\u804A | TMS');
 
-                    _this2.listChatChannel();
+                    _this2.listChatChannel(true);
                 }
             });
 
@@ -313,12 +317,27 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             var _this3 = this;
 
             var start = _.first(this.chats).id;
-            this.lastMoreP = $.get('/admin/chat/direct/more', {
-                last: true,
-                start: start,
-                size: 20,
-                chatTo: this.chatTo
-            }, function (data) {
+
+            var url = void 0;
+            var data = void 0;
+            if (this.isAt) {
+                url = '/admin/chat/direct/more';
+                data = {
+                    last: true,
+                    start: start,
+                    size: 20,
+                    chatTo: this.chatTo
+                };
+            } else {
+                url = '/admin/chat/channel/more';
+                data = {
+                    last: true,
+                    start: start,
+                    size: 20,
+                    channelId: this.channel.id
+                };
+            }
+            this.lastMoreP = $.get(url, data, function (data) {
                 if (data.success) {
                     _this3.chats = _.unionBy(_.reverse(_this3.convertMd(data.data)), _this3.chats);
                     _this3.last = data.msgs[0] - data.data.length <= 0;
@@ -338,12 +357,26 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             var _this4 = this;
 
             var start = _.last(this.chats).id;
-            this.nextMoreP = $.get('/admin/chat/direct/more', {
-                last: false,
-                start: start,
-                size: 20,
-                chatTo: this.chatTo
-            }, function (data) {
+            var url = void 0;
+            var data = void 0;
+            if (this.isAt) {
+                url = '/admin/chat/direct/more';
+                data = {
+                    last: false,
+                    start: start,
+                    size: 20,
+                    chatTo: this.chatTo
+                };
+            } else {
+                url = '/admin/chat/channel/more';
+                data = {
+                    last: false,
+                    start: start,
+                    size: 20,
+                    channelId: this.channel.id
+                };
+            }
+            this.nextMoreP = $.get(url, data, function (data) {
                 if (data.success) {
                     _this4.chats = _.unionBy(_this4.chats, _this4.convertMd(data.data));
                     _this4.first = data.msgs[0] - data.data.length <= 0;
@@ -359,13 +392,19 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             });
         };
 
-        ChatDirect.prototype.listChatChannel = function listChatChannel() {
+        ChatDirect.prototype.listChatChannel = function listChatChannel(isCareMarkId) {
             var _this5 = this;
 
-            $.get('/admin/chat/channel/listBy', {
-                channelId: this.channel.id,
-                size: 20
-            }, function (data) {
+            var data = {
+                size: 20,
+                channelId: this.channel.id
+            };
+
+            if (this.markId && isCareMarkId) {
+                data.id = this.markId;
+            }
+
+            $.get('/admin/chat/channel/listBy', data, function (data) {
                 _this5.processChats(data);
             });
         };
@@ -567,13 +606,24 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                 });
             } else {
 
-                if (this.chatTo == item.chatTo.username) {
+                var chatTo = void 0;
+                var chatId = void 0;
+
+                if (this.isAt) {
+                    chatTo = item.chatTo.username;
+                    chatId = '@' + chatTo;
+                } else {
+                    chatTo = item.channel.name;
+                    chatId = '' + chatTo;
+                }
+
+                if (this.chatTo == chatTo) {
                     this.activate({
                         id: item.id,
-                        username: '@' + item.chatTo.username
+                        username: chatId
                     }, this.routeConfig);
                 } else {
-                    window.location = wurl('path') + ('#/chat/@' + item.chatTo.username + '?id=' + item.id);
+                    window.location = wurl('path') + ('#/chat/' + chatId + '?id=' + item.id);
                 }
             }
         };
@@ -3969,7 +4019,7 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
         throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
     }
 
-    var _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6;
+    var _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7;
 
     var EmChatTopMenu = exports.EmChatTopMenu = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
         function EmChatTopMenu() {
@@ -3979,13 +4029,15 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
 
             _initDefineProp(this, 'channels', _descriptor2, this);
 
-            _initDefineProp(this, 'loginUser', _descriptor3, this);
+            _initDefineProp(this, 'channel', _descriptor3, this);
 
-            _initDefineProp(this, 'chatId', _descriptor4, this);
+            _initDefineProp(this, 'loginUser', _descriptor4, this);
 
-            _initDefineProp(this, 'chatTo', _descriptor5, this);
+            _initDefineProp(this, 'chatId', _descriptor5, this);
 
-            _initDefineProp(this, 'isAt', _descriptor6, this);
+            _initDefineProp(this, 'chatTo', _descriptor6, this);
+
+            _initDefineProp(this, 'isAt', _descriptor7, this);
         }
 
         EmChatTopMenu.prototype.chatToChanged = function chatToChanged() {
@@ -4048,11 +4100,26 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
             }
             localStorage && localStorage.setItem('tms/chat-direct:search', JSON.stringify(this.searchSource));
 
-            this.searchingP = $.get('/admin/chat/direct/search', {
-                search: this.search,
-                size: 20,
-                page: 0
-            }, function (data) {
+            var url = void 0;
+            var data = void 0;
+            if (this.isAt) {
+                url = '/admin/chat/direct/search';
+                data = {
+                    search: this.search,
+                    size: 20,
+                    page: 0
+                };
+            } else {
+                url = '/admin/chat/channel/search';
+                data = {
+                    search: this.search,
+                    channelId: this.channel.id,
+                    size: 20,
+                    page: 0
+                };
+            }
+
+            this.searchingP = $.get(url, data, function (data) {
                 if (data.success) {
                     _this2.toggleRightSidebar(true);
 
@@ -4143,16 +4210,19 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
     }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'channels', [_aureliaFramework.bindable], {
         enumerable: true,
         initializer: null
-    }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'loginUser', [_aureliaFramework.bindable], {
+    }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'channel', [_aureliaFramework.bindable], {
         enumerable: true,
         initializer: null
-    }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'chatId', [_aureliaFramework.bindable], {
+    }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'loginUser', [_aureliaFramework.bindable], {
         enumerable: true,
         initializer: null
-    }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, 'chatTo', [_aureliaFramework.bindable], {
+    }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, 'chatId', [_aureliaFramework.bindable], {
         enumerable: true,
         initializer: null
-    }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, 'isAt', [_aureliaFramework.bindable], {
+    }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, 'chatTo', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, 'isAt', [_aureliaFramework.bindable], {
         enumerable: true,
         initializer: null
     })), _class2)) || _class;
@@ -22875,7 +22945,7 @@ define('highlight/lib/languages/zephir',['require','exports','module'],function 
 });
 
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\r\n\t<require from=\"./app.css\"></require>\r\n\t<require from=\"nprogress/nprogress.css\"></require>\r\n\t<require from=\"toastr/build/toastr.css\"></require>\r\n    <require from=\"tms-semantic-ui/semantic.min.css\"></require>\r\n    <router-view></router-view>\r\n</template>\r\n"; });
-define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <require from=\"./md-github.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" channels.bind=\"channels\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                    <button if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"fluid basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</button>\r\n                    <em-chat-content-item chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                    <button if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"fluid basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})</button>\r\n                </div>\r\n                <em-chat-input channel.bind=\"channel\" is-at.bind=\"isAt\" chat-to.bind=\"chatTo\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <require from=\"./md-github.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" channels.bind=\"channels\" channel.bind=\"channel\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                    <button if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"fluid basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</button>\r\n                    <em-chat-content-item chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                    <button if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"fluid basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})</button>\r\n                </div>\r\n                <em-chat-input channel.bind=\"channel\" is-at.bind=\"isAt\" chat-to.bind=\"chatTo\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n.ui.dimmer {\n  background-color: rgba(0, 0, 0, 0.5) !important;\n}\n"; });
 define('text!test/test-lifecycle.html', ['module'], function(module) { module.exports = "<template>\r\n    <!-- <require from=\"\"></require> -->\r\n    <div class=\"ui container\">\r\n        <h1 class=\"ui header\">Aurelia框架模块生命周期钩子函数调用顺序测试(看console输出)</h1>\r\n    </div>\r\n</template>\r\n"; });
 define('text!chat/chat-direct.css', ['module'], function(module) { module.exports = ".tms-chat-direct {\n  height: 100%;\n}\n.tms-chat-direct .ui.left.sidebar {\n  background-color: #4d394b;\n  width: 220px;\n}\n.tms-chat-direct .ui.left.sidebar * {\n  color: #4183c4!important;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header > input {\n  background-color: transparent;\n  border: 1px #676868 solid;\n  font-size: 12px;\n  padding: 4px;\n  width: 190px;\n  outline: none;\n  margin-top: 10px;\n  border-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header {\n  height: 40px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header i.close.icon {\n  position: absolute;\n  right: 11px;\n  top: 55px;\n  box-shadow: 0 0 0 0.1em #676868 inset;\n  border-top-right-radius: 2px;\n  border-bottom-right-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header .ui.header {\n  margin-bottom: 0;\n}\n.tms-chat-direct .tms-edit-textarea {\n  width: 100%;\n}\n.tms-chat-direct .ui.selection.list > .item {\n  cursor: default;\n}\n.tms-chat-direct .ui.search .prompt {\n  border-radius: .28571429rem;\n}\n.tms-chat-direct .tms-content {\n  position: absolute;\n  top: 60px;\n  left: 220px;\n  bottom: 0;\n  right: 0;\n  display: flex;\n  align-items: stretch;\n}\n.tms-chat-direct .tms-content.tms-sidebar-show .tms-right-sidebar {\n  width: 388px;\n  border-left: 1px #e9e9e9 solid;\n  transition: width 0.15s ease-out 0s;\n  margin: 4px;\n  margin-right: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content {\n    left: 0;\n  }\n}\n.tms-chat-direct .tms-content-body {\n  width: 100%;\n  max-width: 100%;\n  flex: 1 1 0;\n  display: flex;\n  align-items: stretch;\n  padding-bottom: 73px;\n}\n.tms-chat-direct .tms-content-body .ui.comments {\n  overflow-y: auto;\n  flex: 1 1 0;\n  max-width: none;\n  margin-bottom: 12px;\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-pre-more {\n  margin-bottom: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-next-more {\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-right-sidebar {\n  width: 0;\n  overflow-y: auto;\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body {\n  max-height: 65px;\n  overflow-y: hidden;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body.tms-open {\n  max-height: none;\n  overflow-y: auto;\n  padding-bottom: 20px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .tms-btn-open-search-item {\n  display: none;\n  height: 25px;\n  background-color: rgba(0, 0, 0, 0.1);\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  text-align: center;\n  padding-top: 2px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment:hover .tms-btn-open-search-item {\n  display: block;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-left-sidebar {\n    display: none;\n  }\n  .tms-chat-direct .tms-right-sidebar {\n    position: fixed;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 59px;\n    background-color: white;\n    margin-left: 0!important;\n  }\n  .tms-chat-direct .tms-right-sidebar .panel-search .ui.basic.segment.minimal.selection.list.segment.comments {\n    padding-left: 0;\n    padding-right: 0;\n  }\n  .tms-chat-direct .tms-sidebar-show .tms-right-sidebar {\n    width: 100%!important;\n  }\n  .tms-chat-direct .tms-login-user {\n    display: none!important;\n  }\n}\n.tms-chat-direct .tms-edit-actions .left.button {\n  border-top-left-radius: 0;\n}\n.tms-chat-direct .tms-edit-actions .right.button {\n  border-top-right-radius: 0;\n}\n"; });

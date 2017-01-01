@@ -47,7 +47,11 @@ export class ChatDirect {
             poll.reset();
 
             if (!this.first) { // 不是第一页
-                this.listChatDirect(false);
+                if (this.isAt) {
+                    this.listChatDirect(false);
+                } else {
+                    this.listChatChannel(false);
+                }
             }
         });
 
@@ -131,7 +135,7 @@ export class ChatDirect {
                 });
                 routeConfig.navModel.setTitle(`${this.channel.name} | 私聊 | TMS`);
 
-                this.listChatChannel();
+                this.listChatChannel(true);
             }
         });
 
@@ -141,15 +145,30 @@ export class ChatDirect {
 
     }
 
-    lastMoreHandler() {
+    lastMoreHandler() { // 上面的老消息
 
         let start = _.first(this.chats).id;
-        this.lastMoreP = $.get('/admin/chat/direct/more', {
-            last: true,
-            start: start,
-            size: 20,
-            chatTo: this.chatTo
-        }, (data) => {
+
+        let url;
+        let data;
+        if (this.isAt) {
+            url = `/admin/chat/direct/more`;
+            data = {
+                last: true,
+                start: start,
+                size: 20,
+                chatTo: this.chatTo
+            };
+        } else {
+            url = `/admin/chat/channel/more`;
+            data = {
+                last: true,
+                start: start,
+                size: 20,
+                channelId: this.channel.id
+            };
+        }
+        this.lastMoreP = $.get(url, data, (data) => {
             if (data.success) {
                 this.chats = _.unionBy(_.reverse(this.convertMd(data.data)), this.chats);
                 this.last = (data.msgs[0] - data.data.length <= 0);
@@ -165,15 +184,29 @@ export class ChatDirect {
         });
     }
 
-    firstMoreHandler() {
+    firstMoreHandler() { // 前面的新消息
 
         let start = _.last(this.chats).id;
-        this.nextMoreP = $.get('/admin/chat/direct/more', {
-            last: false,
-            start: start,
-            size: 20,
-            chatTo: this.chatTo
-        }, (data) => {
+        let url;
+        let data;
+        if (this.isAt) {
+            url = `/admin/chat/direct/more`;
+            data = {
+                last: false,
+                start: start,
+                size: 20,
+                chatTo: this.chatTo
+            };
+        } else {
+            url = `/admin/chat/channel/more`;
+            data = {
+                last: false,
+                start: start,
+                size: 20,
+                channelId: this.channel.id
+            };
+        }
+        this.nextMoreP = $.get(url, data, (data) => {
             if (data.success) {
                 this.chats = _.unionBy(this.chats, this.convertMd(data.data));
                 this.first = (data.msgs[0] - data.data.length <= 0);
@@ -190,12 +223,19 @@ export class ChatDirect {
     }
 
     // 获取频道消息
-    listChatChannel() {
+    listChatChannel(isCareMarkId) {
 
-        $.get('/admin/chat/channel/listBy', {
-            channelId: this.channel.id,
-            size: 20
-        }, (data) => {
+        var data = {
+            size: 20,
+            channelId: this.channel.id
+        };
+
+        // 如果设定了获取消息界限
+        if (this.markId && isCareMarkId) {
+            data.id = this.markId;
+        }
+
+        $.get('/admin/chat/channel/listBy', data, (data) => {
             this.processChats(data);
         });
     }
@@ -400,15 +440,25 @@ export class ChatDirect {
             });
         } else {
 
-            if (this.chatTo == item.chatTo.username) {
-                this.activate({
-                    id: item.id,
-                    username: `@${item.chatTo.username}`
-                }, this.routeConfig);
+            let chatTo;
+            let chatId;
+
+            if (this.isAt) {
+                chatTo = item.chatTo.username;
+                chatId = `@${chatTo}`;
             } else {
-                window.location = wurl('path') + `#/chat/@${item.chatTo.username}?id=${item.id}`;
+                chatTo = item.channel.name;
+                chatId = `${chatTo}`;
             }
 
+            if (this.chatTo == chatTo) { // 当前定位消息就在当前聊天对象里,只是没有获取显示出来
+                this.activate({
+                    id: item.id,
+                    username: chatId
+                }, this.routeConfig);
+            } else { // 定位消息在非当前聊天对象中
+                window.location = wurl('path') + `#/chat/${chatId}?id=${item.id}`;
+            }
         }
 
     }
