@@ -1227,157 +1227,136 @@ define('init/config',['exports', 'aurelia-templating-resources', 'aurelia-event-
         }
     }
 
-    var _createClass = function () {
-        function defineProperties(target, props) {
-            for (var i = 0; i < props.length; i++) {
-                var descriptor = props[i];
-                descriptor.enumerable = descriptor.enumerable || false;
-                descriptor.configurable = true;
-                if ("value" in descriptor) descriptor.writable = true;
-                Object.defineProperty(target, descriptor.key, descriptor);
-            }
-        }
-
-        return function (Constructor, protoProps, staticProps) {
-            if (protoProps) defineProperties(Constructor.prototype, protoProps);
-            if (staticProps) defineProperties(Constructor, staticProps);
-            return Constructor;
-        };
-    }();
-
     var Config = exports.Config = function () {
         function Config() {
             _classCallCheck(this, Config);
         }
 
-        _createClass(Config, [{
-            key: 'initHttp',
-            value: function initHttp() {
-                window.json = function (param) {
-                    console.log(JSON.stringify(param));
-                    return (0, _aureliaFetchClient.json)(param);
-                };
-                window.http = this.aurelia.container.root.get(_aureliaFetchClient.HttpClient);
-                http.configure(function (config) {
-                    config.withDefaults({
-                        credentials: 'same-origin',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'fetch'
-                        }
-                    }).withInterceptor({
-                        request: function request(req) {
-                            _nprogress2.default && _nprogress2.default.start();
-                            return req;
-                        },
-                        requestError: function requestError(req) {
-                            console.log(req);
-                        },
-                        response: function response(resp) {
-                            _nprogress2.default && _nprogress2.default.done();
-                            if (!resp.ok) {
-                                resp.json().then(function (data) {
-                                    _toastr2.default.error(data.message);
-                                });
-
-                                if (resp.status == 401) {
-                                    _toastr2.default.error('用户未登录!');
-                                    _commonUtils2.default.redirect2Login();
-                                    return;
-                                }
-                            }
-
-                            return resp;
-                        },
-                        responseError: function responseError(resp) {
-                            _toastr2.default.error(resp.message, '网络请求错误!');
-                            console.log(resp);
-                        }
-                    });
-                });
-
-                return this;
-            }
-        }, {
-            key: 'initToastr',
-            value: function initToastr() {
-                _toastr2.default.options.positionClass = 'toast-bottom-center';
-                _toastr2.default.options.preventDuplicates = true;
-
-                return this;
-            }
-        }, {
-            key: 'initMarked',
-            value: function initMarked() {
-
-                _marked2.default.setOptions({
-                    breaks: true,
-                    highlight: function highlight(code) {
-                        return _highlight2.default.highlightAuto(code).value;
+        Config.prototype.initHttp = function initHttp() {
+            window.json = function (param) {
+                console.log(JSON.stringify(param));
+                return (0, _aureliaFetchClient.json)(param);
+            };
+            window.http = this.aurelia.container.root.get(_aureliaFetchClient.HttpClient);
+            http.configure(function (config) {
+                config.withDefaults({
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'fetch'
                     }
-                });
-
-                return this;
-            }
-        }, {
-            key: 'initAjax',
-            value: function initAjax() {
-                $.ajaxSetup({
-                    cache: false
-                });
-
-                $(document).ajaxSend(function (event, jqxhr, settings) {
-
-                    if (settings.url.lastIndexOf('/chat/direct/latest') == -1) {
+                }).withInterceptor({
+                    request: function request(req) {
                         _nprogress2.default && _nprogress2.default.start();
+                        return req;
+                    },
+                    requestError: function requestError(req) {
+                        console.log(req);
+                    },
+                    response: function response(resp) {
+                        _nprogress2.default && _nprogress2.default.done();
+                        if (!resp.ok) {
+                            resp.json().then(function (data) {
+                                _toastr2.default.error(data.message);
+                            });
+
+                            if (resp.status == 401) {
+                                _toastr2.default.error('用户未登录!');
+                                _commonUtils2.default.redirect2Login();
+                                return;
+                            }
+                        }
+
+                        return resp;
+                    },
+                    responseError: function responseError(resp) {
+                        _toastr2.default.error(resp.message, '网络请求错误!');
+                        console.log(resp);
                     }
                 });
+            });
 
-                $(document).on('ajaxStop', function () {
-                    _nprogress2.default && _nprogress2.default.done();
+            return this;
+        };
+
+        Config.prototype.initToastr = function initToastr() {
+            _toastr2.default.options.positionClass = 'toast-bottom-center';
+            _toastr2.default.options.preventDuplicates = true;
+
+            return this;
+        };
+
+        Config.prototype.initMarked = function initMarked() {
+
+            _marked2.default.setOptions({
+                breaks: true,
+                highlight: function highlight(code) {
+                    return _highlight2.default.highlightAuto(code).value;
+                }
+            });
+
+            return this;
+        };
+
+        Config.prototype.initAjax = function initAjax() {
+            $.ajaxSetup({
+                cache: false
+            });
+
+            var exceptUrls = ['/chat/channel/latest', '/chat/direct/latest'];
+
+            $(document).ajaxSend(function (event, jqxhr, settings) {
+
+                var isNotInExceptUrls = _.every(exceptUrls, function (url) {
+                    return settings.url.lastIndexOf(url) == -1;
                 });
 
-                $(document).ajaxError(function (event, xhr, settings) {
-                    if (xhr && xhr.status == 401) {
-                        _commonUtils2.default.redirect2Login();
-                    }
-                });
+                if (isNotInExceptUrls) {
+                    _nprogress2.default && _nprogress2.default.start();
+                }
+            });
 
-                return this;
-            }
-        }, {
-            key: 'initGlobalVar',
-            value: function initGlobalVar() {
-                window.toastr = _toastr2.default;
-                window.wurl = _wurl2.default;
-                window.utils = _commonUtils2.default;
-                window.marked = _marked2.default;
-                window.autosize = _autosize2.default;
-                window.bs = this.aurelia.container.root.get(_aureliaTemplatingResources.BindingSignaler);
-                window.ea = this.aurelia.container.root.get(_aureliaEventAggregator.EventAggregator);
-                return this;
-            }
-        }, {
-            key: 'initAnimateCss',
-            value: function initAnimateCss() {
-                $.fn.extend({
-                    animateCss: function animateCss(animationName) {
-                        var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-                        this.addClass('animated ' + animationName).one(animationEnd, function () {
-                            $(this).removeClass('animated ' + animationName);
-                        });
-                    }
-                });
-                return this;
-            }
-        }, {
-            key: 'context',
-            value: function context(aurelia) {
-                this.aurelia = aurelia;
-                return this;
-            }
-        }]);
+            $(document).on('ajaxStop', function () {
+                _nprogress2.default && _nprogress2.default.done();
+            });
+
+            $(document).ajaxError(function (event, xhr, settings) {
+                if (xhr && xhr.status == 401) {
+                    _commonUtils2.default.redirect2Login();
+                }
+            });
+
+            return this;
+        };
+
+        Config.prototype.initGlobalVar = function initGlobalVar() {
+            window.toastr = _toastr2.default;
+            window.wurl = _wurl2.default;
+            window.utils = _commonUtils2.default;
+            window.marked = _marked2.default;
+            window.autosize = _autosize2.default;
+            window.bs = this.aurelia.container.root.get(_aureliaTemplatingResources.BindingSignaler);
+            window.ea = this.aurelia.container.root.get(_aureliaEventAggregator.EventAggregator);
+            return this;
+        };
+
+        Config.prototype.initAnimateCss = function initAnimateCss() {
+            $.fn.extend({
+                animateCss: function animateCss(animationName) {
+                    var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+                    this.addClass('animated ' + animationName).one(animationEnd, function () {
+                        $(this).removeClass('animated ' + animationName);
+                    });
+                }
+            });
+            return this;
+        };
+
+        Config.prototype.context = function context(aurelia) {
+            this.aurelia = aurelia;
+            return this;
+        };
 
         return Config;
     }();

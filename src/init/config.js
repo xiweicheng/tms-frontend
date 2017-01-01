@@ -107,9 +107,18 @@ export class Config {
             cache: false,
         });
 
+        let exceptUrls = [
+            '/chat/channel/latest',
+            '/chat/direct/latest'
+        ];
+
         $(document).ajaxSend(function(event, jqxhr, settings) {
 
-            if (settings.url.lastIndexOf('/chat/direct/latest') == -1) {
+            let isNotInExceptUrls = _.every(exceptUrls, (url) => {
+                return (settings.url.lastIndexOf(url) == -1);
+            });
+
+            if (isNotInExceptUrls) {
                 NProgress && NProgress.start();
             }
         });
