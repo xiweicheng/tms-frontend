@@ -1,14 +1,5 @@
 .tms-chat-direct {
     height: 100%;
-    .top.fixed.menu {
-        padding-left: 220px;
-        height: 60px;
-        @media only screen and (max-width: 767px) {
-            .tms-chat-at.tms-hide {
-                display: none;
-            }
-        }
-    }
     .ui.left.sidebar {
         background-color: #4d394b;
         width: 220px;
@@ -24,19 +15,6 @@
             outline: none;
             margin-top: 10px;
             border-radius: 2px;
-        }
-    }
-    .ui.left.sidebar .ui.list {
-        position: absolute;
-        bottom: 0;
-        top: 80px;
-        overflow-y: auto;
-        width: 190px;
-        a > i.circular.icon {
-            box-shadow: 0 0 0 .1em rgb(65, 131, 196) inset;
-        }
-        &::-webkit-scrollbar-thumb {
-            background-color: #475a81;
         }
     }
     .ui.left.sidebar .tms-header {
@@ -135,40 +113,6 @@
                     display: block;
                 }
             }
-        }
-    }
-    .ui.top.menu {
-        .item.tms-item:before {
-            display: none;
-        }
-        &>.ui.dropdown.item {
-            &>.text > .icon {
-                display: none;
-            }
-        }
-        .right.menu {
-            .item.tms-item {
-                padding-left: 5px;
-                padding-right: 5px;
-            }
-            .ui.search {
-                input {
-                    width: 100px;
-                    transition: width .15s ease-out 0s;
-                }
-                i.remove.icon {
-                    display: none;
-                    position: absolute;
-                    right: 0;
-                    left: auto;
-                }
-            }
-        }
-        @media only screen and (max-width: 767px) {
-            padding-left: 0;
-        }
-        .ui.basic.button {
-            box-shadow: none;
         }
     }
     @media only screen and (max-width: 767px) {

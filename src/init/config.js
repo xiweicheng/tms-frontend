@@ -1,20 +1,29 @@
+import { BindingSignaler } from 'aurelia-templating-resources';
+import { EventAggregator } from 'aurelia-event-aggregator';
 import 'isomorphic-fetch';
 import { HttpClient, json } from 'aurelia-fetch-client';
-import { inject, Lazy } from 'aurelia-framework';
-
 import {
     default as toastr
-}
-from 'toastr';
+} from 'toastr';
+import {
+    default as wurl
+} from 'wurl';
+import utils from 'common/common-utils';
+import 'common/common-plugin'
+import 'common/common-constant';
+import {
+    default as marked
+} from 'marked'; // https://github.com/chjj/marked
+import {
+    default as hljs
+} from 'highlight';
+import {
+    default as autosize
+} from 'autosize';
 import {
     default as NProgress
 }
 from 'nprogress';
-import utils from 'common/common-utils';
-import {
-    default as wurl
-}
-from 'wurl';
 
 export class Config {
 
@@ -79,11 +88,37 @@ export class Config {
         return this;
     }
 
+    initMarked() {
+
+        marked.setOptions({
+            breaks: true,
+            highlight: function(code) {
+                return hljs.highlightAuto(code).value;
+            }
+        });
+
+        return this;
+    }
+
     initAjax() {
+        // ajax全局配置选项设置
+        $.ajaxSetup({
+            // ajax请求不缓存
+            cache: false,
+        });
+
+        let exceptUrls = [
+            '/chat/channel/latest',
+            '/chat/direct/latest'
+        ];
 
         $(document).ajaxSend(function(event, jqxhr, settings) {
 
-            if (settings.url.lastIndexOf('/chat/direct/latest') == -1) {
+            let isNotInExceptUrls = _.every(exceptUrls, (url) => {
+                return (settings.url.lastIndexOf(url) == -1);
+            });
+
+            if (isNotInExceptUrls) {
                 NProgress && NProgress.start();
             }
         });
@@ -103,6 +138,29 @@ export class Config {
             }
         });
 
+        return this;
+    }
+
+    initGlobalVar() {
+        window.toastr = toastr;
+        window.wurl = wurl;
+        window.utils = utils;
+        window.marked = marked;
+        window.autosize = autosize;
+        window.bs = this.aurelia.container.root.get(BindingSignaler);
+        window.ea = this.aurelia.container.root.get(EventAggregator);
+        return this;
+    }
+
+    initAnimateCss() {
+        $.fn.extend({
+            animateCss: function(animationName) {
+                var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+                this.addClass('animated ' + animationName).one(animationEnd, function() {
+                    $(this).removeClass('animated ' + animationName);
+                });
+            }
+        });
         return this;
     }
 

@@ -1,0 +1,56 @@
+<template>
+    <require from="./em-chat-sidebar-left.css"></require>
+    <div class="ui left visible segment sidebar tms-left-sidebar">
+        <div class="tms-header">
+            <h1 class="ui header"><a href="/admin/dynamic?scroll=1">TMS沟通</a></h1>
+            <input value.bind="filter" focusin.trigger="chatToUserFilerFocusinHanlder()" keyup.trigger="chatToUserFilerKeyupHanlder($event)" type="text" placeholder="私聊对象查找">
+            <i title="清空过滤输入" click.delegate="clearFilterHandler()" class="bordered close icon link small"></i>
+        </div>
+        <div class="tms-body">
+            <div class="tms-channels">
+                <div class="title">
+                    <h4 class="ui header"><i class="users icon"></i>频道</h4>
+                    <i ref="createChannelRef" class="plus link circular icon"></i>
+                </div>
+                <div class="ui middle aligned selection list">
+                    <a repeat.for="item of channels" title="${item.title}(${item.name})" show.bind="!item.hidden" href="#/chat/${item.name}" class="item ${(!isAt && item.name == chatTo) ? 'active' : ''}">
+                        <i class="hashtag icon"></i>
+                        <div class="content">
+                            <div style="color: black;">${item.title}</div>
+                        </div>
+                        <div class="actions">
+                            <div if.bind="item.owner.username == loginUser.username" ui-dropdown class="ui right pointing dropdown">
+                                <!-- <i class="ellipsis vertical icon"></i> -->
+                                <i class="large ellipsis horizontal icon"></i>
+                                <div class="menu">
+                                    <div class="item" click.delegate="membersMgrHandler(item)">成员管理</div>
+                                    <div class="item" click.delegate="editHandler(item)">编辑</div>
+                                    <div class="item" click.delegate="delHandler(item)">删除</div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="ui divider"></div>
+            <div class="tms-users">
+                <div class="title">
+                    <h4 class="ui header"><i class="user icon"></i>用户</h4>
+                    <!-- <i class="plus link circular icon"></i> -->
+                </div>
+                <div ref="userListRef" class="ui middle aligned selection list">
+                    <a repeat.for="item of users" title="${item.username}" show.bind="!item.hidden" href="#/chat/@${item.username}" class="item ${(isAt && item.username == chatTo) ? 'active' : ''}" data-id="${item.username}">
+                        <i style="font-weight: bold;" class="at icon"></i>
+                        <div class="content">
+                            <div style="color: black;">${item.name ? item.name : item.username}</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <em-confirm-modal em-confirm-modal.ref="confirmMd"></em-confirm-modal>
+    <em-chat-channel-create trigger.bind="createChannelRef"></em-chat-channel-create>
+    <em-chat-channel-edit channel.bind="selectedChannel" em-chat-channel-edit.ref="channelEditMd"></em-chat-channel-edit>
+    <em-chat-channel-members-mgr users.bind="users" channel.bind="selectedChannel" em-chat-channel-members-mgr.ref="channelMembersMgrMd"></em-chat-channel-members-mgr>
+</template>

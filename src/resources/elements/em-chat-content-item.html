@@ -1,0 +1,33 @@
+<template>
+    <div repeat.for="item of chats" swipebox class="comment item ${item.id == markId ? 'active' : ''}" data-id="${item.id}">
+        <a class="avatar">
+            <i class="circular icon large user"></i>
+        </a>
+        <div class="content">
+            <a class="author">${item.creator.name}</a>
+            <div class="metadata">
+                <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
+            </div>
+            <div show.bind="!item.isEditing" class="text markdown-body" innerhtml.bind="item.contentMd"></div>
+            <textarea ref="editTxtRef" pastable autosize dropzone keydown.trigger="eidtKeydownHandler($event, item, editTxtRef)" show.bind="item.isEditing" value.bind="item.content" class="tms-edit-textarea" rows="1"></textarea>
+            <div show.bind="item.isEditing" class="ui compact icon buttons tms-edit-actions">
+                <button click.delegate="editOkHandler($event, item, editTxtRef)" title="保存 (ctrl+enter)" class="ui left attached compact icon button">
+                    <i class="checkmark icon"></i>
+                </button>
+                <button click.delegate="editCancelHandler($event, item, editTxtRef)" title="取消 (esc)" class="ui attached compact icon button">
+                    <i class="remove icon"></i>
+                </button>
+                <button dropzone="clickable.bind: !0; target.bind: editTxtRef" title="上传 (ctrl+u)" class="ui right attached compact icon button">
+                    <i class="upload icon"></i>
+                </button>
+            </div>
+            <div class="actions">
+                <a if.bind="item.creator.username == loginUser.username" click.delegate="editHandler(item, editTxtRef)" class="tms-edit">编辑</a>
+                <a if.bind="item.creator.username == loginUser.username" click.delegate="deleteHandler(item)" class="tms-delete">删除</a>
+                <a class="tms-copy tms-clipboard" data-clipboard-text="${item.content}">复制</a>
+                <a class="tms-share tms-clipboard" data-clipboard-text="${selfLink + '?id=' + item.id}">分享</a>
+            </div>
+        </div>
+    </div>
+    <em-confirm-modal em-confirm-modal.ref="emConfirmModal"></em-confirm-modal>
+</template>

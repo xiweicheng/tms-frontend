@@ -1,25 +1,15 @@
 import 'tms-semantic-ui';
-import {
-    default as toastr
-}
-from 'toastr';
-import {
-    default as wurl
-}
-from 'wurl';
-import 'lodash';
-import utils from 'common/common-utils';
-import 'common/common-constant';
 
 export class App {
+
     constructor() {
-        window.toastr = toastr;
-        window.wurl = wurl;
-        window.utils = utils;
         this.init();
     }
 
     init() {
+
+        $.fn.dropdown.settings.forceSelection = false;
+
         // ui form 验证提示信息国际化
         _.extend($.fn.form.settings.prompt, {
             empty: '{name}不能为空',
@@ -82,7 +72,7 @@ export class App {
             moduleId: 'user/user-login',
             nav: false,
             title: '登录'
-        },  {
+        }, {
             route: ['test'],
             name: 'test',
             moduleId: 'test/test-lifecycle',
