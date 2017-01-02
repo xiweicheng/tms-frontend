@@ -167,6 +167,12 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
         };
     }
 
+    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+        return typeof obj;
+    } : function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+
     function _classCallCheck(instance, Constructor) {
         if (!(instance instanceof Constructor)) {
             throw new TypeError("Cannot call a class as a function");
@@ -522,10 +528,16 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                 _this10.focusedComment = $(event.currentTarget);
             }).on('dblclick', '.comment.item', function (event) {
                 if (event.ctrlKey) {
-                    (function () {
+                    var _ret = function () {
                         var chatId = $(event.currentTarget).attr('data-id');
                         var $t = $(event.currentTarget).find('.content > textarea');
                         var item = _.find(_this10.chats, { id: Number.parseInt(chatId) });
+
+                        if (item.creator.username != _this10.loginUser.username) {
+                            return {
+                                v: void 0
+                            };
+                        }
 
                         item.isEditing = true;
                         item.contentOld = item.content;
@@ -533,7 +545,9 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                             $t.focus().select();
                             autosize.update($t.get(0));
                         });
-                    })();
+                    }();
+
+                    if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
                 }
             });
         };
