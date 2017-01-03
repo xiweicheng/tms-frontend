@@ -141,6 +141,12 @@
             "path": "../node_modules/jquery.hotkeys",
             "main": "jquery.hotkeys",
             "deps": ["jquery"]
+          },
+          {
+            "name": "tablesort",
+            "path": "../node_modules/jquery-tablesort",
+            "main": "jquery.tablesort",
+            "deps": ["jquery"]
           }
         ]
       },
