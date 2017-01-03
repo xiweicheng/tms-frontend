@@ -3581,6 +3581,9 @@ define('resources/elements/em-chat-sidebar-left',['exports', 'aurelia-framework'
             _.each(this.users, function (item) {
                 item.hidden = item.username.indexOf(_this3.filter) == -1;
             });
+            _.each(this.channels, function (item) {
+                item.hidden = item.name.indexOf(_this3.filter) == -1;
+            });
         };
 
         EmChatSidebarLeft.prototype.editHandler = function editHandler(item) {

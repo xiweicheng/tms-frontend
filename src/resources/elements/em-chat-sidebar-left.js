@@ -54,6 +54,9 @@ export class EmChatSidebarLeft {
         _.each(this.users, (item) => {
             item.hidden = item.username.indexOf(this.filter) == -1;
         });
+        _.each(this.channels, (item) => {
+            item.hidden = item.name.indexOf(this.filter) == -1;
+        });
     }
 
     editHandler(item) {
