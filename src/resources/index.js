@@ -23,6 +23,7 @@ export function configure(aurelia) {
         'resources/attributes/attr-dimmer',
         'resources/attributes/attr-ui-dropdown',
         'resources/attributes/attr-ui-tab',
+        'resources/attributes/attr-tablesort',
         'resources/elements/em-modal',
         'resources/elements/em-dropdown',
         'resources/elements/em-confirm-modal',
@@ -33,6 +34,7 @@ export function configure(aurelia) {
         'resources/elements/em-chat-content-item',
         'resources/elements/em-chat-sidebar-right',
         'resources/elements/em-chat-channel-create',
+        'resources/elements/em-chat-channel-join',
         'resources/elements/em-chat-channel-edit',
         'resources/elements/em-chat-channel-members-mgr',
     ]);

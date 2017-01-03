@@ -54,6 +54,9 @@ export class EmChatSidebarLeft {
         _.each(this.users, (item) => {
             item.hidden = item.username.indexOf(this.filter) == -1;
         });
+        _.each(this.channels, (item) => {
+            item.hidden = item.name.indexOf(this.filter) == -1;
+        });
     }
 
     editHandler(item) {
@@ -70,8 +73,7 @@ export class EmChatSidebarLeft {
                     if (data.success) {
                         toastr.success('删除频道成功!');
                         _.remove(this.channels, { id: item.id });
-                        // this.channels = [...this.channels];
-                        ea.publish(nsCons.EVENT_CHAT_CHANNEL_DELETED, item);
+                        ea.publish(nsCons.EVENT_CHAT_CHANNEL_DELETED, { channel: item });
                     } else {
                         toastr.error(data.data, '删除频道失败!');
                     }
@@ -83,6 +85,24 @@ export class EmChatSidebarLeft {
     membersMgrHandler(item) {
         this.selectedChannel = item;
         this.channelMembersMgrMd.show();
+    }
+
+    leaveHandler(item) {
+        this.confirmMd.show({
+            content: `确定要离开频道<code class="nx">${item.title}</code>吗?`,
+            onapprove: () => {
+                $.post('/admin/channel/leave', {
+                    id: item.id
+                }, (data) => {
+                    if (data.success) {
+                        toastr.success('离开频道成功!');
+                        ea.publish(nsCons.EVENT_CHAT_CHANNEL_LEAVED, { channel: data.data });
+                    } else {
+                        toastr.error(data.data, '离开频道失败!');
+                    }
+                });
+            }
+        });
     }
 
 }

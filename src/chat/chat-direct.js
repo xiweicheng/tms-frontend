@@ -75,11 +75,27 @@ export class ChatDirect {
 
         this.subscribe5 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_DELETED, (payload) => {
 
-            if (payload.name == this.chatTo) {
+            if (!this.isAt && (payload.channel.name == this.chatTo)) {
                 window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
             }
 
             this.channels = [...this.channels];
+
+        });
+
+        this.subscribe6 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_JOINED, (payload) => {
+
+            this.channels.splice(0, 0, payload.channel);
+
+        });
+
+        this.subscribe7 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_LEAVED, (payload) => {
+
+            if(!this.isAt && (payload.channel.name == this.chatTo)) {
+                window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
+            }
+
+            this.channels = _.reject(this.channels, { id: payload.channel.id });
 
         });
     }
@@ -94,6 +110,8 @@ export class ChatDirect {
         this.subscribe3.dispose();
         this.subscribe4.dispose();
         this.subscribe5.dispose();
+        this.subscribe6.dispose();
+        this.subscribe7.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();
@@ -126,7 +144,7 @@ export class ChatDirect {
             this.loginUser = user;
         });
 
-        chatService.listUsers(true).then((users) => {
+        chatService.listUsers(false).then((users) => {
             this.users = users;
             if (this.isAt) {
                 this.user = _.find(this.users, {
@@ -143,7 +161,7 @@ export class ChatDirect {
             }
         });
 
-        chatService.listChannels(true).then((channels) => {
+        chatService.listChannels(false).then((channels) => {
             this.channels = channels;
             if (!this.isAt) {
                 this.channel = _.find(this.channels, {
@@ -331,7 +349,8 @@ export class ChatDirect {
 
             $.get(url, data, (data) => {
                 if (data.success) {
-                    if (data.data.length == 0) {
+
+                    if (!this._checkPollResultOk(data)) {
                         return;
                     }
                     this.chats = _.unionBy(this.chats, this.convertMd(data.data), 'id');
@@ -348,6 +367,16 @@ export class ChatDirect {
                 });
             });
         });
+    }
+
+    _checkPollResultOk(data) {
+
+        if (data.data.length == 0) {
+            return false;
+        }
+
+        let chat = _.first(data.data);
+        return this.isAt ? _.has(chat, 'chatTo') : _.has(chat, 'channel');
     }
 
     /**

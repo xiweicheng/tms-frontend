@@ -18,6 +18,7 @@ export class EmConfirmModal {
 
         $(this.md).modal({
             closable: false,
+            allowMultiple: true,
             onApprove: () => {
                 this.onapprove && this.onapprove();
             },
