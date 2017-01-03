@@ -3,6 +3,7 @@ import { bindable, containerless } from 'aurelia-framework';
 @containerless
 export class EmChatChannelCreate {
 
+    @bindable loginUser;
     @bindable trigger;
     @bindable name;
 
@@ -41,6 +42,7 @@ export class EmChatChannelCreate {
         this.title = '';
         this.desc = '';
         $(this.chk).checkbox('set checked');
+        this.channelJoinVm.refresh();
     }
 
     /**

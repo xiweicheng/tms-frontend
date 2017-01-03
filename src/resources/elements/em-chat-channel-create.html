@@ -31,31 +31,7 @@
                 </div>
             </div>
             <div class="ui tab basic segment tms-join" data-tab="channel-join">
-                <table class="ui very basic striped table">
-                    <thead>
-                        <tr>
-                            <th>标识</th>
-                            <th>名称</th>
-                            <th>描述</th>
-                            <th>可见性</th>
-                            <th>状态</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>#test</td>
-                            <td>测试频道</td>
-                            <td>测试频道</td>
-                            <td>公开</td>
-                            <td>未加入</td>
-                            <td>
-                                <div class="ui mini green button">加入</div>
-                                <div class="ui mini orange button">离开</div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <em-chat-channel-join em-chat-channel-join.ref="channelJoinVm" login-user.bind="loginUser"></em-chat-channel-join>
             </div>
         </div>
     </em-modal>
