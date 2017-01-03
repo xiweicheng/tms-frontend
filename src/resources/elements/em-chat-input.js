@@ -211,8 +211,11 @@ export class EmChatInput {
         } else {
             url = `/admin/chat/channel/create`;
             data = {
+                baseUrl: utils.getBaseUrl(),
+                path: wurl('path'),
                 channelId: this.channel.id,
-                content: content
+                content: content,
+                contentHtml: html
             };
         }
         $.post(url, data, (data, textStatus, xhr) => {
