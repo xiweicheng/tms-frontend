@@ -6,6 +6,7 @@ export class EmChatChannelCreate {
     @bindable loginUser;
     @bindable trigger;
     @bindable name;
+    activeTab = 'channel-create';
 
     nameRegex = /^[a-z][a-z0-9_\-]{0,49}$/;
 
@@ -20,7 +21,7 @@ export class EmChatChannelCreate {
         if (!this.nameRegex.test(this.oldName)) {
             this.oldName = '';
         }
-        
+
         return this.oldName;
     }
 
@@ -50,6 +51,11 @@ export class EmChatChannelCreate {
      */
     attached() {
         $(this.chk).checkbox();
+        $(this.tabRef).find('.item').tab({
+            onVisible: (tabPath) => {
+                this.activeTab = tabPath;
+            }
+        });
     }
 
     approveHandler(modal) {
@@ -60,13 +66,14 @@ export class EmChatChannelCreate {
             desc: this.desc,
             privated: $(this.chk).checkbox('is checked')
         }, (data) => {
-            modal.hide();
             if (data.success) {
+                modal.hide();
                 toastr.success('创建频道成功!');
                 ea.publish(nsCons.EVENT_CHAT_CHANNEL_CREATED, {
                     channel: data.data
                 });
             } else {
+                modal.hideDimmer();
                 toastr.error(data.data, '创建频道失败!');
             }
         });

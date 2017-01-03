@@ -15,6 +15,7 @@ export class EmModal {
     @bindable onvisible;
     @bindable disabled = false;
     @bindable classes = 'small';
+    @bindable showConfirm = true;
 
     options = {
         hideOnApprove: true,
