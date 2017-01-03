@@ -331,7 +331,8 @@ export class ChatDirect {
 
             $.get(url, data, (data) => {
                 if (data.success) {
-                    if (data.data.length == 0) {
+
+                    if(!this._checkPollResultOk(data)) {
                         return;
                     }
                     this.chats = _.unionBy(this.chats, this.convertMd(data.data), 'id');
@@ -348,6 +349,16 @@ export class ChatDirect {
                 });
             });
         });
+    }
+
+    _checkPollResultOk(data) {
+
+        if (data.data.length == 0) {
+            return false;
+        }
+
+        let chat = _.first(data.data);
+        return this.isAt ? _.has(chat, 'chatTo') : _.has(chat, 'channel');
     }
 
     /**
