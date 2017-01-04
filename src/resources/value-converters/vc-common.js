@@ -59,3 +59,12 @@ export class TimeagoValueConverter {
         return value ? tg.format(value, 'zh_CN') : '';
     }
 }
+
+/**
+ * markdown内容解析处理
+ */
+export class ParseMdValueConverter {
+    toView(value, members) {
+        return marked(utils.preParse(value, members));
+    }
+}

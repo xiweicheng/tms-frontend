@@ -18,9 +18,6 @@ export class EmChatSidebarRight {
             this.search = payload.search;
             this.searchPage = result;
             this.searchChats = result.content;
-            _.each(this.searchChats, (item) => {
-                item.contentMd = marked(item.content);
-            });
             this.lastSearch = result.last;
             this.moreSearchCnt = result.totalElements - (result.number + 1) * result.size;
         });
@@ -75,9 +72,6 @@ export class EmChatSidebarRight {
             page: this.searchPage.number + 1
         }, (data) => {
             if (data.success) {
-                _.each(data.data.content, (item) => {
-                    item.contentMd = marked(item.content);
-                });
                 this.searchChats = _.concat(this.searchChats, data.data.content);
 
                 this.lastSearch = data.data.last;

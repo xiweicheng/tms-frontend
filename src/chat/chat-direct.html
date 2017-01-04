@@ -12,7 +12,7 @@
             <div ref="contentBodyRef" class="tms-content-body">
                 <div ref="commentsRef" class="ui basic segment minimal selection list segment comments">
                     <button if.bind="!last" click.delegate="lastMoreHandler()" class="fluid basic ui button tms-pre-more"><i show.bind="lastMoreP && lastMoreP.readyState != 4" class="spinner loading icon"></i> 加载更多(${lastCnt})</button>
-                    <em-chat-content-item is-at.bind="isAt" chats.bind="chats" login-user.bind="loginUser"></em-chat-content-item>
+                    <em-chat-content-item channel.bind="channel" is-at.bind="isAt" chats.bind="chats" login-user.bind="loginUser"></em-chat-content-item>
                     <button if.bind="!first" click.delegate="firstMoreHandler()" class="fluid basic ui button tms-next-more"><i show.bind="nextMoreP && nextMoreP.readyState != 4" class="spinner loading icon"></i> 加载更多(${firstCnt})</button>
                 </div>
                 <em-chat-input channel.bind="channel" is-at.bind="isAt" chat-to.bind="chatTo" em-chat-input.ref="emChatInputRef"></em-chat-input>

@@ -11,6 +11,16 @@ export class EmChatInput {
     @bindable chatTo;
     @bindable isAt;
     @bindable channel;
+    members = [];
+
+    channelChanged() {
+
+        this.channel && (this.members = [{
+            username: 'all',
+            mails: '',
+            name: '全部成员'
+        }, ...this.channel.members]);
+    }
 
     initHotkeys() {
         $(document).bind('keydown', 'ctrl+i', () => {
@@ -136,16 +146,24 @@ export class EmChatInput {
             autoDownloadFontAwesome: false,
             insertTexts: {
                 table: ["", "\n\n| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n\n"],
-            }
+            },
+            previewRender: (plainText, preview) => { // Async method
+                setTimeout(() => {
+                    preview.innerHTML = this.simplemde.markdown(utils.preParse(plainText, this.members));
+                }, 250);
+
+                return "解释渲染中...";
+            },
         });
 
         this.$chatMsgInputRef = $(this.inputRef).find('.textareaWrapper .CodeMirror textarea');
         this.initTextcomplete();
+        this.initTextcompleteAt();
     }
 
     initTextcomplete() {
 
-        $(this.$chatMsgInputRef).textcomplete([{
+        $(this.$chatMsgInputRef).textcomplete([{ // chat msg help
             match: /(|\b)(\/.*)$/,
             search: (term, callback) => {
                 var keys = _.keys(tips);
@@ -159,6 +177,20 @@ export class EmChatInput {
             replace: (value) => {
                 this.tipsActionHandler(value);
                 return '';
+            }
+        }, { // @user
+            match: /(^|\s)@(\w*)$/,
+            search: (term, callback) => {
+                callback($.map(this.members, (member) => {
+                    return member.username.indexOf(term) === 0 ? member.username : null;
+                }));
+            },
+            template: (value, term) => {
+                let user = _.find(this.members, { username: value });
+                return `${user.name} - ${user.mails} (${user.username})`;
+            },
+            replace: (value) => {
+                return `{~${value}}`;
             }
         }], {
             appendTo: '.tms-chat-status-bar',
@@ -177,6 +209,28 @@ export class EmChatInput {
             } else if (e.ctrlKey && e.keyCode == 191) {
                 this.emHotkeysModal.show();
             }
+        });
+    }
+
+    initTextcompleteAt() {
+        $(this.$chatMsgInputRef).textcomplete([{
+            match: /(|\b)(\/.*)$/,
+            search: (term, callback) => {
+                var keys = _.keys(tips);
+                callback($.map(keys, (key) => {
+                    return key.indexOf(term) === 0 ? key : null;
+                }));
+            },
+            template: (value, term) => {
+                return tips[value].label;
+            },
+            replace: (value) => {
+                this.tipsActionHandler(value);
+                return '';
+            }
+        }], {
+            appendTo: '.tms-chat-status-bar',
+            maxCount: 20
         });
     }
 
@@ -214,6 +268,7 @@ export class EmChatInput {
                 baseUrl: utils.getBaseUrl(),
                 path: wurl('path'),
                 channelId: this.channel.id,
+                usernames: utils.parseUsernames(content, this.members).join(','),
                 content: content,
                 contentHtml: html
             };

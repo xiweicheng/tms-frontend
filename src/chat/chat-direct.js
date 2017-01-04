@@ -117,13 +117,6 @@ export class ChatDirect {
         poll.stop();
     }
 
-    convertMd(chats) {
-        _.each(chats, (item) => {
-            item.contentMd = marked(item.content);
-        });
-        return chats;
-    }
-
     /**
      * 在视图模型(ViewModel)展示前执行一些自定义代码逻辑
      * @param  {[object]} params                参数
@@ -207,7 +200,7 @@ export class ChatDirect {
         }
         this.lastMoreP = $.get(url, data, (data) => {
             if (data.success) {
-                this.chats = _.unionBy(_.reverse(this.convertMd(data.data)), this.chats);
+                this.chats = _.unionBy(_.reverse(data.data), this.chats);
                 this.last = (data.msgs[0] - data.data.length <= 0);
                 !this.last && (this.lastCnt = data.msgs[0] - data.data.length);
                 _.defer(() => {
@@ -245,7 +238,7 @@ export class ChatDirect {
         }
         this.nextMoreP = $.get(url, data, (data) => {
             if (data.success) {
-                this.chats = _.unionBy(this.chats, this.convertMd(data.data));
+                this.chats = _.unionBy(this.chats, data.data);
                 this.first = (data.msgs[0] - data.data.length <= 0);
                 !this.first && (this.firstCnt = data.msgs[0] - data.data.length);
                 _.defer(() => {
@@ -297,7 +290,7 @@ export class ChatDirect {
     // 共同返回消息处理
     processChats(data) {
         if (data.success) {
-            this.chats = _.reverse(this.convertMd(data.data.content));
+            this.chats = _.reverse(data.data.content);
             this.last = data.data.last;
             this.first = data.data.first;
             !this.last && (this.lastCnt = data.data.totalElements - data.data.numberOfElements);
@@ -353,7 +346,7 @@ export class ChatDirect {
                     if (!this._checkPollResultOk(data)) {
                         return;
                     }
-                    this.chats = _.unionBy(this.chats, this.convertMd(data.data), 'id');
+                    this.chats = _.unionBy(this.chats, data.data, 'id');
                     _.defer(() => {
                         $(this.commentsRef).scrollTo('max');
                     });

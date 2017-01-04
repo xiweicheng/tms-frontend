@@ -170,7 +170,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
     var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
         return typeof obj;
     } : function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
     };
 
     function _classCallCheck(instance, Constructor) {
@@ -275,13 +275,6 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             _commonPoll2.default.stop();
         };
 
-        ChatDirect.prototype.convertMd = function convertMd(chats) {
-            _.each(chats, function (item) {
-                item.contentMd = marked(item.content);
-            });
-            return chats;
-        };
-
         ChatDirect.prototype.activate = function activate(params, routeConfig, navigationInstruction) {
             var _this2 = this;
 
@@ -305,7 +298,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
 
                     if (_this2.user) {
                         var name = _this2.user ? _this2.user.name : _this2.chatTo;
-                        routeConfig.navModel.setTitle(name + ' | \u79C1\u804A | TMS');
+                        routeConfig.navModel.setTitle(name + ' | 私聊 | TMS');
 
                         _this2.listChatDirect(true);
                     }
@@ -320,7 +313,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                     });
 
                     if (_this2.channel) {
-                        routeConfig.navModel.setTitle(_this2.channel.name + ' | \u79C1\u804A | TMS');
+                        routeConfig.navModel.setTitle(_this2.channel.name + ' | 私聊 | TMS');
 
                         _this2.listChatChannel(true);
                     }
@@ -358,7 +351,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             }
             this.lastMoreP = $.get(url, data, function (data) {
                 if (data.success) {
-                    _this3.chats = _.unionBy(_.reverse(_this3.convertMd(data.data)), _this3.chats);
+                    _this3.chats = _.unionBy(_.reverse(data.data), _this3.chats);
                     _this3.last = data.msgs[0] - data.data.length <= 0;
                     !_this3.last && (_this3.lastCnt = data.msgs[0] - data.data.length);
                     _.defer(function () {
@@ -397,7 +390,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             }
             this.nextMoreP = $.get(url, data, function (data) {
                 if (data.success) {
-                    _this4.chats = _.unionBy(_this4.chats, _this4.convertMd(data.data));
+                    _this4.chats = _.unionBy(_this4.chats, data.data);
                     _this4.first = data.msgs[0] - data.data.length <= 0;
                     !_this4.first && (_this4.firstCnt = data.msgs[0] - data.data.length);
                     _.defer(function () {
@@ -448,7 +441,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             var _this7 = this;
 
             if (data.success) {
-                this.chats = _.reverse(this.convertMd(data.data.content));
+                this.chats = _.reverse(data.data.content);
                 this.last = data.data.last;
                 this.first = data.data.first;
                 !this.last && (this.lastCnt = data.data.totalElements - data.data.numberOfElements);
@@ -503,7 +496,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                         if (!_this8._checkPollResultOk(data)) {
                             return;
                         }
-                        _this8.chats = _.unionBy(_this8.chats, _this8.convertMd(data.data), 'id');
+                        _this8.chats = _.unionBy(_this8.chats, data.data, 'id');
                         _.defer(function () {
                             $(_this8.commentsRef).scrollTo('max');
                         });
@@ -693,9 +686,9 @@ define('chat/chat-service',['exports'], function (exports) {
                         resolve(value);
                     } else {
                         return Promise.resolve(value).then(function (value) {
-                            step("next", value);
+                            return step("next", value);
                         }, function (err) {
-                            step("throw", err);
+                            return step("throw", err);
                         });
                     }
                 }
@@ -1165,7 +1158,7 @@ define('common/common-utils',['exports', 'wurl'], function (exports, _wurl) {
 
             var cnt = time ? time : 10;
             var timer = null;
-            var $t = toastr.error('\u7F51\u7EDC\u8FDE\u63A5\u9519\u8BEF,' + cnt + '\u79D2\u540E\u81EA\u52A8\u91CD\u8BD5!', null, {
+            var $t = toastr.error('网络连接错误,' + cnt + '秒后自动重试!', null, {
                 "closeButton": false,
                 "timeOut": "0",
                 "preventDuplicates": false,
@@ -1184,7 +1177,7 @@ define('common/common-utils',['exports', 'wurl'], function (exports, _wurl) {
                     callback && callback();
                     return;
                 }
-                $t && $t.find('.toast-message').text('\u7F51\u7EDC\u8FDE\u63A5\u9519\u8BEF,' + cnt + '\u79D2\u540E\u81EA\u52A8\u91CD\u8BD5!');
+                $t && $t.find('.toast-message').text('网络连接错误,' + cnt + '秒后自动重试!');
                 cnt--;
             }, 1000);
         };
@@ -1225,6 +1218,41 @@ define('common/common-utils',['exports', 'wurl'], function (exports, _wurl) {
             } else {
                 return name;
             }
+        };
+
+        CommonUtils.prototype.preParse = function preParse(plainText, members) {
+
+            var txt = plainText;
+            $.each(this.parseUsers(plainText, members), function (index, user) {
+                txt = txt.replace(new RegExp('{~' + user.username + '}', 'g'), '<span data-value="' + user.username + '" class="at-user">**`@' + user.name + '`**</span>');
+            });
+
+            return txt;
+        };
+
+        CommonUtils.prototype.parseUsers = function parseUsers(plainText, members) {
+            var users = [];
+            var atR = /\{~([^\}]*)\}/g;
+            var rs = atR.exec(plainText);
+            while (rs) {
+                var user = _.find(members, { username: rs[1] });
+                var isNotExists = !_.some(users, { username: rs[1] });
+                if (user && isNotExists) {
+                    users.push(user);
+                }
+                rs = atR.exec(plainText);
+            }
+
+            return users;
+        };
+
+        CommonUtils.prototype.parseUsernames = function parseUsernames(plainText, members) {
+            var users = this.parseUsers(plainText, members);
+            var isExitsAll = _.some(users, { username: 'all' });
+            if (isExitsAll) {
+                return _.without(_.map(members, 'username'), 'all');
+            }
+            return _.map(users, 'username');;
         };
 
         return CommonUtils;
@@ -2032,7 +2060,7 @@ define('resources/attributes/attr-c2c',['exports', 'aurelia-framework', 'clipboa
         AttrC2cCustomAttribute.prototype._init = function _init() {
             var _this = this;
 
-            $(this.element).append('<span style="margin-left: 5px; display: none;" data-tooltip="\u590D\u5236\u5230\u526A\u8D34\u677F" data-position="right center" data-inverted=""><i class="copy link icon"></i></span>');
+            $(this.element).append('<span style="margin-left: 5px; display: none;" data-tooltip="复制到剪贴板" data-position="right center" data-inverted=""><i class="copy link icon"></i></span>');
             this.clipboard = new _clipboard2.default($(this.element).find('i.copy.icon')[0], {
                 text: function text(trigger) {
                     return _this.value ? _this.value : $(_this.element).text();
@@ -2553,7 +2581,7 @@ define('resources/binding-behaviors/bb-key',['exports'], function (exports) {
         }
 
         KeyBindingBehavior.prototype.bind = function bind(binding, source) {
-            var key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 13;
+            var key = arguments.length <= 2 || arguments[2] === undefined ? 13 : arguments[2];
             var metaKeys = arguments[3];
 
             var methodName = 'updateTarget';
@@ -2586,6 +2614,74 @@ define('resources/binding-behaviors/bb-key',['exports'], function (exports) {
 
         return KeyBindingBehavior;
     }();
+});
+define('resources/elements/em-chat-channel-at',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmChatChannelAt = undefined;
+
+    function _initDefineProp(target, property, descriptor, context) {
+        if (!descriptor) return;
+        Object.defineProperty(target, property, {
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+            writable: descriptor.writable,
+            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+        });
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+        var desc = {};
+        Object['ke' + 'ys'](descriptor).forEach(function (key) {
+            desc[key] = descriptor[key];
+        });
+        desc.enumerable = !!desc.enumerable;
+        desc.configurable = !!desc.configurable;
+
+        if ('value' in desc || desc.initializer) {
+            desc.writable = true;
+        }
+
+        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+            return decorator(target, property, desc) || desc;
+        }, desc);
+
+        if (context && desc.initializer !== void 0) {
+            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+            desc.initializer = undefined;
+        }
+
+        if (desc.initializer === void 0) {
+            Object['define' + 'Property'](target, property, desc);
+            desc = null;
+        }
+
+        return desc;
+    }
+
+    function _initializerWarningHelper(descriptor, context) {
+        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+    }
+
+    var _class, _desc, _value, _class2, _descriptor;
+
+    var EmChatChannelAt = exports.EmChatChannelAt = (0, _aureliaFramework.containerless)(_class = (_class2 = function EmChatChannelAt() {
+        _classCallCheck(this, EmChatChannelAt);
+
+        _initDefineProp(this, 'channel', _descriptor, this);
+    }, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'channel', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    })), _class2)) || _class;
 });
 define('resources/elements/em-chat-channel-create',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
     'use strict';
@@ -2941,7 +3037,7 @@ define('resources/elements/em-chat-channel-join',['exports', 'aurelia-framework'
 
         EmChatChannelJoin.prototype.joinHandler = function joinHandler(item) {
             this.confirmMd.show({
-                content: '\u786E\u5B9A\u8981\u52A0\u5165\u9891\u9053<code class="nx">' + item.title + '</code>\u5417?',
+                content: '确定要加入频道<code class="nx">' + item.title + '</code>吗?',
                 onapprove: function onapprove() {
                     $.post('/admin/channel/join', {
                         id: item.id
@@ -2960,7 +3056,7 @@ define('resources/elements/em-chat-channel-join',['exports', 'aurelia-framework'
 
         EmChatChannelJoin.prototype.leaveHandler = function leaveHandler(item) {
             this.confirmMd.show({
-                content: '\u786E\u5B9A\u8981\u79BB\u5F00\u9891\u9053<code class="nx">' + item.title + '</code>\u5417?',
+                content: '确定要离开频道<code class="nx">' + item.title + '</code>吗?',
                 onapprove: function onapprove() {
                     $.post('/admin/channel/leave', {
                         id: item.id
@@ -3200,7 +3296,7 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
         throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
     }
 
-    var _dec, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3;
+    var _dec, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4;
 
     var EmChatContentItem = exports.EmChatContentItem = (_dec = (0, _aureliaFramework.bindable)({ defaultBindingMode: _aureliaFramework.bindingMode.twoWay }), (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
         function EmChatContentItem() {
@@ -3212,8 +3308,20 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
 
             _initDefineProp(this, 'isAt', _descriptor3, this);
 
+            _initDefineProp(this, 'channel', _descriptor4, this);
+
+            this.members = [];
             this.selfLink = utils.getBaseUrl() + wurl('path') + '#' + utils.getHash();
         }
+
+        EmChatContentItem.prototype.channelChanged = function channelChanged() {
+
+            this.channel && (this.members = [{
+                username: 'all',
+                mails: '',
+                name: '全部成员'
+            }].concat(this.channel.members));
+        };
 
         EmChatContentItem.prototype.deleteHandler = function deleteHandler(item) {
             var _this = this;
@@ -3275,23 +3383,32 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
             var html = $('<div class="markdown-body"/>').html('<style>.markdown-body{font-size:14px;line-height:1.6}.markdown-body>:first-child{margin-top:0!important}.markdown-body>:last-child{margin-bottom:0!important}.markdown-body a.absent{color:#C00}.markdown-body a.anchor{bottom:0;cursor:pointer;display:block;left:0;margin-left:-30px;padding-left:30px;position:absolute;top:0}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{cursor:text;font-weight:700;margin:20px 0 10px;padding:0;position:relative}.markdown-body h1 .mini-icon-link,.markdown-body h2 .mini-icon-link,.markdown-body h3 .mini-icon-link,.markdown-body h4 .mini-icon-link,.markdown-body h5 .mini-icon-link,.markdown-body h6 .mini-icon-link{color:#000;display:none}.markdown-body h1:hover a.anchor,.markdown-body h2:hover a.anchor,.markdown-body h3:hover a.anchor,.markdown-body h4:hover a.anchor,.markdown-body h5:hover a.anchor,.markdown-body h6:hover a.anchor{line-height:1;margin-left:-22px;padding-left:0;text-decoration:none;top:15%}.markdown-body h1:hover a.anchor .mini-icon-link,.markdown-body h2:hover a.anchor .mini-icon-link,.markdown-body h3:hover a.anchor .mini-icon-link,.markdown-body h4:hover a.anchor .mini-icon-link,.markdown-body h5:hover a.anchor .mini-icon-link,.markdown-body h6:hover a.anchor .mini-icon-link{display:inline-block}.markdown-body hr:after,.markdown-body hr:before{display:table;content:""}.markdown-body h1 code,.markdown-body h1 tt,.markdown-body h2 code,.markdown-body h2 tt,.markdown-body h3 code,.markdown-body h3 tt,.markdown-body h4 code,.markdown-body h4 tt,.markdown-body h5 code,.markdown-body h5 tt,.markdown-body h6 code,.markdown-body h6 tt{font-size:inherit}.markdown-body h1{color:#000;font-size:28px}.markdown-body h2{border-bottom:1px solid #CCC;color:#000;font-size:24px}.markdown-body h3{font-size:18px}.markdown-body h4{font-size:16px}.markdown-body h5{font-size:14px}.markdown-body h6{color:#777;font-size:14px}.markdown-body blockquote,.markdown-body dl,.markdown-body ol,.markdown-body p,.markdown-body pre,.markdown-body table,.markdown-body ul{margin:15px 0}.markdown-body hr{overflow:hidden;background:#e7e7e7;height:4px;padding:0;margin:16px 0;border:0;-moz-box-sizing:content-box;box-sizing:content-box}.markdown-body h1+p,.markdown-body h2+p,.markdown-body h3+p,.markdown-body h4+p,.markdown-body h5+p,.markdown-body h6+p,.markdown-body ol li>:first-child,.markdown-body ul li>:first-child{margin-top:0}.markdown-body hr:after{clear:both}.markdown-body a:first-child h1,.markdown-body a:first-child h2,.markdown-body a:first-child h3,.markdown-body a:first-child h4,.markdown-body a:first-child h5,.markdown-body a:first-child h6,.markdown-body>h1:first-child,.markdown-body>h1:first-child+h2,.markdown-body>h2:first-child,.markdown-body>h3:first-child,.markdown-body>h4:first-child,.markdown-body>h5:first-child,.markdown-body>h6:first-child{margin-top:0;padding-top:0}.markdown-body li p.first{display:inline-block}.markdown-body ol,.markdown-body ul{padding-left:30px}.markdown-body ol.no-list,.markdown-body ul.no-list{list-style-type:none;padding:0}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-bottom:0}.markdown-body dl{padding:0}.markdown-body dl dt{font-size:14px;font-style:italic;font-weight:700;margin:15px 0 5px;padding:0}.markdown-body dl dt:first-child{padding:0}.markdown-body dl dt>:first-child{margin-top:0}.markdown-body dl dt>:last-child{margin-bottom:0}.markdown-body dl dd{margin:0 0 15px;padding:0 15px}.markdown-body blockquote>:first-child,.markdown-body dl dd>:first-child{margin-top:0}.markdown-body blockquote>:last-child,.markdown-body dl dd>:last-child{margin-bottom:0}.markdown-body blockquote{border-left:4px solid #DDD;color:#777;padding:0 15px}.markdown-body table th{font-weight:700}.markdown-body table td,.markdown-body table th{border:1px solid #CCC;padding:6px 13px}.markdown-body table tr{background-color:#FFF;border-top:1px solid #CCC}.markdown-body table tr:nth-child(2n){background-color:#F8F8F8}.markdown-body img{max-width:100%}.markdown-body span.frame{display:block;overflow:hidden}.markdown-body span.frame>span{border:1px solid #DDD;display:block;float:left;margin:13px 0 0;overflow:hidden;padding:7px;width:auto}.markdown-body span.frame span img{display:block;float:left}.markdown-body span.frame span span{clear:both;color:#333;display:block;padding:5px 0 0}.markdown-body span.align-center{clear:both;display:block;overflow:hidden}.markdown-body span.align-center>span{display:block;margin:13px auto 0;overflow:hidden;text-align:center}.markdown-body span.align-center span img{margin:0 auto;text-align:center}.markdown-body span.align-right{clear:both;display:block;overflow:hidden}.markdown-body span.align-right>span{display:block;margin:13px 0 0;overflow:hidden;text-align:right}.markdown-body span.align-right span img{margin:0;text-align:right}.markdown-body span.float-left{display:block;float:left;margin-right:13px;overflow:hidden}.markdown-body span.float-left span{margin:13px 0 0}.markdown-body span.float-right{display:block;float:right;margin-left:13px;overflow:hidden}.markdown-body span.float-right>span{display:block;margin:13px auto 0;overflow:hidden;text-align:right}.markdown-body code,.markdown-body tt{background-color:#F8F8F8;border:1px solid #EAEAEA;border-radius:3px;margin:0 2px;padding:0 5px;white-space:nowrap}.markdown-body pre>code{background:none;border:none;margin:0;padding:0;white-space:pre}.markdown-body .highlight pre,.markdown-body pre{background-color:#F8F8F8;border:1px solid #CCC;border-radius:3px;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px}.markdown-body pre code,.markdown-body pre tt{background-color:transparent;border:none}</style>' + marked(item.content)).wrap('<div/>').parent().html();
 
             var url = void 0;
+            var data = void 0;
 
             if (this.isAt) {
                 url = '/admin/chat/direct/update';
+                data = {
+                    baseUrl: utils.getBaseUrl(),
+                    path: wurl('path'),
+                    id: item.id,
+                    content: item.content,
+                    contentHtml: html
+                };
             } else {
                 url = '/admin/chat/channel/update';
+                data = {
+                    baseUrl: utils.getBaseUrl(),
+                    path: wurl('path'),
+                    id: item.id,
+                    usernames: utils.parseUsernames(item.content, this.members).join(','),
+                    content: item.content,
+                    contentHtml: html
+                };
             }
 
-            $.post(url, {
-                baseUrl: utils.getBaseUrl(),
-                path: wurl('path'),
-                id: item.id,
-                content: item.content,
-                contentHtml: html
-            }, function (data, textStatus, xhr) {
+            $.post(url, data, function (data, textStatus, xhr) {
                 if (data.success) {
                     toastr.success('更新消息成功!');
-                    item.contentMd = marked(item.content);
                     item.isEditing = false;
                 } else {
                     toastr.error(data.data, '更新消息失败!');
@@ -3330,6 +3447,9 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
         enumerable: true,
         initializer: null
     }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'isAt', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'channel', [_aureliaFramework.bindable], {
         enumerable: true,
         initializer: null
     })), _class2)) || _class);
@@ -3412,7 +3532,18 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
             _initDefineProp(this, 'isAt', _descriptor2, this);
 
             _initDefineProp(this, 'channel', _descriptor3, this);
+
+            this.members = [];
         }
+
+        EmChatInput.prototype.channelChanged = function channelChanged() {
+
+            this.channel && (this.members = [{
+                username: 'all',
+                mails: '',
+                name: '全部成员'
+            }].concat(this.channel.members));
+        };
 
         EmChatInput.prototype.initHotkeys = function initHotkeys() {
             var _this2 = this;
@@ -3517,6 +3648,8 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
         };
 
         EmChatInput.prototype.initSimpleMDE = function initSimpleMDE(textareaDom) {
+            var _this5 = this;
+
             this.simplemde = new _simplemde2.default({
                 element: textareaDom,
                 spellChecker: false,
@@ -3527,15 +3660,23 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
                 autoDownloadFontAwesome: false,
                 insertTexts: {
                     table: ["", "\n\n| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n\n"]
+                },
+                previewRender: function previewRender(plainText, preview) {
+                    setTimeout(function () {
+                        preview.innerHTML = _this5.simplemde.markdown(utils.preParse(plainText, _this5.members));
+                    }, 250);
+
+                    return "解释渲染中...";
                 }
             });
 
             this.$chatMsgInputRef = $(this.inputRef).find('.textareaWrapper .CodeMirror textarea');
             this.initTextcomplete();
+            this.initTextcompleteAt();
         };
 
         EmChatInput.prototype.initTextcomplete = function initTextcomplete() {
-            var _this5 = this;
+            var _this6 = this;
 
             $(this.$chatMsgInputRef).textcomplete([{
                 match: /(|\b)(\/.*)$/,
@@ -3549,8 +3690,22 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
                     return _commonTips2.default[value].label;
                 },
                 replace: function replace(value) {
-                    _this5.tipsActionHandler(value);
+                    _this6.tipsActionHandler(value);
                     return '';
+                }
+            }, {
+                match: /(^|\s)@(\w*)$/,
+                search: function search(term, callback) {
+                    callback($.map(_this6.members, function (member) {
+                        return member.username.indexOf(term) === 0 ? member.username : null;
+                    }));
+                },
+                template: function template(value, term) {
+                    var user = _.find(_this6.members, { username: value });
+                    return user.name + ' - ' + user.mails + ' (' + user.username + ')';
+                },
+                replace: function replace(value) {
+                    return '{~' + value + '}';
                 }
             }], {
                 appendTo: '.tms-chat-status-bar',
@@ -3558,22 +3713,46 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
             });
 
             this.simplemde.codemirror.on('keydown', function (cm, e) {
-                if (e.keyCode === 13 && _this5.isTipsShow()) {
+                if (e.keyCode === 13 && _this6.isTipsShow()) {
                     e.preventDefault();
                 } else if (e.ctrlKey && e.keyCode === 13) {
-                    _this5.sendChatMsg();
+                    _this6.sendChatMsg();
                 } else if (e.keyCode === 27) {
-                    _this5.simplemde.value('');
+                    _this6.simplemde.value('');
                 } else if (e.ctrlKey && e.keyCode == 85) {
-                    $(_this5.btnItemUploadRef).find('.content').click();
+                    $(_this6.btnItemUploadRef).find('.content').click();
                 } else if (e.ctrlKey && e.keyCode == 191) {
-                    _this5.emHotkeysModal.show();
+                    _this6.emHotkeysModal.show();
                 }
             });
         };
 
+        EmChatInput.prototype.initTextcompleteAt = function initTextcompleteAt() {
+            var _this7 = this;
+
+            $(this.$chatMsgInputRef).textcomplete([{
+                match: /(|\b)(\/.*)$/,
+                search: function search(term, callback) {
+                    var keys = _.keys(_commonTips2.default);
+                    callback($.map(keys, function (key) {
+                        return key.indexOf(term) === 0 ? key : null;
+                    }));
+                },
+                template: function template(value, term) {
+                    return _commonTips2.default[value].label;
+                },
+                replace: function replace(value) {
+                    _this7.tipsActionHandler(value);
+                    return '';
+                }
+            }], {
+                appendTo: '.tms-chat-status-bar',
+                maxCount: 20
+            });
+        };
+
         EmChatInput.prototype.sendChatMsg = function sendChatMsg() {
-            var _this6 = this;
+            var _this8 = this;
 
             var content = this.simplemde.value();
 
@@ -3607,13 +3786,14 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
                     baseUrl: utils.getBaseUrl(),
                     path: wurl('path'),
                     channelId: this.channel.id,
+                    usernames: utils.parseUsernames(content, this.members).join(','),
                     content: content,
                     contentHtml: html
                 };
             }
             $.post(url, data, function (data, textStatus, xhr) {
                 if (data.success) {
-                    _this6.simplemde.value('');
+                    _this8.simplemde.value('');
                     ea.publish(nsCons.EVENT_CHAT_MSG_SENDED, {
                         data: data
                     });
@@ -3621,7 +3801,7 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
                     toastr.error(data.data, '发送消息失败!');
                 }
             }).always(function () {
-                _this6.sending = false;
+                _this8.sending = false;
             });
         };
 
@@ -3847,7 +4027,7 @@ define('resources/elements/em-chat-sidebar-left',['exports', 'aurelia-framework'
 
         EmChatSidebarLeft.prototype.leaveHandler = function leaveHandler(item) {
             this.confirmMd.show({
-                content: '\u786E\u5B9A\u8981\u79BB\u5F00\u9891\u9053<code class="nx">' + item.title + '</code>\u5417?',
+                content: '确定要离开频道<code class="nx">' + item.title + '</code>吗?',
                 onapprove: function onapprove() {
                     $.post('/admin/channel/leave', {
                         id: item.id
@@ -3957,9 +4137,6 @@ define('resources/elements/em-chat-sidebar-right',['exports', 'aurelia-framework
                 _this.search = payload.search;
                 _this.searchPage = result;
                 _this.searchChats = result.content;
-                _.each(_this.searchChats, function (item) {
-                    item.contentMd = marked(item.content);
-                });
                 _this.lastSearch = result.last;
                 _this.moreSearchCnt = result.totalElements - (result.number + 1) * result.size;
             });
@@ -4010,9 +4187,6 @@ define('resources/elements/em-chat-sidebar-right',['exports', 'aurelia-framework
                 page: this.searchPage.number + 1
             }, function (data) {
                 if (data.success) {
-                    _.each(data.data.content, function (item) {
-                        item.contentMd = marked(item.content);
-                    });
                     _this3.searchChats = _.concat(_this3.searchChats, data.data.content);
 
                     _this3.lastSearch = data.data.last;
@@ -4735,7 +4909,7 @@ define('resources/value-converters/vc-common',['exports', 'jquery-format', 'time
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
-    exports.TimeagoValueConverter = exports.NumberValueConverter = exports.DateValueConverter = exports.LowerValueConverter = exports.UpperValueConverter = undefined;
+    exports.ParseMdValueConverter = exports.TimeagoValueConverter = exports.NumberValueConverter = exports.DateValueConverter = exports.LowerValueConverter = exports.UpperValueConverter = undefined;
 
     function _classCallCheck(instance, Constructor) {
         if (!(instance instanceof Constructor)) {
@@ -4775,7 +4949,7 @@ define('resources/value-converters/vc-common',['exports', 'jquery-format', 'time
         }
 
         DateValueConverter.prototype.toView = function toView(value) {
-            var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'yyyy-MM-dd hh:mm:ss';
+            var format = arguments.length <= 1 || arguments[1] === undefined ? 'yyyy-MM-dd hh:mm:ss' : arguments[1];
 
             return _.isInteger(_.toNumber(value)) ? $.format.date(new Date(value), format) : value ? value : '';
         };
@@ -4789,7 +4963,7 @@ define('resources/value-converters/vc-common',['exports', 'jquery-format', 'time
         }
 
         NumberValueConverter.prototype.toView = function toView(value) {
-            var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '#,##0.00';
+            var format = arguments.length <= 1 || arguments[1] === undefined ? '#,##0.00' : arguments[1];
 
             return _.isNumber(_.toNumber(value)) ? $.format.number(value, format) : value ? value : '';
         };
@@ -4807,6 +4981,18 @@ define('resources/value-converters/vc-common',['exports', 'jquery-format', 'time
         };
 
         return TimeagoValueConverter;
+    }();
+
+    var ParseMdValueConverter = exports.ParseMdValueConverter = function () {
+        function ParseMdValueConverter() {
+            _classCallCheck(this, ParseMdValueConverter);
+        }
+
+        ParseMdValueConverter.prototype.toView = function toView(value, members) {
+            return marked(utils.preParse(value, members));
+        };
+
+        return ParseMdValueConverter;
     }();
 });
 define('aurelia-templating-resources/compose',['exports', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-templating', 'aurelia-pal'], function (exports, _aureliaDependencyInjection, _aureliaTaskQueue, _aureliaTemplating, _aureliaPal) {
@@ -6711,30 +6897,6 @@ define('aurelia-templating-resources/css-resource',['exports', 'aurelia-templati
 
     return ViewCSS;
   }
-});
-define('aurelia-templating-resources/attr-binding-behavior',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.AttrBindingBehavior = undefined;
-
-  
-
-  var AttrBindingBehavior = exports.AttrBindingBehavior = function () {
-    function AttrBindingBehavior() {
-      
-    }
-
-    AttrBindingBehavior.prototype.bind = function bind(binding, source) {
-      binding.targetObserver = new _aureliaBinding.DataAttributeObserver(binding.target, binding.targetProperty);
-    };
-
-    AttrBindingBehavior.prototype.unbind = function unbind(binding, source) {};
-
-    return AttrBindingBehavior;
-  }();
 });
 define('aurelia-templating-resources/binding-mode-behaviors',['exports', 'aurelia-binding', 'aurelia-metadata'], function (exports, _aureliaBinding, _aureliaMetadata) {
   'use strict';
@@ -10049,32 +10211,6 @@ define('highlight/lib/languages/ceylon',['require','exports','module'],function 
 };
 });
 
-define('highlight/lib/languages/clean',['require','exports','module'],function (require, exports, module) {module.exports = function(hljs) {
-  return {
-    aliases: ['clean','icl','dcl'],
-    keywords: {
-      keyword:
-        'if let in with where case of class instance otherwise ' +
-        'implementation definition system module from import qualified as ' +
-        'special code inline foreign export ccall stdcall generic derive ' +
-        'infix infixl infixr',
-      literal:
-        'True False'
-    },
-    contains: [
-
-      hljs.C_LINE_COMMENT_MODE,
-      hljs.C_BLOCK_COMMENT_MODE,
-      hljs.APOS_STRING_MODE,
-      hljs.QUOTE_STRING_MODE,
-      hljs.C_NUMBER_MODE,
-
-      {begin: '->|<-[|:]?|::|#!?|>>=|\\{\\||\\|\\}|:==|=:|\\.\\.|<>|`'} // relevance booster
-    ]
-  };
-};
-});
-
 define('highlight/lib/languages/clojure',['require','exports','module'],function (require, exports, module) {module.exports = function(hljs) {
   var keywords = {
     'builtin-name':
@@ -12772,52 +12908,6 @@ define('highlight/lib/languages/fix',['require','exports','module'],function (re
 };
 });
 
-define('highlight/lib/languages/flix',['require','exports','module'],function (require, exports, module) {module.exports = function (hljs) {
-
-    var CHAR = {
-        className: 'string',
-        begin: /'(.|\\[xXuU][a-zA-Z0-9]+)'/
-    };
-
-    var STRING = {
-        className: 'string',
-        variants: [
-            {
-                begin: '"', end: '"'
-            }
-        ]
-    };
-
-    var NAME = {
-        className: 'title',
-        begin: /[^0-9\n\t "'(),.`{}\[\]:;][^\n\t "'(),.`{}\[\]:;]+|[^0-9\n\t "'(),.`{}\[\]:;=]/
-    };
-
-    var METHOD = {
-        className: 'function',
-        beginKeywords: 'def',
-        end: /[:={\[(\n;]/,
-        excludeEnd: true,
-        contains: [NAME]
-    };
-
-    return {
-        keywords: {
-            literal: 'true false',
-            keyword: 'case class def else enum if impl import in lat rel index let match namespace switch type yield with'
-        },
-        contains: [
-            hljs.C_LINE_COMMENT_MODE,
-            hljs.C_BLOCK_COMMENT_MODE,
-            CHAR,
-            STRING,
-            METHOD,
-            hljs.C_NUMBER_MODE
-        ]
-    };
-};
-});
-
 define('highlight/lib/languages/fortran',['require','exports','module'],function (require, exports, module) {module.exports = function(hljs) {
   var PARAMS = {
     className: 'params',
@@ -13439,7 +13529,7 @@ define('highlight/lib/languages/glsl',['require','exports','module'],function (r
     keywords: {
       keyword:
         // Statements
-        'break continue discard do else for if return while switch case default ' +
+        'break continue discard do else for if return while' +
         // Qualifiers
         'attribute binding buffer ccw centroid centroid varying coherent column_major const cw ' +
         'depth_any depth_greater depth_less depth_unchanged early_fragment_tests equal_spacing ' +
@@ -14032,111 +14122,57 @@ define('highlight/lib/languages/haxe',['require','exports','module'],function (r
   var IDENT_RE = '[a-zA-Z_$][a-zA-Z0-9_$]*';
   var IDENT_FUNC_RETURN_TYPE_RE = '([*]|[a-zA-Z_$][a-zA-Z0-9_$]*)';
 
-  var HAXE_BASIC_TYPES = 'Int Float String Bool Dynamic Void Array ';
-
   return {
     aliases: ['hx'],
     keywords: {
-      keyword: 'break callback case cast catch continue default do dynamic else enum extern ' +
-               'for function here if import in inline never new override package private get set ' +
-               'public return static super switch this throw trace try typedef untyped using var while ' +
-               HAXE_BASIC_TYPES,
-      built_in:
-        'trace this',
-      literal:
-        'true false null _'
+      keyword: 'break callback case cast catch class continue default do dynamic else enum extends extern ' +
+    'for function here if implements import in inline interface never new override package private ' +
+    'public return static super switch this throw trace try typedef untyped using var while',
+      literal: 'true false null'
     },
     contains: [
-      { className: 'string', // interpolate-able strings
-        begin: '\'', end: '\'',
-        contains: [
-          hljs.BACKSLASH_ESCAPE,
-          { className: 'subst', // interpolation
-            begin: '\\$\\{', end: '\\}'
-          },
-          { className: 'subst', // interpolation
-            begin: '\\$', end: '\\W}'
-          }
-        ]
-      },
+      hljs.APOS_STRING_MODE,
       hljs.QUOTE_STRING_MODE,
       hljs.C_LINE_COMMENT_MODE,
       hljs.C_BLOCK_COMMENT_MODE,
       hljs.C_NUMBER_MODE,
-      { className: 'meta', // compiler meta
-        begin: '@:', end: '$'
+      {
+        className: 'class',
+        beginKeywords: 'class interface', end: '{', excludeEnd: true,
+        contains: [
+          {
+            beginKeywords: 'extends implements'
+          },
+          hljs.TITLE_MODE
+        ]
       },
-      { className: 'meta', // compiler conditionals
+      {
+        className: 'meta',
         begin: '#', end: '$',
         keywords: {'meta-keyword': 'if else elseif end error'}
       },
-      { className: 'type', // function types
-        begin: ':[ \t]*', end: '[^A-Za-z0-9_ \t\\->]',
-        excludeBegin: true, excludeEnd: true,
-        relevance: 0
-      },
-      { className: 'type', // types
-        begin: ':[ \t]*', end: '\\W',
-        excludeBegin: true, excludeEnd: true
-      },
-      { className: 'type', // instantiation
-        begin: 'new *', end: '\\W',
-        excludeBegin: true, excludeEnd: true
-      },
-      { className: 'class', // enums
-        beginKeywords: 'enum', end: '\\{',
-        contains: [
-          hljs.TITLE_MODE
-        ]
-      },
-      { className: 'class', // abstracts
-        beginKeywords: 'abstract', end: '[\\{$]',
-        contains: [
-          { className: 'type',
-            begin: '\\(', end: '\\)',
-            excludeBegin: true, excludeEnd: true
-          },
-          { className: 'type',
-            begin: 'from +', end: '\\W',
-            excludeBegin: true, excludeEnd: true
-          },
-          { className: 'type',
-            begin: 'to +', end: '\\W',
-            excludeBegin: true, excludeEnd: true
-          },
-          hljs.TITLE_MODE
-        ],
-        keywords: {
-          keyword: 'abstract from to'
-        }
-      },
-      { className: 'class', // classes
-        begin: '\\b(class|interface) +', end: '[\\{$]',  excludeEnd: true,
-        keywords: 'class interface',
-        contains: [
-          { className: 'keyword',
-            begin: '\\b(extends|implements) +',
-            keywords: 'extends implements',
-            contains: [
-              {
-                className: 'type',
-                begin: hljs.IDENT_RE,
-                relevance: 0
-              }
-            ]
-          },
-          hljs.TITLE_MODE
-        ]
-      },
-      { className: 'function',
-        beginKeywords: 'function', end: '\\(', excludeEnd: true,
+      {
+        className: 'function',
+        beginKeywords: 'function', end: '[{;]', excludeEnd: true,
         illegal: '\\S',
         contains: [
-          hljs.TITLE_MODE
+          hljs.TITLE_MODE,
+          {
+            className: 'params',
+            begin: '\\(', end: '\\)',
+            contains: [
+              hljs.APOS_STRING_MODE,
+              hljs.QUOTE_STRING_MODE,
+              hljs.C_LINE_COMMENT_MODE,
+              hljs.C_BLOCK_COMMENT_MODE
+            ]
+          },
+          {
+            begin: ':\\s*' + IDENT_FUNC_RETURN_TYPE_RE
+          }
         ]
       }
-    ],
-    illegal: /<\//
+    ]
   };
 };
 });
@@ -14505,14 +14541,13 @@ define('highlight/lib/languages/irpf90',['require','exports','module'],function 
 });
 
 define('highlight/lib/languages/java',['require','exports','module'],function (require, exports, module) {module.exports = function(hljs) {
-  var JAVA_IDENT_RE = '[\u00C0-\u02B8a-zA-Z_$][\u00C0-\u02B8a-zA-Z_$0-9]*';
-  var GENERIC_IDENT_RE = JAVA_IDENT_RE + '(<' + JAVA_IDENT_RE + '(\\s*,\\s*' + JAVA_IDENT_RE + ')*>)?';
+  var GENERIC_IDENT_RE = hljs.UNDERSCORE_IDENT_RE + '(<' + hljs.UNDERSCORE_IDENT_RE + '(\\s*,\\s*' + hljs.UNDERSCORE_IDENT_RE + ')*>)?';
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
     'for true while long strictfp finally protected import native final void ' +
     'enum else break transient catch instanceof byte super volatile case assert short ' +
     'package default double public try this switch continue throws protected public private ' +
-    'module requires exports do';
+    'module requires exports';
 
   // https://docs.oracle.com/javase/7/docs/technotes/guides/language/underscores-literals.html
   var JAVA_NUMBER_RE = '\\b' +
@@ -17652,86 +17687,65 @@ define('highlight/lib/languages/nix',['require','exports','module'],function (re
 define('highlight/lib/languages/nsis',['require','exports','module'],function (require, exports, module) {module.exports = function(hljs) {
   var CONSTANTS = {
     className: 'variable',
-    begin: /\$(ADMINTOOLS|APPDATA|CDBURN_AREA|CMDLINE|COMMONFILES32|COMMONFILES64|COMMONFILES|COOKIES|DESKTOP|DOCUMENTS|EXEDIR|EXEFILE|EXEPATH|FAVORITES|FONTS|HISTORY|HWNDPARENT|INSTDIR|INTERNET_CACHE|LANGUAGE|LOCALAPPDATA|MUSIC|NETHOOD|OUTDIR|PICTURES|PLUGINSDIR|PRINTHOOD|PROFILE|PROGRAMFILES32|PROGRAMFILES64|PROGRAMFILES|QUICKLAUNCH|RECENT|RESOURCES_LOCALIZED|RESOURCES|SENDTO|SMPROGRAMS|SMSTARTUP|STARTMENU|SYSDIR|TEMP|TEMPLATES|VIDEOS|WINDIR)/
+    begin: '\\$(ADMINTOOLS|APPDATA|CDBURN_AREA|CMDLINE|COMMONFILES32|COMMONFILES64|COMMONFILES|COOKIES|DESKTOP|DOCUMENTS|EXEDIR|EXEFILE|EXEPATH|FAVORITES|FONTS|HISTORY|HWNDPARENT|INSTDIR|INTERNET_CACHE|LANGUAGE|LOCALAPPDATA|MUSIC|NETHOOD|OUTDIR|PICTURES|PLUGINSDIR|PRINTHOOD|PROFILE|PROGRAMFILES32|PROGRAMFILES64|PROGRAMFILES|QUICKLAUNCH|RECENT|RESOURCES_LOCALIZED|RESOURCES|SENDTO|SMPROGRAMS|SMSTARTUP|STARTMENU|SYSDIR|TEMP|TEMPLATES|VIDEOS|WINDIR)'
   };
 
   var DEFINES = {
     // ${defines}
     className: 'variable',
-    begin: /\$+{[\w\.:-]+}/
+    begin: '\\$+{[a-zA-Z0-9_]+}'
   };
 
   var VARIABLES = {
     // $variables
     className: 'variable',
-    begin: /\$+\w+/,
-    illegal: /\(\){}/
+    begin: '\\$+[a-zA-Z0-9_]+',
+    illegal: '\\(\\){}'
   };
 
   var LANGUAGES = {
     // $(language_strings)
     className: 'variable',
-    begin: /\$+\([\w\^\.:-]+\)/
+    begin: '\\$+\\([a-zA-Z0-9_]+\\)'
   };
 
   var PARAMETERS = {
     // command parameters
-    className: 'params',
+    className: 'built_in',
     begin: '(ARCHIVE|FILE_ATTRIBUTE_ARCHIVE|FILE_ATTRIBUTE_NORMAL|FILE_ATTRIBUTE_OFFLINE|FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM|FILE_ATTRIBUTE_TEMPORARY|HKCR|HKCU|HKDD|HKEY_CLASSES_ROOT|HKEY_CURRENT_CONFIG|HKEY_CURRENT_USER|HKEY_DYN_DATA|HKEY_LOCAL_MACHINE|HKEY_PERFORMANCE_DATA|HKEY_USERS|HKLM|HKPD|HKU|IDABORT|IDCANCEL|IDIGNORE|IDNO|IDOK|IDRETRY|IDYES|MB_ABORTRETRYIGNORE|MB_DEFBUTTON1|MB_DEFBUTTON2|MB_DEFBUTTON3|MB_DEFBUTTON4|MB_ICONEXCLAMATION|MB_ICONINFORMATION|MB_ICONQUESTION|MB_ICONSTOP|MB_OK|MB_OKCANCEL|MB_RETRYCANCEL|MB_RIGHT|MB_RTLREADING|MB_SETFOREGROUND|MB_TOPMOST|MB_USERICON|MB_YESNO|NORMAL|OFFLINE|READONLY|SHCTX|SHELL_CONTEXT|SYSTEM|TEMPORARY)'
   };
 
-  var COMPILER = {
+  var COMPILER ={
     // !compiler_flags
     className: 'keyword',
-    begin: /\!(addincludedir|addplugindir|appendfile|cd|define|delfile|echo|else|endif|error|execute|finalize|getdllversionsystem|ifdef|ifmacrodef|ifmacrondef|ifndef|if|include|insertmacro|macroend|macro|makensis|packhdr|searchparse|searchreplace|tempfile|undef|verbose|warning)/
-  };
-
-  var METACHARS = {
-    // $\n, $\r, $\t, $$
-    className: 'subst',
-    begin: /\$(\\[nrt]|\$)/
-  };
-
-  var PLUGINS = {
-    // plug::ins
-    className: 'class',
-    begin: /\w+\:\:\w+/
-  };
-
-    var STRING = {
-      className: 'string',
-      variants: [
-        {
-          begin: '"', end: '"'
-        },
-        {
-          begin: '\'', end: '\''
-        },
-        {
-          begin: '`', end: '`'
-        }
-      ],
-      illegal: /\n/,
-      contains: [
-        METACHARS,
-        CONSTANTS,
-        DEFINES,
-        VARIABLES,
-        LANGUAGES
-      ]
+    begin: '\\!(addincludedir|addplugindir|appendfile|cd|define|delfile|echo|else|endif|error|execute|finalize|getdllversionsystem|ifdef|ifmacrodef|ifmacrondef|ifndef|if|include|insertmacro|macroend|macro|makensis|packhdr|searchparse|searchreplace|tempfile|undef|verbose|warning)'
   };
 
   return {
     case_insensitive: false,
     keywords: {
       keyword:
-      'Abort AddBrandingImage AddSize AllowRootDirInstall AllowSkipFiles AutoCloseWindow BGFont BGGradient BrandingText BringToFront Call CallInstDLL Caption ChangeUI CheckBitmap ClearErrors CompletedText ComponentText CopyFiles CRCCheck CreateDirectory CreateFont CreateShortCut Delete DeleteINISec DeleteINIStr DeleteRegKey DeleteRegValue DetailPrint DetailsButtonText DirText DirVar DirVerify EnableWindow EnumRegKey EnumRegValue Exch Exec ExecShell ExecWait ExpandEnvStrings File FileBufSize FileClose FileErrorText FileOpen FileRead FileReadByte FileReadUTF16LE FileReadWord FileSeek FileWrite FileWriteByte FileWriteUTF16LE FileWriteWord FindClose FindFirst FindNext FindWindow FlushINI FunctionEnd GetCurInstType GetCurrentAddress GetDlgItem GetDLLVersion GetDLLVersionLocal GetErrorLevel GetFileTime GetFileTimeLocal GetFullPathName GetFunctionAddress GetInstDirError GetLabelAddress GetTempFileName Goto HideWindow Icon IfAbort IfErrors IfFileExists IfRebootFlag IfSilent InitPluginsDir InstallButtonText InstallColors InstallDir InstallDirRegKey InstProgressFlags InstType InstTypeGetText InstTypeSetText IntCmp IntCmpU IntFmt IntOp IsWindow LangString LicenseBkColor LicenseData LicenseForceSelection LicenseLangString LicenseText LoadLanguageFile LockWindow LogSet LogText ManifestDPIAware ManifestSupportedOS MessageBox MiscButtonText Name Nop OutFile Page PageCallbacks PageExEnd Pop Push Quit ReadEnvStr ReadINIStr ReadRegDWORD ReadRegStr Reboot RegDLL Rename RequestExecutionLevel ReserveFile Return RMDir SearchPath SectionEnd SectionGetFlags SectionGetInstTypes SectionGetSize SectionGetText SectionGroupEnd SectionIn SectionSetFlags SectionSetInstTypes SectionSetSize SectionSetText SendMessage SetAutoClose SetBrandingImage SetCompress SetCompressor SetCompressorDictSize SetCtlColors SetCurInstType SetDatablockOptimize SetDateSave SetDetailsPrint SetDetailsView SetErrorLevel SetErrors SetFileAttributes SetFont SetOutPath SetOverwrite SetRebootFlag SetRegView SetShellVarContext SetSilent ShowInstDetails ShowUninstDetails ShowWindow SilentInstall SilentUnInstall Sleep SpaceTexts StrCmp StrCmpS StrCpy StrLen SubCaption Unicode UninstallButtonText UninstallCaption UninstallIcon UninstallSubCaption UninstallText UninstPage UnRegDLL Var VIAddVersionKey VIFileVersion VIProductVersion WindowIcon WriteINIStr WriteRegBin WriteRegDWORD WriteRegExpandStr WriteRegStr WriteUninstaller XPStyle',
+      'Abort AddBrandingImage AddSize AllowRootDirInstall AllowSkipFiles AutoCloseWindow BGFont BGGradient BrandingText BringToFront Call CallInstDLL Caption ChangeUI CheckBitmap ClearErrors CompletedText ComponentText CopyFiles CRCCheck CreateDirectory CreateFont CreateShortCut Delete DeleteINISec DeleteINIStr DeleteRegKey DeleteRegValue DetailPrint DetailsButtonText DirText DirVar DirVerify EnableWindow EnumRegKey EnumRegValue Exch Exec ExecShell ExecWait ExpandEnvStrings File FileBufSize FileClose FileErrorText FileOpen FileRead FileReadByte FileReadUTF16LE FileReadWord FileSeek FileWrite FileWriteByte FileWriteUTF16LE FileWriteWord FindClose FindFirst FindNext FindWindow FlushINI FunctionEnd GetCurInstType GetCurrentAddress GetDlgItem GetDLLVersion GetDLLVersionLocal GetErrorLevel GetFileTime GetFileTimeLocal GetFullPathName GetFunctionAddress GetInstDirError GetLabelAddress GetTempFileName Goto HideWindow Icon IfAbort IfErrors IfFileExists IfRebootFlag IfSilent InitPluginsDir InstallButtonText InstallColors InstallDir InstallDirRegKey InstProgressFlags InstType InstTypeGetText InstTypeSetText IntCmp IntCmpU IntFmt IntOp IsWindow LangString LicenseBkColor LicenseData LicenseForceSelection LicenseLangString LicenseText LoadLanguageFile LockWindow LogSet LogText ManifestDPIAware ManifestSupportedOS MessageBox MiscButtonText Name Nop OutFile Page PageCallbacks PageExEnd Pop Push Quit ReadEnvStr ReadINIStr ReadRegDWORD ReadRegStr Reboot RegDLL Rename RequestExecutionLevel ReserveFile Return RMDir SearchPath SectionEnd SectionGetFlags SectionGetInstTypes SectionGetSize SectionGetText SectionGroupEnd SectionIn SectionSetFlags SectionSetInstTypes SectionSetSize SectionSetText SendMessage SetAutoClose SetBrandingImage SetCompress SetCompressor SetCompressorDictSize SetCtlColors SetCurInstType SetDatablockOptimize SetDateSave SetDetailsPrint SetDetailsView SetErrorLevel SetErrors SetFileAttributes SetFont SetOutPath SetOverwrite SetPluginUnload SetRebootFlag SetRegView SetShellVarContext SetSilent ShowInstDetails ShowUninstDetails ShowWindow SilentInstall SilentUnInstall Sleep SpaceTexts StrCmp StrCmpS StrCpy StrLen SubCaption SubSectionEnd Unicode UninstallButtonText UninstallCaption UninstallIcon UninstallSubCaption UninstallText UninstPage UnRegDLL Var VIAddVersionKey VIFileVersion VIProductVersion WindowIcon WriteINIStr WriteRegBin WriteRegDWORD WriteRegExpandStr WriteRegStr WriteUninstaller XPStyle',
       literal:
-      'admin all auto both bottom bzip2 colored components current custom directory false force hide highest ifdiff ifnewer instfiles lastused leave left license listonly lzma nevershow none normal notset off on open print right show silent silentlog smooth textonly top true try un.components un.custom un.directory un.instfiles un.license uninstConfirm user Win10 Win7 Win8 WinVista zlib'
+      'admin all auto both colored current false force hide highest lastused leave listonly none normal notset off on open print show silent silentlog smooth textonly true user '
     },
     contains: [
       hljs.HASH_COMMENT_MODE,
       hljs.C_BLOCK_COMMENT_MODE,
+      {
+        className: 'string',
+        begin: '"', end: '"',
+        illegal: '\\n',
+        contains: [
+          { // $\n, $\r, $\t, $$
+            begin: '\\$(\\\\(n|r|t)|\\$)'
+          },
+          CONSTANTS,
+          DEFINES,
+          VARIABLES,
+          LANGUAGES
+        ]
+      },
       hljs.COMMENT(
         ';',
         '$',
@@ -17741,16 +17755,17 @@ define('highlight/lib/languages/nsis',['require','exports','module'],function (r
       ),
       {
         className: 'function',
-        beginKeywords: 'Function PageEx Section SectionGroup', end: '$'
+        beginKeywords: 'Function PageEx Section SectionGroup SubSection', end: '$'
       },
-      STRING,
       COMPILER,
       DEFINES,
       VARIABLES,
       LANGUAGES,
       PARAMETERS,
-      PLUGINS,
-      hljs.NUMBER_MODE
+      hljs.NUMBER_MODE,
+      { // plug::ins
+        begin: hljs.IDENT_RE + '::' + hljs.IDENT_RE
+      }
     ]
   };
 };
@@ -18437,7 +18452,7 @@ define('highlight/lib/languages/powershell',['require','exports','module'],funct
     case_insensitive: true,
     keywords: {
       keyword: 'if else foreach return function do while until elseif begin for trap data dynamicparam end break throw param continue finally in switch exit filter try process catch',
-      built_in: 'Add-Computer Add-Content Add-History Add-JobTrigger Add-Member Add-PSSnapin Add-Type Checkpoint-Computer Clear-Content Clear-EventLog Clear-History Clear-Host Clear-Item Clear-ItemProperty Clear-Variable Compare-Object Complete-Transaction Connect-PSSession Connect-WSMan Convert-Path ConvertFrom-Csv ConvertFrom-Json ConvertFrom-SecureString ConvertFrom-StringData ConvertTo-Csv ConvertTo-Html ConvertTo-Json ConvertTo-SecureString ConvertTo-Xml Copy-Item Copy-ItemProperty Debug-Process Disable-ComputerRestore Disable-JobTrigger Disable-PSBreakpoint Disable-PSRemoting Disable-PSSessionConfiguration Disable-WSManCredSSP Disconnect-PSSession Disconnect-WSMan Disable-ScheduledJob Enable-ComputerRestore Enable-JobTrigger Enable-PSBreakpoint Enable-PSRemoting Enable-PSSessionConfiguration Enable-ScheduledJob Enable-WSManCredSSP Enter-PSSession Exit-PSSession Export-Alias Export-Clixml Export-Console Export-Counter Export-Csv Export-FormatData Export-ModuleMember Export-PSSession ForEach-Object Format-Custom Format-List Format-Table Format-Wide Get-Acl Get-Alias Get-AuthenticodeSignature Get-ChildItem Get-Command Get-ComputerRestorePoint Get-Content Get-ControlPanelItem Get-Counter Get-Credential Get-Culture Get-Date Get-Event Get-EventLog Get-EventSubscriber Get-ExecutionPolicy Get-FormatData Get-Host Get-HotFix Get-Help Get-History Get-IseSnippet Get-Item Get-ItemProperty Get-Job Get-JobTrigger Get-Location Get-Member Get-Module Get-PfxCertificate Get-Process Get-PSBreakpoint Get-PSCallStack Get-PSDrive Get-PSProvider Get-PSSession Get-PSSessionConfiguration Get-PSSnapin Get-Random Get-ScheduledJob Get-ScheduledJobOption Get-Service Get-TraceSource Get-Transaction Get-TypeData Get-UICulture Get-Unique Get-Variable Get-Verb Get-WinEvent Get-WmiObject Get-WSManCredSSP Get-WSManInstance Group-Object Import-Alias Import-Clixml Import-Counter Import-Csv Import-IseSnippet Import-LocalizedData Import-PSSession Import-Module Invoke-AsWorkflow Invoke-Command Invoke-Expression Invoke-History Invoke-Item Invoke-RestMethod Invoke-WebRequest Invoke-WmiMethod Invoke-WSManAction Join-Path Limit-EventLog Measure-Command Measure-Object Move-Item Move-ItemProperty New-Alias New-Event New-EventLog New-IseSnippet New-Item New-ItemProperty New-JobTrigger New-Object New-Module New-ModuleManifest New-PSDrive New-PSSession New-PSSessionConfigurationFile New-PSSessionOption New-PSTransportOption New-PSWorkflowExecutionOption New-PSWorkflowSession New-ScheduledJobOption New-Service New-TimeSpan New-Variable New-WebServiceProxy New-WinEvent New-WSManInstance New-WSManSessionOption Out-Default Out-File Out-GridView Out-Host Out-Null Out-Printer Out-String Pop-Location Push-Location Read-Host Receive-Job Register-EngineEvent Register-ObjectEvent Register-PSSessionConfiguration Register-ScheduledJob Register-WmiEvent Remove-Computer Remove-Event Remove-EventLog Remove-Item Remove-ItemProperty Remove-Job Remove-JobTrigger Remove-Module Remove-PSBreakpoint Remove-PSDrive Remove-PSSession Remove-PSSnapin Remove-TypeData Remove-Variable Remove-WmiObject Remove-WSManInstance Rename-Computer Rename-Item Rename-ItemProperty Reset-ComputerMachinePassword Resolve-Path Restart-Computer Restart-Service Restore-Computer Resume-Job Resume-Service Save-Help Select-Object Select-String Select-Xml Send-MailMessage Set-Acl Set-Alias Set-AuthenticodeSignature Set-Content Set-Date Set-ExecutionPolicy Set-Item Set-ItemProperty Set-JobTrigger Set-Location Set-PSBreakpoint Set-PSDebug Set-PSSessionConfiguration Set-ScheduledJob Set-ScheduledJobOption Set-Service Set-StrictMode Set-TraceSource Set-Variable Set-WmiInstance Set-WSManInstance Set-WSManQuickConfig Show-Command Show-ControlPanelItem Show-EventLog Sort-Object Split-Path Start-Job Start-Process Start-Service Start-Sleep Start-Transaction Start-Transcript Stop-Computer Stop-Job Stop-Process Stop-Service Stop-Transcript Suspend-Job Suspend-Service Tee-Object Test-ComputerSecureChannel Test-Connection Test-ModuleManifest Test-Path Test-PSSessionConfigurationFile Trace-Command Unblock-File Undo-Transaction Unregister-Event Unregister-PSSessionConfiguration Unregister-ScheduledJob Update-FormatData Update-Help Update-List Update-TypeData Use-Transaction Wait-Event Wait-Job Wait-Process Where-Object Write-Debug Write-Error Write-EventLog Write-Host Write-Output Write-Progress Write-Verbose Write-Warning Add-MDTPersistentDrive Disable-MDTMonitorService Enable-MDTMonitorService Get-MDTDeploymentShareStatistics Get-MDTMonitorData Get-MDTOperatingSystemCatalog Get-MDTPersistentDrive Import-MDTApplication Import-MDTDriver Import-MDTOperatingSystem Import-MDTPackage Import-MDTTaskSequence New-MDTDatabase Remove-MDTMonitorData Remove-MDTPersistentDrive Restore-MDTPersistentDrive Set-MDTMonitorData Test-MDTDeploymentShare Test-MDTMonitorData Update-MDTDatabaseSchema Update-MDTDeploymentShare Update-MDTLinkedDS Update-MDTMedia Update-MDTMedia Add-VamtProductKey Export-VamtData Find-VamtManagedMachine Get-VamtConfirmationId Get-VamtProduct Get-VamtProductKey Import-VamtData Initialize-VamtData Install-VamtConfirmationId Install-VamtProductActivation Install-VamtProductKey Update-VamtProduct',
+      built_in: 'Add-Computer Add-Content Add-History Add-JobTrigger Add-Member Add-PSSnapin Add-Type Checkpoint-Computer Clear-Content Clear-EventLog Clear-History Clear-Host Clear-Item Clear-ItemProperty Clear-Variable Compare-Object Complete-Transaction Connect-PSSession Connect-WSMan Convert-Path ConvertFrom-Csv ConvertFrom-Json ConvertFrom-SecureString ConvertFrom-StringData ConvertTo-Csv ConvertTo-Html ConvertTo-Json ConvertTo-SecureString ConvertTo-Xml Copy-Item Copy-ItemProperty Debug-Process Disable-ComputerRestore Disable-JobTrigger Disable-PSBreakpoint Disable-PSRemoting Disable-PSSessionConfiguration Disable-WSManCredSSP Disconnect-PSSession Disconnect-WSMan Disable-ScheduledJob Enable-ComputerRestore Enable-JobTrigger Enable-PSBreakpoint Enable-PSRemoting Enable-PSSessionConfiguration Enable-ScheduledJob Enable-WSManCredSSP Enter-PSSession Exit-PSSession Export-Alias Export-Clixml Export-Console Export-Counter Export-Csv Export-FormatData Export-ModuleMember Export-PSSession ForEach-Object Format-Custom Format-List Format-Table Format-Wide Get-Acl Get-Alias Get-AuthenticodeSignature Get-ChildItem Get-Command Get-ComputerRestorePoint Get-Content Get-ControlPanelItem Get-Counter Get-Credential Get-Culture Get-Date Get-Event Get-EventLog Get-EventSubscriber Get-ExecutionPolicy Get-FormatData Get-Host Get-HotFix Get-Help Get-History Get-IseSnippet Get-Item Get-ItemProperty Get-Job Get-JobTrigger Get-Location Get-Member Get-Module Get-PfxCertificate Get-Process Get-PSBreakpoint Get-PSCallStack Get-PSDrive Get-PSProvider Get-PSSession Get-PSSessionConfiguration Get-PSSnapin Get-Random Get-ScheduledJob Get-ScheduledJobOption Get-Service Get-TraceSource Get-Transaction Get-TypeData Get-UICulture Get-Unique Get-Variable Get-Verb Get-WinEvent Get-WmiObject Get-WSManCredSSP Get-WSManInstance Group-Object Import-Alias Import-Clixml Import-Counter Import-Csv Import-IseSnippet Import-LocalizedData Import-PSSession Import-Module Invoke-AsWorkflow Invoke-Command Invoke-Expression Invoke-History Invoke-Item Invoke-RestMethod Invoke-WebRequest Invoke-WmiMethod Invoke-WSManAction Join-Path Limit-EventLog Measure-Command Measure-Object Move-Item Move-ItemProperty New-Alias New-Event New-EventLog New-IseSnippet New-Item New-ItemProperty New-JobTrigger New-Object New-Module New-ModuleManifest New-PSDrive New-PSSession New-PSSessionConfigurationFile New-PSSessionOption New-PSTransportOption New-PSWorkflowExecutionOption New-PSWorkflowSession New-ScheduledJobOption New-Service New-TimeSpan New-Variable New-WebServiceProxy New-WinEvent New-WSManInstance New-WSManSessionOption Out-Default Out-File Out-GridView Out-Host Out-Null Out-Printer Out-String Pop-Location Push-Location Read-Host Receive-Job Register-EngineEvent Register-ObjectEvent Register-PSSessionConfiguration Register-ScheduledJob Register-WmiEvent Remove-Computer Remove-Event Remove-EventLog Remove-Item Remove-ItemProperty Remove-Job Remove-JobTrigger Remove-Module Remove-PSBreakpoint Remove-PSDrive Remove-PSSession Remove-PSSnapin Remove-TypeData Remove-Variable Remove-WmiObject Remove-WSManInstance Rename-Computer Rename-Item Rename-ItemProperty Reset-ComputerMachinePassword Resolve-Path Restart-Computer Restart-Service Restore-Computer Resume-Job Resume-Service Save-Help Select-Object Select-String Select-Xml Send-MailMessage Set-Acl Set-Alias Set-AuthenticodeSignature Set-Content Set-Date Set-ExecutionPolicy Set-Item Set-ItemProperty Set-JobTrigger Set-Location Set-PSBreakpoint Set-PSDebug Set-PSSessionConfiguration Set-ScheduledJob Set-ScheduledJobOption Set-Service Set-StrictMode Set-TraceSource Set-Variable Set-WmiInstance Set-WSManInstance Set-WSManQuickConfig Show-Command Show-ControlPanelItem Show-EventLog Sort-Object Split-Path Start-Job Start-Process Start-Service Start-Sleep Start-Transaction Start-Transcript Stop-Computer Stop-Job Stop-Process Stop-Service Stop-Transcript Suspend-Job Suspend-Service Tee-Object Test-ComputerSecureChannel Test-Connection Test-ModuleManifest Test-Path Test-PSSessionConfigurationFile Trace-Command Unblock-File Undo-Transaction Unregister-Event Unregister-PSSessionConfiguration Unregister-ScheduledJob Update-FormatData Update-Help Update-List Update-TypeData Use-Transaction Wait-Event Wait-Job Wait-Process Where-Object Write-Debug Write-Error Write-EventLog Write-Host Write-Output Write-Progress Write-Verbose Write-Warning',
       nomarkup: '-ne -eq -lt -gt -ge -le -not -like -notlike -match -notmatch -contains -notcontains -in -notin -replace'
     },
     contains: [
@@ -18893,7 +18908,7 @@ define('highlight/lib/languages/python',['require','exports','module'],function 
       built_in:
         'Ellipsis NotImplemented'
     },
-    illegal: /(<\/|->|\?)|=>/,
+    illegal: /(<\/|->|\?)/,
     contains: [
       PROMPT,
       NUMBER,
@@ -18901,7 +18916,7 @@ define('highlight/lib/languages/python',['require','exports','module'],function 
       hljs.HASH_COMMENT_MODE,
       {
         variants: [
-          {className: 'function', beginKeywords: 'def'},
+          {className: 'function', beginKeywords: 'def', relevance: 10},
           {className: 'class', beginKeywords: 'class'}
         ],
         end: /:/,
@@ -21393,7 +21408,7 @@ define('highlight/lib/languages/swift',['require','exports','module'],function (
 
   var TYPE = {
     className: 'type',
-    begin: '\\b[A-Z][\\w\u00C0-\u02B8\']*',
+    begin: '\\b[A-Z][\\w\']*',
     relevance: 0
   };
   var BLOCK_COMMENT = hljs.COMMENT(
@@ -21460,7 +21475,7 @@ define('highlight/lib/languages/swift',['require','exports','module'],function (
         end: '\\{',
         excludeEnd: true,
         contains: [
-          hljs.inherit(hljs.TITLE_MODE, {begin: /[A-Za-z$_][\u00C0-\u02B80-9A-Za-z$_]*/})
+          hljs.inherit(hljs.TITLE_MODE, {begin: /[A-Za-z$_][0-9A-Za-z$_]*/})
         ]
       },
       {
@@ -22893,35 +22908,36 @@ define('highlight/lib/languages/zephir',['require','exports','module'],function 
 });
 
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\r\n\t<require from=\"./app.css\"></require>\r\n\t<require from=\"./common.css\"></require>\r\n\t<require from=\"./override.css\"></require>\r\n\t<require from=\"nprogress/nprogress.css\"></require>\r\n\t<require from=\"toastr/build/toastr.css\"></require>\r\n    <require from=\"tms-semantic-ui/semantic.min.css\"></require>\r\n    <router-view></router-view>\r\n</template>\r\n"; });
-define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <require from=\"./md-github.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" channel.bind=\"channel\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                    <button if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"fluid basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</button>\r\n                    <em-chat-content-item is-at.bind=\"isAt\" chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                    <button if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"fluid basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})</button>\r\n                </div>\r\n                <em-chat-input channel.bind=\"channel\" is-at.bind=\"isAt\" chat-to.bind=\"chatTo\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n"; });
-define('text!common.css', ['module'], function(module) { module.exports = "code.nx {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  white-space: nowrap;\n}\n"; });
+define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <require from=\"./md-github.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" channel.bind=\"channel\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                    <button if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"fluid basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</button>\r\n                    <em-chat-content-item channel.bind=\"channel\" is-at.bind=\"isAt\" chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                    <button if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"fluid basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})</button>\r\n                </div>\r\n                <em-chat-input channel.bind=\"channel\" is-at.bind=\"isAt\" chat-to.bind=\"chatTo\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!test/test-lifecycle.html', ['module'], function(module) { module.exports = "<template>\r\n    <!-- <require from=\"\"></require> -->\r\n    <div class=\"ui container\">\r\n        <h1 class=\"ui header\">Aurelia框架模块生命周期钩子函数调用顺序测试(看console输出)</h1>\r\n    </div>\r\n</template>\r\n"; });
+define('text!common.css', ['module'], function(module) { module.exports = "code.nx {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  white-space: nowrap;\n}\n"; });
 define('text!user/user-login.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-login.css\"></require>\r\n    <div class=\"tms-user-login\">\r\n        <div class=\"container\">\r\n            <h2 class=\"ui center aligned icon header\">\r\n            <i class=\"circular users icon\"></i> 用户登录\r\n            </h2>\r\n            <form class=\"ui form segment\">\r\n                <div class=\"field\">\r\n                    <div class=\"ui left icon input\">\r\n                        <i class=\"user icon\"></i>\r\n                        <input type=\"text\" name=\"username\" value.bind=\"username\" placeholder=\"用户名\" />\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div class=\"ui left icon input\">\r\n                        <i class=\"lock icon\"></i>\r\n                        <input type=\"password\" name=\"password\" keydown.trigger=\"kdHandler($event)\" value.bind=\"password\" placeholder=\"密码\" />\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"rememberMeRef\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" name=\"remember-me\" />\r\n                        <label>记住我在此计算机的登录(2周)</label>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui center aligned header\">\r\n                    <button type=\"submit\" click.delegate=\"loginHandler()\" class=\"ui submit fluid button ${isReq ? 'disabled' : ''}\">登录</button>\r\n                </div>\r\n                <div style=\"text-align: center; font-size:12px;\">\r\n                    <a href=\"#/pwd-reset\">忘记密码</a> &nbsp;&nbsp;\r\n                    <a href=\"#/register\">注册用户</a>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!override.css', ['module'], function(module) { module.exports = ".ui.dimmer {\n  background-color: rgba(0, 0, 0, 0.5) !important;\n}\n.ui.modal > .actions > .ui.left.floated.button {\n  margin-left: 3.5px;\n}\n"; });
 define('text!user/user-pwd-reset.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-pwd-reset.css\"></require>\r\n    <div class=\"ui container tms-user-pwd-reset\">\r\n        <div class=\"tms-flex\">\r\n            <div if.bind=\"!token\" ref=\"fm\" class=\"ui form segment\" style=\"width: 260px;\">\r\n                <div class=\"ui message\">输入您的邮箱地址,我们会发送密码重置链接到您的邮箱!</div>\r\n                <div class=\"field\">\r\n                    <label style=\"display:none;\">邮件地址</label>\r\n                    <input type=\"text\" name=\"mail\" autofocus=\"\" value.bind=\"mail\" placeholder=\"输入您的邮件地址\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"resetPwdHandler()\">发送密码重置邮件</div>\r\n            </div>\r\n            <div if.bind=\"token\" ref=\"fm2\" class=\"ui form segment\" style=\"width: 260px;\">\r\n                <div class=\"ui message\">设置您的新密码,密码长度要求至少8位字符!</div>\r\n                <div class=\"field\">\r\n                    <label style=\"display:none;\">新密码</label>\r\n                    <input type=\"password\" name=\"mail\" autofocus=\"\" value.bind=\"pwd\" placeholder=\"设置您的新密码\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"newPwdHandler()\">确认</div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!chat/chat-direct.css', ['module'], function(module) { module.exports = ".tms-chat-direct {\n  height: 100%;\n}\n.tms-chat-direct .ui.left.sidebar {\n  background-color: #4d394b;\n  width: 220px;\n}\n.tms-chat-direct .ui.left.sidebar * {\n  color: #4183c4!important;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header > input {\n  background-color: transparent;\n  border: 1px #676868 solid;\n  font-size: 12px;\n  padding: 4px;\n  width: 190px;\n  outline: none;\n  margin-top: 10px;\n  border-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header {\n  height: 40px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header i.close.icon {\n  position: absolute;\n  right: 11px;\n  top: 55px;\n  box-shadow: 0 0 0 0.1em #676868 inset;\n  border-top-right-radius: 2px;\n  border-bottom-right-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header .ui.header {\n  margin-bottom: 0;\n}\n.tms-chat-direct .tms-edit-textarea {\n  width: 100%;\n}\n.tms-chat-direct .ui.selection.list > .item {\n  cursor: default;\n}\n.tms-chat-direct .ui.search .prompt {\n  border-radius: .28571429rem;\n}\n.tms-chat-direct .tms-content {\n  position: absolute;\n  top: 60px;\n  left: 220px;\n  bottom: 0;\n  right: 0;\n  display: flex;\n  align-items: stretch;\n}\n.tms-chat-direct .tms-content.tms-sidebar-show .tms-right-sidebar {\n  width: 388px;\n  border-left: 1px #e9e9e9 solid;\n  transition: width 0.15s ease-out 0s;\n  margin: 4px;\n  margin-right: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content {\n    left: 0;\n  }\n}\n.tms-chat-direct .tms-content-body {\n  width: 100%;\n  max-width: 100%;\n  flex: 1 1 0;\n  display: flex;\n  align-items: stretch;\n  padding-bottom: 73px;\n}\n.tms-chat-direct .tms-content-body .ui.comments {\n  overflow-y: auto;\n  flex: 1 1 0;\n  max-width: none;\n  margin-bottom: 12px;\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-pre-more {\n  margin-bottom: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-next-more {\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-right-sidebar {\n  width: 0;\n  overflow-y: auto;\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body {\n  max-height: 65px;\n  overflow-y: hidden;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body.tms-open {\n  max-height: none;\n  overflow-y: auto;\n  padding-bottom: 20px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .tms-btn-open-search-item {\n  display: none;\n  height: 25px;\n  background-color: rgba(0, 0, 0, 0.1);\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  text-align: center;\n  padding-top: 2px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment:hover .tms-btn-open-search-item {\n  display: block;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-left-sidebar {\n    display: none;\n  }\n  .tms-chat-direct .tms-right-sidebar {\n    position: fixed;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 59px;\n    background-color: white;\n    margin-left: 0!important;\n  }\n  .tms-chat-direct .tms-right-sidebar .panel-search .ui.basic.segment.minimal.selection.list.segment.comments {\n    padding-left: 0;\n    padding-right: 0;\n  }\n  .tms-chat-direct .tms-sidebar-show .tms-right-sidebar {\n    width: 100%!important;\n  }\n  .tms-chat-direct .tms-login-user {\n    display: none!important;\n  }\n}\n.tms-chat-direct .tms-edit-actions .left.button {\n  border-top-left-radius: 0;\n}\n.tms-chat-direct .tms-edit-actions .right.button {\n  border-top-right-radius: 0;\n}\n"; });
 define('text!user/user-register.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-register.css\"></require>\r\n    <div class=\"ui container tms-user-register\">\r\n        <div class=\"tms-flex\">\r\n            <div if.bind=\"!token\" ref=\"fm\" class=\"ui form segment\" style=\"width: 280px;\">\r\n                <div class=\"ui message\">提交账户注册信息成功后,我们会向您的注册邮箱发送一封账户激活邮件,激活账户后即可登录!</div>\r\n                <div class=\"required field\">\r\n                    <label>用户名</label>\r\n                    <input type=\"text\" name=\"username\" autofocus=\"\" value.bind=\"username\" placeholder=\"输入您的登录用户名\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>密码</label>\r\n                    <input type=\"password\" name=\"pwd\" autofocus=\"\" value.bind=\"pwd\" placeholder=\"输入您的登录密码\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>姓名</label>\r\n                    <input type=\"text\" name=\"name\" autofocus=\"\" value.bind=\"name\" placeholder=\"输入您的显示名称\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>邮箱</label>\r\n                    <input type=\"text\" name=\"mail\" autofocus=\"\" value.bind=\"mail\" placeholder=\"输入您的账户激活邮箱\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"okHandler()\">确认</div>\r\n            </div>\r\n            <div if.bind=\"token\" class=\"ui center aligned very padded segment\" style=\"width: 320px;\">\r\n            \t<h1 class=\"ui header\">${header}</h1>\r\n            \t<a href=\"/admin/login\" class=\"ui green button\">返回登录页面</a>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!chat/md-github.css', ['module'], function(module) { module.exports = ".markdown-body {\n  font-size: 14px;\n  line-height: 1.6;\n}\n.markdown-body > br,\n.markdown-body ul br .markdown-body ol br {\n  display: none;\n}\n.markdown-body > *:first-child {\n  margin-top: 0 !important;\n}\n.markdown-body > *:last-child {\n  margin-bottom: 0 !important;\n}\n.markdown-body a.absent {\n  color: #CC0000;\n}\n.markdown-body a.anchor {\n  bottom: 0;\n  cursor: pointer;\n  display: block;\n  left: 0;\n  margin-left: -30px;\n  padding-left: 30px;\n  position: absolute;\n  top: 0;\n}\n.markdown-body h1,\n.markdown-body h2,\n.markdown-body h3,\n.markdown-body h4,\n.markdown-body h5,\n.markdown-body h6 {\n  cursor: text;\n  font-weight: bold;\n  margin: 20px 0 10px;\n  padding: 0;\n  position: relative;\n}\n.markdown-body h1 .mini-icon-link,\n.markdown-body h2 .mini-icon-link,\n.markdown-body h3 .mini-icon-link,\n.markdown-body h4 .mini-icon-link,\n.markdown-body h5 .mini-icon-link,\n.markdown-body h6 .mini-icon-link {\n  color: #000000;\n  display: none;\n}\n.markdown-body h1:hover a.anchor,\n.markdown-body h2:hover a.anchor,\n.markdown-body h3:hover a.anchor,\n.markdown-body h4:hover a.anchor,\n.markdown-body h5:hover a.anchor,\n.markdown-body h6:hover a.anchor {\n  line-height: 1;\n  margin-left: -22px;\n  padding-left: 0;\n  text-decoration: none;\n  top: 15%;\n}\n.markdown-body h1:hover a.anchor .mini-icon-link,\n.markdown-body h2:hover a.anchor .mini-icon-link,\n.markdown-body h3:hover a.anchor .mini-icon-link,\n.markdown-body h4:hover a.anchor .mini-icon-link,\n.markdown-body h5:hover a.anchor .mini-icon-link,\n.markdown-body h6:hover a.anchor .mini-icon-link {\n  display: inline-block;\n}\n.markdown-body h1 tt,\n.markdown-body h1 code,\n.markdown-body h2 tt,\n.markdown-body h2 code,\n.markdown-body h3 tt,\n.markdown-body h3 code,\n.markdown-body h4 tt,\n.markdown-body h4 code,\n.markdown-body h5 tt,\n.markdown-body h5 code,\n.markdown-body h6 tt,\n.markdown-body h6 code {\n  font-size: inherit;\n}\n.markdown-body h1 {\n  color: #000000;\n  font-size: 28px;\n}\n.markdown-body h2 {\n  border-bottom: 1px solid #CCCCCC;\n  color: #000000;\n  font-size: 24px;\n}\n.markdown-body h3 {\n  font-size: 18px;\n}\n.markdown-body h4 {\n  font-size: 16px;\n}\n.markdown-body h5 {\n  font-size: 14px;\n}\n.markdown-body h6 {\n  color: #777777;\n  font-size: 14px;\n}\n.markdown-body p,\n.markdown-body blockquote,\n.markdown-body ul,\n.markdown-body ol,\n.markdown-body dl,\n.markdown-body table,\n.markdown-body pre {\n  margin: 15px 0;\n}\n.markdown-body hr {\n  overflow: hidden;\n  background: 0 0;\n}\n.markdown-body hr:before {\n  display: table;\n  content: \"\";\n}\n.markdown-body hr:after {\n  display: table;\n  clear: both;\n  content: \"\";\n}\n.markdown-body hr {\n  height: 4px;\n  padding: 0;\n  margin: 16px 0;\n  background-color: #e7e7e7;\n  border: 0;\n}\n.markdown-body hr {\n  -moz-box-sizing: content-box;\n  box-sizing: content-box;\n}\n.markdown-body > h2:first-child,\n.markdown-body > h1:first-child,\n.markdown-body > h1:first-child + h2,\n.markdown-body > h3:first-child,\n.markdown-body > h4:first-child,\n.markdown-body > h5:first-child,\n.markdown-body > h6:first-child {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body a:first-child h1,\n.markdown-body a:first-child h2,\n.markdown-body a:first-child h3,\n.markdown-body a:first-child h4,\n.markdown-body a:first-child h5,\n.markdown-body a:first-child h6 {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body h1 + p,\n.markdown-body h2 + p,\n.markdown-body h3 + p,\n.markdown-body h4 + p,\n.markdown-body h5 + p,\n.markdown-body h6 + p {\n  margin-top: 0;\n}\n.markdown-body li p.first {\n  display: inline-block;\n}\n.markdown-body ul,\n.markdown-body ol {\n  padding-left: 30px;\n}\n.markdown-body ul.no-list,\n.markdown-body ol.no-list {\n  list-style-type: none;\n  padding: 0;\n}\n.markdown-body ul li > *:first-child,\n.markdown-body ol li > *:first-child {\n  margin-top: 0;\n}\n.markdown-body ul ul,\n.markdown-body ul ol,\n.markdown-body ol ol,\n.markdown-body ol ul {\n  margin-bottom: 0;\n}\n.markdown-body dl {\n  padding: 0;\n}\n.markdown-body dl dt {\n  font-size: 14px;\n  font-style: italic;\n  font-weight: bold;\n  margin: 15px 0 5px;\n  padding: 0;\n}\n.markdown-body dl dt:first-child {\n  padding: 0;\n}\n.markdown-body dl dt > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dt > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body dl dd {\n  margin: 0 0 15px;\n  padding: 0 15px;\n}\n.markdown-body dl dd > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dd > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body blockquote {\n  border-left: 4px solid #DDDDDD;\n  color: #777777;\n  padding: 0 15px;\n}\n.markdown-body blockquote > *:first-child {\n  margin-top: 0;\n}\n.markdown-body blockquote > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body table th {\n  font-weight: bold;\n}\n.markdown-body table th,\n.markdown-body table td {\n  border: 1px solid #CCCCCC;\n  padding: 6px 13px;\n}\n.markdown-body table tr {\n  background-color: #FFFFFF;\n  border-top: 1px solid #CCCCCC;\n}\n.markdown-body table tr:nth-child(2n) {\n  background-color: #F8F8F8;\n}\n.markdown-body img {\n  max-width: 100%;\n}\n.markdown-body span.frame {\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.frame > span {\n  border: 1px solid #DDDDDD;\n  display: block;\n  float: left;\n  margin: 13px 0 0;\n  overflow: hidden;\n  padding: 7px;\n  width: auto;\n}\n.markdown-body span.frame span img {\n  display: block;\n  float: left;\n}\n.markdown-body span.frame span span {\n  clear: both;\n  color: #333333;\n  display: block;\n  padding: 5px 0 0;\n}\n.markdown-body span.align-center {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-center > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: center;\n}\n.markdown-body span.align-center span img {\n  margin: 0 auto;\n  text-align: center;\n}\n.markdown-body span.align-right {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-right > span {\n  display: block;\n  margin: 13px 0 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body span.align-right span img {\n  margin: 0;\n  text-align: right;\n}\n.markdown-body span.float-left {\n  display: block;\n  float: left;\n  margin-right: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-left span {\n  margin: 13px 0 0;\n}\n.markdown-body span.float-right {\n  display: block;\n  float: right;\n  margin-left: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-right > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body code,\n.markdown-body tt {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  /* white-space: nowrap; */\n  white-space: normal;\n  word-break: break-all;\n}\n.markdown-body pre > code {\n  background: none repeat scroll 0 0 transparent;\n  border: medium none;\n  margin: 0;\n  padding: 0;\n  white-space: pre;\n}\n.markdown-body .highlight pre,\n.markdown-body pre {\n  background-color: #F8F8F8;\n  border: 1px solid #CCCCCC;\n  border-radius: 3px 3px 3px 3px;\n  font-size: 13px;\n  line-height: 19px;\n  overflow: auto;\n  padding: 6px 10px;\n}\n.markdown-body pre code,\n.markdown-body pre tt {\n  background-color: transparent;\n  border: medium none;\n}\n"; });
-define('text!resources/elements/em-chat-channel-create.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-create.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" show-confirm.bind=\"activeTab == 'channel-create'\" confirm-label=\"创建\">\r\n        <div slot=\"header\">创建加入频道</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"tabRef\" class=\"ui pointing secondary menu\">\r\n                <a class=\"active item\" data-tab=\"channel-create\">创建频道</a>\r\n                <a class=\"item\" data-tab=\"channel-join\">加入频道</a>\r\n            </div>\r\n            <div class=\"ui active tab basic segment tms-create\" data-tab=\"channel-create\">\r\n                <div ref=\"frm\" class=\"ui form\">\r\n                    <div class=\"inline required field\">\r\n                        <label>标识</label>\r\n                        <input type=\"text\" name=\"name\" value.bind=\"name\" placeholder=\"小写字母数组-_组合\">\r\n                    </div>\r\n                    <div class=\"inline required field\">\r\n                        <label>名称</label>\r\n                        <input type=\"text\" name=\"title\" value.bind=\"title\" placeholder=\"\">\r\n                    </div>\r\n                    <div class=\"inline field\">\r\n                        <label style=\"visibility: hidden;\">公开</label>\r\n                        <div ref=\"chk\" class=\"ui checkbox\">\r\n                            <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                            <label>非公开(公开频道用户可以自由加入)</label>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"field\">\r\n                        <label>描述</label>\r\n                        <textarea name=\"desc\" value.bind=\"desc\" placeholder=\"\" rows=\"5\"></textarea>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"ui tab basic segment tms-join\" data-tab=\"channel-join\">\r\n                <em-chat-channel-join em-chat-channel-join.ref=\"channelJoinVm\" login-user.bind=\"loginUser\"></em-chat-channel-join>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-channel-at.html', ['module'], function(module) { module.exports = "<template>\n    <div class=\"tms-at-users\" style=\"max-height:150px; overflow:auto;\">\n        <div class=\"ui middle aligned selection list\">\n            <div class=\"item\" repeat.for=\"item of channel.members\">\n                <div class=\"content\">\n                    <div class=\"header\">${item.name} - ${item.mails} (${item.username})</div>\n                </div>\n            </div>\n        </div>\n    </div>\n</template>\n"; });
 define('text!user/user-login.css', ['module'], function(module) { module.exports = ".tms-user-login {\n  width: 100%;\n  min-height: 100%;\n  background-color: #5a3636;\n  overflow: hidden;\n}\n.tms-user-login .container {\n  width: 300px;\n  top: 50px;\n  margin-left: auto;\n  margin-right: auto;\n  position: relative;\n}\n.tms-user-login h2 {\n  color: rgba(197, 164, 164, 0.8) !important;\n}\n.tms-user-login .ui.form {\n  background-color: #353131;\n}\n.tms-user-login .ui.error.message {\n  background-color: #5a3636;\n}\n.tms-user-login .ui.error.message .header {\n  color: #e0b4b4;\n}\n.tms-user-login .ui.checkbox label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox input:focus ~ label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox label:hover {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.button {\n  background-color: #5a3636;\n  color: #ad8b75;\n}\n"; });
-define('text!resources/elements/em-chat-channel-edit.html', ['module'], function(module) { module.exports = "<template>\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\n        <div slot=\"header\">编辑频道</div>\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\n            <div ref=\"frm\" class=\"ui form\">\n                <div class=\"inline required field\">\n                    <label>标识</label>\n                    <div class=\"ui basic label\">${channel.name}</div>\n                </div>\n                <div class=\"inline required field\">\n                    <label>名称</label>\n                    <input type=\"text\" name=\"title\" value.bind=\"channel.title\" placeholder=\"\">\n                </div>\n                <div class=\"inline field\">\n                    <label style=\"visibility: hidden;\">公开</label>\n                    <div ref=\"chk\" class=\"ui checkbox\">\n                        <input type=\"checkbox\" name=\"privated\" checked=\"\">\n                        <label>非公开(公开频道用户可以自由加入)</label>\n                    </div>\n                </div>\n                <div class=\"field\">\n                    <label>描述</label>\n                    <textarea name=\"desc\" value.bind=\"channel.description\" placeholder=\"\" rows=\"5\"></textarea>\n                </div>\n            </div>\n        </div>\n    </em-modal>\n</template>\n"; });
+define('text!resources/elements/em-chat-channel-create.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-create.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" show-confirm.bind=\"activeTab == 'channel-create'\" confirm-label=\"创建\">\r\n        <div slot=\"header\">创建加入频道</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"tabRef\" class=\"ui pointing secondary menu\">\r\n                <a class=\"active item\" data-tab=\"channel-create\">创建频道</a>\r\n                <a class=\"item\" data-tab=\"channel-join\">加入频道</a>\r\n            </div>\r\n            <div class=\"ui active tab basic segment tms-create\" data-tab=\"channel-create\">\r\n                <div ref=\"frm\" class=\"ui form\">\r\n                    <div class=\"inline required field\">\r\n                        <label>标识</label>\r\n                        <input type=\"text\" name=\"name\" value.bind=\"name\" placeholder=\"小写字母数组-_组合\">\r\n                    </div>\r\n                    <div class=\"inline required field\">\r\n                        <label>名称</label>\r\n                        <input type=\"text\" name=\"title\" value.bind=\"title\" placeholder=\"\">\r\n                    </div>\r\n                    <div class=\"inline field\">\r\n                        <label style=\"visibility: hidden;\">公开</label>\r\n                        <div ref=\"chk\" class=\"ui checkbox\">\r\n                            <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                            <label>非公开(公开频道用户可以自由加入)</label>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"field\">\r\n                        <label>描述</label>\r\n                        <textarea name=\"desc\" value.bind=\"desc\" placeholder=\"\" rows=\"5\"></textarea>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"ui tab basic segment tms-join\" data-tab=\"channel-join\">\r\n                <em-chat-channel-join em-chat-channel-join.ref=\"channelJoinVm\" login-user.bind=\"loginUser\"></em-chat-channel-join>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!user/user-pwd-reset.css', ['module'], function(module) { module.exports = ".tms-user-pwd-reset {\n  height: 100%;\n}\n.tms-user-pwd-reset .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
-define('text!resources/elements/em-chat-channel-join.html', ['module'], function(module) { module.exports = "<template>\r\n    <table class=\"ui very basic striped table\">\r\n        <thead>\r\n            <tr>\r\n                <th>标识</th>\r\n                <th>名称</th>\r\n                <th>描述</th>\r\n                <th>可见性</th>\r\n                <th>拥有者</th>\r\n                <th>操作</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n            <tr repeat.for=\"item of channels\">\r\n                <td><i class=\"hashtag icon\"></i>${item.name}</td>\r\n                <td title=\"${item.title}\">${item.title}</td>\r\n                <td><span data-tooltip=\"${item.description}\"><i class=\"info circle icon\"></i></span></td>\r\n                <td if.bind=\"item.privated\"><span data-tooltip=\"私有频道\"><i class=\"lock icon\"></i></span></td>\r\n                <td if.bind=\"!item.privated\"><span data-tooltip=\"公开频道\"><i class=\"unlock icon\"></i></span></td>\r\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username != loginUser.username\">${item.owner.name ? item.owner.name : item.owner.username}</td>\r\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username == loginUser.username\">自己</td>\r\n                <td>\r\n                    <div if.bind=\"!item.privated && !item.joined\" class=\"ui mini green button\" click.delegate=\"joinHandler(item)\">加入</div>\r\n                    <div if.bind=\"item.joined && (item.owner.username != loginUser.username)\" class=\"ui mini orange button\" click.delegate=\"leaveHandler(item)\">离开</div>\r\n                </td>\r\n            </tr>\r\n        </tbody>\r\n    </table>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-channel-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\r\n        <div slot=\"header\">编辑频道</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"inline required field\">\r\n                    <label>标识</label>\r\n                    <div class=\"ui basic label\">${channel.name}</div>\r\n                </div>\r\n                <div class=\"inline required field\">\r\n                    <label>名称</label>\r\n                    <input type=\"text\" name=\"title\" value.bind=\"channel.title\" placeholder=\"\">\r\n                </div>\r\n                <div class=\"inline field\">\r\n                    <label style=\"visibility: hidden;\">公开</label>\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                        <label>非公开(公开频道用户可以自由加入)</label>\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <label>描述</label>\r\n                    <textarea name=\"desc\" value.bind=\"channel.description\" placeholder=\"\" rows=\"5\"></textarea>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!user/user-register.css', ['module'], function(module) { module.exports = ".tms-user-register {\n  height: 100%;\n}\n.tms-user-register .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
-define('text!resources/elements/em-chat-channel-members-mgr.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-chat-channel-members-mgr.css\"></require>\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"确定\">\n        <div slot=\"header\">频道成员管理</div>\n        <div slot=\"content\" class=\"tms-em-chat-channel-members-mgr\">\n            <div ref=\"frm\" class=\"ui form\">\n                <div class=\"field\">\n                    <label>频道成员</label>\n                    <div ref=\"membersRef\" class=\"ui fluid multiple search selection dropdown\">\n                        <input type=\"hidden\" name=\"members\">\n                        <i class=\"dropdown icon\"></i>\n                        <div class=\"default text\"></div>\n                        <div class=\"menu\">\n                            <div repeat.for=\"item of users\" task.bind=\"initMembersUI($last)\" class=\"item\" data-value=\"${item.username}\">\n                                ${item.name ? item.name : item.username}\n                                <input type=\"hidden\" class=\"${channel.owner.username == item.username ? 'owner' : ''}\">\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </em-modal>\n</template>\n"; });
+define('text!resources/elements/em-chat-channel-join.html', ['module'], function(module) { module.exports = "<template>\n    <table class=\"ui very basic striped table\">\n        <thead>\n            <tr>\n                <th>标识</th>\n                <th>名称</th>\n                <th>描述</th>\n                <th>可见性</th>\n                <th>拥有者</th>\n                <th>操作</th>\n            </tr>\n        </thead>\n        <tbody>\n            <tr repeat.for=\"item of channels\">\n                <td><i class=\"hashtag icon\"></i>${item.name}</td>\n                <td title=\"${item.title}\">${item.title}</td>\n                <td><span data-tooltip=\"${item.description}\"><i class=\"info circle icon\"></i></span></td>\n                <td if.bind=\"item.privated\"><span data-tooltip=\"私有频道\"><i class=\"lock icon\"></i></span></td>\n                <td if.bind=\"!item.privated\"><span data-tooltip=\"公开频道\"><i class=\"unlock icon\"></i></span></td>\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username != loginUser.username\">${item.owner.name ? item.owner.name : item.owner.username}</td>\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username == loginUser.username\">自己</td>\n                <td>\n                    <div if.bind=\"!item.privated && !item.joined\" class=\"ui mini green button\" click.delegate=\"joinHandler(item)\">加入</div>\n                    <div if.bind=\"item.joined && (item.owner.username != loginUser.username)\" class=\"ui mini orange button\" click.delegate=\"leaveHandler(item)\">离开</div>\n                </td>\n            </tr>\n        </tbody>\n    </table>\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\n</template>\n"; });
 define('text!resources/elements/em-chat-channel-create.css', ['module'], function(module) { module.exports = ".tms-em-chat-channel-create .tms-join {\n  max-height: 315px;\n  overflow-y: auto;\n}\n.tms-em-chat-channel-create .ui.form > .field > label {\n  width: 35px!important;\n}\n"; });
-define('text!resources/elements/em-chat-content-item.html', ['module'], function(module) { module.exports = "<template>\n    <div repeat.for=\"item of chats\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\n        <a class=\"avatar\">\n            <i class=\"circular icon large user\"></i>\n        </a>\n        <div class=\"content\">\n            <a class=\"author\">${item.creator.name}</a>\n            <div class=\"metadata\">\n                <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\n            </div>\n            <div show.bind=\"!item.isEditing\" class=\"text markdown-body\" innerhtml.bind=\"item.contentMd\"></div>\n            <textarea ref=\"editTxtRef\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content\" class=\"tms-edit-textarea\" rows=\"1\"></textarea>\n            <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-edit-actions\">\n                <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\n                    <i class=\"checkmark icon\"></i>\n                </button>\n                <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\n                    <i class=\"remove icon\"></i>\n                </button>\n                <button dropzone=\"clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\n                    <i class=\"upload icon\"></i>\n                </button>\n            </div>\n            <div class=\"actions\">\n                <a if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"editHandler(item, editTxtRef)\" class=\"tms-edit\">编辑</a>\n                <a if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"deleteHandler(item)\" class=\"tms-delete\">删除</a>\n                <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\">复制</a>\n                <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${selfLink + '?id=' + item.id}\">分享</a>\n            </div>\n        </div>\n    </div>\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\n</template>\n"; });
+define('text!resources/elements/em-chat-channel-members-mgr.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-members-mgr.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"确定\">\r\n        <div slot=\"header\">频道成员管理</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-members-mgr\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"field\">\r\n                    <label>频道成员</label>\r\n                    <div ref=\"membersRef\" class=\"ui fluid multiple search selection dropdown\">\r\n                        <input type=\"hidden\" name=\"members\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\"></div>\r\n                        <div class=\"menu\">\r\n                            <div repeat.for=\"item of users\" task.bind=\"initMembersUI($last)\" class=\"item\" data-value=\"${item.username}\">\r\n                                ${item.name ? item.name : item.username}\r\n                                <input type=\"hidden\" class=\"${channel.owner.username == item.username ? 'owner' : ''}\">\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-channel-members-mgr.css', ['module'], function(module) { module.exports = ".tms-em-chat-channel-members-mgr .ui.dropdown > a.ui.label > input.owner + i.delete.icon {\n  display: none;\n}\n"; });
-define('text!resources/elements/em-chat-input.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-input.css\"></require>\r\n    <require from=\"./em-hotkeys-modal\"></require>\r\n    <div class=\"ui basic segment tms-msg-input tms-em-chat-input dropzone\">\r\n        <div ref=\"chatStatusBarRef\" class=\"tms-chat-status-bar dropzone-previews\"></div>\r\n        <div ref=\"inputRef\" class=\"ui left action fluid icon input dropzone\">\r\n            <div ref=\"chatBtnRef\" class=\"ui icon button\">\r\n                <i class=\"plus icon\"></i>\r\n            </div>\r\n            <div class=\"ui flowing popup bottom left transition hidden\">\r\n                <div class=\"ui middle aligned selection list\">\r\n                    <div ref=\"btnItemUploadRef\" class=\"item\">\r\n                        <i class=\"upload icon\"></i>\r\n                        <div class=\"content\">\r\n                            上传文件\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"textareaWrapper\">\r\n                <textarea ref=\"chatInputRef\" placeholder=\"/ 键提示,Ctrl+Enter发送,Esc清空\"></textarea>\r\n            </div>\r\n            <i click.delegate=\"sendChatMsgHandler()\" title=\"发送消息(Enter)\" class=\"send link icon\"></i>\r\n        </div>\r\n    </div>\r\n    <div ref=\"previewTemplateRef\" style=\"display: none;\">\r\n        <div class=\"dz-preview dz-file-preview\">\r\n            <div class=\"dz-details\">\r\n                <div class=\"dz-filename\"><span data-dz-name></span></div>\r\n                <div class=\"dz-size\" data-dz-size></div>\r\n                <img data-dz-thumbnail />\r\n            </div>\r\n            <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            <div class=\"dz-success-mark\"><span>✔</span></div>\r\n            <div class=\"dz-error-mark\"><span>✘</span></div>\r\n            <div class=\"dz-error-message\"><span data-dz-errormessage></span></div>\r\n        </div>\r\n    </div>\r\n    <em-hotkeys-modal em-hotkeys-modal.ref=\"emHotkeysModal\"></em-hotkeys-modal>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-content-item.html', ['module'], function(module) { module.exports = "<template>\r\n    <div repeat.for=\"item of chats\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\r\n        <a class=\"avatar\">\r\n            <i class=\"circular icon large user\"></i>\r\n        </a>\r\n        <div class=\"content\">\r\n            <a class=\"author\">${item.creator.name}</a>\r\n            <div class=\"metadata\">\r\n                <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\r\n            </div>\r\n            <div show.bind=\"!item.isEditing\" class=\"text markdown-body\" innerhtml.bind=\"item.content | parseMd:members\"></div>\r\n            <textarea ref=\"editTxtRef\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content\" class=\"tms-edit-textarea\" rows=\"1\"></textarea>\r\n            <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-edit-actions\">\r\n                <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\r\n                    <i class=\"checkmark icon\"></i>\r\n                </button>\r\n                <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\r\n                    <i class=\"remove icon\"></i>\r\n                </button>\r\n                <button dropzone=\"clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\r\n                    <i class=\"upload icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"actions\">\r\n                <a if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"editHandler(item, editTxtRef)\" class=\"tms-edit\">编辑</a>\r\n                <a if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"deleteHandler(item)\" class=\"tms-delete\">删除</a>\r\n                <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\">复制</a>\r\n                <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${selfLink + '?id=' + item.id}\">分享</a>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-input.css', ['module'], function(module) { module.exports = ".tms-em-chat-input.ui.segment {\n  margin: 0;\n  position: fixed;\n  bottom: 0;\n  left: 220px;\n  right: 0;\n  background-color: white;\n  padding-bottom: 22px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-input.ui.segment {\n    left: 0;\n  }\n}\n.tms-em-chat-input.ui.segment .tms-chat-status-bar .dz-preview {\n  display: block!important;\n  width: auto!important;\n  background: #e0e1e2;\n  margin: 0;\n  padding: 7px;\n}\n.tms-em-chat-input.ui.segment .ui[class*=\"left action\"].input > textarea {\n  border-top-left-radius: 0!important;\n  border-bottom-left-radius: 0!important;\n  border-left-color: transparent!important;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper {\n  width: calc(100% - 35px);\n  /* max-width: 100%;\n            -webkit-box-flex: 1;\n            -webkit-flex: 1 0 auto;\n            -ms-flex: 1 0 auto;\n            flex: 1 0 auto; */\n  border: 1px solid rgba(34, 36, 38, 0.15);\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror,\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  min-height: 0;\n  border: none;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  max-height: 300px;\n}\n.tms-em-chat-input.ui.segment .ui.input i.send.icon {\n  z-index: 1;\n}\n.tms-em-chat-input.ui.segment .ui.input textarea {\n  resize: none;\n  width: 100%;\n  padding-right: 2.67142857em!important;\n  margin: 0;\n  max-width: 100%;\n  outline: 0;\n  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);\n  text-align: left;\n  display: block;\n  padding: .67861429em 1em;\n  background: #FFF;\n  border: none;\n  color: rgba(0, 0, 0, 0.87);\n  box-shadow: none;\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n@media only screen and (min-width: 768px) {\n  .tms-chat-direct .tms-content.tms-sidebar-show .tms-em-chat-input {\n    right: 392px;\n  }\n}\n.textcomplete-dropdown {\n  position: static!important;\n  border: 1px solid #ddd;\n  background-color: white;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  border-radius: 5px;\n}\n.textcomplete-dropdown li {\n  /* border-top: 1px solid #ddd; */\n  padding: 2px 5px;\n}\n.textcomplete-dropdown li:first-child {\n  border-top: none;\n  border-top-left-radius: 5px;\n  border-top-right-radius: 5px;\n}\n.textcomplete-dropdown li:last-child {\n  border-bottom-left-radius: 5px;\n  border-bottom-right-radius: 5px;\n}\n.textcomplete-dropdown li:hover,\n.textcomplete-dropdown .active {\n  background-color: #439fe0;\n}\n.textcomplete-dropdown a:hover {\n  cursor: pointer;\n}\n.textcomplete-dropdown li.textcomplete-item a {\n  color: black;\n}\n.textcomplete-dropdown li.textcomplete-item:hover a,\n.textcomplete-dropdown li.textcomplete-item.active a {\n  color: white;\n}\n"; });
-define('text!resources/elements/em-chat-sidebar-left.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-sidebar-left.css\"></require>\r\n    <div class=\"ui left visible segment sidebar tms-left-sidebar\">\r\n        <div class=\"tms-header\">\r\n            <h1 class=\"ui header\"><a href=\"/admin/dynamic?scroll=1\">TMS沟通</a></h1>\r\n            <input value.bind=\"filter\" focusin.trigger=\"chatToUserFilerFocusinHanlder()\" keyup.trigger=\"chatToUserFilerKeyupHanlder($event)\" type=\"text\" placeholder=\"沟通对象查找\">\r\n            <i title=\"清空过滤输入\" click.delegate=\"clearFilterHandler()\" class=\"bordered close icon link small\"></i>\r\n        </div>\r\n        <div class=\"tms-body\">\r\n            <div class=\"tms-channels\">\r\n                <div class=\"title\">\r\n                    <h4 class=\"ui header\"><i class=\"users icon\"></i>频道</h4>\r\n                    <i ref=\"createChannelRef\" class=\"plus link circular icon\"></i>\r\n                </div>\r\n                <div class=\"ui middle aligned selection list\">\r\n                    <a repeat.for=\"item of channels\" title=\"${item.title}(${item.name})\" show.bind=\"!item.hidden\" href=\"#/chat/${item.name}\" class=\"item ${(!isAt && item.name == chatTo) ? 'active' : ''}\">\r\n                        <i class=\"hashtag icon\"></i>\r\n                        <div class=\"content\">\r\n                            <div style=\"color: black;\">${item.title}</div>\r\n                        </div>\r\n                        <div class=\"actions\">\r\n                            <div if.bind=\"item.owner.username == loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                <!-- <i class=\"ellipsis vertical icon\"></i> -->\r\n                                <i class=\"large ellipsis horizontal icon\"></i>\r\n                                <div class=\"menu\">\r\n                                    <div class=\"item\" click.delegate=\"membersMgrHandler(item)\">成员管理</div>\r\n                                    <div class=\"item\" click.delegate=\"editHandler(item)\">编辑</div>\r\n                                    <div class=\"item\" click.delegate=\"delHandler(item)\">删除</div>\r\n                                </div>\r\n                            </div>\r\n                            <div if.bind=\"item.owner.username != loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                <!-- <i class=\"ellipsis vertical icon\"></i> -->\r\n                                <i class=\"large ellipsis horizontal icon\"></i>\r\n                                <div class=\"menu\">\r\n                                    <div class=\"item\" click.delegate=\"leaveHandler(item)\">离开</div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                </div>\r\n            </div>\r\n            <div class=\"ui divider\"></div>\r\n            <div class=\"tms-users\">\r\n                <div class=\"title\">\r\n                    <h4 class=\"ui header\"><i class=\"user icon\"></i>用户</h4>\r\n                    <!-- <i class=\"plus link circular icon\"></i> -->\r\n                </div>\r\n                <div ref=\"userListRef\" class=\"ui middle aligned selection list\">\r\n                    <a repeat.for=\"item of users\" title=\"${item.username}\" show.bind=\"!item.hidden\" href=\"#/chat/@${item.username}\" class=\"item ${(isAt && item.username == chatTo) ? 'active' : ''}\" data-id=\"${item.username}\">\r\n                        <i style=\"font-weight: bold;\" class=\"at icon\"></i>\r\n                        <div class=\"content\">\r\n                            <div style=\"color: black;\">${item.name ? item.name : item.username}</div>\r\n                        </div>\r\n                    </a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n    <em-chat-channel-create login-user.bind=\"loginUser\" trigger.bind=\"createChannelRef\"></em-chat-channel-create>\r\n    <em-chat-channel-edit channel.bind=\"selectedChannel\" em-chat-channel-edit.ref=\"channelEditMd\"></em-chat-channel-edit>\r\n    <em-chat-channel-members-mgr users.bind=\"users\" channel.bind=\"selectedChannel\" em-chat-channel-members-mgr.ref=\"channelMembersMgrMd\"></em-chat-channel-members-mgr>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-input.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-input.css\"></require>\r\n    <require from=\"./em-hotkeys-modal\"></require>\r\n    <div class=\"ui basic segment tms-msg-input tms-em-chat-input dropzone\">\r\n        <div ref=\"chatStatusBarRef\" class=\"tms-chat-status-bar dropzone-previews\"></div>\r\n        <!-- <em-chat-channel-at channel.bind=\"channel\" em-chat-channel-at.ref=\"channelAtVm\"></em-chat-channel-at> -->\r\n        <div ref=\"inputRef\" class=\"ui left action fluid icon input dropzone\">\r\n            <div ref=\"chatBtnRef\" class=\"ui icon button\">\r\n                <i class=\"plus icon\"></i>\r\n            </div>\r\n            <div class=\"ui flowing popup bottom left transition hidden\">\r\n                <div class=\"ui middle aligned selection list\">\r\n                    <div ref=\"btnItemUploadRef\" class=\"item\">\r\n                        <i class=\"upload icon\"></i>\r\n                        <div class=\"content\">\r\n                            上传文件\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"textareaWrapper\">\r\n                <textarea ref=\"chatInputRef\" placeholder=\"/ 键提示,Ctrl+Enter发送,Esc清空\"></textarea>\r\n            </div>\r\n            <i click.delegate=\"sendChatMsgHandler()\" title=\"发送消息(Enter)\" class=\"send link icon\"></i>\r\n        </div>\r\n    </div>\r\n    <div ref=\"previewTemplateRef\" style=\"display: none;\">\r\n        <div class=\"dz-preview dz-file-preview\">\r\n            <div class=\"dz-details\">\r\n                <div class=\"dz-filename\"><span data-dz-name></span></div>\r\n                <div class=\"dz-size\" data-dz-size></div>\r\n                <img data-dz-thumbnail />\r\n            </div>\r\n            <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            <div class=\"dz-success-mark\"><span>✔</span></div>\r\n            <div class=\"dz-error-mark\"><span>✘</span></div>\r\n            <div class=\"dz-error-message\"><span data-dz-errormessage></span></div>\r\n        </div>\r\n    </div>\r\n    <em-hotkeys-modal em-hotkeys-modal.ref=\"emHotkeysModal\"></em-hotkeys-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-sidebar-left.css', ['module'], function(module) { module.exports = ".tms-left-sidebar .tms-body {\n  position: absolute;\n  top: 98px;\n  width: 190px;\n  height: calc(100vh - 160px);\n  overflow-y: auto;\n}\n.tms-left-sidebar .tms-body::-webkit-scrollbar-thumb {\n  background-color: #475a81;\n}\n.tms-left-sidebar .tms-body i.circular.icon {\n  box-shadow: 0 0 0 0.1em #4183c4 inset;\n}\n.tms-left-sidebar .tms-body .ui.selection.list {\n  margin-top: 10px;\n}\n.tms-left-sidebar .tms-body .title {\n  position: relative;\n}\n.tms-left-sidebar .tms-body .title .ui.header {\n  display: inline-block;\n  margin-top: 2px;\n  margin-bottom: 0;\n}\n.tms-left-sidebar .tms-body .title i.plus.icon {\n  position: absolute;\n  right: 0;\n  font-size: 12px;\n}\n.tms-left-sidebar .tms-body .tms-channels .ui.list a.item {\n  position: relative;\n}\n.tms-left-sidebar .tms-body .tms-channels .ui.list a.item:hover .actions {\n  display: inline-block;\n}\n.tms-left-sidebar .tms-body .tms-channels .actions {\n  display: none;\n  position: absolute;\n  right: 0;\n  top: 5px;\n}\n"; });
-define('text!resources/elements/em-chat-sidebar-right.html', ['module'], function(module) { module.exports = "<template>\n    <div class=\"tms-right-sidebar\">\n        <div class=\"panel-search\">\n            <div class=\"ui basic segment minimal selection list segment comments\">\n                <h1 show.bind=\"!searchChats.length\" class=\"ui center aligned header\">无符合检索结果</h1>\n                <div repeat.for=\"item of searchChats\" mouseleave.trigger=\"searchItemMouseleaveHandler(item)\" mouseenter.trigger=\"searchItemMouseenterHandler(item)\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\n                    <a class=\"avatar\">\n                        <i class=\"circular icon large user\"></i>\n                    </a>\n                    <div class=\"content\">\n                        <a class=\"author\">${item.creator.name}</a>\n                        <div class=\"metadata\">\n                            <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\n                        </div>\n                        <div class=\"text markdown-body ${item.isOpen ? 'tms-open' : ''}\" innerhtml.bind=\"item.contentMd\"></div>\n                        <div class=\"actions\">\n                            <a click.delegate=\"gotoChatHandler(item)\" class=\"tms-goto\" href=\"\">定位</a>\n                            <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\">复制</a>\n                            <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${selfLink + '?id=' + item.id}\">分享</a>\n                        </div>\n                    </div>\n                    <div class=\"tms-btn-open-search-item\" click.delegate=\"openSearchItemHandler(item)\">\n                        <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\n                    </div>\n                </div>\n                <button if.bind=\"!lastSearch\" click.delegate=\"searchMoreHandler()\" class=\"fluid ui basic button tms-search-more\"><i show.bind=\"searchMoreP && searchMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreSearchCnt})</button>\n            </div>\n        </div>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-chat-sidebar-left.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-sidebar-left.css\"></require>\r\n    <div class=\"ui left visible segment sidebar tms-left-sidebar\">\r\n        <div class=\"tms-header\">\r\n            <h1 class=\"ui header\"><a href=\"/admin/dynamic?scroll=1\">TMS沟通</a></h1>\r\n            <input value.bind=\"filter\" focusin.trigger=\"chatToUserFilerFocusinHanlder()\" keyup.trigger=\"chatToUserFilerKeyupHanlder($event)\" type=\"text\" placeholder=\"沟通对象查找\">\r\n            <i title=\"清空过滤输入\" click.delegate=\"clearFilterHandler()\" class=\"bordered close icon link small\"></i>\r\n        </div>\r\n        <div class=\"tms-body\">\r\n            <div class=\"tms-channels\">\r\n                <div class=\"title\">\r\n                    <h4 class=\"ui header\"><i class=\"users icon\"></i>频道</h4>\r\n                    <i ref=\"createChannelRef\" class=\"plus link circular icon\"></i>\r\n                </div>\r\n                <div class=\"ui middle aligned selection list\">\r\n                    <a repeat.for=\"item of channels\" title=\"${item.title}(${item.name})\" show.bind=\"!item.hidden\" href=\"#/chat/${item.name}\" class=\"item ${(!isAt && item.name == chatTo) ? 'active' : ''}\">\r\n                        <i class=\"hashtag icon\"></i>\r\n                        <div class=\"content\">\r\n                            <div style=\"color: black;\">${item.title}</div>\r\n                        </div>\r\n                        <div class=\"actions\">\r\n                            <div if.bind=\"item.owner.username == loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                <!-- <i class=\"ellipsis vertical icon\"></i> -->\r\n                                <i class=\"large ellipsis horizontal icon\"></i>\r\n                                <div class=\"menu\">\r\n                                    <div class=\"item\" click.delegate=\"membersMgrHandler(item)\">成员管理</div>\r\n                                    <div class=\"item\" click.delegate=\"editHandler(item)\">编辑</div>\r\n                                    <div class=\"item\" click.delegate=\"delHandler(item)\">删除</div>\r\n                                </div>\r\n                            </div>\r\n                            <div if.bind=\"item.owner.username != loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                <!-- <i class=\"ellipsis vertical icon\"></i> -->\r\n                                <i class=\"large ellipsis horizontal icon\"></i>\r\n                                <div class=\"menu\">\r\n                                    <div class=\"item\" click.delegate=\"leaveHandler(item)\">离开</div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                </div>\r\n            </div>\r\n            <div class=\"ui divider\"></div>\r\n            <div class=\"tms-users\">\r\n                <div class=\"title\">\r\n                    <h4 class=\"ui header\"><i class=\"user icon\"></i>用户</h4>\r\n                    <!-- <i class=\"plus link circular icon\"></i> -->\r\n                </div>\r\n                <div ref=\"userListRef\" class=\"ui middle aligned selection list\">\r\n                    <a repeat.for=\"item of users\" title=\"${item.username}\" show.bind=\"!item.hidden\" href=\"#/chat/@${item.username}\" class=\"item ${(isAt && item.username == chatTo) ? 'active' : ''}\" data-id=\"${item.username}\">\r\n                        <i style=\"font-weight: bold;\" class=\"at icon\"></i>\r\n                        <div class=\"content\">\r\n                            <div style=\"color: black;\">${item.name ? item.name : item.username}</div>\r\n                        </div>\r\n                    </a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n    <em-chat-channel-create login-user.bind=\"loginUser\" trigger.bind=\"createChannelRef\"></em-chat-channel-create>\r\n    <em-chat-channel-edit channel.bind=\"selectedChannel\" em-chat-channel-edit.ref=\"channelEditMd\"></em-chat-channel-edit>\r\n    <em-chat-channel-members-mgr users.bind=\"users\" channel.bind=\"selectedChannel\" em-chat-channel-members-mgr.ref=\"channelMembersMgrMd\"></em-chat-channel-members-mgr>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-top-menu.css', ['module'], function(module) { module.exports = ".tms-em-chat-top-menu.ui.top.menu {\n  padding-left: 220px;\n  height: 60px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .tms-chat-at.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .item.tms-item:before {\n  display: none;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item {\n  padding-left: 5px;\n  padding-right: 5px;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search input {\n  width: 100px;\n  transition: width 0.15s ease-out 0s;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search i.remove.icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu {\n    padding-left: 0;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .ui.basic.button {\n  box-shadow: none;\n}\n"; });
-define('text!resources/elements/em-chat-top-menu.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-chat-top-menu.css\"></require>\n    <div class=\"ui top fixed menu tms-em-chat-top-menu\">\n        <div ref=\"chatToDropdownRef\" class=\"ui dropdown link item ${isActiveSearch ? 'tms-hide' : ''} tms-chat-at\">\n            <!-- <i class=\"big loading at icon\"></i> -->\n            <span class=\"text\"></span>\n            <i class=\"dropdown icon\"></i>\n            <div class=\"menu\">\n                <div class=\"ui icon search input\">\n                    <i class=\"search icon\"></i>\n                    <input ref=\"filterChatToUser\" type=\"text\" placeholder=\"过滤沟通对象\">\n                </div>\n                <div class=\"divider\"></div>\n                <div class=\"header\">\n                    <i class=\"filter icon\"></i> 切换沟通对象(Ctrl+k)\n                </div>\n                <div class=\"scrolling menu\">\n                    <div class=\"header\">\n                        <i class=\"users icon\"></i> 频道\n                    </div>\n                    <a repeat.for=\"item of channels\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/${item.name}\" class=\"item\" title=\"${item.name}\" data-value=\"${item.name}\" data-id=\"${item.name}\">\n                        <i class=\"hashtag icon\"></i>${item.title}\n                    </a>\n                    <div class=\"header\">\n                        <i class=\"user icon\"></i> 用户\n                    </div>\n                    <a repeat.for=\"item of users\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/@${item.username}\" class=\"item\" title=\"${item.username}\" data-value=\"${item.username}\" data-id=\"@${item.username}\">\n                        <i style=\"font-weight: bold;\" class=\"at icon\"></i>${item.name}\n                    </a>\n                </div>\n            </div>\n        </div>\n        <div class=\"right menu\">\n            <div class=\"item tms-item\">\n                <button click.delegate=\"sibebarRightHandler()\" title=\"右侧边栏(Ctrl+.)\" class=\"basic ${isRightSidebarShow ? 'active' : ''} ui icon button\">\n                    <i class=\"columns icon\"></i>\n                </button>\n            </div>\n            <div class=\"item\">\n                <div ref=\"searchRef\" class=\"ui search\">\n                    <div class=\"ui left icon input\">\n                        <input ref=\"searchInputRef\" keyup.trigger=\"searchKeyupHandler($event)\" focusout.trigger=\"searchFocusoutHandler()\" focusin.trigger=\"searchFocusinHandler()\" class=\"prompt\" type=\"text\" placeholder=\"搜索...\">\n                        <i class=\"${(searchingP && searchingP.readyState != 4) ? 'spinner loading' : 'search'} icon\"></i>\n                        <i ref=\"searchRemoveRef\" click.delegate=\"clearSearchHandler()\" class=\"remove link icon\"></i>\n                    </div>\n                </div>\n            </div>\n            <a class=\"item tms-login-user\">\n                <i class=\"circular user icon\"></i> ${loginUser.name}\n            </a>\n        </div>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-chat-sidebar-right.html', ['module'], function(module) { module.exports = "<template>\r\n    <div class=\"tms-right-sidebar\">\r\n        <div class=\"panel-search\">\r\n            <div class=\"ui basic segment minimal selection list segment comments\">\r\n                <h1 show.bind=\"!searchChats.length\" class=\"ui center aligned header\">无符合检索结果</h1>\r\n                <div repeat.for=\"item of searchChats\" mouseleave.trigger=\"searchItemMouseleaveHandler(item)\" mouseenter.trigger=\"searchItemMouseenterHandler(item)\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\r\n                    <a class=\"avatar\">\r\n                        <i class=\"circular icon large user\"></i>\r\n                    </a>\r\n                    <div class=\"content\">\r\n                        <a class=\"author\">${item.creator.name}</a>\r\n                        <div class=\"metadata\">\r\n                            <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\r\n                        </div>\r\n                        <div class=\"text markdown-body ${item.isOpen ? 'tms-open' : ''}\" innerhtml.bind=\"item.content | parseMd\"></div>\r\n                        <div class=\"actions\">\r\n                            <a click.delegate=\"gotoChatHandler(item)\" class=\"tms-goto\" href=\"\">定位</a>\r\n                            <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\">复制</a>\r\n                            <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${selfLink + '?id=' + item.id}\">分享</a>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"tms-btn-open-search-item\" click.delegate=\"openSearchItemHandler(item)\">\r\n                        <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                    </div>\r\n                </div>\r\n                <button if.bind=\"!lastSearch\" click.delegate=\"searchMoreHandler()\" class=\"fluid ui basic button tms-search-more\"><i show.bind=\"searchMoreP && searchMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreSearchCnt})</button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(module) { module.exports = ".tms-em-hotkeys-modal ul {\n  padding-left: 30px;\n}\n.tms-em-hotkeys-modal ul.no_bullets {\n  margin: 0 0 2rem;\n}\n.tms-em-hotkeys-modal ul.no_bullets li {\n  line-height: 2rem;\n  list-style-type: none;\n  padding: 0;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.tms-em-hotkeys-modal > .content {\n  background-color: rgba(11, 7, 11, 0.78) !important;\n}\n.tms-em-hotkeys-modal .keyboard i.icon {\n  margin-right: 0px!important;\n}\n.tms-em-hotkeys-modal .subtle_silver {\n  color: #9e9ea6!important;\n}\n.tms-em-hotkeys-modal .ui.grid .column {\n  padding: 0!important;\n}\n"; });
-define('text!resources/elements/em-confirm-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"md\" class=\"ui small modal nx-ui-confirm tms-md450\">\r\n        <div class=\"header\">\r\n            ${config.title}\r\n        </div>\r\n        <div class=\"content\">\r\n            <i if.bind=\"config.warning\" class=\"large yellow warning sign icon\" style=\"float: left;\"></i>\r\n            <i if.bind=\"!config.warning\" class=\"large blue info circle icon\" style=\"float: left;\"></i>\r\n            <p style=\"margin-left: 20px;\">\r\n                <span innerhtml.bind=\"config.content\"></span>\r\n            </p>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <div class=\"ui cancel basic blue left floated button\">取消</div>\r\n            <div class=\"ui ok blue button\">确认</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-top-menu.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-top-menu.css\"></require>\r\n    <div class=\"ui top fixed menu tms-em-chat-top-menu\">\r\n        <div ref=\"chatToDropdownRef\" class=\"ui dropdown link item ${isActiveSearch ? 'tms-hide' : ''} tms-chat-at\">\r\n            <!-- <i class=\"big loading at icon\"></i> -->\r\n            <span class=\"text\"></span>\r\n            <i class=\"dropdown icon\"></i>\r\n            <div class=\"menu\">\r\n                <div class=\"ui icon search input\">\r\n                    <i class=\"search icon\"></i>\r\n                    <input ref=\"filterChatToUser\" type=\"text\" placeholder=\"过滤沟通对象\">\r\n                </div>\r\n                <div class=\"divider\"></div>\r\n                <div class=\"header\">\r\n                    <i class=\"filter icon\"></i> 切换沟通对象(Ctrl+k)\r\n                </div>\r\n                <div class=\"scrolling menu\">\r\n                    <div class=\"header\">\r\n                        <i class=\"users icon\"></i> 频道\r\n                    </div>\r\n                    <a repeat.for=\"item of channels\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/${item.name}\" class=\"item\" title=\"${item.name}\" data-value=\"${item.name}\" data-id=\"${item.name}\">\r\n                        <i class=\"hashtag icon\"></i>${item.title}\r\n                    </a>\r\n                    <div class=\"header\">\r\n                        <i class=\"user icon\"></i> 用户\r\n                    </div>\r\n                    <a repeat.for=\"item of users\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/@${item.username}\" class=\"item\" title=\"${item.username}\" data-value=\"${item.username}\" data-id=\"@${item.username}\">\r\n                        <i style=\"font-weight: bold;\" class=\"at icon\"></i>${item.name}\r\n                    </a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"right menu\">\r\n            <div class=\"item tms-item\">\r\n                <button click.delegate=\"sibebarRightHandler()\" title=\"右侧边栏(Ctrl+.)\" class=\"basic ${isRightSidebarShow ? 'active' : ''} ui icon button\">\r\n                    <i class=\"columns icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item\">\r\n                <div ref=\"searchRef\" class=\"ui search\">\r\n                    <div class=\"ui left icon input\">\r\n                        <input ref=\"searchInputRef\" keyup.trigger=\"searchKeyupHandler($event)\" focusout.trigger=\"searchFocusoutHandler()\" focusin.trigger=\"searchFocusinHandler()\" class=\"prompt\" type=\"text\" placeholder=\"搜索...\">\r\n                        <i class=\"${(searchingP && searchingP.readyState != 4) ? 'spinner loading' : 'search'} icon\"></i>\r\n                        <i ref=\"searchRemoveRef\" click.delegate=\"clearSearchHandler()\" class=\"remove link icon\"></i>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <a class=\"item tms-login-user\">\r\n                <i class=\"circular user icon\"></i> ${loginUser.name}\r\n            </a>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-confirm-modal.html', ['module'], function(module) { module.exports = "<template>\n    <div ref=\"md\" class=\"ui small modal nx-ui-confirm tms-md450\">\n        <div class=\"header\">\n            ${config.title}\n        </div>\n        <div class=\"content\">\n            <i if.bind=\"config.warning\" class=\"large yellow warning sign icon\" style=\"float: left;\"></i>\n            <i if.bind=\"!config.warning\" class=\"large blue info circle icon\" style=\"float: left;\"></i>\n            <p style=\"margin-left: 20px;\">\n                <span innerhtml.bind=\"config.content\"></span>\n            </p>\n        </div>\n        <div class=\"actions\">\n            <div class=\"ui cancel basic blue left floated button\">取消</div>\n            <div class=\"ui ok blue button\">确认</div>\n        </div>\n    </div>\n</template>\n"; });
 define('text!resources/elements/em-dropdown.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"dropdown\" class=\"ui dropdown ${classes}\">\r\n        <input type=\"hidden\" name=\"${name}\">\r\n        <i class=\"dropdown icon\"></i>\r\n        <div class=\"default text\">${text}</div>\r\n        <div class=\"menu\">\r\n            <div repeat.for=\"item of menuItems\" task.bind=\"initDropdownHandler($last)\" class=\"item\" data-value=\"${item[valueProp]}\">${item[labelProp]}</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-hotkeys-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-hotkeys-modal.css\"></require>\r\n    <div ref=\"md\" class=\"ui basic modal tms-em-hotkeys-modal\">\r\n        <i class=\"close icon\"></i>\r\n        <!-- <div class=\"header\">\r\n            Archive Old Messages\r\n        </div> -->\r\n        <div class=\"content\">\r\n            <h1 class=\"ui center inverted aligned header\">键盘快捷键\r\n\t\t\t\t<span style=\"position: relative; top: -0.375rem; left: 1rem;\" aria-hidden=\"true\">\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Control\">Ctrl</span>\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Question mark\">/</span>\r\n\t\t\t\t</span>\r\n            </h1>\r\n            <div class=\"ui grid\">\r\n                <div class=\"three column row\">\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>上一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>下一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>第一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>最后一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>历史回退: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow left icon\" aria-label=\"Left arrow\"></i></span></li>\r\n                            <li>历史向前: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow right icon\" aria-label=\"Right arrow\"></i></span></li>\r\n                            <li>标记已读: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                            <li>全部标记已读: <span class=\"keyboard\">Shift</span><span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                            <li>快速切换: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">k</span></li>\r\n                            <li>Browse DMs: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">k</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>\r\n                                自动补全\r\n                                <ul>\r\n                                    <li>名称: <span class=\"subtle_silver\">[a-z]</span><span class=\"keyboard\">Tab</span> <span class=\"subtle_silver\">or</span> <span class=\"keyboard\">@</span><span class=\"keyboard\">Tab</span></li>\r\n                                    <li>频道: <span class=\"keyboard\" aria-label=\"Number symbol\">#</span><span class=\"keyboard\">Tab</span></li>\r\n                                    <li>表情: <span class=\"keyboard\" aria-label=\"Colon\">:</span><span class=\"keyboard\">Tab</span></li>\r\n                                </ul>\r\n                            </li>\r\n                            <li>换行: <span class=\"keyboard\">Shift</span><span class=\"keyboard\">Enter</span></li>\r\n                            <li>输入聚焦: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">i</span></li>\r\n                            <li>编辑: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">DblClick</span></li>\r\n                            <li>编辑上一条: <span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span> <span class=\"subtle_silver\">in input</span></li>\r\n                            <li>响应最后一条: <span class=\"keyboard\" aria-label=\"control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">\\</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>切换边栏: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">.</span></li>\r\n                            <ul>\r\n                                <li>团队: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">e</span></li>\r\n                                <li>标星: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">s</span></li>\r\n                            </ul>\r\n                            <li>粘贴代码片段: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">Enter</span></li>\r\n                            <li>上传文件: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">u</span></li>\r\n                            <li>关闭对话框: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                        </ul>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <!-- <div class=\"image\">\r\n                <i class=\"archive icon\"></i>\r\n            </div>\r\n            <div class=\"description\">\r\n                <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>\r\n            </div> -->\r\n        </div>\r\n        <!-- <div class=\"actions\">\r\n            <div class=\"two fluid ui inverted buttons\">\r\n                <div class=\"ui cancel red basic inverted button\">\r\n                    <i class=\"remove icon\"></i> No\r\n                </div>\r\n                <div class=\"ui ok green basic inverted button\">\r\n                    <i class=\"checkmark icon\"></i> Yes\r\n                </div>\r\n            </div>\r\n        </div> -->\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"modal\" class=\"ui modal ${classes}\">\r\n        <!-- <i class=\"close icon\"></i> -->\r\n        <div class=\"header\">\r\n            <slot name=\"header\">modal header...</slot>\r\n        </div>\r\n        <div class=\"content\">\r\n            <div class=\"ui inverted dimmer\" style=\"background-color: rgba(255, 255, 255, 0.5) !important;\">\r\n                <div class=\"ui loader\"></div>\r\n            </div>\r\n            <slot name=\"content\">modal content...</slot>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <slot name=\"actions\">\r\n                <div style=\"margin-left: 3.5px;\" class=\"ui cancel basic blue left floated button\" textcontent.bind=\"cancelLabel\">取消</div>\r\n                <div show.bind=\"showConfirm\" class=\"ui ok blue button ${(loading || disabled) ? 'disabled' : ''}\" textcontent.bind=\"confirmLabel\">确认</div>\r\n            </slot>\r\n            <div style=\"clear: both;\"></div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });

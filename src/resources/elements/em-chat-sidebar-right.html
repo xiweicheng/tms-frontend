@@ -12,7 +12,7 @@
                         <div class="metadata">
                             <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
                         </div>
-                        <div class="text markdown-body ${item.isOpen ? 'tms-open' : ''}" innerhtml.bind="item.contentMd"></div>
+                        <div class="text markdown-body ${item.isOpen ? 'tms-open' : ''}" innerhtml.bind="item.content | parseMd"></div>
                         <div class="actions">
                             <a click.delegate="gotoChatHandler(item)" class="tms-goto" href="">定位</a>
                             <a class="tms-copy tms-clipboard" data-clipboard-text="${item.content}">复制</a>

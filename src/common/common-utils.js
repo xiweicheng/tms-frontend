@@ -171,7 +171,7 @@ export class CommonUtils {
             callback && callback.call(null);
         });
     }
-    
+
     /**
      * 获取聊天对象标识
      * @param  {[type]} name [description]
@@ -185,6 +185,56 @@ export class CommonUtils {
         }
     }
 
+    /**
+     * 替换@user解析
+     * @param  {[type]} plainText [description]
+     * @return {[type]}           [description]
+     */
+    preParse(plainText, members) {
+
+        var txt = plainText;
+        $.each(this.parseUsers(plainText, members), function(index, user) {
+            txt = txt.replace(new RegExp(`{~${user.username}}`, 'g'), `<span data-value="${user.username}" class="at-user">**\`@${user.name}\`**</span>`);
+        });
+
+        return txt;
+    }
+
+
+    /**
+     * 解析@users
+     * @param  {[type]} plainText [description]
+     * @return {[type]}           [description]
+     */
+    parseUsers(plainText, members) {
+        var users = [];
+        var atR = /\{~([^\}]*)\}/g;
+        var rs = atR.exec(plainText);
+        while (rs) {
+            let user = _.find(members, { username: rs[1] });
+            let isNotExists = !_.some(users, { username: rs[1] });
+            if (user && isNotExists) {
+                users.push(user);
+            }
+            rs = atR.exec(plainText);
+        }
+
+        return users;
+    }
+
+    /**
+     * 解析要发送邮件的用户们
+     * @param  {[type]} plainText [description]
+     * @return {[type]}           [description]
+     */
+    parseUsernames(plainText, members) {
+        let users = this.parseUsers(plainText, members);
+        let isExitsAll = _.some(users, { username: 'all' });
+        if (isExitsAll) {
+            return _.without(_.map(members, 'username'), 'all');
+        }
+        return _.map(users, 'username');;
+    }
 }
 
 export default new CommonUtils();
