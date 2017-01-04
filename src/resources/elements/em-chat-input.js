@@ -195,7 +195,7 @@ export class EmChatInput {
                 return `${user.name} - ${user.mails} (${user.username})`;
             },
             replace: (value) => {
-                return `{~${value}}`;
+                return `$1{~${value}}`;
             }
         }], {
             appendTo: '.tms-chat-status-bar',
@@ -203,7 +203,7 @@ export class EmChatInput {
         });
 
         this.simplemde.codemirror.on('keydown', (cm, e) => {
-            if (e.keyCode === 13 && this.isTipsShow()) {
+            if (_.includes([13, 38, 40], e.keyCode) && this.isTipsShow()) { // enter | up | down
                 e.preventDefault();
             } else if (e.ctrlKey && e.keyCode === 13) {
                 this.sendChatMsg();
