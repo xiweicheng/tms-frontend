@@ -19,6 +19,14 @@ export class CommonUtils {
         return '';
     }
 
+    /**
+     * 获取浏览器Url(不含参数)
+     * @return {[type]} [description]
+     */
+    getUrl() {
+        return this.getBaseUrl() + '#' + wurl('hash');
+    }
+
     redirect2Login(redirectUrl) {
         let redirect = this.urlQuery('redirect');
         if (!redirect) {

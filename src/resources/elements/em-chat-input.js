@@ -15,11 +15,16 @@ export class EmChatInput {
 
     channelChanged() {
 
-        this.channel && (this.members = [{
-            username: 'all',
-            mails: '',
-            name: '全部成员'
-        }, ...this.channel.members]);
+        if (this.channel) {
+            this.members = [{
+                username: 'all',
+                mails: '',
+                name: '全部成员'
+            }, ...this.channel.members];
+        } else {
+            this.members = [];
+        }
+
     }
 
     initHotkeys() {
@@ -265,8 +270,7 @@ export class EmChatInput {
         } else {
             url = `/admin/chat/channel/create`;
             data = {
-                baseUrl: utils.getBaseUrl(),
-                path: wurl('path'),
+                url: utils.getUrl(),
                 channelId: this.channel.id,
                 usernames: utils.parseUsernames(content, this.members).join(','),
                 content: content,

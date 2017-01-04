@@ -140,6 +140,7 @@ export class ChatDirect {
         chatService.listUsers(false).then((users) => {
             this.users = users;
             if (this.isAt) {
+                this.channel = null;
                 this.user = _.find(this.users, {
                     username: this.chatTo
                 });
@@ -157,6 +158,7 @@ export class ChatDirect {
         chatService.listChannels(false).then((channels) => {
             this.channels = channels;
             if (!this.isAt) {
+                this.user = null;
                 this.channel = _.find(this.channels, {
                     name: this.chatTo
                 });
