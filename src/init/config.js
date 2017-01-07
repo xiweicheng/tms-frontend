@@ -90,7 +90,20 @@ export class Config {
 
     initMarked() {
 
+        let renderer = new marked.Renderer();
+        renderer.listitem = function(text) {
+            if (/^\s*\[[x ]\]\s*/.test(text)) {
+                text = text
+                    .replace(/^\s*\[ \]\s*/, '<input type="checkbox" disabled> ')
+                    .replace(/^\s*\[x\]\s*/, '<input type="checkbox" checked disabled> ');
+                return '<li class="task-item" style="list-style: none; margin-left: -30px;">' + text + '</li>';
+            } else {
+                return '<li>' + text + '</li>';
+            }
+        };
+        // https://github.com/chjj/marked
         marked.setOptions({
+            renderer: renderer,
             breaks: true,
             highlight: function(code) {
                 return hljs.highlightAuto(code).value;

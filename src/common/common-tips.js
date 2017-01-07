@@ -70,6 +70,18 @@ export default {
         label: '/hr [分隔线]',
         value: '\n-----\n',
     },
+    '/task': {
+        label: '/task [任务]',
+        value: '- [ ] ',
+    },
+    '/task-done': {
+        label: '/task [任务(完成)]',
+        value: '- [x] ',
+    },
+    '/details': {
+        label: '/details [折叠详情]',
+        value: '<details>\n<summary>标题</summary>详情内容\n</details>',
+    },
     '/upload': {
         label: '/upload [上传文件] (ctrl+u)',
         value: '',

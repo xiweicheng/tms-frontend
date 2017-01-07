@@ -163,7 +163,6 @@ export class EmChatInput {
 
         this.$chatMsgInputRef = $(this.inputRef).find('.textareaWrapper .CodeMirror textarea');
         this.initTextcomplete();
-        this.initTextcompleteAt();
     }
 
     initTextcomplete() {
@@ -199,7 +198,7 @@ export class EmChatInput {
             }
         }], {
             appendTo: '.tms-chat-status-bar',
-            maxCount: 20
+            maxCount: 25
         });
 
         this.simplemde.codemirror.on('keydown', (cm, e) => {
@@ -214,28 +213,6 @@ export class EmChatInput {
             } else if (e.ctrlKey && e.keyCode == 191) {
                 this.emHotkeysModal.show();
             }
-        });
-    }
-
-    initTextcompleteAt() {
-        $(this.$chatMsgInputRef).textcomplete([{
-            match: /(|\b)(\/.*)$/,
-            search: (term, callback) => {
-                var keys = _.keys(tips);
-                callback($.map(keys, (key) => {
-                    return key.indexOf(term) === 0 ? key : null;
-                }));
-            },
-            template: (value, term) => {
-                return tips[value].label;
-            },
-            replace: (value) => {
-                this.tipsActionHandler(value);
-                return '';
-            }
-        }], {
-            appendTo: '.tms-chat-status-bar',
-            maxCount: 20
         });
     }
 
