@@ -94,8 +94,8 @@ export class Config {
         renderer.listitem = function(text) {
             if (/^\s*\[[x ]\]\s*/.test(text)) {
                 text = text
-                    .replace(/^\s*\[ \]\s*/, '<input type="checkbox" disabled> ')
-                    .replace(/^\s*\[x\]\s*/, '<input type="checkbox" checked disabled> ');
+                    .replace(/^\s*\[ \]\s*/, '<input style="position: relative; top: 2px;" type="checkbox" disabled> ')
+                    .replace(/^\s*\[x\]\s*/, '<input style="position: relative; top: 2px;" type="checkbox" checked disabled> ');
                 return '<li class="task-item" style="list-style: none; margin-left: -30px;">' + text + '</li>';
             } else {
                 return '<li>' + text + '</li>';

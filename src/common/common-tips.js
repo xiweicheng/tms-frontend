@@ -71,12 +71,8 @@ export default {
         value: '\n-----\n',
     },
     '/task': {
-        label: '/task [任务]',
-        value: '- [ ] ',
-    },
-    '/task-done': {
-        label: '/task [任务(完成)]',
-        value: '- [x] ',
+        label: '/task [任务列表]',
+        value: '- [ ] 未完成任务\n- [x] 已完成任务',
     },
     '/details': {
         label: '/details [折叠详情]',
