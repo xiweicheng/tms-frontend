@@ -153,11 +153,7 @@ export class EmChatInput {
                 table: ["", "\n\n| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n\n"],
             },
             previewRender: (plainText, preview) => { // Async method
-                setTimeout(() => {
-                    preview.innerHTML = this.simplemde.markdown(utils.preParse(plainText, this.members));
-                }, 250);
-
-                return "解释渲染中...";
+                return this.simplemde.markdown(utils.preParse(plainText, this.members));
             },
         });
 
