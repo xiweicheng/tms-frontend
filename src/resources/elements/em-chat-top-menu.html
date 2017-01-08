@@ -16,7 +16,7 @@
                 </div>
                 <div class="scrolling menu">
                     <div class="header">
-                        <i class="users icon"></i> 频道
+                        <i class="users icon"></i> 频道 <i ref="createChannelRef" class="circular icon link plus"></i>
                     </div>
                     <a repeat.for="item of channels" task.bind="initChatToDropdownHandler($last)" href="#/chat/${item.name}" class="item" title="${item.name}" data-value="${item.name}" data-id="${item.name}">
                         <i class="hashtag icon"></i>${item.title}
@@ -50,4 +50,5 @@
             </a>
         </div>
     </div>
+    <em-chat-channel-create login-user.bind="loginUser" trigger.bind="createChannelRef"></em-chat-channel-create>
 </template>

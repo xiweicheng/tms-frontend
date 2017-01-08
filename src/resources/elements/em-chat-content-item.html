@@ -1,8 +1,6 @@
 <template>
     <div repeat.for="item of chats" swipebox class="comment item ${item.id == markId ? 'active' : ''}" data-id="${item.id}">
-        <a class="avatar">
-            <i class="circular icon large user"></i>
-        </a>
+        <em-user-avatar user.bind="item.creator"></em-user-avatar>
         <div class="content">
             <a class="author">${item.creator.name}</a>
             <div class="metadata">

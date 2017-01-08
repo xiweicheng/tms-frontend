@@ -37,5 +37,6 @@ export function configure(aurelia) {
         'resources/elements/em-chat-channel-join',
         'resources/elements/em-chat-channel-edit',
         'resources/elements/em-chat-channel-members-mgr',
+        'resources/elements/em-user-avatar',
     ]);
 }
