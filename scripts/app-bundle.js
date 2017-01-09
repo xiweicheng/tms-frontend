@@ -145,452 +145,6 @@ define('main',['exports', './environment'], function (exports, _environment) {
     });
   }
 });
-define('common/common-constant',[], function () {
-    'use strict';
-
-    window.nsCons = {
-        EVENT_CHAT_MSG_SENDED: 'event_chat_msg_sended',
-        EVENT_CHAT_MSG_EDIT_UPLOAD: 'event_chat_msg_edit_upload',
-        EVENT_CHAT_SIDEBAR_TOGGLE: 'event_chat_sidebar_toggle',
-        EVENT_CHAT_SEARCH_RESULT: 'event_chat_search_result',
-        EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM: 'event_chat_search_goto_chat_item',
-        EVENT_CHAT_CHANNEL_CREATED: 'event_chat_channel_created',
-        EVENT_CHAT_CHANNEL_DELETED: 'event_chat_channel_deleted',
-        EVENT_CHAT_CHANNEL_JOINED: 'event_chat_channel_joined',
-        EVENT_CHAT_CHANNEL_LEAVED: 'event_chat_channel_leaved'
-    };
-});
-define('common/common-plugin',[], function () {
-    'use strict';
-
-    (function ($) {
-        $.fn.extend({
-            insertAtCaret: function insertAtCaret(myValue) {
-                var $t = $(this)[0];
-                if (document.selection) {
-                    this.focus();
-                    sel = document.selection.createRange();
-                    sel.text = myValue;
-                    this.focus();
-                } else if ($t.selectionStart || $t.selectionStart == '0') {
-                    var startPos = $t.selectionStart;
-                    var endPos = $t.selectionEnd;
-                    var scrollTop = $t.scrollTop;
-                    $t.value = $t.value.substring(0, startPos) + myValue + $t.value.substring(endPos, $t.value.length);
-                    this.focus();
-                    $t.selectionStart = startPos + myValue.length;
-                    $t.selectionEnd = startPos + myValue.length;
-                    $t.scrollTop = scrollTop;
-                } else {
-                    this.value += myValue;
-                    this.focus();
-                }
-            }
-        });
-    })(jQuery);
-});
-define('common/common-poll',['exports'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-
-    var minInterval = 6000;
-    var maxInterval = 300000;
-    var incInterval = 6000;
-
-    var tolerate = 10;
-
-    var timer = null;
-
-    var inc = 0;
-
-    var interval = minInterval;
-
-    var _pollCb = null;
-    var _errCb = null;
-    var _isPause = false;
-
-    function oneHandler() {
-
-        if (_isPause) {
-            return;
-        }
-
-        try {
-            _pollCb && _pollCb(_reset, _stop);
-        } catch (e) {
-            _errCb && _errCb(_reset, _stop, e);
-
-            console.log('轮询异常: ' + e);
-        }
-    }
-
-    function _start() {
-        console.log('poll start...');
-
-        _isPause = false;
-
-        oneHandler();
-        timer = setInterval(function () {
-            inc++;
-            oneHandler();
-
-
-            if (inc > tolerate) {
-
-                interval = minInterval + incInterval * (inc - tolerate);
-
-                if (interval <= maxInterval) {
-                    clearInterval(timer);
-                    _start();
-                }
-            }
-        }, interval);
-    }
-
-    function _stop() {
-        console.log("poll stop...");
-
-        inc = 0;
-        interval = minInterval;
-        _isPause = false;
-        clearInterval(timer);
-        timer = null;
-    }
-
-    function _reset() {
-        console.log("poll reset...");
-
-        _stop();
-        _start();
-    }
-
-    function _pause() {
-        console.log("pause reset...");
-        _isPause = true;
-    }
-
-    exports.default = {
-        start: function start(pollCb, errCb) {
-            if (timer) {
-                _stop();
-            }
-            _pollCb = pollCb;
-            _errCb = errCb;
-            _start();
-        },
-        reset: function reset() {
-            _reset();
-        },
-        stop: function stop() {
-            _stop();
-        },
-        pause: function pause() {
-            _pause();
-        }
-    };
-});
-define('common/common-tips',['exports'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.default = {
-
-        '/h1': {
-            label: '/h1 [标题1] (ctrl+h)',
-            value: '# '
-        },
-        '/h2': {
-            label: '/h2 [标题2]',
-            value: '## '
-        },
-        '/h3': {
-            label: '/h3 [标题3]',
-            value: '### '
-        },
-        '/h4': {
-            label: '/h4 [标题4]',
-            value: '#### '
-        },
-        '/h5': {
-            label: '/h5 [标题5]',
-            value: '##### '
-        },
-        '/h6': {
-            label: '/h6 [标题6] (ctrl+shift+h)',
-            value: '###### '
-        },
-        '/b': {
-            label: '/b [粗体] (ctrl+b)',
-            value: '****',
-            ch: 2
-        },
-        '/i': {
-            label: '/i [斜体] (ctrl+i)',
-            value: '**',
-            ch: 1
-        },
-        '/s': {
-            label: '/s [删除线]',
-            value: '~~~~',
-            ch: 2
-        },
-        '/code': {
-            label: '/code [代码] (ctrl+alt+c)',
-            value: '```\n\n```\n',
-            line: 1
-        },
-        '/quote': {
-            label: '/quote [引用] (ctrl+\')',
-            value: '> '
-        },
-        '/list': {
-            label: '/list [列表] (ctrl+l)',
-            value: '* '
-        },
-        '/href': {
-            label: '/href [链接] (ctrl+k)',
-            value: '[](http://)',
-            ch: 1
-        },
-        '/img': {
-            label: '/img [图片] (ctrl+alt+i)',
-            value: '![](http://)',
-            ch: 2
-        },
-        '/table': {
-            label: '/table [表格]',
-            value: '| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n'
-        },
-        '/hr': {
-            label: '/hr [分隔线]',
-            value: '\n-----\n'
-        },
-        '/task': {
-            label: '/task [任务列表]',
-            value: '- [ ] 未完成任务\n- [x] 已完成任务'
-        },
-        '/details': {
-            label: '/details [折叠详情]',
-            value: '<details>\n<summary>标题</summary>详情内容\n</details>'
-        },
-        '/upload': {
-            label: '/upload [上传文件] (ctrl+u)',
-            value: ''
-        },
-        '/shortcuts': {
-            label: '/shortcuts [热键] (ctrl+/)',
-            value: ''
-        }
-    };
-});
-define('common/common-utils',['exports', 'wurl'], function (exports, _wurl) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.CommonUtils = undefined;
-
-    var _wurl2 = _interopRequireDefault(_wurl);
-
-    function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-            default: obj
-        };
-    }
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    var CommonUtils = exports.CommonUtils = function () {
-        function CommonUtils() {
-            _classCallCheck(this, CommonUtils);
-        }
-
-        CommonUtils.prototype.getBaseUrl = function getBaseUrl() {
-            if (typeof _wurl2.default == 'function') {
-                if ((0, _wurl2.default)('port') == 80 || (0, _wurl2.default)('port') == 443) {
-                    return (0, _wurl2.default)('protocol') + '://' + (0, _wurl2.default)('hostname');
-                } else {
-                    return (0, _wurl2.default)('protocol') + '://' + (0, _wurl2.default)('hostname') + ':' + (0, _wurl2.default)('port');
-                }
-            }
-            return '';
-        };
-
-        CommonUtils.prototype.getUrl = function getUrl() {
-            return this.getBaseUrl() + '#' + (0, _wurl2.default)('hash');
-        };
-
-        CommonUtils.prototype.redirect2Login = function redirect2Login(redirectUrl) {
-            var redirect = this.urlQuery('redirect');
-            if (!redirect) {
-                redirectUrl = redirectUrl ? redirectUrl : (0, _wurl2.default)();
-                window.location = this.getBaseUrl() + (0, _wurl2.default)('path') + ('#/login?redirect=' + encodeURIComponent(redirectUrl));
-            } else {
-                console.log('url has contains ?redirect');
-            }
-        };
-
-        CommonUtils.prototype.getHash = function getHash() {
-            var hash = (0, _wurl2.default)('hash');
-            var index = hash.indexOf('?');
-            if (index != -1) {
-                return hash.substring(0, index);
-            }
-
-            return hash;
-        };
-
-        CommonUtils.prototype.urlQuery = function urlQuery(name) {
-            return (0, _wurl2.default)('?' + name) || (0, _wurl2.default)('?' + name, (0, _wurl2.default)('hash'));
-        };
-
-        CommonUtils.prototype.removeUrlQuery = function removeUrlQuery(name, href) {
-
-            var s = href ? href : window.location.href;
-
-            var rs = new RegExp('(&|\\?)?' + name + '=?[^&#]*(.)?', 'g').exec(s);
-
-
-            if (rs) {
-                if (rs[1] == '&') {
-                    return s.replace(new RegExp('&' + name + '=?[^&#]+', 'g'), '');
-                } else if (rs[1] == '?') {
-                    if (rs[2] != '&') {
-                        return s.replace(new RegExp('\\?' + name + '=?[^&#]*', 'g'), '');
-                    } else {
-                        return s.replace(new RegExp('' + name + '=?[^&#]*&', 'g'), '');
-                    }
-                }
-            }
-
-            return s;
-        };
-
-        CommonUtils.prototype.errorAutoTry = function errorAutoTry(callback, time) {
-            var _this = this;
-
-            if (this.isRunning) {
-                return;
-            }
-
-            var cnt = time ? time : 10;
-            var timer = null;
-            var $t = toastr.error('网络连接错误,' + cnt + '秒后自动重试!', null, {
-                "closeButton": false,
-                "timeOut": "0",
-                "preventDuplicates": false,
-                "onclick": function onclick() {
-                    clearInterval(_this.timer);
-                    callback && callback();
-                }
-            });
-
-            this.isRunning = true;
-            timer = setInterval(function () {
-                if (cnt === 0) {
-                    clearInterval(timer);
-                    _this.isRunning = false;
-                    toastr.remove();
-                    callback && callback();
-                    return;
-                }
-                $t && $t.find('.toast-message').text('网络连接错误,' + cnt + '秒后自动重试!');
-                cnt--;
-            }, 1000);
-        };
-
-        CommonUtils.prototype.isElementInViewport = function isElementInViewport(el) {
-            if (typeof jQuery === "function" && el instanceof jQuery) {
-                el = el[0];
-            }
-
-            var rect = el.getBoundingClientRect();
-
-            return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
-        };
-
-        CommonUtils.prototype.imgLoaded = function imgLoaded($imgs, callback) {
-            var imgdefereds = [];
-            $imgs.each(function () {
-                var dfd = $.Deferred();
-                $(this).bind('load', function () {
-                    dfd.resolve();
-                }).bind('error', function () {
-                    dfd.resolve();
-                });
-                if (this.complete) {
-                    dfd.resolve();
-                }
-
-                imgdefereds.push(dfd);
-            });
-            $.when.apply(null, imgdefereds).done(function () {
-                callback && callback.call(null);
-            });
-        };
-
-        CommonUtils.prototype.getChatName = function getChatName(name) {
-            if (_.startsWith(name, '@')) {
-                return name.substr(1);
-            } else {
-                return name;
-            }
-        };
-
-        CommonUtils.prototype.preParse = function preParse(plainText, members) {
-
-            var txt = plainText;
-            $.each(this.parseUsers(plainText, members), function (index, user) {
-                txt = txt.replace(new RegExp('{~' + user.username + '}', 'g'), '<span data-value="' + user.username + '" class="at-user">**`@' + user.name + '`**</span>');
-            });
-
-            return txt;
-        };
-
-        CommonUtils.prototype.parseUsers = function parseUsers(plainText, members) {
-            var users = [];
-            var atR = /\{~([^\}]*)\}/g;
-            var rs = atR.exec(plainText);
-            while (rs) {
-                var user = _.find(members, { username: rs[1] });
-                var isNotExists = !_.some(users, { username: rs[1] });
-                if (user && isNotExists) {
-                    users.push(user);
-                }
-                rs = atR.exec(plainText);
-            }
-
-            return users;
-        };
-
-        CommonUtils.prototype.parseUsernames = function parseUsernames(plainText, members) {
-            var users = this.parseUsers(plainText, members);
-            var isExitsAll = _.some(users, { username: 'all' });
-            if (isExitsAll) {
-                return _.without(_.map(members, 'username'), 'all');
-            }
-            return _.map(users, 'username');;
-        };
-
-        CommonUtils.prototype.md2html = function md2html(content, members) {
-            return $('<div class="markdown-body"/>').html('<style>.markdown-body{font-size:14px;line-height:1.6}.markdown-body>:first-child{margin-top:0!important}.markdown-body>:last-child{margin-bottom:0!important}.markdown-body a.absent{color:#C00}.markdown-body a.anchor{bottom:0;cursor:pointer;display:block;left:0;margin-left:-30px;padding-left:30px;position:absolute;top:0}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{cursor:text;font-weight:700;margin:20px 0 10px;padding:0;position:relative}.markdown-body h1 .mini-icon-link,.markdown-body h2 .mini-icon-link,.markdown-body h3 .mini-icon-link,.markdown-body h4 .mini-icon-link,.markdown-body h5 .mini-icon-link,.markdown-body h6 .mini-icon-link{color:#000;display:none}.markdown-body h1:hover a.anchor,.markdown-body h2:hover a.anchor,.markdown-body h3:hover a.anchor,.markdown-body h4:hover a.anchor,.markdown-body h5:hover a.anchor,.markdown-body h6:hover a.anchor{line-height:1;margin-left:-22px;padding-left:0;text-decoration:none;top:15%}.markdown-body h1:hover a.anchor .mini-icon-link,.markdown-body h2:hover a.anchor .mini-icon-link,.markdown-body h3:hover a.anchor .mini-icon-link,.markdown-body h4:hover a.anchor .mini-icon-link,.markdown-body h5:hover a.anchor .mini-icon-link,.markdown-body h6:hover a.anchor .mini-icon-link{display:inline-block}.markdown-body hr:after,.markdown-body hr:before{display:table;content:""}.markdown-body h1 code,.markdown-body h1 tt,.markdown-body h2 code,.markdown-body h2 tt,.markdown-body h3 code,.markdown-body h3 tt,.markdown-body h4 code,.markdown-body h4 tt,.markdown-body h5 code,.markdown-body h5 tt,.markdown-body h6 code,.markdown-body h6 tt{font-size:inherit}.markdown-body h1{color:#000;font-size:28px}.markdown-body h2{border-bottom:1px solid #CCC;color:#000;font-size:24px}.markdown-body h3{font-size:18px}.markdown-body h4{font-size:16px}.markdown-body h5{font-size:14px}.markdown-body h6{color:#777;font-size:14px}.markdown-body blockquote,.markdown-body dl,.markdown-body ol,.markdown-body p,.markdown-body pre,.markdown-body table,.markdown-body ul{margin:15px 0}.markdown-body hr{overflow:hidden;background:#e7e7e7;height:4px;padding:0;margin:16px 0;border:0;-moz-box-sizing:content-box;box-sizing:content-box}.markdown-body h1+p,.markdown-body h2+p,.markdown-body h3+p,.markdown-body h4+p,.markdown-body h5+p,.markdown-body h6+p,.markdown-body ol li>:first-child,.markdown-body ul li>:first-child{margin-top:0}.markdown-body hr:after{clear:both}.markdown-body a:first-child h1,.markdown-body a:first-child h2,.markdown-body a:first-child h3,.markdown-body a:first-child h4,.markdown-body a:first-child h5,.markdown-body a:first-child h6,.markdown-body>h1:first-child,.markdown-body>h1:first-child+h2,.markdown-body>h2:first-child,.markdown-body>h3:first-child,.markdown-body>h4:first-child,.markdown-body>h5:first-child,.markdown-body>h6:first-child{margin-top:0;padding-top:0}.markdown-body li p.first{display:inline-block}.markdown-body ol,.markdown-body ul{padding-left:30px}.markdown-body ol.no-list,.markdown-body ul.no-list{list-style-type:none;padding:0}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-bottom:0}.markdown-body dl{padding:0}.markdown-body dl dt{font-size:14px;font-style:italic;font-weight:700;margin:15px 0 5px;padding:0}.markdown-body dl dt:first-child{padding:0}.markdown-body dl dt>:first-child{margin-top:0}.markdown-body dl dt>:last-child{margin-bottom:0}.markdown-body dl dd{margin:0 0 15px;padding:0 15px}.markdown-body blockquote>:first-child,.markdown-body dl dd>:first-child{margin-top:0}.markdown-body blockquote>:last-child,.markdown-body dl dd>:last-child{margin-bottom:0}.markdown-body blockquote{border-left:4px solid #DDD;color:#777;padding:0 15px}.markdown-body table th{font-weight:700}.markdown-body table td,.markdown-body table th{border:1px solid #CCC;padding:6px 13px}.markdown-body table tr{background-color:#FFF;border-top:1px solid #CCC}.markdown-body table tr:nth-child(2n){background-color:#F8F8F8}.markdown-body img{max-width:100%}.markdown-body span.frame{display:block;overflow:hidden}.markdown-body span.frame>span{border:1px solid #DDD;display:block;float:left;margin:13px 0 0;overflow:hidden;padding:7px;width:auto}.markdown-body span.frame span img{display:block;float:left}.markdown-body span.frame span span{clear:both;color:#333;display:block;padding:5px 0 0}.markdown-body span.align-center{clear:both;display:block;overflow:hidden}.markdown-body span.align-center>span{display:block;margin:13px auto 0;overflow:hidden;text-align:center}.markdown-body span.align-center span img{margin:0 auto;text-align:center}.markdown-body span.align-right{clear:both;display:block;overflow:hidden}.markdown-body span.align-right>span{display:block;margin:13px 0 0;overflow:hidden;text-align:right}.markdown-body span.align-right span img{margin:0;text-align:right}.markdown-body span.float-left{display:block;float:left;margin-right:13px;overflow:hidden}.markdown-body span.float-left span{margin:13px 0 0}.markdown-body span.float-right{display:block;float:right;margin-left:13px;overflow:hidden}.markdown-body span.float-right>span{display:block;margin:13px auto 0;overflow:hidden;text-align:right}.markdown-body code,.markdown-body tt{background-color:#F8F8F8;border:1px solid #EAEAEA;border-radius:3px;margin:0 2px;padding:0 5px;white-space:nowrap}.markdown-body pre>code{background:none;border:none;margin:0;padding:0;white-space:pre}.markdown-body .highlight pre,.markdown-body pre{background-color:#F8F8F8;border:1px solid #CCC;border-radius:3px;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px}.markdown-body pre code,.markdown-body pre tt{background-color:transparent;border:none}</style>' + marked(this.preParse(content, members))).wrap('<div/>').parent().html();
-        };
-
-        return CommonUtils;
-    }();
-
-    exports.default = new CommonUtils();
-});
 define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll', 'clipboard', 'dropzone', './chat-service'], function (exports, _aureliaFramework, _commonPoll, _clipboard, _dropzone, _chatService) {
     'use strict';
 
@@ -1278,6 +832,1561 @@ define('chat/chat-service',['exports'], function (exports) {
 
     exports.default = new ChatService();
 });
+define('common/common-constant',[], function () {
+    'use strict';
+
+    window.nsCons = {
+        EVENT_CHAT_MSG_SENDED: 'event_chat_msg_sended',
+        EVENT_CHAT_MSG_EDIT_UPLOAD: 'event_chat_msg_edit_upload',
+        EVENT_CHAT_SIDEBAR_TOGGLE: 'event_chat_sidebar_toggle',
+        EVENT_CHAT_SEARCH_RESULT: 'event_chat_search_result',
+        EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM: 'event_chat_search_goto_chat_item',
+        EVENT_CHAT_CHANNEL_CREATED: 'event_chat_channel_created',
+        EVENT_CHAT_CHANNEL_DELETED: 'event_chat_channel_deleted',
+        EVENT_CHAT_CHANNEL_JOINED: 'event_chat_channel_joined',
+        EVENT_CHAT_CHANNEL_LEAVED: 'event_chat_channel_leaved'
+    };
+});
+define('common/common-diff',[], function () {
+  "use strict";
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+  };
+
+  (function webpackUniversalModuleDefinition(root, factory) {
+    root["JsDiff"] = factory();
+  })(window, function () {
+    return function (modules) {
+      var installedModules = {};
+
+      function __webpack_require__(moduleId) {
+        if (installedModules[moduleId]) return installedModules[moduleId].exports;
+
+        var module = installedModules[moduleId] = { exports: {},
+          id: moduleId,
+          loaded: false
+        };
+
+        modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+        module.loaded = true;
+
+        return module.exports;
+      }
+
+      __webpack_require__.m = modules;
+
+      __webpack_require__.c = installedModules;
+
+      __webpack_require__.p = "";
+
+      return __webpack_require__(0);
+    }([function (module, exports, __webpack_require__) {
+      'use strict';
+
+      exports.__esModule = true;
+
+
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : { 'default': obj };
+      }
+
+      var _diffBase = __webpack_require__(1);
+
+      var _diffBase2 = _interopRequireDefault(_diffBase);
+
+      var _diffCharacter = __webpack_require__(3);
+
+      var _diffWord = __webpack_require__(4);
+
+      var _diffLine = __webpack_require__(5);
+
+      var _diffSentence = __webpack_require__(6);
+
+      var _diffCss = __webpack_require__(7);
+
+      var _diffJson = __webpack_require__(8);
+
+      var _patchApply = __webpack_require__(9);
+
+      var _patchCreate = __webpack_require__(10);
+
+      var _convertDmp = __webpack_require__(12);
+
+      var _convertXml = __webpack_require__(13);
+
+      exports.Diff = _diffBase2['default'];
+      exports.diffChars = _diffCharacter.diffChars;
+      exports.diffWords = _diffWord.diffWords;
+      exports.diffWordsWithSpace = _diffWord.diffWordsWithSpace;
+      exports.diffLines = _diffLine.diffLines;
+      exports.diffTrimmedLines = _diffLine.diffTrimmedLines;
+      exports.diffSentences = _diffSentence.diffSentences;
+      exports.diffCss = _diffCss.diffCss;
+      exports.diffJson = _diffJson.diffJson;
+      exports.structuredPatch = _patchCreate.structuredPatch;
+      exports.createTwoFilesPatch = _patchCreate.createTwoFilesPatch;
+      exports.createPatch = _patchCreate.createPatch;
+      exports.applyPatch = _patchApply.applyPatch;
+      exports.convertChangesToDMP = _convertDmp.convertChangesToDMP;
+      exports.convertChangesToXML = _convertXml.convertChangesToXML;
+      exports.canonicalize = _diffJson.canonicalize;
+    }, function (module, exports, __webpack_require__) {
+
+      'use strict';
+
+      exports.__esModule = true;
+      exports['default'] = Diff;
+
+
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : { 'default': obj };
+      }
+
+      var _utilMap = __webpack_require__(2);
+
+      var _utilMap2 = _interopRequireDefault(_utilMap);
+
+      function Diff(ignoreWhitespace) {
+        this.ignoreWhitespace = ignoreWhitespace;
+      }
+
+      Diff.prototype = {
+        diff: function diff(oldString, newString, callback) {
+          var self = this;
+
+          function done(value) {
+            if (callback) {
+              setTimeout(function () {
+                callback(undefined, value);
+              }, 0);
+              return true;
+            } else {
+              return value;
+            }
+          }
+
+          oldString = this.castInput(oldString);
+          newString = this.castInput(newString);
+
+          if (newString === oldString) {
+            return done([{ value: newString }]);
+          }
+          if (!newString) {
+            return done([{ value: oldString, removed: true }]);
+          }
+          if (!oldString) {
+            return done([{ value: newString, added: true }]);
+          }
+
+          newString = this.removeEmpty(this.tokenize(newString));
+          oldString = this.removeEmpty(this.tokenize(oldString));
+
+          var newLen = newString.length,
+              oldLen = oldString.length;
+          var editLength = 1;
+          var maxEditLength = newLen + oldLen;
+          var bestPath = [{ newPos: -1, components: [] }];
+
+          var oldPos = this.extractCommon(bestPath[0], newString, oldString, 0);
+          if (bestPath[0].newPos + 1 >= newLen && oldPos + 1 >= oldLen) {
+            return done([{ value: newString.join('') }]);
+          }
+
+          function execEditLength() {
+            for (var diagonalPath = -1 * editLength; diagonalPath <= editLength; diagonalPath += 2) {
+              var basePath = undefined;
+              var addPath = bestPath[diagonalPath - 1],
+                  removePath = bestPath[diagonalPath + 1],
+                  _oldPos = (removePath ? removePath.newPos : 0) - diagonalPath;
+              if (addPath) {
+                bestPath[diagonalPath - 1] = undefined;
+              }
+
+              var canAdd = addPath && addPath.newPos + 1 < newLen,
+                  canRemove = removePath && 0 <= _oldPos && _oldPos < oldLen;
+              if (!canAdd && !canRemove) {
+                bestPath[diagonalPath] = undefined;
+                continue;
+              }
+
+              if (!canAdd || canRemove && addPath.newPos < removePath.newPos) {
+                basePath = clonePath(removePath);
+                self.pushComponent(basePath.components, undefined, true);
+              } else {
+                basePath = addPath;
+                basePath.newPos++;
+                self.pushComponent(basePath.components, true, undefined);
+              }
+
+              _oldPos = self.extractCommon(basePath, newString, oldString, diagonalPath);
+
+              if (basePath.newPos + 1 >= newLen && _oldPos + 1 >= oldLen) {
+                return done(buildValues(basePath.components, newString, oldString, self.useLongestToken));
+              } else {
+                bestPath[diagonalPath] = basePath;
+              }
+            }
+
+            editLength++;
+          }
+
+          if (callback) {
+            (function exec() {
+              setTimeout(function () {
+                if (editLength > maxEditLength) {
+                  return callback();
+                }
+
+                if (!execEditLength()) {
+                  exec();
+                }
+              }, 0);
+            })();
+          } else {
+            while (editLength <= maxEditLength) {
+              var ret = execEditLength();
+              if (ret) {
+                return ret;
+              }
+            }
+          }
+        },
+
+        pushComponent: function pushComponent(components, added, removed) {
+          var last = components[components.length - 1];
+          if (last && last.added === added && last.removed === removed) {
+            components[components.length - 1] = { count: last.count + 1, added: added, removed: removed };
+          } else {
+            components.push({ count: 1, added: added, removed: removed });
+          }
+        },
+        extractCommon: function extractCommon(basePath, newString, oldString, diagonalPath) {
+          var newLen = newString.length,
+              oldLen = oldString.length,
+              newPos = basePath.newPos,
+              oldPos = newPos - diagonalPath,
+              commonCount = 0;
+          while (newPos + 1 < newLen && oldPos + 1 < oldLen && this.equals(newString[newPos + 1], oldString[oldPos + 1])) {
+            newPos++;
+            oldPos++;
+            commonCount++;
+          }
+
+          if (commonCount) {
+            basePath.components.push({ count: commonCount });
+          }
+
+          basePath.newPos = newPos;
+          return oldPos;
+        },
+
+        equals: function equals(left, right) {
+          var reWhitespace = /\S/;
+          return left === right || this.ignoreWhitespace && !reWhitespace.test(left) && !reWhitespace.test(right);
+        },
+        removeEmpty: function removeEmpty(array) {
+          var ret = [];
+          for (var i = 0; i < array.length; i++) {
+            if (array[i]) {
+              ret.push(array[i]);
+            }
+          }
+          return ret;
+        },
+        castInput: function castInput(value) {
+          return value;
+        },
+        tokenize: function tokenize(value) {
+          return value.split('');
+        }
+      };
+
+      function buildValues(components, newString, oldString, useLongestToken) {
+        var componentPos = 0,
+            componentLen = components.length,
+            newPos = 0,
+            oldPos = 0;
+
+        for (; componentPos < componentLen; componentPos++) {
+          var component = components[componentPos];
+          if (!component.removed) {
+            if (!component.added && useLongestToken) {
+              var value = newString.slice(newPos, newPos + component.count);
+              value = _utilMap2['default'](value, function (value, i) {
+                var oldValue = oldString[oldPos + i];
+                return oldValue.length > value.length ? oldValue : value;
+              });
+
+              component.value = value.join('');
+            } else {
+              component.value = newString.slice(newPos, newPos + component.count).join('');
+            }
+            newPos += component.count;
+
+            if (!component.added) {
+              oldPos += component.count;
+            }
+          } else {
+            component.value = oldString.slice(oldPos, oldPos + component.count).join('');
+            oldPos += component.count;
+
+            if (componentPos && components[componentPos - 1].added) {
+              var tmp = components[componentPos - 1];
+              components[componentPos - 1] = components[componentPos];
+              components[componentPos] = tmp;
+            }
+          }
+        }
+
+        return components;
+      }
+
+      function clonePath(path) {
+        return { newPos: path.newPos, components: path.components.slice(0) };
+      }
+      module.exports = exports['default'];
+    }, function (module, exports) {
+      "use strict";
+
+      exports.__esModule = true;
+      exports["default"] = map;
+
+      function map(arr, mapper, that) {
+        if (Array.prototype.map) {
+          return Array.prototype.map.call(arr, mapper, that);
+        }
+
+        var other = new Array(arr.length);
+
+        for (var i = 0, n = arr.length; i < n; i++) {
+          other[i] = mapper.call(that, arr[i], i, arr);
+        }
+        return other;
+      }
+      module.exports = exports["default"];
+    }, function (module, exports, __webpack_require__) {
+
+      'use strict';
+
+      exports.__esModule = true;
+      exports.diffChars = diffChars;
+
+
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : { 'default': obj };
+      }
+
+      var _base = __webpack_require__(1);
+
+      var _base2 = _interopRequireDefault(_base);
+
+      var characterDiff = new _base2['default']();
+      exports.characterDiff = characterDiff;
+
+      function diffChars(oldStr, newStr, callback) {
+        return characterDiff.diff(oldStr, newStr, callback);
+      }
+    }, function (module, exports, __webpack_require__) {
+
+      'use strict';
+
+      exports.__esModule = true;
+      exports.diffWords = diffWords;
+      exports.diffWordsWithSpace = diffWordsWithSpace;
+
+
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : { 'default': obj };
+      }
+
+      var _base = __webpack_require__(1);
+
+      var _base2 = _interopRequireDefault(_base);
+
+      var extendedWordChars = /^[A-Za-z\xC0-\u02C6\u02C8-\u02D7\u02DE-\u02FF\u1E00-\u1EFF]+$/;
+
+      var wordDiff = new _base2['default'](true);
+      exports.wordDiff = wordDiff;
+      var wordWithSpaceDiff = new _base2['default']();
+      exports.wordWithSpaceDiff = wordWithSpaceDiff;
+      wordDiff.tokenize = wordWithSpaceDiff.tokenize = function (value) {
+        var tokens = value.split(/(\s+|\b)/);
+
+        for (var i = 0; i < tokens.length - 1; i++) {
+          if (!tokens[i + 1] && tokens[i + 2] && extendedWordChars.test(tokens[i]) && extendedWordChars.test(tokens[i + 2])) {
+            tokens[i] += tokens[i + 2];
+            tokens.splice(i + 1, 2);
+            i--;
+          }
+        }
+
+        return tokens;
+      };
+
+      function diffWords(oldStr, newStr, callback) {
+        return wordDiff.diff(oldStr, newStr, callback);
+      }
+
+      function diffWordsWithSpace(oldStr, newStr, callback) {
+        return wordWithSpaceDiff.diff(oldStr, newStr, callback);
+      }
+    }, function (module, exports, __webpack_require__) {
+
+      'use strict';
+
+      exports.__esModule = true;
+      exports.diffLines = diffLines;
+      exports.diffTrimmedLines = diffTrimmedLines;
+
+
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : { 'default': obj };
+      }
+
+      var _base = __webpack_require__(1);
+
+      var _base2 = _interopRequireDefault(_base);
+
+      var lineDiff = new _base2['default']();
+      exports.lineDiff = lineDiff;
+      var trimmedLineDiff = new _base2['default']();
+      exports.trimmedLineDiff = trimmedLineDiff;
+      trimmedLineDiff.ignoreTrim = true;
+
+      lineDiff.tokenize = trimmedLineDiff.tokenize = function (value) {
+        var retLines = [],
+            lines = value.split(/^/m);
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i],
+              lastLine = lines[i - 1],
+              lastLineLastChar = lastLine && lastLine[lastLine.length - 1];
+
+          if (line === '\n' && lastLineLastChar === '\r') {
+            retLines[retLines.length - 1] = retLines[retLines.length - 1].slice(0, -1) + '\r\n';
+          } else {
+            if (this.ignoreTrim) {
+              line = line.trim();
+
+              if (i < lines.length - 1) {
+                line += '\n';
+              }
+            }
+            retLines.push(line);
+          }
+        }
+
+        return retLines;
+      };
+
+      function diffLines(oldStr, newStr, callback) {
+        return lineDiff.diff(oldStr, newStr, callback);
+      }
+
+      function diffTrimmedLines(oldStr, newStr, callback) {
+        return trimmedLineDiff.diff(oldStr, newStr, callback);
+      }
+    }, function (module, exports, __webpack_require__) {
+
+      'use strict';
+
+      exports.__esModule = true;
+      exports.diffSentences = diffSentences;
+
+
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : { 'default': obj };
+      }
+
+      var _base = __webpack_require__(1);
+
+      var _base2 = _interopRequireDefault(_base);
+
+      var sentenceDiff = new _base2['default']();
+      exports.sentenceDiff = sentenceDiff;
+      sentenceDiff.tokenize = function (value) {
+        return value.split(/(\S.+?[.!?])(?=\s+|$)/);
+      };
+
+      function diffSentences(oldStr, newStr, callback) {
+        return sentenceDiff.diff(oldStr, newStr, callback);
+      }
+    }, function (module, exports, __webpack_require__) {
+
+      'use strict';
+
+      exports.__esModule = true;
+      exports.diffCss = diffCss;
+
+
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : { 'default': obj };
+      }
+
+      var _base = __webpack_require__(1);
+
+      var _base2 = _interopRequireDefault(_base);
+
+      var cssDiff = new _base2['default']();
+      exports.cssDiff = cssDiff;
+      cssDiff.tokenize = function (value) {
+        return value.split(/([{}:;,]|\s+)/);
+      };
+
+      function diffCss(oldStr, newStr, callback) {
+        return cssDiff.diff(oldStr, newStr, callback);
+      }
+    }, function (module, exports, __webpack_require__) {
+
+      'use strict';
+
+      exports.__esModule = true;
+      exports.diffJson = diffJson;
+      exports.canonicalize = canonicalize;
+
+
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : { 'default': obj };
+      }
+
+      var _base = __webpack_require__(1);
+
+      var _base2 = _interopRequireDefault(_base);
+
+      var _line = __webpack_require__(5);
+
+      var objectPrototypeToString = Object.prototype.toString;
+
+      var jsonDiff = new _base2['default']();
+
+      exports.jsonDiff = jsonDiff;
+      jsonDiff.useLongestToken = true;
+
+      jsonDiff.tokenize = _line.lineDiff.tokenize;
+      jsonDiff.castInput = function (value) {
+        return typeof value === 'string' ? value : JSON.stringify(canonicalize(value), undefined, '  ');
+      };
+      jsonDiff.equals = function (left, right) {
+        return _base2['default'].prototype.equals(left.replace(/,([\r\n])/g, '$1'), right.replace(/,([\r\n])/g, '$1'));
+      };
+
+      function diffJson(oldObj, newObj, callback) {
+        return jsonDiff.diff(oldObj, newObj, callback);
+      }
+
+      function canonicalize(obj, stack, replacementStack) {
+        stack = stack || [];
+        replacementStack = replacementStack || [];
+
+        var i = undefined;
+
+        for (i = 0; i < stack.length; i += 1) {
+          if (stack[i] === obj) {
+            return replacementStack[i];
+          }
+        }
+
+        var canonicalizedObj = undefined;
+
+        if ('[object Array]' === objectPrototypeToString.call(obj)) {
+          stack.push(obj);
+          canonicalizedObj = new Array(obj.length);
+          replacementStack.push(canonicalizedObj);
+          for (i = 0; i < obj.length; i += 1) {
+            canonicalizedObj[i] = canonicalize(obj[i], stack, replacementStack);
+          }
+          stack.pop();
+          replacementStack.pop();
+        } else if ((typeof obj === "undefined" ? "undefined" : _typeof(obj)) === 'object' && obj !== null) {
+          stack.push(obj);
+          canonicalizedObj = {};
+          replacementStack.push(canonicalizedObj);
+          var sortedKeys = [],
+              key = undefined;
+          for (key in obj) {
+            if (obj.hasOwnProperty(key)) {
+              sortedKeys.push(key);
+            }
+          }
+          sortedKeys.sort();
+          for (i = 0; i < sortedKeys.length; i += 1) {
+            key = sortedKeys[i];
+            canonicalizedObj[key] = canonicalize(obj[key], stack, replacementStack);
+          }
+          stack.pop();
+          replacementStack.pop();
+        } else {
+          canonicalizedObj = obj;
+        }
+        return canonicalizedObj;
+      }
+    }, function (module, exports) {
+
+      'use strict';
+
+      exports.__esModule = true;
+      exports.applyPatch = applyPatch;
+
+      function applyPatch(oldStr, uniDiff) {
+        var diffstr = uniDiff.split('\n'),
+            hunks = [],
+            i = 0,
+            remEOFNL = false,
+            addEOFNL = false;
+
+        while (i < diffstr.length && !/^@@/.test(diffstr[i])) {
+          i++;
+        }
+
+        for (; i < diffstr.length; i++) {
+          if (diffstr[i][0] === '@') {
+            var chnukHeader = diffstr[i].split(/@@ -(\d+),(\d+) \+(\d+),(\d+) @@/);
+            hunks.unshift({
+              start: chnukHeader[3],
+              oldlength: +chnukHeader[2],
+              removed: [],
+              newlength: chnukHeader[4],
+              added: []
+            });
+          } else if (diffstr[i][0] === '+') {
+            hunks[0].added.push(diffstr[i].substr(1));
+          } else if (diffstr[i][0] === '-') {
+            hunks[0].removed.push(diffstr[i].substr(1));
+          } else if (diffstr[i][0] === ' ') {
+            hunks[0].added.push(diffstr[i].substr(1));
+            hunks[0].removed.push(diffstr[i].substr(1));
+          } else if (diffstr[i][0] === '\\') {
+            if (diffstr[i - 1][0] === '+') {
+              remEOFNL = true;
+            } else if (diffstr[i - 1][0] === '-') {
+              addEOFNL = true;
+            }
+          }
+        }
+
+        var lines = oldStr.split('\n');
+        for (i = hunks.length - 1; i >= 0; i--) {
+          var hunk = hunks[i];
+
+          for (var j = 0; j < hunk.oldlength; j++) {
+            if (lines[hunk.start - 1 + j] !== hunk.removed[j]) {
+              return false;
+            }
+          }
+          Array.prototype.splice.apply(lines, [hunk.start - 1, hunk.oldlength].concat(hunk.added));
+        }
+
+        if (remEOFNL) {
+          while (!lines[lines.length - 1]) {
+            lines.pop();
+          }
+        } else if (addEOFNL) {
+          lines.push('');
+        }
+        return lines.join('\n');
+      }
+    }, function (module, exports, __webpack_require__) {
+
+      'use strict';
+
+      exports.__esModule = true;
+      exports.structuredPatch = structuredPatch;
+      exports.createTwoFilesPatch = createTwoFilesPatch;
+      exports.createPatch = createPatch;
+
+
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : { 'default': obj };
+      }
+
+      var _diffPatch = __webpack_require__(11);
+
+      var _utilMap = __webpack_require__(2);
+
+      var _utilMap2 = _interopRequireDefault(_utilMap);
+
+      function structuredPatch(oldFileName, newFileName, oldStr, newStr, oldHeader, newHeader, options) {
+        if (!options) {
+          options = { context: 4 };
+        }
+
+        var diff = _diffPatch.patchDiff.diff(oldStr, newStr);
+        diff.push({ value: '', lines: [] });
+
+        function contextLines(lines) {
+          return _utilMap2['default'](lines, function (entry) {
+            return ' ' + entry;
+          });
+        }
+
+        var hunks = [];
+        var oldRangeStart = 0,
+            newRangeStart = 0,
+            curRange = [],
+            oldLine = 1,
+            newLine = 1;
+
+        var _loop = function _loop(i) {
+          var current = diff[i],
+              lines = current.lines || current.value.replace(/\n$/, '').split('\n');
+          current.lines = lines;
+
+          if (current.added || current.removed) {
+            if (!oldRangeStart) {
+              var prev = diff[i - 1];
+              oldRangeStart = oldLine;
+              newRangeStart = newLine;
+
+              if (prev) {
+                curRange = options.context > 0 ? contextLines(prev.lines.slice(-options.context)) : [];
+                oldRangeStart -= curRange.length;
+                newRangeStart -= curRange.length;
+              }
+            }
+
+            curRange.push.apply(curRange, _utilMap2['default'](lines, function (entry) {
+              return (current.added ? '+' : '-') + entry;
+            }));
+
+            if (current.added) {
+              newLine += lines.length;
+            } else {
+              oldLine += lines.length;
+            }
+          } else {
+            if (oldRangeStart) {
+              if (lines.length <= options.context * 2 && i < diff.length - 2) {
+                curRange.push.apply(curRange, contextLines(lines));
+              } else {
+                var contextSize = Math.min(lines.length, options.context);
+                curRange.push.apply(curRange, contextLines(lines.slice(0, contextSize)));
+
+                var hunk = {
+                  oldStart: oldRangeStart,
+                  oldLines: oldLine - oldRangeStart + contextSize,
+                  newStart: newRangeStart,
+                  newLines: newLine - newRangeStart + contextSize,
+                  lines: curRange
+                };
+                if (i >= diff.length - 2 && lines.length <= options.context) {
+                  var oldEOFNewline = /\n$/.test(oldStr);
+                  var newEOFNewline = /\n$/.test(newStr);
+                  if (lines.length == 0 && !oldEOFNewline) {
+                    curRange.splice(hunk.oldLines, 0, '\\ No newline at end of file');
+                  } else if (!oldEOFNewline || !newEOFNewline) {
+                    curRange.push('\\ No newline at end of file');
+                  }
+                }
+                hunks.push(hunk);
+
+                oldRangeStart = 0;
+                newRangeStart = 0;
+                curRange = [];
+              }
+            }
+            oldLine += lines.length;
+            newLine += lines.length;
+          }
+        };
+
+        for (var i = 0; i < diff.length; i++) {
+          _loop(i);
+        }
+
+        return {
+          oldFileName: oldFileName, newFileName: newFileName,
+          oldHeader: oldHeader, newHeader: newHeader,
+          hunks: hunks
+        };
+      }
+
+      function createTwoFilesPatch(oldFileName, newFileName, oldStr, newStr, oldHeader, newHeader, options) {
+        var diff = structuredPatch(oldFileName, newFileName, oldStr, newStr, oldHeader, newHeader, options);
+
+        var ret = [];
+        if (oldFileName == newFileName) {
+          ret.push('Index: ' + oldFileName);
+        }
+        ret.push('===================================================================');
+        ret.push('--- ' + diff.oldFileName + (typeof diff.oldHeader === 'undefined' ? '' : '\t' + diff.oldHeader));
+        ret.push('+++ ' + diff.newFileName + (typeof diff.newHeader === 'undefined' ? '' : '\t' + diff.newHeader));
+
+        for (var i = 0; i < diff.hunks.length; i++) {
+          var hunk = diff.hunks[i];
+          ret.push('@@ -' + hunk.oldStart + ',' + hunk.oldLines + ' +' + hunk.newStart + ',' + hunk.newLines + ' @@');
+          ret.push.apply(ret, hunk.lines);
+        }
+
+        return ret.join('\n') + '\n';
+      }
+
+      function createPatch(fileName, oldStr, newStr, oldHeader, newHeader, options) {
+        return createTwoFilesPatch(fileName, fileName, oldStr, newStr, oldHeader, newHeader, options);
+      }
+    }, function (module, exports, __webpack_require__) {
+
+      'use strict';
+
+      exports.__esModule = true;
+
+
+      function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : { 'default': obj };
+      }
+
+      var _base = __webpack_require__(1);
+
+      var _base2 = _interopRequireDefault(_base);
+
+      var patchDiff = new _base2['default']();
+      exports.patchDiff = patchDiff;
+      patchDiff.tokenize = function (value) {
+        var ret = [],
+            linesAndNewlines = value.split(/(\n|\r\n)/);
+
+        if (!linesAndNewlines[linesAndNewlines.length - 1]) {
+          linesAndNewlines.pop();
+        }
+
+        for (var i = 0; i < linesAndNewlines.length; i++) {
+          var line = linesAndNewlines[i];
+
+          if (i % 2) {
+            ret[ret.length - 1] += line;
+          } else {
+            ret.push(line);
+          }
+        }
+        return ret;
+      };
+    }, function (module, exports) {
+      "use strict";
+
+      exports.__esModule = true;
+      exports.convertChangesToDMP = convertChangesToDMP;
+
+      function convertChangesToDMP(changes) {
+        var ret = [],
+            change = undefined,
+            operation = undefined;
+        for (var i = 0; i < changes.length; i++) {
+          change = changes[i];
+          if (change.added) {
+            operation = 1;
+          } else if (change.removed) {
+            operation = -1;
+          } else {
+            operation = 0;
+          }
+
+          ret.push([operation, change.value]);
+        }
+        return ret;
+      }
+    }, function (module, exports) {
+
+      'use strict';
+
+      exports.__esModule = true;
+      exports.convertChangesToXML = convertChangesToXML;
+
+      function convertChangesToXML(changes) {
+        var ret = [];
+        for (var i = 0; i < changes.length; i++) {
+          var change = changes[i];
+          if (change.added) {
+            ret.push('<ins>');
+          } else if (change.removed) {
+            ret.push('<del>');
+          }
+
+          ret.push(escapeHTML(change.value));
+
+          if (change.added) {
+            ret.push('</ins>');
+          } else if (change.removed) {
+            ret.push('</del>');
+          }
+        }
+        return ret.join('');
+      }
+
+      function escapeHTML(s) {
+        var n = s;
+        n = n.replace(/&/g, '&amp;');
+        n = n.replace(/</g, '&lt;');
+        n = n.replace(/>/g, '&gt;');
+        n = n.replace(/"/g, '&quot;');
+
+        return n;
+      }
+    }]);
+  });
+  ;
+});
+define('common/common-plugin',[], function () {
+    'use strict';
+
+    (function ($) {
+        $.fn.extend({
+            insertAtCaret: function insertAtCaret(myValue) {
+                var $t = $(this)[0];
+                if (document.selection) {
+                    this.focus();
+                    sel = document.selection.createRange();
+                    sel.text = myValue;
+                    this.focus();
+                } else if ($t.selectionStart || $t.selectionStart == '0') {
+                    var startPos = $t.selectionStart;
+                    var endPos = $t.selectionEnd;
+                    var scrollTop = $t.scrollTop;
+                    $t.value = $t.value.substring(0, startPos) + myValue + $t.value.substring(endPos, $t.value.length);
+                    this.focus();
+                    $t.selectionStart = startPos + myValue.length;
+                    $t.selectionEnd = startPos + myValue.length;
+                    $t.scrollTop = scrollTop;
+                } else {
+                    this.value += myValue;
+                    this.focus();
+                }
+            }
+        });
+    })(jQuery);
+});
+define('common/common-poll',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var minInterval = 6000;
+    var maxInterval = 300000;
+    var incInterval = 6000;
+
+    var tolerate = 10;
+
+    var timer = null;
+
+    var inc = 0;
+
+    var interval = minInterval;
+
+    var _pollCb = null;
+    var _errCb = null;
+    var _isPause = false;
+
+    function oneHandler() {
+
+        if (_isPause) {
+            return;
+        }
+
+        try {
+            _pollCb && _pollCb(_reset, _stop);
+        } catch (e) {
+            _errCb && _errCb(_reset, _stop, e);
+
+            console.log('轮询异常: ' + e);
+        }
+    }
+
+    function _start() {
+        console.log('poll start...');
+
+        _isPause = false;
+
+        oneHandler();
+        timer = setInterval(function () {
+            inc++;
+            oneHandler();
+
+
+            if (inc > tolerate) {
+
+                interval = minInterval + incInterval * (inc - tolerate);
+
+                if (interval <= maxInterval) {
+                    clearInterval(timer);
+                    _start();
+                }
+            }
+        }, interval);
+    }
+
+    function _stop() {
+        console.log("poll stop...");
+
+        inc = 0;
+        interval = minInterval;
+        _isPause = false;
+        clearInterval(timer);
+        timer = null;
+    }
+
+    function _reset() {
+        console.log("poll reset...");
+
+        _stop();
+        _start();
+    }
+
+    function _pause() {
+        console.log("pause reset...");
+        _isPause = true;
+    }
+
+    exports.default = {
+        start: function start(pollCb, errCb) {
+            if (timer) {
+                _stop();
+            }
+            _pollCb = pollCb;
+            _errCb = errCb;
+            _start();
+        },
+        reset: function reset() {
+            _reset();
+        },
+        stop: function stop() {
+            _stop();
+        },
+        pause: function pause() {
+            _pause();
+        }
+    };
+});
+define('common/common-tips',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = {
+
+        '/h1': {
+            label: '/h1 [标题1] (ctrl+h)',
+            value: '# '
+        },
+        '/h2': {
+            label: '/h2 [标题2]',
+            value: '## '
+        },
+        '/h3': {
+            label: '/h3 [标题3]',
+            value: '### '
+        },
+        '/h4': {
+            label: '/h4 [标题4]',
+            value: '#### '
+        },
+        '/h5': {
+            label: '/h5 [标题5]',
+            value: '##### '
+        },
+        '/h6': {
+            label: '/h6 [标题6] (ctrl+shift+h)',
+            value: '###### '
+        },
+        '/b': {
+            label: '/b [粗体] (ctrl+b)',
+            value: '****',
+            ch: 2
+        },
+        '/i': {
+            label: '/i [斜体] (ctrl+i)',
+            value: '**',
+            ch: 1
+        },
+        '/s': {
+            label: '/s [删除线]',
+            value: '~~~~',
+            ch: 2
+        },
+        '/code': {
+            label: '/code [代码] (ctrl+alt+c)',
+            value: '```\n\n```\n',
+            line: 1
+        },
+        '/quote': {
+            label: '/quote [引用] (ctrl+\')',
+            value: '> '
+        },
+        '/list': {
+            label: '/list [列表] (ctrl+l)',
+            value: '* '
+        },
+        '/href': {
+            label: '/href [链接] (ctrl+k)',
+            value: '[](http://)',
+            ch: 1
+        },
+        '/img': {
+            label: '/img [图片] (ctrl+alt+i)',
+            value: '![](http://)',
+            ch: 2
+        },
+        '/table': {
+            label: '/table [表格]',
+            value: '| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n'
+        },
+        '/hr': {
+            label: '/hr [分隔线]',
+            value: '\n-----\n'
+        },
+        '/task': {
+            label: '/task [任务列表]',
+            value: '- [ ] 未完成任务\n- [x] 已完成任务'
+        },
+        '/details': {
+            label: '/details [折叠详情]',
+            value: '<details>\n<summary>标题</summary>详情内容\n</details>'
+        },
+        '/upload': {
+            label: '/upload [上传文件] (ctrl+u)',
+            value: ''
+        },
+        '/shortcuts': {
+            label: '/shortcuts [热键] (ctrl+/)',
+            value: ''
+        }
+    };
+});
+define('common/common-utils',['exports', 'wurl', 'common/common-diff'], function (exports, _wurl) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.CommonUtils = undefined;
+
+    var _wurl2 = _interopRequireDefault(_wurl);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var CommonUtils = exports.CommonUtils = function () {
+        function CommonUtils() {
+            _classCallCheck(this, CommonUtils);
+        }
+
+        CommonUtils.prototype.getBaseUrl = function getBaseUrl() {
+            if (typeof _wurl2.default == 'function') {
+                if ((0, _wurl2.default)('port') == 80 || (0, _wurl2.default)('port') == 443) {
+                    return (0, _wurl2.default)('protocol') + '://' + (0, _wurl2.default)('hostname');
+                } else {
+                    return (0, _wurl2.default)('protocol') + '://' + (0, _wurl2.default)('hostname') + ':' + (0, _wurl2.default)('port');
+                }
+            }
+            return '';
+        };
+
+        CommonUtils.prototype.getUrl = function getUrl() {
+            return this.getBaseUrl() + '#' + (0, _wurl2.default)('hash');
+        };
+
+        CommonUtils.prototype.redirect2Login = function redirect2Login(redirectUrl) {
+            var redirect = this.urlQuery('redirect');
+            if (!redirect) {
+                redirectUrl = redirectUrl ? redirectUrl : (0, _wurl2.default)();
+                window.location = this.getBaseUrl() + (0, _wurl2.default)('path') + ('#/login?redirect=' + encodeURIComponent(redirectUrl));
+            } else {
+                console.log('url has contains ?redirect');
+            }
+        };
+
+        CommonUtils.prototype.getHash = function getHash() {
+            var hash = (0, _wurl2.default)('hash');
+            var index = hash.indexOf('?');
+            if (index != -1) {
+                return hash.substring(0, index);
+            }
+
+            return hash;
+        };
+
+        CommonUtils.prototype.urlQuery = function urlQuery(name) {
+            return (0, _wurl2.default)('?' + name) || (0, _wurl2.default)('?' + name, (0, _wurl2.default)('hash'));
+        };
+
+        CommonUtils.prototype.removeUrlQuery = function removeUrlQuery(name, href) {
+
+            var s = href ? href : window.location.href;
+
+            var rs = new RegExp('(&|\\?)?' + name + '=?[^&#]*(.)?', 'g').exec(s);
+
+
+            if (rs) {
+                if (rs[1] == '&') {
+                    return s.replace(new RegExp('&' + name + '=?[^&#]+', 'g'), '');
+                } else if (rs[1] == '?') {
+                    if (rs[2] != '&') {
+                        return s.replace(new RegExp('\\?' + name + '=?[^&#]*', 'g'), '');
+                    } else {
+                        return s.replace(new RegExp('' + name + '=?[^&#]*&', 'g'), '');
+                    }
+                }
+            }
+
+            return s;
+        };
+
+        CommonUtils.prototype.errorAutoTry = function errorAutoTry(callback, time) {
+            var _this = this;
+
+            if (this.isRunning) {
+                return;
+            }
+
+            var cnt = time ? time : 10;
+            var timer = null;
+            var $t = toastr.error('网络连接错误,' + cnt + '秒后自动重试!', null, {
+                "closeButton": false,
+                "timeOut": "0",
+                "preventDuplicates": false,
+                "onclick": function onclick() {
+                    clearInterval(_this.timer);
+                    callback && callback();
+                }
+            });
+
+            this.isRunning = true;
+            timer = setInterval(function () {
+                if (cnt === 0) {
+                    clearInterval(timer);
+                    _this.isRunning = false;
+                    toastr.remove();
+                    callback && callback();
+                    return;
+                }
+                $t && $t.find('.toast-message').text('网络连接错误,' + cnt + '秒后自动重试!');
+                cnt--;
+            }, 1000);
+        };
+
+        CommonUtils.prototype.isElementInViewport = function isElementInViewport(el) {
+            if (typeof jQuery === "function" && el instanceof jQuery) {
+                el = el[0];
+            }
+
+            var rect = el.getBoundingClientRect();
+
+            return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+        };
+
+        CommonUtils.prototype.imgLoaded = function imgLoaded($imgs, callback) {
+            var imgdefereds = [];
+            $imgs.each(function () {
+                var dfd = $.Deferred();
+                $(this).bind('load', function () {
+                    dfd.resolve();
+                }).bind('error', function () {
+                    dfd.resolve();
+                });
+                if (this.complete) {
+                    dfd.resolve();
+                }
+
+                imgdefereds.push(dfd);
+            });
+            $.when.apply(null, imgdefereds).done(function () {
+                callback && callback.call(null);
+            });
+        };
+
+        CommonUtils.prototype.getChatName = function getChatName(name) {
+            if (_.startsWith(name, '@')) {
+                return name.substr(1);
+            } else {
+                return name;
+            }
+        };
+
+        CommonUtils.prototype.preParse = function preParse(plainText, members) {
+
+            var txt = plainText;
+            $.each(this.parseUsers(plainText, members), function (index, user) {
+                txt = txt.replace(new RegExp('{~' + user.username + '}', 'g'), '<span data-value="' + user.username + '" class="at-user">**`@' + user.name + '`**</span>');
+            });
+
+            return txt;
+        };
+
+        CommonUtils.prototype.parseUsers = function parseUsers(plainText, members) {
+            var users = [];
+            var atR = /\{~([^\}]*)\}/g;
+            var rs = atR.exec(plainText);
+            while (rs) {
+                var user = _.find(members, { username: rs[1] });
+                var isNotExists = !_.some(users, { username: rs[1] });
+                if (user && isNotExists) {
+                    users.push(user);
+                }
+                rs = atR.exec(plainText);
+            }
+
+            return users;
+        };
+
+        CommonUtils.prototype.parseUsernames = function parseUsernames(plainText, members) {
+            var users = this.parseUsers(plainText, members);
+            var isExitsAll = _.some(users, { username: 'all' });
+            if (isExitsAll) {
+                return _.without(_.map(members, 'username'), 'all');
+            }
+            return _.map(users, 'username');;
+        };
+
+        CommonUtils.prototype.md2html = function md2html(content, members) {
+            return $('<div class="markdown-body"/>').html('<style>.markdown-body{font-size:14px;line-height:1.6}.markdown-body>:first-child{margin-top:0!important}.markdown-body>:last-child{margin-bottom:0!important}.markdown-body a.absent{color:#C00}.markdown-body a.anchor{bottom:0;cursor:pointer;display:block;left:0;margin-left:-30px;padding-left:30px;position:absolute;top:0}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{cursor:text;font-weight:700;margin:20px 0 10px;padding:0;position:relative}.markdown-body h1 .mini-icon-link,.markdown-body h2 .mini-icon-link,.markdown-body h3 .mini-icon-link,.markdown-body h4 .mini-icon-link,.markdown-body h5 .mini-icon-link,.markdown-body h6 .mini-icon-link{color:#000;display:none}.markdown-body h1:hover a.anchor,.markdown-body h2:hover a.anchor,.markdown-body h3:hover a.anchor,.markdown-body h4:hover a.anchor,.markdown-body h5:hover a.anchor,.markdown-body h6:hover a.anchor{line-height:1;margin-left:-22px;padding-left:0;text-decoration:none;top:15%}.markdown-body h1:hover a.anchor .mini-icon-link,.markdown-body h2:hover a.anchor .mini-icon-link,.markdown-body h3:hover a.anchor .mini-icon-link,.markdown-body h4:hover a.anchor .mini-icon-link,.markdown-body h5:hover a.anchor .mini-icon-link,.markdown-body h6:hover a.anchor .mini-icon-link{display:inline-block}.markdown-body hr:after,.markdown-body hr:before{display:table;content:""}.markdown-body h1 code,.markdown-body h1 tt,.markdown-body h2 code,.markdown-body h2 tt,.markdown-body h3 code,.markdown-body h3 tt,.markdown-body h4 code,.markdown-body h4 tt,.markdown-body h5 code,.markdown-body h5 tt,.markdown-body h6 code,.markdown-body h6 tt{font-size:inherit}.markdown-body h1{color:#000;font-size:28px}.markdown-body h2{border-bottom:1px solid #CCC;color:#000;font-size:24px}.markdown-body h3{font-size:18px}.markdown-body h4{font-size:16px}.markdown-body h5{font-size:14px}.markdown-body h6{color:#777;font-size:14px}.markdown-body blockquote,.markdown-body dl,.markdown-body ol,.markdown-body p,.markdown-body pre,.markdown-body table,.markdown-body ul{margin:15px 0}.markdown-body hr{overflow:hidden;background:#e7e7e7;height:4px;padding:0;margin:16px 0;border:0;-moz-box-sizing:content-box;box-sizing:content-box}.markdown-body h1+p,.markdown-body h2+p,.markdown-body h3+p,.markdown-body h4+p,.markdown-body h5+p,.markdown-body h6+p,.markdown-body ol li>:first-child,.markdown-body ul li>:first-child{margin-top:0}.markdown-body hr:after{clear:both}.markdown-body a:first-child h1,.markdown-body a:first-child h2,.markdown-body a:first-child h3,.markdown-body a:first-child h4,.markdown-body a:first-child h5,.markdown-body a:first-child h6,.markdown-body>h1:first-child,.markdown-body>h1:first-child+h2,.markdown-body>h2:first-child,.markdown-body>h3:first-child,.markdown-body>h4:first-child,.markdown-body>h5:first-child,.markdown-body>h6:first-child{margin-top:0;padding-top:0}.markdown-body li p.first{display:inline-block}.markdown-body ol,.markdown-body ul{padding-left:30px}.markdown-body ol.no-list,.markdown-body ul.no-list{list-style-type:none;padding:0}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-bottom:0}.markdown-body dl{padding:0}.markdown-body dl dt{font-size:14px;font-style:italic;font-weight:700;margin:15px 0 5px;padding:0}.markdown-body dl dt:first-child{padding:0}.markdown-body dl dt>:first-child{margin-top:0}.markdown-body dl dt>:last-child{margin-bottom:0}.markdown-body dl dd{margin:0 0 15px;padding:0 15px}.markdown-body blockquote>:first-child,.markdown-body dl dd>:first-child{margin-top:0}.markdown-body blockquote>:last-child,.markdown-body dl dd>:last-child{margin-bottom:0}.markdown-body blockquote{border-left:4px solid #DDD;color:#777;padding:0 15px}.markdown-body table th{font-weight:700}.markdown-body table td,.markdown-body table th{border:1px solid #CCC;padding:6px 13px}.markdown-body table tr{background-color:#FFF;border-top:1px solid #CCC}.markdown-body table tr:nth-child(2n){background-color:#F8F8F8}.markdown-body img{max-width:100%}.markdown-body span.frame{display:block;overflow:hidden}.markdown-body span.frame>span{border:1px solid #DDD;display:block;float:left;margin:13px 0 0;overflow:hidden;padding:7px;width:auto}.markdown-body span.frame span img{display:block;float:left}.markdown-body span.frame span span{clear:both;color:#333;display:block;padding:5px 0 0}.markdown-body span.align-center{clear:both;display:block;overflow:hidden}.markdown-body span.align-center>span{display:block;margin:13px auto 0;overflow:hidden;text-align:center}.markdown-body span.align-center span img{margin:0 auto;text-align:center}.markdown-body span.align-right{clear:both;display:block;overflow:hidden}.markdown-body span.align-right>span{display:block;margin:13px 0 0;overflow:hidden;text-align:right}.markdown-body span.align-right span img{margin:0;text-align:right}.markdown-body span.float-left{display:block;float:left;margin-right:13px;overflow:hidden}.markdown-body span.float-left span{margin:13px 0 0}.markdown-body span.float-right{display:block;float:right;margin-left:13px;overflow:hidden}.markdown-body span.float-right>span{display:block;margin:13px auto 0;overflow:hidden;text-align:right}.markdown-body code,.markdown-body tt{background-color:#F8F8F8;border:1px solid #EAEAEA;border-radius:3px;margin:0 2px;padding:0 5px;white-space:nowrap}.markdown-body pre>code{background:none;border:none;margin:0;padding:0;white-space:pre}.markdown-body .highlight pre,.markdown-body pre{background-color:#F8F8F8;border:1px solid #CCC;border-radius:3px;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px}.markdown-body pre code,.markdown-body pre tt{background-color:transparent;border:none}</style>' + marked(this.preParse(content, members))).wrap('<div/>').parent().html();
+        };
+
+        CommonUtils.prototype.diffS = function diffS(oldS, newS) {
+            var delStyle = 'style="background-color: #e6cf56; text-decoration: line-through;"';
+            var insStyle = 'style="background-color: #98e287; text-decoration: none;"';
+            var diff = JsDiff.diffChars(oldS, newS);
+            var nodeArr = [];
+            for (var i = 0; i < diff.length; i++) {
+
+                if (diff[i].added && diff[i + 1] && diff[i + 1].removed) {
+                    var swap = diff[i];
+                    diff[i] = diff[i + 1];
+                    diff[i + 1] = swap;
+                }
+
+                var node;
+                if (diff[i].removed) {
+                    node = '<del ' + delStyle + '>' + diff[i].value + '</del>';
+                } else if (diff[i].added) {
+                    node = '<ins ' + insStyle + '>' + diff[i].value + '</ins>';
+                } else {
+                    node = '' + diff[i].value;
+                }
+                nodeArr.push(node);
+            }
+
+            return '<pre>' + nodeArr.join('') + '</pre>';
+        };
+
+        return CommonUtils;
+    }();
+
+    exports.default = new CommonUtils();
+});
+define('init/config',['exports', 'aurelia-templating-resources', 'aurelia-event-aggregator', 'aurelia-fetch-client', 'toastr', 'wurl', 'common/common-utils', 'marked', 'highlight', 'autosize', 'nprogress', 'isomorphic-fetch', 'common/common-plugin', 'common/common-constant'], function (exports, _aureliaTemplatingResources, _aureliaEventAggregator, _aureliaFetchClient, _toastr, _wurl, _commonUtils, _marked, _highlight, _autosize, _nprogress) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.Config = undefined;
+
+    var _toastr2 = _interopRequireDefault(_toastr);
+
+    var _wurl2 = _interopRequireDefault(_wurl);
+
+    var _commonUtils2 = _interopRequireDefault(_commonUtils);
+
+    var _marked2 = _interopRequireDefault(_marked);
+
+    var _highlight2 = _interopRequireDefault(_highlight);
+
+    var _autosize2 = _interopRequireDefault(_autosize);
+
+    var _nprogress2 = _interopRequireDefault(_nprogress);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var Config = exports.Config = function () {
+        function Config() {
+            _classCallCheck(this, Config);
+        }
+
+        Config.prototype.initHttp = function initHttp() {
+            window.json = function (param) {
+                console.log(JSON.stringify(param));
+                return (0, _aureliaFetchClient.json)(param);
+            };
+            window.http = this.aurelia.container.root.get(_aureliaFetchClient.HttpClient);
+            http.configure(function (config) {
+                config.withDefaults({
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'fetch'
+                    }
+                }).withInterceptor({
+                    request: function request(req) {
+                        _nprogress2.default && _nprogress2.default.start();
+                        return req;
+                    },
+                    requestError: function requestError(req) {
+                        console.log(req);
+                    },
+                    response: function response(resp) {
+                        _nprogress2.default && _nprogress2.default.done();
+                        if (!resp.ok) {
+                            resp.json().then(function (data) {
+                                _toastr2.default.error(data.message);
+                            });
+
+                            if (resp.status == 401) {
+                                _toastr2.default.error('用户未登录!');
+                                _commonUtils2.default.redirect2Login();
+                                return;
+                            }
+                        }
+
+                        return resp;
+                    },
+                    responseError: function responseError(resp) {
+                        _toastr2.default.error(resp.message, '网络请求错误!');
+                        console.log(resp);
+                    }
+                });
+            });
+
+            return this;
+        };
+
+        Config.prototype.initToastr = function initToastr() {
+            _toastr2.default.options.positionClass = 'toast-bottom-center';
+            _toastr2.default.options.preventDuplicates = true;
+
+            return this;
+        };
+
+        Config.prototype.initMarked = function initMarked() {
+
+            var renderer = new _marked2.default.Renderer();
+            renderer.listitem = function (text) {
+                if (/^\s*\[[x ]\]\s*/.test(text)) {
+                    text = text.replace(/^\s*\[ \]\s*/, '<input style="position: relative; top: 2px;" type="checkbox" disabled> ').replace(/^\s*\[x\]\s*/, '<input style="position: relative; top: 2px;" type="checkbox" checked disabled> ');
+                    return '<li class="task-item" style="list-style: none; margin-left: -30px;">' + text + '</li>';
+                } else {
+                    return '<li>' + text + '</li>';
+                }
+            };
+
+            _marked2.default.setOptions({
+                renderer: renderer,
+                breaks: true,
+                highlight: function highlight(code) {
+                    return _highlight2.default.highlightAuto(code).value;
+                }
+            });
+
+            return this;
+        };
+
+        Config.prototype.initAjax = function initAjax() {
+            $.ajaxSetup({
+                cache: false
+            });
+
+            var exceptUrls = ['/chat/channel/latest', '/chat/direct/latest'];
+
+            $(document).ajaxSend(function (event, jqxhr, settings) {
+
+                var isNotInExceptUrls = _.every(exceptUrls, function (url) {
+                    return settings.url.lastIndexOf(url) == -1;
+                });
+
+                if (isNotInExceptUrls) {
+                    _nprogress2.default && _nprogress2.default.start();
+                }
+            });
+
+            $(document).on('ajaxStop', function () {
+                _nprogress2.default && _nprogress2.default.done();
+            });
+
+            $(document).ajaxError(function (event, xhr, settings) {
+                if (xhr && xhr.status == 401) {
+                    _commonUtils2.default.redirect2Login();
+                }
+            });
+
+            return this;
+        };
+
+        Config.prototype.initGlobalVar = function initGlobalVar() {
+            window.toastr = _toastr2.default;
+            window.wurl = _wurl2.default;
+            window.utils = _commonUtils2.default;
+            window.marked = _marked2.default;
+            window.autosize = _autosize2.default;
+            window.bs = this.aurelia.container.root.get(_aureliaTemplatingResources.BindingSignaler);
+            window.ea = this.aurelia.container.root.get(_aureliaEventAggregator.EventAggregator);
+            return this;
+        };
+
+        Config.prototype.initAnimateCss = function initAnimateCss() {
+            $.fn.extend({
+                animateCss: function animateCss(animationName) {
+                    var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+                    this.addClass('animated ' + animationName).one(animationEnd, function () {
+                        $(this).removeClass('animated ' + animationName);
+                    });
+                }
+            });
+            return this;
+        };
+
+        Config.prototype.context = function context(aurelia) {
+            this.aurelia = aurelia;
+            return this;
+        };
+
+        return Config;
+    }();
+
+    exports.default = new Config();
+});
+define('init/index',['exports', './config', 'jquery', 'jquery.scrollto', 'timeago', 'lodash', 'hotkeys'], function (exports, _config) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.configure = configure;
+
+    var _config2 = _interopRequireDefault(_config);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function configure(aurelia, params) {
+
+        _config2.default.context(aurelia).initGlobalVar().initAjax().initToastr().initMarked().initAnimateCss();
+    }
+});
 define('resources/index',['exports'], function (exports) {
     'use strict';
 
@@ -1707,208 +2816,6 @@ define('user/user-register',['exports'], function (exports) {
 
         return ViewModel;
     }();
-});
-define('init/config',['exports', 'aurelia-templating-resources', 'aurelia-event-aggregator', 'aurelia-fetch-client', 'toastr', 'wurl', 'common/common-utils', 'marked', 'highlight', 'autosize', 'nprogress', 'isomorphic-fetch', 'common/common-plugin', 'common/common-constant'], function (exports, _aureliaTemplatingResources, _aureliaEventAggregator, _aureliaFetchClient, _toastr, _wurl, _commonUtils, _marked, _highlight, _autosize, _nprogress) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.Config = undefined;
-
-    var _toastr2 = _interopRequireDefault(_toastr);
-
-    var _wurl2 = _interopRequireDefault(_wurl);
-
-    var _commonUtils2 = _interopRequireDefault(_commonUtils);
-
-    var _marked2 = _interopRequireDefault(_marked);
-
-    var _highlight2 = _interopRequireDefault(_highlight);
-
-    var _autosize2 = _interopRequireDefault(_autosize);
-
-    var _nprogress2 = _interopRequireDefault(_nprogress);
-
-    function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-            default: obj
-        };
-    }
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    var Config = exports.Config = function () {
-        function Config() {
-            _classCallCheck(this, Config);
-        }
-
-        Config.prototype.initHttp = function initHttp() {
-            window.json = function (param) {
-                console.log(JSON.stringify(param));
-                return (0, _aureliaFetchClient.json)(param);
-            };
-            window.http = this.aurelia.container.root.get(_aureliaFetchClient.HttpClient);
-            http.configure(function (config) {
-                config.withDefaults({
-                    credentials: 'same-origin',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'fetch'
-                    }
-                }).withInterceptor({
-                    request: function request(req) {
-                        _nprogress2.default && _nprogress2.default.start();
-                        return req;
-                    },
-                    requestError: function requestError(req) {
-                        console.log(req);
-                    },
-                    response: function response(resp) {
-                        _nprogress2.default && _nprogress2.default.done();
-                        if (!resp.ok) {
-                            resp.json().then(function (data) {
-                                _toastr2.default.error(data.message);
-                            });
-
-                            if (resp.status == 401) {
-                                _toastr2.default.error('用户未登录!');
-                                _commonUtils2.default.redirect2Login();
-                                return;
-                            }
-                        }
-
-                        return resp;
-                    },
-                    responseError: function responseError(resp) {
-                        _toastr2.default.error(resp.message, '网络请求错误!');
-                        console.log(resp);
-                    }
-                });
-            });
-
-            return this;
-        };
-
-        Config.prototype.initToastr = function initToastr() {
-            _toastr2.default.options.positionClass = 'toast-bottom-center';
-            _toastr2.default.options.preventDuplicates = true;
-
-            return this;
-        };
-
-        Config.prototype.initMarked = function initMarked() {
-
-            var renderer = new _marked2.default.Renderer();
-            renderer.listitem = function (text) {
-                if (/^\s*\[[x ]\]\s*/.test(text)) {
-                    text = text.replace(/^\s*\[ \]\s*/, '<input style="position: relative; top: 2px;" type="checkbox" disabled> ').replace(/^\s*\[x\]\s*/, '<input style="position: relative; top: 2px;" type="checkbox" checked disabled> ');
-                    return '<li class="task-item" style="list-style: none; margin-left: -30px;">' + text + '</li>';
-                } else {
-                    return '<li>' + text + '</li>';
-                }
-            };
-
-            _marked2.default.setOptions({
-                renderer: renderer,
-                breaks: true,
-                highlight: function highlight(code) {
-                    return _highlight2.default.highlightAuto(code).value;
-                }
-            });
-
-            return this;
-        };
-
-        Config.prototype.initAjax = function initAjax() {
-            $.ajaxSetup({
-                cache: false
-            });
-
-            var exceptUrls = ['/chat/channel/latest', '/chat/direct/latest'];
-
-            $(document).ajaxSend(function (event, jqxhr, settings) {
-
-                var isNotInExceptUrls = _.every(exceptUrls, function (url) {
-                    return settings.url.lastIndexOf(url) == -1;
-                });
-
-                if (isNotInExceptUrls) {
-                    _nprogress2.default && _nprogress2.default.start();
-                }
-            });
-
-            $(document).on('ajaxStop', function () {
-                _nprogress2.default && _nprogress2.default.done();
-            });
-
-            $(document).ajaxError(function (event, xhr, settings) {
-                if (xhr && xhr.status == 401) {
-                    _commonUtils2.default.redirect2Login();
-                }
-            });
-
-            return this;
-        };
-
-        Config.prototype.initGlobalVar = function initGlobalVar() {
-            window.toastr = _toastr2.default;
-            window.wurl = _wurl2.default;
-            window.utils = _commonUtils2.default;
-            window.marked = _marked2.default;
-            window.autosize = _autosize2.default;
-            window.bs = this.aurelia.container.root.get(_aureliaTemplatingResources.BindingSignaler);
-            window.ea = this.aurelia.container.root.get(_aureliaEventAggregator.EventAggregator);
-            return this;
-        };
-
-        Config.prototype.initAnimateCss = function initAnimateCss() {
-            $.fn.extend({
-                animateCss: function animateCss(animationName) {
-                    var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-                    this.addClass('animated ' + animationName).one(animationEnd, function () {
-                        $(this).removeClass('animated ' + animationName);
-                    });
-                }
-            });
-            return this;
-        };
-
-        Config.prototype.context = function context(aurelia) {
-            this.aurelia = aurelia;
-            return this;
-        };
-
-        return Config;
-    }();
-
-    exports.default = new Config();
-});
-define('init/index',['exports', './config', 'jquery', 'jquery.scrollto', 'timeago', 'lodash', 'hotkeys'], function (exports, _config) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.configure = configure;
-
-    var _config2 = _interopRequireDefault(_config);
-
-    function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-            default: obj
-        };
-    }
-
-    function configure(aurelia, params) {
-
-        _config2.default.context(aurelia).initGlobalVar().initAjax().initToastr().initMarked().initAnimateCss();
-    }
 });
 define('resources/attributes/attr-attr',['exports', 'aurelia-framework', 'aurelia-dependency-injection'], function (exports, _aureliaFramework, _aureliaDependencyInjection) {
     'use strict';
@@ -3358,6 +4265,7 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
                     path: wurl('path'),
                     id: item.id,
                     content: item.content,
+                    diff: utils.diffS(item.contentOld, item.content),
                     contentHtml: html,
                     contentHtmlOld: htmlOld
                 };
@@ -22931,36 +23839,36 @@ define('highlight/lib/languages/zephir',['require','exports','module'],function 
 });
 
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\r\n\t<require from=\"./app.css\"></require>\r\n\t<require from=\"./common.css\"></require>\r\n\t<require from=\"./override.css\"></require>\r\n\t<require from=\"nprogress/nprogress.css\"></require>\r\n\t<require from=\"toastr/build/toastr.css\"></require>\r\n    <require from=\"tms-semantic-ui/semantic.min.css\"></require>\r\n    <router-view></router-view>\r\n</template>\r\n"; });
-define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n"; });
-define('text!common.css', ['module'], function(module) { module.exports = "code.nx {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  white-space: nowrap;\n}\n"; });
 define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <require from=\"./md-github.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" channel.bind=\"channel\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                    <button if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"fluid basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</button>\r\n                    <em-chat-content-item channel.bind=\"channel\" is-at.bind=\"isAt\" chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                    <button if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"fluid basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})</button>\r\n                </div>\r\n                <em-chat-input channel.bind=\"channel\" is-at.bind=\"isAt\" chat-to.bind=\"chatTo\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!override.css', ['module'], function(module) { module.exports = ".ui.dimmer {\n  background-color: rgba(0, 0, 0, 0.5) !important;\n}\n.ui.modal > .actions > .ui.left.floated.button {\n  margin-left: 3.5px;\n}\n"; });
+define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n"; });
 define('text!test/test-lifecycle.html', ['module'], function(module) { module.exports = "<template>\r\n    <!-- <require from=\"\"></require> -->\r\n    <div class=\"ui container\">\r\n        <h1 class=\"ui header\">Aurelia框架模块生命周期钩子函数调用顺序测试(看console输出)</h1>\r\n    </div>\r\n</template>\r\n"; });
-define('text!chat/chat-direct.css', ['module'], function(module) { module.exports = ".tms-chat-direct {\n  height: 100%;\n}\n.tms-chat-direct .ui.comments > .comment > .content {\n  display: block!important;\n}\n.tms-chat-direct .ui.left.sidebar {\n  background-color: #4d394b;\n  width: 220px;\n}\n.tms-chat-direct .ui.left.sidebar * {\n  color: #4183c4!important;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header > input {\n  background-color: transparent;\n  border: 1px #676868 solid;\n  font-size: 12px;\n  padding: 4px;\n  width: 190px;\n  outline: none;\n  margin-top: 10px;\n  border-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header {\n  height: 40px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header i.close.icon {\n  position: absolute;\n  right: 11px;\n  top: 55px;\n  box-shadow: 0 0 0 0.1em #676868 inset;\n  border-top-right-radius: 2px;\n  border-bottom-right-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header .ui.header {\n  margin-bottom: 0;\n}\n.tms-chat-direct .tms-edit-textarea {\n  width: 100%;\n}\n.tms-chat-direct .ui.selection.list > .item {\n  cursor: default;\n}\n.tms-chat-direct .ui.search .prompt {\n  border-radius: .28571429rem;\n}\n.tms-chat-direct .tms-content {\n  position: absolute;\n  top: 60px;\n  left: 220px;\n  bottom: 0;\n  right: 0;\n  display: flex;\n  align-items: stretch;\n}\n.tms-chat-direct .tms-content.tms-sidebar-show .tms-right-sidebar {\n  width: 388px;\n  border-left: 1px #e9e9e9 solid;\n  transition: width 0.15s ease-out 0s;\n  margin: 4px;\n  margin-right: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content {\n    left: 0;\n  }\n}\n.tms-chat-direct .tms-content-body {\n  width: 100%;\n  max-width: 100%;\n  flex: 1 1 0;\n  display: flex;\n  align-items: stretch;\n  padding-bottom: 73px;\n}\n.tms-chat-direct .tms-content-body .ui.comments {\n  overflow-y: auto;\n  flex: 1 1 0;\n  max-width: none;\n  margin-bottom: 12px;\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-pre-more {\n  margin-bottom: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-next-more {\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-right-sidebar {\n  width: 0;\n  overflow-y: auto;\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body {\n  max-height: 65px;\n  overflow-y: hidden;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body.tms-open {\n  max-height: none;\n  overflow-y: auto;\n  padding-bottom: 20px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .tms-btn-open-search-item {\n  display: none;\n  height: 25px;\n  background-color: rgba(0, 0, 0, 0.1);\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  text-align: center;\n  padding-top: 2px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment:hover .tms-btn-open-search-item {\n  display: block;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-left-sidebar {\n    display: none;\n  }\n  .tms-chat-direct .tms-right-sidebar {\n    position: fixed;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 59px;\n    background-color: white;\n    margin-left: 0!important;\n  }\n  .tms-chat-direct .tms-right-sidebar .panel-search .ui.basic.segment.minimal.selection.list.segment.comments {\n    padding-left: 0;\n    padding-right: 0;\n  }\n  .tms-chat-direct .tms-sidebar-show .tms-right-sidebar {\n    width: 100%!important;\n  }\n  .tms-chat-direct .tms-login-user {\n    display: none!important;\n  }\n}\n.tms-chat-direct .tms-edit-actions .left.button {\n  border-top-left-radius: 0;\n}\n.tms-chat-direct .tms-edit-actions .right.button {\n  border-top-right-radius: 0;\n}\n"; });
+define('text!common.css', ['module'], function(module) { module.exports = "code.nx {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  white-space: nowrap;\n}\n"; });
 define('text!user/user-login.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-login.css\"></require>\r\n    <div class=\"tms-user-login\">\r\n        <div class=\"container\">\r\n            <h2 class=\"ui center aligned icon header\">\r\n            <i class=\"circular users icon\"></i> 用户登录\r\n            </h2>\r\n            <form class=\"ui form segment\">\r\n                <div class=\"field\">\r\n                    <div class=\"ui left icon input\">\r\n                        <i class=\"user icon\"></i>\r\n                        <input type=\"text\" name=\"username\" value.bind=\"username\" placeholder=\"用户名\" />\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div class=\"ui left icon input\">\r\n                        <i class=\"lock icon\"></i>\r\n                        <input type=\"password\" name=\"password\" keydown.trigger=\"kdHandler($event)\" value.bind=\"password\" placeholder=\"密码\" />\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"rememberMeRef\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" name=\"remember-me\" />\r\n                        <label>记住我在此计算机的登录(2周)</label>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui center aligned header\">\r\n                    <button type=\"submit\" click.delegate=\"loginHandler()\" class=\"ui submit fluid button ${isReq ? 'disabled' : ''}\">登录</button>\r\n                </div>\r\n                <div style=\"text-align: center; font-size:12px;\">\r\n                    <a href=\"#/pwd-reset\">忘记密码</a> &nbsp;&nbsp;\r\n                    <a href=\"#/register\">注册用户</a>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!chat/md-github.css', ['module'], function(module) { module.exports = ".markdown-body {\n  font-size: 14px;\n  line-height: 1.6;\n}\n.markdown-body > br,\n.markdown-body ul br .markdown-body ol br {\n  display: none;\n}\n.markdown-body > *:first-child {\n  margin-top: 0 !important;\n}\n.markdown-body > *:last-child {\n  margin-bottom: 0 !important;\n}\n.markdown-body a.absent {\n  color: #CC0000;\n}\n.markdown-body a.anchor {\n  bottom: 0;\n  cursor: pointer;\n  display: block;\n  left: 0;\n  margin-left: -30px;\n  padding-left: 30px;\n  position: absolute;\n  top: 0;\n}\n.markdown-body h1,\n.markdown-body h2,\n.markdown-body h3,\n.markdown-body h4,\n.markdown-body h5,\n.markdown-body h6 {\n  cursor: text;\n  font-weight: bold;\n  margin: 20px 0 10px;\n  padding: 0;\n  position: relative;\n}\n.markdown-body h1 .mini-icon-link,\n.markdown-body h2 .mini-icon-link,\n.markdown-body h3 .mini-icon-link,\n.markdown-body h4 .mini-icon-link,\n.markdown-body h5 .mini-icon-link,\n.markdown-body h6 .mini-icon-link {\n  color: #000000;\n  display: none;\n}\n.markdown-body h1:hover a.anchor,\n.markdown-body h2:hover a.anchor,\n.markdown-body h3:hover a.anchor,\n.markdown-body h4:hover a.anchor,\n.markdown-body h5:hover a.anchor,\n.markdown-body h6:hover a.anchor {\n  line-height: 1;\n  margin-left: -22px;\n  padding-left: 0;\n  text-decoration: none;\n  top: 15%;\n}\n.markdown-body h1:hover a.anchor .mini-icon-link,\n.markdown-body h2:hover a.anchor .mini-icon-link,\n.markdown-body h3:hover a.anchor .mini-icon-link,\n.markdown-body h4:hover a.anchor .mini-icon-link,\n.markdown-body h5:hover a.anchor .mini-icon-link,\n.markdown-body h6:hover a.anchor .mini-icon-link {\n  display: inline-block;\n}\n.markdown-body h1 tt,\n.markdown-body h1 code,\n.markdown-body h2 tt,\n.markdown-body h2 code,\n.markdown-body h3 tt,\n.markdown-body h3 code,\n.markdown-body h4 tt,\n.markdown-body h4 code,\n.markdown-body h5 tt,\n.markdown-body h5 code,\n.markdown-body h6 tt,\n.markdown-body h6 code {\n  font-size: inherit;\n}\n.markdown-body h1 {\n  color: #000000;\n  font-size: 28px;\n}\n.markdown-body h2 {\n  border-bottom: 1px solid #CCCCCC;\n  color: #000000;\n  font-size: 24px;\n}\n.markdown-body h3 {\n  font-size: 18px;\n}\n.markdown-body h4 {\n  font-size: 16px;\n}\n.markdown-body h5 {\n  font-size: 14px;\n}\n.markdown-body h6 {\n  color: #777777;\n  font-size: 14px;\n}\n.markdown-body p,\n.markdown-body blockquote,\n.markdown-body ul,\n.markdown-body ol,\n.markdown-body dl,\n.markdown-body table,\n.markdown-body pre {\n  margin: 15px 0;\n}\n.markdown-body hr {\n  overflow: hidden;\n  background: 0 0;\n}\n.markdown-body hr:before {\n  display: table;\n  content: \"\";\n}\n.markdown-body hr:after {\n  display: table;\n  clear: both;\n  content: \"\";\n}\n.markdown-body hr {\n  height: 4px;\n  padding: 0;\n  margin: 16px 0;\n  background-color: #e7e7e7;\n  border: 0;\n}\n.markdown-body hr {\n  -moz-box-sizing: content-box;\n  box-sizing: content-box;\n}\n.markdown-body > h2:first-child,\n.markdown-body > h1:first-child,\n.markdown-body > h1:first-child + h2,\n.markdown-body > h3:first-child,\n.markdown-body > h4:first-child,\n.markdown-body > h5:first-child,\n.markdown-body > h6:first-child {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body a:first-child h1,\n.markdown-body a:first-child h2,\n.markdown-body a:first-child h3,\n.markdown-body a:first-child h4,\n.markdown-body a:first-child h5,\n.markdown-body a:first-child h6 {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body h1 + p,\n.markdown-body h2 + p,\n.markdown-body h3 + p,\n.markdown-body h4 + p,\n.markdown-body h5 + p,\n.markdown-body h6 + p {\n  margin-top: 0;\n}\n.markdown-body li p.first {\n  display: inline-block;\n}\n.markdown-body ul,\n.markdown-body ol {\n  padding-left: 30px;\n}\n.markdown-body ul.no-list,\n.markdown-body ol.no-list {\n  list-style-type: none;\n  padding: 0;\n}\n.markdown-body ul li > *:first-child,\n.markdown-body ol li > *:first-child {\n  margin-top: 0;\n}\n.markdown-body ul ul,\n.markdown-body ul ol,\n.markdown-body ol ol,\n.markdown-body ol ul {\n  margin-bottom: 0;\n}\n.markdown-body dl {\n  padding: 0;\n}\n.markdown-body dl dt {\n  font-size: 14px;\n  font-style: italic;\n  font-weight: bold;\n  margin: 15px 0 5px;\n  padding: 0;\n}\n.markdown-body dl dt:first-child {\n  padding: 0;\n}\n.markdown-body dl dt > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dt > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body dl dd {\n  margin: 0 0 15px;\n  padding: 0 15px;\n}\n.markdown-body dl dd > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dd > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body blockquote {\n  border-left: 4px solid #DDDDDD;\n  color: #777777;\n  padding: 0 15px;\n}\n.markdown-body blockquote > *:first-child {\n  margin-top: 0;\n}\n.markdown-body blockquote > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body table th {\n  font-weight: bold;\n}\n.markdown-body table th,\n.markdown-body table td {\n  border: 1px solid #CCCCCC;\n  padding: 6px 13px;\n}\n.markdown-body table tr {\n  background-color: #FFFFFF;\n  border-top: 1px solid #CCCCCC;\n}\n.markdown-body table tr:nth-child(2n) {\n  background-color: #F8F8F8;\n}\n.markdown-body img {\n  max-width: 100%;\n}\n.markdown-body span.frame {\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.frame > span {\n  border: 1px solid #DDDDDD;\n  display: block;\n  float: left;\n  margin: 13px 0 0;\n  overflow: hidden;\n  padding: 7px;\n  width: auto;\n}\n.markdown-body span.frame span img {\n  display: block;\n  float: left;\n}\n.markdown-body span.frame span span {\n  clear: both;\n  color: #333333;\n  display: block;\n  padding: 5px 0 0;\n}\n.markdown-body span.align-center {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-center > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: center;\n}\n.markdown-body span.align-center span img {\n  margin: 0 auto;\n  text-align: center;\n}\n.markdown-body span.align-right {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-right > span {\n  display: block;\n  margin: 13px 0 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body span.align-right span img {\n  margin: 0;\n  text-align: right;\n}\n.markdown-body span.float-left {\n  display: block;\n  float: left;\n  margin-right: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-left span {\n  margin: 13px 0 0;\n}\n.markdown-body span.float-right {\n  display: block;\n  float: right;\n  margin-left: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-right > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body code,\n.markdown-body tt {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  /* white-space: nowrap; */\n  white-space: normal;\n  word-break: break-all;\n}\n.markdown-body pre > code {\n  background: none repeat scroll 0 0 transparent;\n  border: medium none;\n  margin: 0;\n  padding: 0;\n  white-space: pre;\n}\n.markdown-body .highlight pre,\n.markdown-body pre {\n  background-color: #F8F8F8;\n  border: 1px solid #CCCCCC;\n  border-radius: 3px 3px 3px 3px;\n  font-size: 13px;\n  line-height: 19px;\n  overflow: auto;\n  padding: 6px 10px;\n}\n.markdown-body pre code,\n.markdown-body pre tt {\n  background-color: transparent;\n  border: medium none;\n}\n"; });
+define('text!override.css', ['module'], function(module) { module.exports = ".ui.dimmer {\n  background-color: rgba(0, 0, 0, 0.5) !important;\n}\n.ui.modal > .actions > .ui.left.floated.button {\n  margin-left: 3.5px;\n}\n"; });
 define('text!user/user-pwd-reset.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-pwd-reset.css\"></require>\r\n    <div class=\"ui container tms-user-pwd-reset\">\r\n        <div class=\"tms-flex\">\r\n            <div if.bind=\"!token\" ref=\"fm\" class=\"ui form segment\" style=\"width: 260px;\">\r\n                <div class=\"ui message\">输入您的邮箱地址,我们会发送密码重置链接到您的邮箱!</div>\r\n                <div class=\"field\">\r\n                    <label style=\"display:none;\">邮件地址</label>\r\n                    <input type=\"text\" name=\"mail\" autofocus=\"\" value.bind=\"mail\" placeholder=\"输入您的邮件地址\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"resetPwdHandler()\">发送密码重置邮件</div>\r\n            </div>\r\n            <div if.bind=\"token\" ref=\"fm2\" class=\"ui form segment\" style=\"width: 260px;\">\r\n                <div class=\"ui message\">设置您的新密码,密码长度要求至少8位字符!</div>\r\n                <div class=\"field\">\r\n                    <label style=\"display:none;\">新密码</label>\r\n                    <input type=\"password\" name=\"mail\" autofocus=\"\" value.bind=\"pwd\" placeholder=\"设置您的新密码\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"newPwdHandler()\">确认</div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!user/user-login.css', ['module'], function(module) { module.exports = ".tms-user-login {\n  width: 100%;\n  min-height: 100%;\n  background-color: #5a3636;\n  overflow: hidden;\n}\n.tms-user-login .container {\n  width: 300px;\n  top: 50px;\n  margin-left: auto;\n  margin-right: auto;\n  position: relative;\n}\n.tms-user-login h2 {\n  color: rgba(197, 164, 164, 0.8) !important;\n}\n.tms-user-login .ui.form {\n  background-color: #353131;\n}\n.tms-user-login .ui.error.message {\n  background-color: #5a3636;\n}\n.tms-user-login .ui.error.message .header {\n  color: #e0b4b4;\n}\n.tms-user-login .ui.checkbox label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox input:focus ~ label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox label:hover {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.button {\n  background-color: #5a3636;\n  color: #ad8b75;\n}\n"; });
+define('text!chat/chat-direct.css', ['module'], function(module) { module.exports = ".tms-chat-direct {\n  height: 100%;\n}\n.tms-chat-direct .ui.comments > .comment > .content {\n  display: block!important;\n}\n.tms-chat-direct .ui.left.sidebar {\n  background-color: #4d394b;\n  width: 220px;\n}\n.tms-chat-direct .ui.left.sidebar * {\n  color: #4183c4!important;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header > input {\n  background-color: transparent;\n  border: 1px #676868 solid;\n  font-size: 12px;\n  padding: 4px;\n  width: 190px;\n  outline: none;\n  margin-top: 10px;\n  border-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header {\n  height: 40px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header i.close.icon {\n  position: absolute;\n  right: 11px;\n  top: 55px;\n  box-shadow: 0 0 0 0.1em #676868 inset;\n  border-top-right-radius: 2px;\n  border-bottom-right-radius: 2px;\n}\n.tms-chat-direct .ui.left.sidebar .tms-header .ui.header {\n  margin-bottom: 0;\n}\n.tms-chat-direct .tms-edit-textarea {\n  width: 100%;\n}\n.tms-chat-direct .ui.selection.list > .item {\n  cursor: default;\n}\n.tms-chat-direct .ui.search .prompt {\n  border-radius: .28571429rem;\n}\n.tms-chat-direct .tms-content {\n  position: absolute;\n  top: 60px;\n  left: 220px;\n  bottom: 0;\n  right: 0;\n  display: flex;\n  align-items: stretch;\n}\n.tms-chat-direct .tms-content.tms-sidebar-show .tms-right-sidebar {\n  width: 388px;\n  border-left: 1px #e9e9e9 solid;\n  transition: width 0.15s ease-out 0s;\n  margin: 4px;\n  margin-right: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content {\n    left: 0;\n  }\n}\n.tms-chat-direct .tms-content-body {\n  width: 100%;\n  max-width: 100%;\n  flex: 1 1 0;\n  display: flex;\n  align-items: stretch;\n  padding-bottom: 73px;\n}\n.tms-chat-direct .tms-content-body .ui.comments {\n  overflow-y: auto;\n  flex: 1 1 0;\n  max-width: none;\n  margin-bottom: 12px;\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-pre-more {\n  margin-bottom: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-next-more {\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-right-sidebar {\n  width: 0;\n  overflow-y: auto;\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body {\n  max-height: 65px;\n  overflow-y: hidden;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body.tms-open {\n  max-height: none;\n  overflow-y: auto;\n  padding-bottom: 20px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .tms-btn-open-search-item {\n  display: none;\n  height: 25px;\n  background-color: rgba(0, 0, 0, 0.1);\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  text-align: center;\n  padding-top: 2px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment:hover .tms-btn-open-search-item {\n  display: block;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-left-sidebar {\n    display: none;\n  }\n  .tms-chat-direct .tms-right-sidebar {\n    position: fixed;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 59px;\n    background-color: white;\n    margin-left: 0!important;\n  }\n  .tms-chat-direct .tms-right-sidebar .panel-search .ui.basic.segment.minimal.selection.list.segment.comments {\n    padding-left: 0;\n    padding-right: 0;\n  }\n  .tms-chat-direct .tms-sidebar-show .tms-right-sidebar {\n    width: 100%!important;\n  }\n  .tms-chat-direct .tms-login-user {\n    display: none!important;\n  }\n}\n.tms-chat-direct .tms-edit-actions .left.button {\n  border-top-left-radius: 0;\n}\n.tms-chat-direct .tms-edit-actions .right.button {\n  border-top-right-radius: 0;\n}\n"; });
 define('text!user/user-register.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-register.css\"></require>\r\n    <div class=\"ui container tms-user-register\">\r\n        <div class=\"tms-flex\">\r\n            <div if.bind=\"!token\" ref=\"fm\" class=\"ui form segment\" style=\"width: 280px;\">\r\n                <div class=\"ui message\">提交账户注册信息成功后,我们会向您的注册邮箱发送一封账户激活邮件,激活账户后即可登录!</div>\r\n                <div class=\"required field\">\r\n                    <label>用户名</label>\r\n                    <input type=\"text\" name=\"username\" autofocus=\"\" value.bind=\"username\" placeholder=\"输入您的登录用户名\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>密码</label>\r\n                    <input type=\"password\" name=\"pwd\" autofocus=\"\" value.bind=\"pwd\" placeholder=\"输入您的登录密码\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>姓名</label>\r\n                    <input type=\"text\" name=\"name\" autofocus=\"\" value.bind=\"name\" placeholder=\"输入您的显示名称\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>邮箱</label>\r\n                    <input type=\"text\" name=\"mail\" autofocus=\"\" value.bind=\"mail\" placeholder=\"输入您的账户激活邮箱\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"okHandler()\">确认</div>\r\n            </div>\r\n            <div if.bind=\"token\" class=\"ui center aligned very padded segment\" style=\"width: 320px;\">\r\n            \t<h1 class=\"ui header\">${header}</h1>\r\n            \t<a href=\"/admin/login\" class=\"ui green button\">返回登录页面</a>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!user/user-pwd-reset.css', ['module'], function(module) { module.exports = ".tms-user-pwd-reset {\n  height: 100%;\n}\n.tms-user-pwd-reset .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
-define('text!user/user-register.css', ['module'], function(module) { module.exports = ".tms-user-register {\n  height: 100%;\n}\n.tms-user-register .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
-define('text!resources/elements/em-chat-channel-create.css', ['module'], function(module) { module.exports = ".tms-em-chat-channel-create .tms-join {\n  max-height: 315px;\n  overflow-y: auto;\n}\n.tms-em-chat-channel-create .ui.form > .field > label {\n  width: 35px!important;\n}\n"; });
-define('text!resources/elements/em-chat-channel-members-mgr.css', ['module'], function(module) { module.exports = ".tms-em-chat-channel-members-mgr .ui.dropdown > a.ui.label > input.owner + i.delete.icon {\n  display: none;\n}\n"; });
+define('text!chat/md-github.css', ['module'], function(module) { module.exports = ".markdown-body {\n  font-size: 14px;\n  line-height: 1.6;\n}\n.markdown-body > br,\n.markdown-body ul br .markdown-body ol br {\n  display: none;\n}\n.markdown-body > *:first-child {\n  margin-top: 0 !important;\n}\n.markdown-body > *:last-child {\n  margin-bottom: 0 !important;\n}\n.markdown-body a.absent {\n  color: #CC0000;\n}\n.markdown-body a.anchor {\n  bottom: 0;\n  cursor: pointer;\n  display: block;\n  left: 0;\n  margin-left: -30px;\n  padding-left: 30px;\n  position: absolute;\n  top: 0;\n}\n.markdown-body h1,\n.markdown-body h2,\n.markdown-body h3,\n.markdown-body h4,\n.markdown-body h5,\n.markdown-body h6 {\n  cursor: text;\n  font-weight: bold;\n  margin: 20px 0 10px;\n  padding: 0;\n  position: relative;\n}\n.markdown-body h1 .mini-icon-link,\n.markdown-body h2 .mini-icon-link,\n.markdown-body h3 .mini-icon-link,\n.markdown-body h4 .mini-icon-link,\n.markdown-body h5 .mini-icon-link,\n.markdown-body h6 .mini-icon-link {\n  color: #000000;\n  display: none;\n}\n.markdown-body h1:hover a.anchor,\n.markdown-body h2:hover a.anchor,\n.markdown-body h3:hover a.anchor,\n.markdown-body h4:hover a.anchor,\n.markdown-body h5:hover a.anchor,\n.markdown-body h6:hover a.anchor {\n  line-height: 1;\n  margin-left: -22px;\n  padding-left: 0;\n  text-decoration: none;\n  top: 15%;\n}\n.markdown-body h1:hover a.anchor .mini-icon-link,\n.markdown-body h2:hover a.anchor .mini-icon-link,\n.markdown-body h3:hover a.anchor .mini-icon-link,\n.markdown-body h4:hover a.anchor .mini-icon-link,\n.markdown-body h5:hover a.anchor .mini-icon-link,\n.markdown-body h6:hover a.anchor .mini-icon-link {\n  display: inline-block;\n}\n.markdown-body h1 tt,\n.markdown-body h1 code,\n.markdown-body h2 tt,\n.markdown-body h2 code,\n.markdown-body h3 tt,\n.markdown-body h3 code,\n.markdown-body h4 tt,\n.markdown-body h4 code,\n.markdown-body h5 tt,\n.markdown-body h5 code,\n.markdown-body h6 tt,\n.markdown-body h6 code {\n  font-size: inherit;\n}\n.markdown-body h1 {\n  color: #000000;\n  font-size: 28px;\n}\n.markdown-body h2 {\n  border-bottom: 1px solid #CCCCCC;\n  color: #000000;\n  font-size: 24px;\n}\n.markdown-body h3 {\n  font-size: 18px;\n}\n.markdown-body h4 {\n  font-size: 16px;\n}\n.markdown-body h5 {\n  font-size: 14px;\n}\n.markdown-body h6 {\n  color: #777777;\n  font-size: 14px;\n}\n.markdown-body p,\n.markdown-body blockquote,\n.markdown-body ul,\n.markdown-body ol,\n.markdown-body dl,\n.markdown-body table,\n.markdown-body pre {\n  margin: 15px 0;\n}\n.markdown-body hr {\n  overflow: hidden;\n  background: 0 0;\n}\n.markdown-body hr:before {\n  display: table;\n  content: \"\";\n}\n.markdown-body hr:after {\n  display: table;\n  clear: both;\n  content: \"\";\n}\n.markdown-body hr {\n  height: 4px;\n  padding: 0;\n  margin: 16px 0;\n  background-color: #e7e7e7;\n  border: 0;\n}\n.markdown-body hr {\n  -moz-box-sizing: content-box;\n  box-sizing: content-box;\n}\n.markdown-body > h2:first-child,\n.markdown-body > h1:first-child,\n.markdown-body > h1:first-child + h2,\n.markdown-body > h3:first-child,\n.markdown-body > h4:first-child,\n.markdown-body > h5:first-child,\n.markdown-body > h6:first-child {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body a:first-child h1,\n.markdown-body a:first-child h2,\n.markdown-body a:first-child h3,\n.markdown-body a:first-child h4,\n.markdown-body a:first-child h5,\n.markdown-body a:first-child h6 {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body h1 + p,\n.markdown-body h2 + p,\n.markdown-body h3 + p,\n.markdown-body h4 + p,\n.markdown-body h5 + p,\n.markdown-body h6 + p {\n  margin-top: 0;\n}\n.markdown-body li p.first {\n  display: inline-block;\n}\n.markdown-body ul,\n.markdown-body ol {\n  padding-left: 30px;\n}\n.markdown-body ul.no-list,\n.markdown-body ol.no-list {\n  list-style-type: none;\n  padding: 0;\n}\n.markdown-body ul li > *:first-child,\n.markdown-body ol li > *:first-child {\n  margin-top: 0;\n}\n.markdown-body ul ul,\n.markdown-body ul ol,\n.markdown-body ol ol,\n.markdown-body ol ul {\n  margin-bottom: 0;\n}\n.markdown-body dl {\n  padding: 0;\n}\n.markdown-body dl dt {\n  font-size: 14px;\n  font-style: italic;\n  font-weight: bold;\n  margin: 15px 0 5px;\n  padding: 0;\n}\n.markdown-body dl dt:first-child {\n  padding: 0;\n}\n.markdown-body dl dt > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dt > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body dl dd {\n  margin: 0 0 15px;\n  padding: 0 15px;\n}\n.markdown-body dl dd > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dd > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body blockquote {\n  border-left: 4px solid #DDDDDD;\n  color: #777777;\n  padding: 0 15px;\n}\n.markdown-body blockquote > *:first-child {\n  margin-top: 0;\n}\n.markdown-body blockquote > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body table th {\n  font-weight: bold;\n}\n.markdown-body table th,\n.markdown-body table td {\n  border: 1px solid #CCCCCC;\n  padding: 6px 13px;\n}\n.markdown-body table tr {\n  background-color: #FFFFFF;\n  border-top: 1px solid #CCCCCC;\n}\n.markdown-body table tr:nth-child(2n) {\n  background-color: #F8F8F8;\n}\n.markdown-body img {\n  max-width: 100%;\n}\n.markdown-body span.frame {\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.frame > span {\n  border: 1px solid #DDDDDD;\n  display: block;\n  float: left;\n  margin: 13px 0 0;\n  overflow: hidden;\n  padding: 7px;\n  width: auto;\n}\n.markdown-body span.frame span img {\n  display: block;\n  float: left;\n}\n.markdown-body span.frame span span {\n  clear: both;\n  color: #333333;\n  display: block;\n  padding: 5px 0 0;\n}\n.markdown-body span.align-center {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-center > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: center;\n}\n.markdown-body span.align-center span img {\n  margin: 0 auto;\n  text-align: center;\n}\n.markdown-body span.align-right {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-right > span {\n  display: block;\n  margin: 13px 0 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body span.align-right span img {\n  margin: 0;\n  text-align: right;\n}\n.markdown-body span.float-left {\n  display: block;\n  float: left;\n  margin-right: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-left span {\n  margin: 13px 0 0;\n}\n.markdown-body span.float-right {\n  display: block;\n  float: right;\n  margin-left: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-right > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body code,\n.markdown-body tt {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  /* white-space: nowrap; */\n  white-space: normal;\n  word-break: break-all;\n}\n.markdown-body pre > code {\n  background: none repeat scroll 0 0 transparent;\n  border: medium none;\n  margin: 0;\n  padding: 0;\n  white-space: pre;\n}\n.markdown-body .highlight pre,\n.markdown-body pre {\n  background-color: #F8F8F8;\n  border: 1px solid #CCCCCC;\n  border-radius: 3px 3px 3px 3px;\n  font-size: 13px;\n  line-height: 19px;\n  overflow: auto;\n  padding: 6px 10px;\n}\n.markdown-body pre code,\n.markdown-body pre tt {\n  background-color: transparent;\n  border: medium none;\n}\n"; });
 define('text!resources/elements/em-chat-channel-create.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-create.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" show-confirm.bind=\"activeTab == 'channel-create'\" confirm-label=\"创建\">\r\n        <div slot=\"header\">创建加入频道</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"tabRef\" class=\"ui pointing secondary menu\">\r\n                <a class=\"active item\" data-tab=\"channel-create\">创建频道</a>\r\n                <a class=\"item\" data-tab=\"channel-join\">加入频道</a>\r\n            </div>\r\n            <div class=\"ui active tab basic segment tms-create\" data-tab=\"channel-create\">\r\n                <div ref=\"frm\" class=\"ui form\">\r\n                    <div class=\"inline required field\">\r\n                        <label>标识</label>\r\n                        <input type=\"text\" name=\"name\" value.bind=\"name\" placeholder=\"小写字母数组-_组合\">\r\n                    </div>\r\n                    <div class=\"inline required field\">\r\n                        <label>名称</label>\r\n                        <input type=\"text\" name=\"title\" value.bind=\"title\" placeholder=\"\">\r\n                    </div>\r\n                    <div class=\"inline field\">\r\n                        <label style=\"visibility: hidden;\">公开</label>\r\n                        <div ref=\"chk\" class=\"ui checkbox\">\r\n                            <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                            <label>非公开(公开频道用户可以自由加入)</label>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"field\">\r\n                        <label>描述</label>\r\n                        <textarea name=\"desc\" value.bind=\"desc\" placeholder=\"\" rows=\"5\"></textarea>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"ui tab basic segment tms-join\" data-tab=\"channel-join\">\r\n                <em-chat-channel-join em-chat-channel-join.ref=\"channelJoinVm\" login-user.bind=\"loginUser\"></em-chat-channel-join>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
+define('text!user/user-login.css', ['module'], function(module) { module.exports = ".tms-user-login {\n  width: 100%;\n  min-height: 100%;\n  background-color: #5a3636;\n  overflow: hidden;\n}\n.tms-user-login .container {\n  width: 300px;\n  top: 50px;\n  margin-left: auto;\n  margin-right: auto;\n  position: relative;\n}\n.tms-user-login h2 {\n  color: rgba(197, 164, 164, 0.8) !important;\n}\n.tms-user-login .ui.form {\n  background-color: #353131;\n}\n.tms-user-login .ui.error.message {\n  background-color: #5a3636;\n}\n.tms-user-login .ui.error.message .header {\n  color: #e0b4b4;\n}\n.tms-user-login .ui.checkbox label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox input:focus ~ label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox label:hover {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.button {\n  background-color: #5a3636;\n  color: #ad8b75;\n}\n"; });
 define('text!resources/elements/em-chat-channel-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\r\n        <div slot=\"header\">编辑频道</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"inline required field\">\r\n                    <label>标识</label>\r\n                    <div class=\"ui basic label\">${channel.name}</div>\r\n                </div>\r\n                <div class=\"inline required field\">\r\n                    <label>名称</label>\r\n                    <input type=\"text\" name=\"title\" value.bind=\"channel.title\" placeholder=\"\">\r\n                </div>\r\n                <div class=\"inline field\">\r\n                    <label style=\"visibility: hidden;\">公开</label>\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                        <label>非公开(公开频道用户可以自由加入)</label>\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <label>描述</label>\r\n                    <textarea name=\"desc\" value.bind=\"channel.description\" placeholder=\"\" rows=\"5\"></textarea>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-input.css', ['module'], function(module) { module.exports = ".tms-em-chat-input.ui.segment {\n  margin: 0;\n  position: fixed;\n  bottom: 0;\n  left: 220px;\n  right: 0;\n  background-color: white;\n  padding-bottom: 22px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-input.ui.segment {\n    left: 0;\n  }\n}\n.tms-em-chat-input.ui.segment .tms-chat-status-bar .dz-preview {\n  display: block!important;\n  width: auto!important;\n  background: #e0e1e2;\n  margin: 0;\n  padding: 7px;\n}\n.tms-em-chat-input.ui.segment .ui[class*=\"left action\"].input > textarea {\n  border-top-left-radius: 0!important;\n  border-bottom-left-radius: 0!important;\n  border-left-color: transparent!important;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper {\n  width: calc(100% - 35px);\n  /* max-width: 100%;\n            -webkit-box-flex: 1;\n            -webkit-flex: 1 0 auto;\n            -ms-flex: 1 0 auto;\n            flex: 1 0 auto; */\n  border: 1px solid rgba(34, 36, 38, 0.15);\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror,\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  min-height: 0;\n  border: none;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  max-height: 300px;\n}\n.tms-em-chat-input.ui.segment .ui.input i.send.icon {\n  z-index: 1;\n}\n.tms-em-chat-input.ui.segment .ui.input textarea {\n  resize: none;\n  width: 100%;\n  padding-right: 2.67142857em!important;\n  margin: 0;\n  max-width: 100%;\n  outline: 0;\n  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);\n  text-align: left;\n  display: block;\n  padding: .67861429em 1em;\n  background: #FFF;\n  border: none;\n  color: rgba(0, 0, 0, 0.87);\n  box-shadow: none;\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n@media only screen and (min-width: 768px) {\n  .tms-chat-direct .tms-content.tms-sidebar-show .tms-em-chat-input {\n    right: 392px;\n  }\n}\n.textcomplete-dropdown {\n  position: static!important;\n  border: 1px solid #ddd;\n  background-color: white;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  border-radius: 5px;\n}\n.textcomplete-dropdown li {\n  /* border-top: 1px solid #ddd; */\n  padding: 2px 5px;\n}\n.textcomplete-dropdown li:first-child {\n  border-top: none;\n  border-top-left-radius: 5px;\n  border-top-right-radius: 5px;\n}\n.textcomplete-dropdown li:last-child {\n  border-bottom-left-radius: 5px;\n  border-bottom-right-radius: 5px;\n}\n.textcomplete-dropdown li:hover,\n.textcomplete-dropdown .active {\n  background-color: #439fe0;\n}\n.textcomplete-dropdown a:hover {\n  cursor: pointer;\n}\n.textcomplete-dropdown li.textcomplete-item a {\n  color: black;\n}\n.textcomplete-dropdown li.textcomplete-item:hover a,\n.textcomplete-dropdown li.textcomplete-item.active a {\n  color: white;\n}\n"; });
+define('text!user/user-pwd-reset.css', ['module'], function(module) { module.exports = ".tms-user-pwd-reset {\n  height: 100%;\n}\n.tms-user-pwd-reset .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
 define('text!resources/elements/em-chat-channel-join.html', ['module'], function(module) { module.exports = "<template>\n    <table class=\"ui very basic striped table\">\n        <thead>\n            <tr>\n                <th>标识</th>\n                <th>名称</th>\n                <th>描述</th>\n                <th>可见性</th>\n                <th>拥有者</th>\n                <th>操作</th>\n            </tr>\n        </thead>\n        <tbody>\n            <tr repeat.for=\"item of channels\">\n                <td><i class=\"hashtag icon\"></i>${item.name}</td>\n                <td title=\"${item.title}\">${item.title}</td>\n                <td><span data-tooltip=\"${item.description}\"><i class=\"info circle icon\"></i></span></td>\n                <td if.bind=\"item.privated\"><span data-tooltip=\"私有频道\"><i class=\"lock icon\"></i></span></td>\n                <td if.bind=\"!item.privated\"><span data-tooltip=\"公开频道\"><i class=\"unlock icon\"></i></span></td>\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username != loginUser.username\">${item.owner.name ? item.owner.name : item.owner.username}</td>\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username == loginUser.username\">自己</td>\n                <td>\n                    <div if.bind=\"!item.privated && !item.joined\" class=\"ui mini green button\" click.delegate=\"joinHandler(item)\">加入</div>\n                    <div if.bind=\"item.joined && (item.owner.username != loginUser.username)\" class=\"ui mini orange button\" click.delegate=\"leaveHandler(item)\">离开</div>\n                </td>\n            </tr>\n        </tbody>\n    </table>\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\n</template>\n"; });
-define('text!resources/elements/em-chat-sidebar-left.css', ['module'], function(module) { module.exports = ".tms-left-sidebar .tms-body {\n  position: absolute;\n  top: 98px;\n  width: 190px;\n  height: calc(100vh - 160px);\n  overflow-y: auto;\n}\n.tms-left-sidebar .tms-body::-webkit-scrollbar-thumb {\n  background-color: #475a81;\n}\n.tms-left-sidebar .tms-body i.circular.icon {\n  box-shadow: 0 0 0 0.1em #4183c4 inset;\n}\n.tms-left-sidebar .tms-body .ui.selection.list {\n  margin-top: 10px;\n}\n.tms-left-sidebar .tms-body .title {\n  position: relative;\n}\n.tms-left-sidebar .tms-body .title .ui.header {\n  display: inline-block;\n  margin-top: 2px;\n  margin-bottom: 0;\n}\n.tms-left-sidebar .tms-body .title i.plus.icon {\n  position: absolute;\n  right: 0;\n  font-size: 12px;\n}\n.tms-left-sidebar .tms-body .tms-channels .ui.list a.item {\n  position: relative;\n}\n.tms-left-sidebar .tms-body .tms-channels .ui.list a.item:hover .actions {\n  display: inline-block;\n}\n.tms-left-sidebar .tms-body .tms-channels .actions {\n  display: none;\n  position: absolute;\n  right: 0;\n  top: 5px;\n}\n"; });
+define('text!user/user-register.css', ['module'], function(module) { module.exports = ".tms-user-register {\n  height: 100%;\n}\n.tms-user-register .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
 define('text!resources/elements/em-chat-channel-members-mgr.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-members-mgr.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"确定\">\r\n        <div slot=\"header\">频道成员管理</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-members-mgr\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"field\">\r\n                    <label>频道成员</label>\r\n                    <div ref=\"membersRef\" class=\"ui fluid multiple search selection dropdown\">\r\n                        <input type=\"hidden\" name=\"members\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\"></div>\r\n                        <div class=\"menu\">\r\n                            <div repeat.for=\"item of users\" task.bind=\"initMembersUI($last)\" class=\"item\" data-value=\"${item.username}\">\r\n                                ${item.name ? item.name : item.username}\r\n                                <input type=\"hidden\" class=\"${channel.owner.username == item.username ? 'owner' : ''}\">\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-top-menu.css', ['module'], function(module) { module.exports = ".tms-em-chat-top-menu.ui.top.menu {\n  padding-left: 220px;\n  height: 60px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .tms-chat-at.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .item.tms-item:before {\n  display: none;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item {\n  padding-left: 5px;\n  padding-right: 5px;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search input {\n  width: 100px;\n  transition: width 0.15s ease-out 0s;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search i.remove.icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu {\n    padding-left: 0;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .ui.basic.button {\n  box-shadow: none;\n}\n.tms-em-chat-top-menu > .tms-chat-at .menu > .header i.plus.icon {\n  position: absolute;\n  right: 5px;\n  top: 7px;\n}\n"; });
+define('text!resources/elements/em-chat-channel-create.css', ['module'], function(module) { module.exports = ".tms-em-chat-channel-create .tms-join {\n  max-height: 315px;\n  overflow-y: auto;\n}\n.tms-em-chat-channel-create .ui.form > .field > label {\n  width: 35px!important;\n}\n"; });
 define('text!resources/elements/em-chat-content-item.html', ['module'], function(module) { module.exports = "<template>\r\n    <div repeat.for=\"item of chats\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\r\n        <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\r\n        <div class=\"content\">\r\n            <a class=\"author\">${item.creator.name}</a>\r\n            <div class=\"metadata\">\r\n                <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\r\n            </div>\r\n            <div show.bind=\"!item.isEditing\" class=\"text markdown-body\" innerhtml.bind=\"item.content | parseMd:members\"></div>\r\n            <textarea ref=\"editTxtRef\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content\" class=\"tms-edit-textarea\" rows=\"1\"></textarea>\r\n            <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-edit-actions\">\r\n                <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\r\n                    <i class=\"checkmark icon\"></i>\r\n                </button>\r\n                <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\r\n                    <i class=\"remove icon\"></i>\r\n                </button>\r\n                <button dropzone=\"clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\r\n                    <i class=\"upload icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"actions\">\r\n                <a if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"editHandler(item, editTxtRef)\" class=\"tms-edit\">编辑</a>\r\n                <a if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"deleteHandler(item)\" class=\"tms-delete\">删除</a>\r\n                <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\">复制</a>\r\n                <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${selfLink + '?id=' + item.id}\">分享</a>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(module) { module.exports = ".tms-em-hotkeys-modal ul {\n  padding-left: 30px;\n}\n.tms-em-hotkeys-modal ul.no_bullets {\n  margin: 0 0 2rem;\n}\n.tms-em-hotkeys-modal ul.no_bullets li {\n  line-height: 2rem;\n  list-style-type: none;\n  padding: 0;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.tms-em-hotkeys-modal > .content {\n  background-color: rgba(11, 7, 11, 0.78) !important;\n}\n.tms-em-hotkeys-modal .keyboard i.icon {\n  margin-right: 0px!important;\n}\n.tms-em-hotkeys-modal .subtle_silver {\n  color: #9e9ea6!important;\n}\n.tms-em-hotkeys-modal .ui.grid .column {\n  padding: 0!important;\n}\n"; });
+define('text!resources/elements/em-chat-channel-members-mgr.css', ['module'], function(module) { module.exports = ".tms-em-chat-channel-members-mgr .ui.dropdown > a.ui.label > input.owner + i.delete.icon {\n  display: none;\n}\n"; });
 define('text!resources/elements/em-chat-input.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-input.css\"></require>\r\n    <require from=\"./em-hotkeys-modal\"></require>\r\n    <div class=\"ui basic segment tms-msg-input tms-em-chat-input dropzone\">\r\n        <div ref=\"chatStatusBarRef\" class=\"tms-chat-status-bar dropzone-previews\"></div>\r\n        <!-- <em-chat-channel-at channel.bind=\"channel\" em-chat-channel-at.ref=\"channelAtVm\"></em-chat-channel-at> -->\r\n        <div ref=\"inputRef\" class=\"ui left action fluid icon input dropzone\">\r\n            <div ref=\"chatBtnRef\" class=\"ui icon button\">\r\n                <i class=\"plus icon\"></i>\r\n            </div>\r\n            <div class=\"ui flowing popup bottom left transition hidden\">\r\n                <div class=\"ui middle aligned selection list\">\r\n                    <div ref=\"btnItemUploadRef\" class=\"item\">\r\n                        <i class=\"upload icon\"></i>\r\n                        <div class=\"content\">\r\n                            上传文件\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"textareaWrapper\">\r\n                <textarea ref=\"chatInputRef\" placeholder=\"/ 键提示,Ctrl+Enter发送,Esc清空\"></textarea>\r\n            </div>\r\n            <i click.delegate=\"sendChatMsgHandler()\" title=\"发送消息(Enter)\" class=\"send link icon\"></i>\r\n        </div>\r\n    </div>\r\n    <div ref=\"previewTemplateRef\" style=\"display: none;\">\r\n        <div class=\"dz-preview dz-file-preview\">\r\n            <div class=\"dz-details\">\r\n                <div class=\"dz-filename\"><span data-dz-name></span></div>\r\n                <div class=\"dz-size\" data-dz-size></div>\r\n                <img data-dz-thumbnail />\r\n            </div>\r\n            <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            <div class=\"dz-success-mark\"><span>✔</span></div>\r\n            <div class=\"dz-error-mark\"><span>✘</span></div>\r\n            <div class=\"dz-error-message\"><span data-dz-errormessage></span></div>\r\n        </div>\r\n    </div>\r\n    <em-hotkeys-modal em-hotkeys-modal.ref=\"emHotkeysModal\"></em-hotkeys-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-user-avatar.css', ['module'], function(module) { module.exports = ".em-user-avatar.avatar.ui.mini.circular.image {\n  width: 35px;\n  height: 35px;\n  font-size: 35px;\n  background-color: rgba(150, 178, 183, 0.4);\n  text-align: center;\n  margin: 0;\n}\n.em-user-avatar .text-char {\n  display: inline-block;\n  height: 35px;\n  line-height: 35px;\n  vertical-align: top;\n}\n"; });
+define('text!resources/elements/em-chat-input.css', ['module'], function(module) { module.exports = ".tms-em-chat-input.ui.segment {\n  margin: 0;\n  position: fixed;\n  bottom: 0;\n  left: 220px;\n  right: 0;\n  background-color: white;\n  padding-bottom: 22px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-input.ui.segment {\n    left: 0;\n  }\n}\n.tms-em-chat-input.ui.segment .tms-chat-status-bar .dz-preview {\n  display: block!important;\n  width: auto!important;\n  background: #e0e1e2;\n  margin: 0;\n  padding: 7px;\n}\n.tms-em-chat-input.ui.segment .ui[class*=\"left action\"].input > textarea {\n  border-top-left-radius: 0!important;\n  border-bottom-left-radius: 0!important;\n  border-left-color: transparent!important;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper {\n  width: calc(100% - 35px);\n  /* max-width: 100%;\n            -webkit-box-flex: 1;\n            -webkit-flex: 1 0 auto;\n            -ms-flex: 1 0 auto;\n            flex: 1 0 auto; */\n  border: 1px solid rgba(34, 36, 38, 0.15);\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror,\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  min-height: 0;\n  border: none;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  max-height: 300px;\n}\n.tms-em-chat-input.ui.segment .ui.input i.send.icon {\n  z-index: 1;\n}\n.tms-em-chat-input.ui.segment .ui.input textarea {\n  resize: none;\n  width: 100%;\n  padding-right: 2.67142857em!important;\n  margin: 0;\n  max-width: 100%;\n  outline: 0;\n  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);\n  text-align: left;\n  display: block;\n  padding: .67861429em 1em;\n  background: #FFF;\n  border: none;\n  color: rgba(0, 0, 0, 0.87);\n  box-shadow: none;\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n@media only screen and (min-width: 768px) {\n  .tms-chat-direct .tms-content.tms-sidebar-show .tms-em-chat-input {\n    right: 392px;\n  }\n}\n.textcomplete-dropdown {\n  position: static!important;\n  border: 1px solid #ddd;\n  background-color: white;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  border-radius: 5px;\n}\n.textcomplete-dropdown li {\n  /* border-top: 1px solid #ddd; */\n  padding: 2px 5px;\n}\n.textcomplete-dropdown li:first-child {\n  border-top: none;\n  border-top-left-radius: 5px;\n  border-top-right-radius: 5px;\n}\n.textcomplete-dropdown li:last-child {\n  border-bottom-left-radius: 5px;\n  border-bottom-right-radius: 5px;\n}\n.textcomplete-dropdown li:hover,\n.textcomplete-dropdown .active {\n  background-color: #439fe0;\n}\n.textcomplete-dropdown a:hover {\n  cursor: pointer;\n}\n.textcomplete-dropdown li.textcomplete-item a {\n  color: black;\n}\n.textcomplete-dropdown li.textcomplete-item:hover a,\n.textcomplete-dropdown li.textcomplete-item.active a {\n  color: white;\n}\n"; });
 define('text!resources/elements/em-chat-sidebar-left.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-sidebar-left.css\"></require>\r\n    <div class=\"ui left visible segment sidebar tms-left-sidebar\">\r\n        <div class=\"tms-header\">\r\n            <h1 class=\"ui header\"><a href=\"/admin/dynamic?scroll=1\">TMS沟通</a></h1>\r\n            <input value.bind=\"filter\" focusin.trigger=\"chatToUserFilerFocusinHanlder()\" keyup.trigger=\"chatToUserFilerKeyupHanlder($event)\" type=\"text\" placeholder=\"沟通对象查找\">\r\n            <i title=\"清空过滤输入\" click.delegate=\"clearFilterHandler()\" class=\"bordered close icon link small\"></i>\r\n        </div>\r\n        <div class=\"tms-body\">\r\n            <div class=\"tms-channels\">\r\n                <div class=\"title\">\r\n                    <h4 class=\"ui header\"><i class=\"users icon\"></i>频道</h4>\r\n                    <i ref=\"createChannelRef\" class=\"plus link circular icon\"></i>\r\n                </div>\r\n                <div class=\"ui middle aligned selection list\">\r\n                    <a repeat.for=\"item of channels\" title=\"${item.title}(${item.name})\" show.bind=\"!item.hidden\" href=\"#/chat/${item.name}\" class=\"item ${(!isAt && item.name == chatTo) ? 'active' : ''}\">\r\n                        <i class=\"hashtag icon\"></i>\r\n                        <div class=\"content\">\r\n                            <div style=\"color: black;\">${item.title}</div>\r\n                        </div>\r\n                        <div class=\"actions\">\r\n                            <div if.bind=\"item.owner.username == loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                <!-- <i class=\"ellipsis vertical icon\"></i> -->\r\n                                <i class=\"large ellipsis horizontal icon\"></i>\r\n                                <div class=\"menu\">\r\n                                    <div class=\"item\" click.delegate=\"membersMgrHandler(item)\">成员管理</div>\r\n                                    <div class=\"item\" click.delegate=\"editHandler(item)\">编辑</div>\r\n                                    <div class=\"item\" click.delegate=\"delHandler(item)\">删除</div>\r\n                                </div>\r\n                            </div>\r\n                            <div if.bind=\"item.owner.username != loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                <!-- <i class=\"ellipsis vertical icon\"></i> -->\r\n                                <i class=\"large ellipsis horizontal icon\"></i>\r\n                                <div class=\"menu\">\r\n                                    <div class=\"item\" click.delegate=\"leaveHandler(item)\">离开</div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                </div>\r\n            </div>\r\n            <div class=\"ui divider\"></div>\r\n            <div class=\"tms-users\">\r\n                <div class=\"title\">\r\n                    <h4 class=\"ui header\"><i class=\"user icon\"></i>用户</h4>\r\n                    <!-- <i class=\"plus link circular icon\"></i> -->\r\n                </div>\r\n                <div ref=\"userListRef\" class=\"ui middle aligned selection list\">\r\n                    <a repeat.for=\"item of users\" title=\"${item.username}\" show.bind=\"!item.hidden\" href=\"#/chat/@${item.username}\" class=\"item ${(isAt && item.username == chatTo) ? 'active' : ''}\" data-id=\"${item.username}\">\r\n                        <i style=\"font-weight: bold;\" class=\"at icon\"></i>\r\n                        <div class=\"content\">\r\n                            <div style=\"color: black;\">${item.name ? item.name : item.username}</div>\r\n                        </div>\r\n                    </a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n    <em-chat-channel-create login-user.bind=\"loginUser\" trigger.bind=\"createChannelRef\"></em-chat-channel-create>\r\n    <em-chat-channel-edit channel.bind=\"selectedChannel\" em-chat-channel-edit.ref=\"channelEditMd\"></em-chat-channel-edit>\r\n    <em-chat-channel-members-mgr users.bind=\"users\" channel.bind=\"selectedChannel\" em-chat-channel-members-mgr.ref=\"channelMembersMgrMd\"></em-chat-channel-members-mgr>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-sidebar-left.css', ['module'], function(module) { module.exports = ".tms-left-sidebar .tms-body {\n  position: absolute;\n  top: 98px;\n  width: 190px;\n  height: calc(100vh - 160px);\n  overflow-y: auto;\n}\n.tms-left-sidebar .tms-body::-webkit-scrollbar-thumb {\n  background-color: #475a81;\n}\n.tms-left-sidebar .tms-body i.circular.icon {\n  box-shadow: 0 0 0 0.1em #4183c4 inset;\n}\n.tms-left-sidebar .tms-body .ui.selection.list {\n  margin-top: 10px;\n}\n.tms-left-sidebar .tms-body .title {\n  position: relative;\n}\n.tms-left-sidebar .tms-body .title .ui.header {\n  display: inline-block;\n  margin-top: 2px;\n  margin-bottom: 0;\n}\n.tms-left-sidebar .tms-body .title i.plus.icon {\n  position: absolute;\n  right: 0;\n  font-size: 12px;\n}\n.tms-left-sidebar .tms-body .tms-channels .ui.list a.item {\n  position: relative;\n}\n.tms-left-sidebar .tms-body .tms-channels .ui.list a.item:hover .actions {\n  display: inline-block;\n}\n.tms-left-sidebar .tms-body .tms-channels .actions {\n  display: none;\n  position: absolute;\n  right: 0;\n  top: 5px;\n}\n"; });
 define('text!resources/elements/em-chat-sidebar-right.html', ['module'], function(module) { module.exports = "<template>\r\n    <div class=\"tms-right-sidebar\">\r\n        <div class=\"panel-search\">\r\n            <div class=\"ui basic segment minimal selection list segment comments\">\r\n                <h1 show.bind=\"!searchChats.length\" class=\"ui center aligned header\">无符合检索结果</h1>\r\n                <div repeat.for=\"item of searchChats\" mouseleave.trigger=\"searchItemMouseleaveHandler(item)\" mouseenter.trigger=\"searchItemMouseenterHandler(item)\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\r\n                    <a class=\"avatar\">\r\n                        <i class=\"circular icon large user\"></i>\r\n                    </a>\r\n                    <div class=\"content\">\r\n                        <a class=\"author\">${item.creator.name}</a>\r\n                        <div class=\"metadata\">\r\n                            <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\r\n                        </div>\r\n                        <div class=\"text markdown-body ${item.isOpen ? 'tms-open' : ''}\" innerhtml.bind=\"item.content | parseMd\"></div>\r\n                        <div class=\"actions\">\r\n                            <a click.delegate=\"gotoChatHandler(item)\" class=\"tms-goto\" href=\"\">定位</a>\r\n                            <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\">复制</a>\r\n                            <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${selfLink + '?id=' + item.id}\">分享</a>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"tms-btn-open-search-item\" click.delegate=\"openSearchItemHandler(item)\">\r\n                        <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                    </div>\r\n                </div>\r\n                <button if.bind=\"!lastSearch\" click.delegate=\"searchMoreHandler()\" class=\"fluid ui basic button tms-search-more\"><i show.bind=\"searchMoreP && searchMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreSearchCnt})</button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-top-menu.css', ['module'], function(module) { module.exports = ".tms-em-chat-top-menu.ui.top.menu {\n  padding-left: 220px;\n  height: 60px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .tms-chat-at.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .item.tms-item:before {\n  display: none;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item {\n  padding-left: 5px;\n  padding-right: 5px;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search input {\n  width: 100px;\n  transition: width 0.15s ease-out 0s;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search i.remove.icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu {\n    padding-left: 0;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .ui.basic.button {\n  box-shadow: none;\n}\n.tms-em-chat-top-menu > .tms-chat-at .menu > .header i.plus.icon {\n  position: absolute;\n  right: 5px;\n  top: 7px;\n}\n"; });
 define('text!resources/elements/em-chat-top-menu.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-top-menu.css\"></require>\r\n    <div class=\"ui top fixed menu tms-em-chat-top-menu\">\r\n        <div ref=\"chatToDropdownRef\" class=\"ui dropdown link item ${isActiveSearch ? 'tms-hide' : ''} tms-chat-at\">\r\n            <!-- <i class=\"big loading at icon\"></i> -->\r\n            <span class=\"text\"></span>\r\n            <i class=\"dropdown icon\"></i>\r\n            <div class=\"menu\">\r\n                <div class=\"ui icon search input\">\r\n                    <i class=\"search icon\"></i>\r\n                    <input ref=\"filterChatToUser\" type=\"text\" placeholder=\"过滤沟通对象\">\r\n                </div>\r\n                <div class=\"divider\"></div>\r\n                <div class=\"header\">\r\n                    <i class=\"filter icon\"></i> 切换沟通对象(Ctrl+k)\r\n                </div>\r\n                <div class=\"scrolling menu\">\r\n                    <div class=\"header\">\r\n                        <i class=\"users icon\"></i> 频道 <i ref=\"createChannelRef\" class=\"circular icon link plus\"></i>\r\n                    </div>\r\n                    <a repeat.for=\"item of channels\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/${item.name}\" class=\"item\" title=\"${item.name}\" data-value=\"${item.name}\" data-id=\"${item.name}\">\r\n                        <i class=\"hashtag icon\"></i>${item.title}\r\n                    </a>\r\n                    <div class=\"header\">\r\n                        <i class=\"user icon\"></i> 用户\r\n                    </div>\r\n                    <a repeat.for=\"item of users\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/@${item.username}\" class=\"item\" title=\"${item.username}\" data-value=\"${item.username}\" data-id=\"@${item.username}\">\r\n                        <i style=\"font-weight: bold;\" class=\"at icon\"></i>${item.name}\r\n                    </a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"right menu\">\r\n            <div class=\"item tms-item\">\r\n                <button click.delegate=\"sibebarRightHandler()\" title=\"右侧边栏(Ctrl+.)\" class=\"basic ${isRightSidebarShow ? 'active' : ''} ui icon button\">\r\n                    <i class=\"columns icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item\">\r\n                <div ref=\"searchRef\" class=\"ui search\">\r\n                    <div class=\"ui left icon input\">\r\n                        <input ref=\"searchInputRef\" keyup.trigger=\"searchKeyupHandler($event)\" focusout.trigger=\"searchFocusoutHandler()\" focusin.trigger=\"searchFocusinHandler()\" class=\"prompt\" type=\"text\" placeholder=\"搜索...\">\r\n                        <i class=\"${(searchingP && searchingP.readyState != 4) ? 'spinner loading' : 'search'} icon\"></i>\r\n                        <i ref=\"searchRemoveRef\" click.delegate=\"clearSearchHandler()\" class=\"remove link icon\"></i>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <a class=\"item tms-login-user\">\r\n                <i class=\"circular user icon\"></i> ${loginUser.name}\r\n            </a>\r\n        </div>\r\n    </div>\r\n    <em-chat-channel-create login-user.bind=\"loginUser\" trigger.bind=\"createChannelRef\"></em-chat-channel-create>\r\n</template>\r\n"; });
+define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(module) { module.exports = ".tms-em-hotkeys-modal ul {\n  padding-left: 30px;\n}\n.tms-em-hotkeys-modal ul.no_bullets {\n  margin: 0 0 2rem;\n}\n.tms-em-hotkeys-modal ul.no_bullets li {\n  line-height: 2rem;\n  list-style-type: none;\n  padding: 0;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.tms-em-hotkeys-modal > .content {\n  background-color: rgba(11, 7, 11, 0.78) !important;\n}\n.tms-em-hotkeys-modal .keyboard i.icon {\n  margin-right: 0px!important;\n}\n.tms-em-hotkeys-modal .subtle_silver {\n  color: #9e9ea6!important;\n}\n.tms-em-hotkeys-modal .ui.grid .column {\n  padding: 0!important;\n}\n"; });
 define('text!resources/elements/em-confirm-modal.html', ['module'], function(module) { module.exports = "<template>\n    <div ref=\"md\" class=\"ui small modal nx-ui-confirm tms-md450\">\n        <div class=\"header\">\n            ${config.title}\n        </div>\n        <div class=\"content\">\n            <i if.bind=\"config.warning\" class=\"large yellow warning sign icon\" style=\"float: left;\"></i>\n            <i if.bind=\"!config.warning\" class=\"large blue info circle icon\" style=\"float: left;\"></i>\n            <p style=\"margin-left: 20px;\">\n                <span innerhtml.bind=\"config.content\"></span>\n            </p>\n        </div>\n        <div class=\"actions\">\n            <div class=\"ui cancel basic blue left floated button\">取消</div>\n            <div class=\"ui ok blue button\">确认</div>\n        </div>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-user-avatar.css', ['module'], function(module) { module.exports = ".em-user-avatar.avatar.ui.mini.circular.image {\n  width: 35px;\n  height: 35px;\n  font-size: 35px;\n  background-color: rgba(150, 178, 183, 0.4);\n  text-align: center;\n  margin: 0;\n}\n.em-user-avatar .text-char {\n  display: inline-block;\n  height: 35px;\n  line-height: 35px;\n  vertical-align: top;\n}\n"; });
 define('text!resources/elements/em-dropdown.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"dropdown\" class=\"ui dropdown ${classes}\">\r\n        <input type=\"hidden\" name=\"${name}\">\r\n        <i class=\"dropdown icon\"></i>\r\n        <div class=\"default text\">${text}</div>\r\n        <div class=\"menu\">\r\n            <div repeat.for=\"item of menuItems\" task.bind=\"initDropdownHandler($last)\" class=\"item\" data-value=\"${item[valueProp]}\">${item[labelProp]}</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-hotkeys-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-hotkeys-modal.css\"></require>\r\n    <div ref=\"md\" class=\"ui basic modal tms-em-hotkeys-modal\">\r\n        <i class=\"close icon\"></i>\r\n        <!-- <div class=\"header\">\r\n            Archive Old Messages\r\n        </div> -->\r\n        <div class=\"content\">\r\n            <h1 class=\"ui center inverted aligned header\">键盘快捷键\r\n\t\t\t\t<span style=\"position: relative; top: -0.375rem; left: 1rem;\" aria-hidden=\"true\">\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Control\">Ctrl</span>\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Question mark\">/</span>\r\n\t\t\t\t</span>\r\n            </h1>\r\n            <div class=\"ui grid\">\r\n                <div class=\"three column row\">\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>上一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>下一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>第一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>最后一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>历史回退: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow left icon\" aria-label=\"Left arrow\"></i></span></li>\r\n                            <li>历史向前: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow right icon\" aria-label=\"Right arrow\"></i></span></li>\r\n                            <li>标记已读: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                            <li>全部标记已读: <span class=\"keyboard\">Shift</span><span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                            <li>快速切换: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">k</span></li>\r\n                            <li>Browse DMs: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">k</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>\r\n                                自动补全\r\n                                <ul>\r\n                                    <li>名称: <span class=\"subtle_silver\">[a-z]</span><span class=\"keyboard\">Tab</span> <span class=\"subtle_silver\">or</span> <span class=\"keyboard\">@</span><span class=\"keyboard\">Tab</span></li>\r\n                                    <li>频道: <span class=\"keyboard\" aria-label=\"Number symbol\">#</span><span class=\"keyboard\">Tab</span></li>\r\n                                    <li>表情: <span class=\"keyboard\" aria-label=\"Colon\">:</span><span class=\"keyboard\">Tab</span></li>\r\n                                </ul>\r\n                            </li>\r\n                            <li>换行: <span class=\"keyboard\">Shift</span><span class=\"keyboard\">Enter</span></li>\r\n                            <li>输入聚焦: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">i</span></li>\r\n                            <li>编辑: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">DblClick</span></li>\r\n                            <li>编辑上一条: <span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span> <span class=\"subtle_silver\">in input</span></li>\r\n                            <li>响应最后一条: <span class=\"keyboard\" aria-label=\"control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">\\</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>切换边栏: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">.</span></li>\r\n                            <ul>\r\n                                <li>团队: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">e</span></li>\r\n                                <li>标星: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">s</span></li>\r\n                            </ul>\r\n                            <li>粘贴代码片段: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">Enter</span></li>\r\n                            <li>上传文件: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">u</span></li>\r\n                            <li>关闭对话框: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                        </ul>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <!-- <div class=\"image\">\r\n                <i class=\"archive icon\"></i>\r\n            </div>\r\n            <div class=\"description\">\r\n                <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>\r\n            </div> -->\r\n        </div>\r\n        <!-- <div class=\"actions\">\r\n            <div class=\"two fluid ui inverted buttons\">\r\n                <div class=\"ui cancel red basic inverted button\">\r\n                    <i class=\"remove icon\"></i> No\r\n                </div>\r\n                <div class=\"ui ok green basic inverted button\">\r\n                    <i class=\"checkmark icon\"></i> Yes\r\n                </div>\r\n            </div>\r\n        </div> -->\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"modal\" class=\"ui modal ${classes}\">\r\n        <!-- <i class=\"close icon\"></i> -->\r\n        <div class=\"header\">\r\n            <slot name=\"header\">modal header...</slot>\r\n        </div>\r\n        <div class=\"content\">\r\n            <div class=\"ui inverted dimmer\" style=\"background-color: rgba(255, 255, 255, 0.5) !important;\">\r\n                <div class=\"ui loader\"></div>\r\n            </div>\r\n            <slot name=\"content\">modal content...</slot>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <slot name=\"actions\">\r\n                <div style=\"margin-left: 3.5px;\" class=\"ui cancel basic blue left floated button\" textcontent.bind=\"cancelLabel\">取消</div>\r\n                <div show.bind=\"showConfirm\" class=\"ui ok blue button ${(loading || disabled) ? 'disabled' : ''}\" textcontent.bind=\"confirmLabel\">确认</div>\r\n            </slot>\r\n            <div style=\"clear: both;\"></div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });

@@ -93,6 +93,7 @@ export class EmChatContentItem {
                 path: wurl('path'),
                 id: item.id,
                 content: item.content,
+                diff: utils.diffS(item.contentOld, item.content),
                 contentHtml: html,
                 contentHtmlOld: htmlOld
             };
