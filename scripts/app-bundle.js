@@ -4276,6 +4276,7 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
                     id: item.id,
                     usernames: utils.parseUsernames(item.content, this.members).join(','),
                     content: item.content,
+                    diff: utils.diffS(item.contentOld, item.content),
                     contentHtml: html,
                     contentHtmlOld: htmlOld
                 };

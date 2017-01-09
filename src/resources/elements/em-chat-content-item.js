@@ -104,6 +104,7 @@ export class EmChatContentItem {
                 id: item.id,
                 usernames: utils.parseUsernames(item.content, this.members).join(','),
                 content: item.content,
+                diff: utils.diffS(item.contentOld, item.content),
                 contentHtml: html,
                 contentHtmlOld: htmlOld
             };
