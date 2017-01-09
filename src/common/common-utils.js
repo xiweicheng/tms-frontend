@@ -261,10 +261,14 @@ export class CommonUtils {
      * @param  {[type]} newS [description]
      * @return {[type]}      [description]
      */
-    diffS(oldS, newS) {
+    diffS(oldS, newS, way) {
+        var ways = ['diffChars', 'diffWords', 'diffWordsWithSpace', 'diffLines'];
+        if (!ways.includes(way)) {
+            way = 'diffWords';
+        }
         var delStyle = 'style="background-color: #e6cf56; text-decoration: line-through;"';
         var insStyle = 'style="background-color: #98e287; text-decoration: none;"';
-        var diff = JsDiff.diffChars(oldS, newS);
+        var diff = JsDiff[way](oldS, newS);
         var nodeArr = [];
         for (var i = 0; i < diff.length; i++) {
 
