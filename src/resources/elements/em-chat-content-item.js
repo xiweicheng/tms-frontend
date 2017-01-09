@@ -94,8 +94,8 @@ export class EmChatContentItem {
                 id: item.id,
                 content: item.content,
                 diff: utils.diffS(item.contentOld, item.content),
-                contentHtml: html,
-                contentHtmlOld: htmlOld
+                // contentHtml: html,
+                // contentHtmlOld: htmlOld
             };
         } else {
             url = `/admin/chat/channel/update`;
@@ -105,8 +105,8 @@ export class EmChatContentItem {
                 usernames: utils.parseUsernames(item.content, this.members).join(','),
                 content: item.content,
                 diff: utils.diffS(item.contentOld, item.content),
-                contentHtml: html,
-                contentHtmlOld: htmlOld
+                // contentHtml: html,
+                // contentHtmlOld: htmlOld
             };
         }
 
