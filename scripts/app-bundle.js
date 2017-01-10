@@ -3931,8 +3931,14 @@ define('resources/attributes/attr-scrollbar',['exports', 'aurelia-framework', 'a
         }
 
         AttrScrollbarCustomAttribute.prototype.valueChanged = function valueChanged(newValue, oldValue) {
-            var cls = newValue ? newValue : 'scrollbar-outer';
-            jQuery(this.element).addClass(cls).scrollbar();
+            this.cls = newValue ? newValue : 'scrollbar-outer';
+            jQuery(this.element).addClass(this.cls).scrollbar();
+        };
+
+        AttrScrollbarCustomAttribute.prototype.unbind = function unbind() {
+            try {
+                jQuery(this.element).removeClass(this.cls).scrollbar('destroy');
+            } catch (err) {}
         };
 
         return AttrScrollbarCustomAttribute;
