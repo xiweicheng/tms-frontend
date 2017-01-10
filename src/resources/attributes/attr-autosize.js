@@ -1,8 +1,5 @@
 import { inject } from 'aurelia-framework';
 import { customAttribute } from 'aurelia-templating';
-import {
-    default as autosize
-} from 'autosize';
 
 @customAttribute('autosize')
 @inject(Element)

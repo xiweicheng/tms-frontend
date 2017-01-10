@@ -8,6 +8,7 @@ export class EmChatContentItem {
     @bindable isAt;
     @bindable channel;
     members = [];
+    selfLink = utils.getBaseUrl() + wurl('path') + '#' + utils.getHash();
 
     channelChanged() {
 
@@ -21,8 +22,6 @@ export class EmChatContentItem {
             this.members = [];
         }
     }
-
-    selfLink = utils.getBaseUrl() + wurl('path') + '#' + utils.getHash();
 
     deleteHandler(item) {
 

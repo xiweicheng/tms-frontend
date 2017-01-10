@@ -26,10 +26,17 @@ export default class AttributeGenerator {
   }
 
   generateSource(className) {
+    let attrName = className.toLowerCase();
+    if(attrName.startsWith('attr')) {
+        attrName = attrName.replace('attr', '');
+    }
 return `import {inject} from 'aurelia-framework';
+import { customAttribute } from 'aurelia-templating';
 
+@customAttribute('${attrName}')
 @inject(Element)
 export class ${className}CustomAttribute {
+
   constructor(element) {
     this.element = element;
   }

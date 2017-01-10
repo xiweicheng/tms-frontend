@@ -27,6 +27,22 @@ export class EmChatInput {
 
     }
 
+    /**
+     * 构造函数
+     */
+    constructor() {
+        this.subscribe = ea.subscribe(nsCons.EVENT_SHOW_HOTKEYS_MODAL, (payload) => {
+            this.emHotkeysModal.show();
+        });
+    }
+
+    /**
+     * 当数据绑定引擎从视图解除绑定时被调用
+     */
+    unbind() {
+        this.subscribe.dispose();
+    }
+
     initHotkeys() {
         $(document).bind('keydown', 'ctrl+i', () => {
             event.preventDefault();
@@ -175,8 +191,11 @@ export class EmChatInput {
                 return tips[value].label;
             },
             replace: (value) => {
-                this.tipsActionHandler(value);
-                return '';
+                if (this.tipsActionHandler(value)) {
+                    return `$1${tips[value].value}`;
+                } else {
+                    return '';
+                }
             }
         }, { // @user
             match: /(^|\s)@(\w*)$/,
@@ -322,8 +341,11 @@ export class EmChatInput {
         } else if (value == '/shortcuts') {
             this.emHotkeysModal.show();
         } else {
-            this.insertTipContent(tips[value]);
+            // this.insertTipContent(tips[value]);
+            return true;
         }
+
+        return false;
     }
 
 }
