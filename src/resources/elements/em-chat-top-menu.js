@@ -11,6 +11,7 @@ export class EmChatTopMenu {
     @bindable chatId;
     @bindable chatTo;
     @bindable isAt;
+    isRightSidebarShow = false;
 
     chatToChanged() {
         $(this.chatToDropdownRef).dropdown('set selected', this.chatTo);
@@ -132,13 +133,13 @@ export class EmChatTopMenu {
         }
     }
 
-    searchFocusinHandler() {
+    searchFocusHandler() {
         $(this.searchInputRef).css('width', 'auto');
         $(this.searchRemoveRef).show();
         this.isActiveSearch = true;
     }
 
-    searchFocusoutHandler() {
+    searchBlurHandler() {
         if (!$(this.searchInputRef).val()) {
             $(this.searchInputRef).css('width', '100px');
             $(this.searchRemoveRef).hide();

@@ -25,6 +25,7 @@ export function configure(aurelia) {
         'resources/attributes/attr-ui-tab',
         'resources/attributes/attr-tablesort',
         'resources/attributes/attr-textcomplete',
+        'resources/attributes/attr-scrollbar',
         'resources/elements/em-modal',
         'resources/elements/em-dropdown',
         'resources/elements/em-confirm-modal',

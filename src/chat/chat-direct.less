@@ -7,37 +7,6 @@
             }
         }
     }
-    .ui.left.sidebar {
-        background-color: #4d394b;
-        width: 220px;
-        * {
-            color: #4183c4!important;
-        }
-        .tms-header > input {
-            background-color: transparent;
-            border: 1px #676868 solid;
-            font-size: 12px;
-            padding: 4px;
-            width: 190px;
-            outline: none;
-            margin-top: 10px;
-            border-radius: 2px;
-        }
-    }
-    .ui.left.sidebar .tms-header {
-        height: 40px;
-    }
-    .ui.left.sidebar .tms-header i.close.icon {
-        position: absolute;
-        right: 11px;
-        top: 55px;
-        box-shadow: 0 0 0 .1em rgb(103, 104, 104) inset;
-        border-top-right-radius: 2px;
-        border-bottom-right-radius: 2px;
-    }
-    .ui.left.sidebar .tms-header .ui.header {
-        margin-bottom: 0;
-    }
     .tms-edit-textarea {
         width: 100%;
     }
@@ -76,48 +45,56 @@
         align-items: stretch;
         padding-bottom: 73px;
         .ui.comments {
-            overflow-y: auto;
+            overflow: hidden;
             flex: 1 1 0;
             max-width: none;
             margin-bottom: 12px;
             margin-top: 10px;
             .tms-pre-more {
                 margin-bottom: 10px;
+                display: block;
             }
             .tms-next-more {
                 margin-top: 10px;
+                display: block;
             }
         }
     }
     .tms-right-sidebar {
         width: 0;
-        overflow-y: auto;
+        overflow: hidden;
         padding-top: 10px;
         padding-bottom: 10px;
-        .comments .comment {
-            .markdown-body {
-                max-height: 65px;
-                overflow-y: hidden;
-                &.tms-open {
-                    max-height: none;
-                    overflow-y: auto;
-                    padding-bottom: 20px;
+        .comments {
+            .ui.button.tms-search-more {
+                display: block;
+                margin: 0;
+            }
+            .comment {
+                .markdown-body {
+                    max-height: 65px;
+                    overflow-y: hidden;
+                    &.tms-open {
+                        max-height: none;
+                        overflow-y: auto;
+                        padding-bottom: 20px;
+                    }
                 }
-            }
-            .tms-btn-open-search-item {
-                display: none;
-                height: 25px;
-                background-color: rgba(0, 0, 0, 0.1);
-                position: absolute;
-                bottom: 0;
-                right: 0;
-                left: 0;
-                text-align: center;
-                padding-top: 2px;
-            }
-            &:hover {
                 .tms-btn-open-search-item {
-                    display: block;
+                    display: none;
+                    height: 25px;
+                    background-color: rgba(0, 0, 0, 0.1);
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    left: 0;
+                    text-align: center;
+                    padding-top: 2px;
+                }
+                &:hover {
+                    .tms-btn-open-search-item {
+                        display: block;
+                    }
                 }
             }
         }

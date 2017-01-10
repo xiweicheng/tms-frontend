@@ -2,12 +2,10 @@
     .tms-body {
         position: absolute;
         top: 98px;
-        width: 190px;
-        height: e("calc(100vh - 160px)");
-        overflow-y: auto;
-        &::-webkit-scrollbar-thumb {
-            background-color: #475a81;
-        }
+        width: 220px;
+        height: e("calc(100vh - 150px)");
+        overflow: hidden;
+        padding-right: 2px;
         i.circular.icon {
             box-shadow: 0 0 0 .1em rgb(65, 131, 196) inset;
         }
@@ -16,6 +14,7 @@
         }
         .title {
             position: relative;
+            margin-left: 10px;
             .ui.header {
                 display: inline-block;
                 margin-top: 2px;
@@ -23,8 +22,18 @@
             }
             i.plus.icon {
                 position: absolute;
-                right: 0;
+                right: 10px;
                 font-size: 12px;
+                width: 12px!important;
+                height: 12px!important;
+            }
+        }
+        .ui.list {
+            > .item {
+                padding-left: 16px;
+                > .icon+.content {
+                    padding: 0;
+                }
             }
         }
         .tms-users {}
@@ -42,8 +51,42 @@
             .actions {
                 display: none;
                 position: absolute;
-                right: 0;
+                right: 10px;
                 top: 5px;
+            }
+        }
+        .scroll-element.scroll-y {
+            background-color: #4d394b;
+        }
+    }
+    &.ui.left.sidebar {
+        background-color: #4d394b;
+        width: 220px;
+        * {
+            color: #4183c4!important;
+        }
+        .tms-header > input {
+            background-color: transparent;
+            border: 1px #676868 solid;
+            font-size: 12px;
+            padding: 4px;
+            width: 188px;
+            outline: none;
+            margin-top: 10px;
+            border-radius: 2px;
+        }
+        .tms-header {
+            height: 40px;
+            padding-left: 16px;
+            padding-right: 16px;
+            h1.ui.header {
+                margin-top: 9px;
+                margin-bottom: 0;
+            }
+            i.close.icon {
+                position: absolute;
+                right: 16px;
+                top: 57px;
             }
         }
     }

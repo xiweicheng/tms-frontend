@@ -3,8 +3,6 @@ import { bindable, containerless } from 'aurelia-framework';
 @containerless
 export class EmChatSidebarRight {
 
-    @bindable value;
-
     lastSearch = true;
 
     /**

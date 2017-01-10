@@ -14,3 +14,5 @@ https://github.com/yuku-t/jquery-textcomplete
 https://github.com/yuku-t/jquery-textcomplete/blob/master/doc/how_to_use.md  
 https://www.npmjs.com/package/aurelia-textcomplete  
 https://github.com/NextStepWebs/simplemde-markdown-editor/  
+http://gromo.github.io/jquery.scrollbar/demo/basic.html  
+https://github.com/gromo/jquery.scrollbar  
