@@ -210,11 +210,7 @@ export class ChatDirect {
                 this.chats = _.unionBy(_.reverse(data.data), this.chats);
                 this.last = (data.msgs[0] - data.data.length <= 0);
                 !this.last && (this.lastCnt = data.msgs[0] - data.data.length);
-                _.defer(() => {
-                    $(this.commentsRef).scrollTo(`.comment[data-id=${start}]`, {
-                        offset: this.offset
-                    });
-                });
+                this.scrollToAfterImgLoaded(start);
             } else {
                 toastr.error(data.data, '获取更多消息失败!');
             }
@@ -248,11 +244,7 @@ export class ChatDirect {
                 this.chats = _.unionBy(this.chats, data.data);
                 this.first = (data.msgs[0] - data.data.length <= 0);
                 !this.first && (this.firstCnt = data.msgs[0] - data.data.length);
-                _.defer(() => {
-                    $(this.commentsRef).scrollTo(`.comment[data-id=${start}]`, {
-                        offset: this.offset
-                    });
-                });
+                this.scrollToAfterImgLoaded(start);
             } else {
                 toastr.error(data.data, '获取更多消息失败!');
             }
@@ -303,20 +295,26 @@ export class ChatDirect {
             !this.last && (this.lastCnt = data.data.totalElements - data.data.numberOfElements);
             !this.first && (this.firstCnt = data.data.size * data.data.number);
 
-            _.defer(() => {
+            this.scrollToAfterImgLoaded(this.markId ? this.markId : 'b');
+        }
+    }
 
-                utils.imgLoaded($(this.commentsRef).find('.comment img'), () => {
-                    if (this.markId) {
-                        $(this.commentsRef).scrollTo(`.comment[data-id=${this.markId}]`, {
-                            offset: this.offset
-                        });
-                    } else {
-                        $(this.commentsRef).scrollTo('max');
-                    }
-                });
+    scrollToAfterImgLoaded(to) {
+        _.defer(() => {
+            utils.imgLoaded($(this.commentsRef).find('.comment img'), () => {
+                if (to == 'b') {
+                    $(this.commentsRef).parent('.scroll-content').scrollTo('max');
+                } else if (to == 't') {
+                    $(this.commentsRef).parent('.scroll-content').scrollTo(0);
+                } else {
+                    $(this.commentsRef).parent('.scroll-content').scrollTo(`.comment[data-id="${to}"]`, {
+                        offset: this.offset
+                    });
+                }
 
             });
-        }
+
+        });
     }
 
     // 消息轮询处理
@@ -354,9 +352,7 @@ export class ChatDirect {
                         return;
                     }
                     this.chats = _.unionBy(this.chats, data.data, 'id');
-                    _.defer(() => {
-                        $(this.commentsRef).scrollTo('max');
-                    });
+                    this.scrollToAfterImgLoaded('b');
                 } else {
                     toastr.error(data.data, '轮询获取消息失败!');
                 }
@@ -448,7 +444,7 @@ export class ChatDirect {
     }
 
     scrollTo(target) {
-        $(this.commentsRef).scrollTo(target, {
+        $(this.commentsRef).parent('.scroll-content').scrollTo(target, {
             offset: this.offset
         });
     }
@@ -487,9 +483,7 @@ export class ChatDirect {
         if (chat) {
             $(this.commentsRef).find(`.comment[data-id]`).removeClass('active');
             $(this.commentsRef).find(`.comment[data-id=${item.id}]`).addClass('active');
-            $(this.commentsRef).scrollTo(`.comment[data-id=${item.id}]`, {
-                offset: this.offset
-            });
+            this.scrollToAfterImgLoaded(item.id);
         } else {
 
             let chatTo;

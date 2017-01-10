@@ -11,12 +11,12 @@ export class EmChatSidebarLeft {
 
     chatToChanged() {
         _.delay(() => {
-            $(this.userListRef).scrollTo(`a.item[data-id="${this.chatTo}"]`);
+            $(this.channelsRef).parent('.scroll-content').scrollTo(`a.item[data-id="${this.chatTo}"]`);
         }, 1000);
     }
 
     chatToUserFilerFocusinHanlder() {
-        $(this.userListRef).scrollTo(`a.item[data-id="${this.chatTo}"]`);
+        $(this.channelsRef).parent('.scroll-content').scrollTo(`a.item[data-id="${this.chatTo}"]`);
     }
 
     chatToUserFilerKeyupHanlder(evt) {

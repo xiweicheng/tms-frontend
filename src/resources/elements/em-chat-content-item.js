@@ -7,6 +7,7 @@ export class EmChatContentItem {
     @bindable loginUser;
     @bindable isAt;
     @bindable channel;
+    @bindable markId;
     members = [];
     selfLink = utils.getBaseUrl() + wurl('path') + '#' + utils.getHash();
 
