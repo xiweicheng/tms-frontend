@@ -131,12 +131,6 @@
             ]
           },
           {
-            "name": "paste",
-            "path": "../node_modules/paste.js",
-            "main": "paste",
-            "deps": ["jquery"]
-          },
-          {
             "name": "hotkeys",
             "path": "../node_modules/jquery.hotkeys",
             "main": "jquery.hotkeys",

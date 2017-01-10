@@ -1,7 +1,7 @@
 import { inject } from 'aurelia-framework';
 import { customAttribute } from 'aurelia-templating';
 import 'common/common-plugin';
-import 'paste';
+import 'common/common-paste';
 
 @customAttribute('pastable')
 @inject(Element)

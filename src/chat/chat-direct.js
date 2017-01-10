@@ -60,7 +60,12 @@ export class ChatDirect {
 
             this.isRightSidebarShow = payload.isShow;
             if (this.isRightSidebarShow) {
-                $(this.contentBodyRef).width($(this.contentRef).width() - 392);
+                let wid = $(this.contentRef).width() - 392;
+                $(this.contentBodyRef).width(wid);
+                $(this.contentBodyRef).children('.scroll-wrapper').width(wid);
+            } else {
+                $(this.contentBodyRef).css('width', '100%');
+                $(this.contentBodyRef).children('.scroll-wrapper').css('width', '100%');
             }
         });
 
@@ -91,7 +96,7 @@ export class ChatDirect {
 
         this.subscribe7 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_LEAVED, (payload) => {
 
-            if(!this.isAt && (payload.channel.name == this.chatTo)) {
+            if (!this.isAt && (payload.channel.name == this.chatTo)) {
                 window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
             }
 

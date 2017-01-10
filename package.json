@@ -26,7 +26,6 @@
     "lodash": "^4.15.0",
     "marked": "^0.3.6",
     "nprogress": "^0.2.0",
-    "paste.js": "0.0.10",
     "requirejs": "^2.3.2",
     "simplemde": "^1.11.2",
     "swipebox": "^1.4.6",

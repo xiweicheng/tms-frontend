@@ -77,16 +77,20 @@
             browser.scroll = getBrowserScrollSize();
             updateScrollbars();
 
+            // $(window).resize(function () {
+            //     var forceUpdate = false;
+            //     if (browser.scroll && (browser.scroll.height || browser.scroll.width)) {
+            //         var scroll = getBrowserScrollSize();
+            //         if (scroll.height !== browser.scroll.height || scroll.width !== browser.scroll.width) {
+            //             browser.scroll = scroll;
+            //             forceUpdate = true; // handle page zoom
+            //         }
+            //     }
+            //     updateScrollbars(forceUpdate);
+            // });
+            
             $(window).resize(function () {
-                var forceUpdate = false;
-                if (browser.scroll && (browser.scroll.height || browser.scroll.width)) {
-                    var scroll = getBrowserScrollSize();
-                    if (scroll.height !== browser.scroll.height || scroll.width !== browser.scroll.width) {
-                        browser.scroll = scroll;
-                        forceUpdate = true; // handle page zoom
-                    }
-                }
-                updateScrollbars(forceUpdate);
+                updateScrollbars(true);
             });
         }
 
