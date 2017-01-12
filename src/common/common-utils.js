@@ -26,7 +26,7 @@ export class CommonUtils {
      * @return {[type]} [description]
      */
     getUrl() {
-        return this.getBaseUrl() + '#' + wurl('hash');
+        return this.getBaseUrl() + wurl('path') + '#' + wurl('hash');
     }
 
     redirect2Login(redirectUrl) {
