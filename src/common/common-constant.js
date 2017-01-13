@@ -9,4 +9,5 @@ window.nsCons = {
     EVENT_CHAT_CHANNEL_JOINED: 'event_chat_channel_joined',
     EVENT_CHAT_CHANNEL_LEAVED: 'event_chat_channel_leaved',
     EVENT_SHOW_HOTKEYS_MODAL: 'event_show_hotkeys_modal',
+    EVENT_CHAT_LAST_ITEM_RENDERED: 'event_chat_last_item_rendered',
 }

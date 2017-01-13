@@ -27,7 +27,7 @@
                 <a if.bind="item.creator.username == loginUser.username" click.delegate="editHandler(item, editTxtRef)" class="tms-edit">编辑</a>
                 <a if.bind="item.creator.username == loginUser.username" click.delegate="deleteHandler(item)" class="tms-delete">删除</a>
                 <a class="tms-copy tms-clipboard" data-clipboard-text="${item.content}">复制</a>
-                <a class="tms-share tms-clipboard" data-clipboard-text="${selfLink + '?id=' + item.id}">分享</a>
+                <a class="tms-share tms-clipboard" data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}">分享</a>
             </div>
         </div>
     </div>

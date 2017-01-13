@@ -29,6 +29,10 @@ export class CommonUtils {
         return this.getBaseUrl() + wurl('path') + '#' + wurl('hash');
     }
 
+    getBasePath() {
+        return this.getBaseUrl() + wurl('path');
+    }
+
     redirect2Login(redirectUrl) {
         let redirect = this.urlQuery('redirect');
         if (!redirect) {

@@ -9,6 +9,7 @@ export class EmChatContentItem {
     @bindable channel;
     @bindable markId;
     members = [];
+    basePath = utils.getBasePath();
     selfLink = utils.getBaseUrl() + wurl('path') + '#' + utils.getHash();
 
     channelChanged() {
@@ -146,7 +147,7 @@ export class EmChatContentItem {
     notifyRendered(last, item) {
         if(last) {
             _.defer(() => {
-                ea.publish(nsCons.EVENT_CHAT_ITEM_RENDERED, {
+                ea.publish(nsCons.EVENT_CHAT_LAST_ITEM_RENDERED, {
                     item: item
                 });
             });

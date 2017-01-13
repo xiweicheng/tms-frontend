@@ -103,6 +103,15 @@ export class ChatDirect {
             this.channels = _.reject(this.channels, { id: payload.channel.id });
 
         });
+
+        this.subscribe8 = ea.subscribe(nsCons.EVENT_CHAT_LAST_ITEM_RENDERED, (payload) => {
+
+            if (payload.item.__scroll) {
+                this.scrollToAfterImgLoaded(this.markId ? this.markId : 'b');
+                delete payload.item.__scroll;
+            }
+
+        });
     }
 
     /**
@@ -117,6 +126,7 @@ export class ChatDirect {
         this.subscribe5.dispose();
         this.subscribe6.dispose();
         this.subscribe7.dispose();
+        this.subscribe8.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();
@@ -134,8 +144,12 @@ export class ChatDirect {
         this.markId = params.id;
         this.routeConfig = routeConfig;
 
+        if (this.chatId) {
+            this.preChatId = this.chatId; // 记录切换前的沟通对象
+        }
         this.chatId = params.username;
         this.isAt = _.startsWith(params.username, '@');
+
         this.chatTo = utils.getChatName(params.username);
 
         chatService.loginUser(true).then((user) => {
@@ -155,6 +169,13 @@ export class ChatDirect {
                     routeConfig.navModel.setTitle(`${name} | 私聊 | TMS`);
 
                     this.listChatDirect(true);
+                } else {
+                    toastr.error(`聊天用户[${this.chatTo}]不存在或者没有权限访问!`);
+                    if (this.preChatId) {
+                        window.location = wurl('path') + `#/chat/${this.preChatId}`;
+                    } else {
+                        window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
+                    }
                 }
 
             }
@@ -172,6 +193,13 @@ export class ChatDirect {
                     routeConfig.navModel.setTitle(`${this.channel.name} | 私聊 | TMS`);
 
                     this.listChatChannel(true);
+                } else {
+                    toastr.error(`聊天频道[${this.chatTo}]不存在或者没有权限访问!`);
+                    if (this.preChatId) {
+                        window.location = wurl('path') + `#/chat/${this.preChatId}`;
+                    } else {
+                        window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
+                    }
                 }
             }
         });
@@ -290,12 +318,12 @@ export class ChatDirect {
     processChats(data) {
         if (data.success) {
             this.chats = _.reverse(data.data.content);
+            let lastChat = _.last(this.chats);
+            lastChat && (lastChat.__scroll = true); // 标记消息列表渲染完成需要执行消息滚动定位.
             this.last = data.data.last;
             this.first = data.data.first;
             !this.last && (this.lastCnt = data.data.totalElements - data.data.numberOfElements);
             !this.first && (this.firstCnt = data.data.size * data.data.number);
-
-            this.scrollToAfterImgLoaded(this.markId ? this.markId : 'b');
         }
     }
 

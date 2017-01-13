@@ -10,13 +10,13 @@ export class EmChatSidebarLeft {
     @bindable isAt;
 
     chatToChanged() {
-        _.delay(() => {
-            $(this.channelsRef).parent('.scroll-content').scrollTo(`a.item[data-id="${this.chatTo}"]`);
-        }, 1000);
+        // _.delay(() => {
+        //     $(this.channelsRef).parent('.scroll-content').scrollTo(`a.item[data-id="${this.chatTo}"]`);
+        // }, 1000);
     }
 
     chatToUserFilerFocusinHanlder() {
-        $(this.channelsRef).parent('.scroll-content').scrollTo(`a.item[data-id="${this.chatTo}"]`);
+        // $(this.channelsRef).parent('.scroll-content').scrollTo(`a.item[data-id="${this.chatTo}"]`);
     }
 
     chatToUserFilerKeyupHanlder(evt) {

@@ -3,7 +3,6 @@
     <require from="./em-hotkeys-modal"></require>
     <div class="ui basic segment tms-msg-input tms-em-chat-input dropzone">
         <div ref="chatStatusBarRef" class="tms-chat-status-bar dropzone-previews"></div>
-        <!-- <em-chat-channel-at channel.bind="channel" em-chat-channel-at.ref="channelAtVm"></em-chat-channel-at> -->
         <div ref="inputRef" class="ui left action fluid icon input dropzone">
             <div ref="chatBtnRef" class="ui icon button">
                 <i class="plus icon"></i>
@@ -21,7 +20,7 @@
             <div class="textareaWrapper">
                 <textarea ref="chatInputRef" placeholder="/ 键提示,Ctrl+Enter发送,Esc清空"></textarea>
             </div>
-            <i click.delegate="sendChatMsgHandler()" title="发送消息(Enter)" class="send link icon"></i>
+            <i click.delegate="sendChatMsgHandler()" title="发送消息(Ctrl+Enter)" class="send link icon"></i>
         </div>
     </div>
     <div ref="previewTemplateRef" style="display: none;">
