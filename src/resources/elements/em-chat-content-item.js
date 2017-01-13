@@ -142,4 +142,14 @@ export class EmChatContentItem {
 
         return true;
     }
+
+    notifyRendered(last, item) {
+        if(last) {
+            _.defer(() => {
+                ea.publish(nsCons.EVENT_CHAT_ITEM_RENDERED, {
+                    item: item
+                });
+            });
+        }
+    }
 }
