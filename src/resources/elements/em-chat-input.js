@@ -19,7 +19,7 @@ export class EmChatInput {
             this.members = [{
                 username: 'all',
                 mails: '',
-                name: '全部成员'
+                name: '全员'
             }, ...this.channel.members];
         } else {
             this.members = [];
@@ -169,7 +169,7 @@ export class EmChatInput {
                 table: ["", "\n\n| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n\n"],
             },
             previewRender: (plainText, preview) => { // Async method
-                return this.simplemde.markdown(utils.preParse(plainText, this.members));
+                return this.simplemde.markdown(utils.preParse(plainText));
             },
         });
 
@@ -246,7 +246,7 @@ export class EmChatInput {
 
         this.sending = true;
 
-        var html = utils.md2html(content, this.members);
+        var html = utils.md2html(content);
 
         let url;
         let data;
@@ -264,7 +264,7 @@ export class EmChatInput {
             data = {
                 url: utils.getUrl(),
                 channelId: this.channel.id,
-                usernames: utils.parseUsernames(content, this.members).join(','),
+                usernames: utils.parseUsernames(content).join(','),
                 content: content,
                 contentHtml: html
             };

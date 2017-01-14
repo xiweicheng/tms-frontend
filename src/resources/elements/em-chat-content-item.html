@@ -7,7 +7,7 @@
             <div class="metadata">
                 <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
             </div>
-            <div show.bind="!item.isEditing" class="text markdown-body" innerhtml.bind="item.content | parseMd:members"></div>
+            <div show.bind="!item.isEditing" class="text markdown-body" innerhtml.bind="item.content | parseMd"></div>
             <div class="textcomplete-container" show.bind="item.isEditing">
                 <div class="append-to"></div>
             </div>

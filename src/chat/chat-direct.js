@@ -158,6 +158,7 @@ export class ChatDirect {
 
         chatService.listUsers(false).then((users) => {
             this.users = users;
+            window.tmsUsers = users;
             if (this.isAt) {
                 this.channel = null;
                 this.user = _.find(this.users, {
@@ -341,19 +342,6 @@ export class ChatDirect {
                 }
 
             });
-            // utils.imgLoaded($(this.commentsRef).find('.comment img'), () => {
-            //     if (to == 'b') {
-            //         $(this.commentsRef).parent('.scroll-content').scrollTo('max');
-            //     } else if (to == 't') {
-            //         $(this.commentsRef).parent('.scroll-content').scrollTo(0);
-            //     } else {
-            //         $(this.commentsRef).parent('.scroll-content').scrollTo(`.comment[data-id="${to}"]`, {
-            //             offset: this.offset
-            //         });
-            //     }
-
-            // });
-
         });
     }
 
