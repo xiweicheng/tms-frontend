@@ -24,6 +24,7 @@
                 </button>
             </div>
             <div class="actions">
+                <a if.bind="!isAt" click.delegate="stowHandler(item)" class="tms-stow">收藏</a>
                 <a if.bind="item.creator.username == loginUser.username" click.delegate="editHandler(item, editTxtRef)" class="tms-edit">编辑</a>
                 <a if.bind="item.creator.username == loginUser.username" click.delegate="deleteHandler(item)" class="tms-delete">删除</a>
                 <a class="tms-copy tms-clipboard" data-clipboard-text="${item.content}">复制</a>

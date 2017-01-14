@@ -10,7 +10,6 @@ export class EmChatContentItem {
     @bindable markId;
     members = [];
     basePath = utils.getBasePath();
-    selfLink = utils.getBaseUrl() + wurl('path') + '#' + utils.getHash();
 
     channelChanged() {
 
@@ -145,12 +144,24 @@ export class EmChatContentItem {
     }
 
     notifyRendered(last, item) {
-        if(last) {
+        if (last) {
             _.defer(() => {
                 ea.publish(nsCons.EVENT_CHAT_LAST_ITEM_RENDERED, {
                     item: item
                 });
             });
         }
+    }
+
+    stowHandler(item) {
+        $.post('admin/chat/channel/stow', {
+            id: item.id
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                toastr.success('收藏消息成功!');
+            } else {
+                toastr.error(data.data, '收藏消息失败!');
+            }
+        });
     }
 }

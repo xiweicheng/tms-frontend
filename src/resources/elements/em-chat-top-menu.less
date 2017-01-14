@@ -12,7 +12,7 @@
         }
         .right.menu {
             .item.tms-item {
-                padding-left: 5px;
+                padding-left: 0;
                 padding-right: 5px;
             }
             .ui.search {
@@ -36,16 +36,27 @@
         }
     }
     > .tms-chat-at {
-        &.ui.dropdown .menu {
-            > .header {
-                i.plus.icon {
-                    position: absolute;
-                    right: 5px;
-                    top: 7px;
+        &.ui.dropdown {
+            @media only screen and (max-width: 767px) {
+                > .text {
+                    display: none;
+                }
+                > .dropdown.icon {
+                    margin-left: 6px;
+                    margin-right: 6px;
                 }
             }
-            >.item .icon {
-                margin-right: 4px!important;
+            .menu {
+                > .header {
+                    i.plus.icon {
+                        position: absolute;
+                        right: 5px;
+                        top: 7px;
+                    }
+                }
+                >.item .icon {
+                    margin-right: 4px!important;
+                }
             }
         }
     }

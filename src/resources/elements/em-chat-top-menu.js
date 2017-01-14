@@ -12,6 +12,11 @@ export class EmChatTopMenu {
     @bindable chatTo;
     @bindable isAt;
     isRightSidebarShow = false;
+    activeType = ''; // 触发激活的操作类型: search | stow | at
+
+    ACTION_TYPE_SEARCH = nsCons.ACTION_TYPE_SEARCH;
+    ACTION_TYPE_STOW = nsCons.ACTION_TYPE_STOW;
+    ACTION_TYPE_AT = nsCons.ACTION_TYPE_AT;
 
     chatToChanged() {
         $(this.chatToDropdownRef).dropdown('set selected', this.chatTo);
@@ -99,6 +104,7 @@ export class EmChatTopMenu {
                 this.toggleRightSidebar(true);
 
                 ea.publish(nsCons.EVENT_CHAT_SEARCH_RESULT, {
+                    action: this.activeType,
                     result: data.data,
                     search: this.search
                 });
@@ -165,6 +171,7 @@ export class EmChatTopMenu {
 
     searchKeyupHandler(evt) {
         if (evt.keyCode === 13) {
+            this.activeType = nsCons.ACTION_TYPE_SEARCH;
             this.searchHandler();
         }
         return true;
@@ -172,5 +179,43 @@ export class EmChatTopMenu {
 
     clearSearchHandler() {
         $(this.searchInputRef).val('').focus();
+    }
+
+    showStowHandler() {
+        this.activeType = nsCons.ACTION_TYPE_STOW;
+        $.get('/admin/chat/channel/getStows', (data) => {
+            if (data.success) {
+                let stowChats = _.map(data.data, (item) => {
+                    let chatChannel = item.chatChannel;
+                    chatChannel.chatStow = item;
+                    return chatChannel;
+                });
+                ea.publish(nsCons.EVENT_CHAT_SHOW_STOW, {
+                    action: this.activeType,
+                    result: _.reverse(stowChats)
+                });
+                this.toggleRightSidebar(true);
+            } else {
+                toastr.error(data.data, '获取收藏消息失败!');
+            }
+        });
+    }
+
+    showAtHandler() {
+        this.activeType = nsCons.ACTION_TYPE_AT;
+        $.get('/admin/chat/channel/getAts', {
+            page: 0,
+            size: 20
+        }, (data) => {
+            if (data.success) {
+                ea.publish(nsCons.EVENT_CHAT_SHOW_AT, {
+                    action: this.activeType,
+                    result: data.data
+                });
+                this.toggleRightSidebar(true);
+            } else {
+                toastr.error(data.data, '获取@消息失败!');
+            }
+        });
     }
 }

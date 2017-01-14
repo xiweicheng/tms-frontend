@@ -3,7 +3,13 @@ import { bindable, containerless } from 'aurelia-framework';
 @containerless
 export class EmChatSidebarRight {
 
-    lastSearch = true;
+    last = true;
+    @bindable loginUser;
+    @bindable isAt;
+    @bindable channel;
+    forAction = ''; // search | stow | at
+
+    basePath = utils.getBasePath();
 
     /**
      * 构造函数
@@ -11,13 +17,32 @@ export class EmChatSidebarRight {
     constructor() {
 
         this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_RESULT, (payload) => {
-
+            this.forAction = payload.action;
             let result = payload.result;
             this.search = payload.search;
-            this.searchPage = result;
-            this.searchChats = result.content;
-            this.lastSearch = result.last;
-            this.moreSearchCnt = result.totalElements - (result.number + 1) * result.size;
+            this.page = result;
+            this.chats = result.content;
+            this.last = result.last;
+            this.moreCnt = result.totalElements - (result.number + 1) * result.size;
+        });
+
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_SHOW_AT, (payload) => {
+            this.forAction = payload.action;
+            let result = payload.result;
+            this.page = result;
+            this.chats = _.map(result.content, (item) => {
+                let chatChannel = item.chatChannel;
+                chatChannel.chatAt = item;
+                return chatChannel;
+            });
+            this.last = result.last;
+            this.moreCnt = result.totalElements - (result.number + 1) * result.size;
+        });
+
+        this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_SHOW_STOW, (payload) => {
+            this.forAction = payload.action;
+            this.chats = payload.result;
+            this.last = true;
         });
     }
 
@@ -27,6 +52,8 @@ export class EmChatSidebarRight {
     unbind() {
 
         this.subscribe.dispose();
+        this.subscribe1.dispose();
+        this.subscribe2.dispose();
     }
 
     /**
@@ -39,7 +66,7 @@ export class EmChatSidebarRight {
     initHotkeys() {
         $(document).bind('keydown', 'o', () => {
             event.preventDefault();
-            let item = _.find(this.searchChats, { isHover: true });
+            let item = _.find(this.chats, { isHover: true });
             item && (item.isOpen = !item.isOpen);
         });
 
@@ -64,16 +91,71 @@ export class EmChatSidebarRight {
 
     searchMoreHandler() {
 
-        this.searchMoreP = $.get('/admin/chat/direct/search', {
-            search: this.search,
-            size: this.searchPage.size,
-            page: this.searchPage.number + 1
-        }, (data) => {
-            if (data.success) {
-                this.searchChats = _.concat(this.searchChats, data.data.content);
+        if (this.forAction == nsCons.ACTION_TYPE_SEARCH) {
+            this.searchMoreP = $.get('/admin/chat/direct/search', {
+                search: this.search,
+                size: this.page.size,
+                page: this.page.number + 1
+            }, (data) => {
+                if (data.success) {
+                    this.chats = _.concat(this.chats, data.data.content);
 
-                this.lastSearch = data.data.last;
-                this.moreSearchCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
+                    this.page = data.data;
+                    this.last = data.data.last;
+                    this.moreCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
+                }
+            });
+        } else {
+            this.searchMoreP = $.get('/admin/chat/channel/getAts', {
+                size: this.page.size,
+                page: this.page.number + 1
+            }, (data) => {
+                if (data.success) {
+                    this.chats = _.concat(this.chats, _.map(data.data.content, (item) => {
+                        let chatChannel = item.chatChannel;
+                        chatChannel.chatAt = item;
+                        return chatChannel;
+                    }));
+
+                    this.page = data.data;
+                    this.last = data.data.last;
+                    this.moreCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
+                }
+            });
+        }
+    }
+
+    removeStowHandler(item) {
+        this.emConfirmModal.show({
+            onapprove: () => {
+
+                $.post('/admin/chat/channel/removeStow', {
+                    id: item.chatStow.id
+                }, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        this.chats = _.reject(this.chats, {
+                            id: item.id
+                        });
+                        toastr.success('移除收藏消息成功!');
+                    } else {
+                        toastr.error(data.data, '移除收藏消息失败!');
+                    }
+                });
+
+            }
+        });
+    }
+
+    removeAtHandler(item) {
+        $.post('/admin/chat/channel/markAsReaded', {
+            chatAtId: item.chatAt.id
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                this.chats = _.reject(this.chats, {
+                    id: item.id
+                });
+            } else {
+                toastr.error(data.data, '移除@消息失败!');
             }
         });
     }

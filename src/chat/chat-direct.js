@@ -529,10 +529,10 @@ export class ChatDirect {
             let chatTo;
             let chatId;
 
-            if (this.isAt) {
+            if (item.chatTo) {
                 chatTo = item.chatTo.username;
                 chatId = `@${chatTo}`;
-            } else {
+            } else if (item.channel) {
                 chatTo = item.channel.name;
                 chatId = `${chatTo}`;
             }
