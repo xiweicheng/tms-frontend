@@ -215,11 +215,11 @@ export class CommonUtils {
      * @param  {[type]} plainText [description]
      * @return {[type]}           [description]
      */
-    parseUsernames(plainText) {
+    parseUsernames(plainText, members) {
         let users = this.parseUsers(plainText);
         let isExitsAll = _.some(users, { username: 'all' });
         if (isExitsAll) {
-            return _.map(tmsUsers, 'username');
+            return _.without(_.map(members, 'username'), 'all');
         }
         return _.map(users, 'username');;
     }

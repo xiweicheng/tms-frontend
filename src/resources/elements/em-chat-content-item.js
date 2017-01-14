@@ -102,7 +102,7 @@ export class EmChatContentItem {
             data = {
                 url: utils.getUrl(),
                 id: item.id,
-                usernames: utils.parseUsernames(item.content).join(','),
+                usernames: utils.parseUsernames(item.content, this.members).join(','),
                 content: item.content,
                 diff: utils.diffS(item.contentOld, item.content),
                 // contentHtml: html,

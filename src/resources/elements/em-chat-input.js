@@ -264,7 +264,7 @@ export class EmChatInput {
             data = {
                 url: utils.getUrl(),
                 channelId: this.channel.id,
-                usernames: utils.parseUsernames(content).join(','),
+                usernames: utils.parseUsernames(content, this.members).join(','),
                 content: content,
                 contentHtml: html
             };

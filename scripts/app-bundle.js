@@ -3201,11 +3201,11 @@ define('common/common-utils',['exports', 'wurl', 'common/common-diff'], function
             return users;
         };
 
-        CommonUtils.prototype.parseUsernames = function parseUsernames(plainText) {
+        CommonUtils.prototype.parseUsernames = function parseUsernames(plainText, members) {
             var users = this.parseUsers(plainText);
             var isExitsAll = _.some(users, { username: 'all' });
             if (isExitsAll) {
-                return _.map(tmsUsers, 'username');
+                return _.without(_.map(members, 'username'), 'all');
             }
             return _.map(users, 'username');;
         };
@@ -5467,7 +5467,7 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
                 data = {
                     url: utils.getUrl(),
                     id: item.id,
-                    usernames: utils.parseUsernames(item.content).join(','),
+                    usernames: utils.parseUsernames(item.content, this.members).join(','),
                     content: item.content,
                     diff: utils.diffS(item.contentOld, item.content)
                 };
@@ -5865,7 +5865,7 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
                 data = {
                     url: utils.getUrl(),
                     channelId: this.channel.id,
-                    usernames: utils.parseUsernames(content).join(','),
+                    usernames: utils.parseUsernames(content, this.members).join(','),
                     content: content,
                     contentHtml: html
                 };
