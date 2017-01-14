@@ -25218,19 +25218,22 @@ define('common/common-imgs-loaded',[], function () {
     $.fn.imagesLoaded = function (callback) {
         var elems = this.filter('img'),
             len = elems.length;
+        if (len > 0) {
+            elems.bind('load', function () {
+                if (--len <= 0) {
+                    callback.call(elems, this);
+                }
+            }).each(function () {
+                if (this.complete || this.complete === undefined) {
+                    var src = this.src;
 
-        elems.bind('load', function () {
-            if (--len <= 0) {
-                callback.call(elems, this);
-            }
-        }).each(function () {
-            if (this.complete || this.complete === undefined) {
-                var src = this.src;
-
-                this.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
-                this.src = src;
-            }
-        });
+                    this.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+                    this.src = src;
+                }
+            });
+        } else {
+            callback.call(elems, this);
+        }
 
         return this;
     };
