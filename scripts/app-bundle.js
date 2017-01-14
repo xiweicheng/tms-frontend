@@ -479,7 +479,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             var _this7 = this;
 
             _.defer(function () {
-                utils.imgLoaded($(_this7.commentsRef).find('.comment img'), function () {
+                $('.comment img', _this7.commentsRef).imagesLoaded(function () {
                     if (to == 'b') {
                         $(_this7.commentsRef).parent('.scroll-content').scrollTo('max');
                     } else if (to == 't') {
@@ -3157,26 +3157,6 @@ define('common/common-utils',['exports', 'wurl', 'common/common-diff'], function
             return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
         };
 
-        CommonUtils.prototype.imgLoaded = function imgLoaded($imgs, callback) {
-            var imgdefereds = [];
-            $imgs.each(function () {
-                var dfd = $.Deferred();
-                $(this).bind('load', function () {
-                    dfd.resolve();
-                }).bind('error', function () {
-                    dfd.resolve();
-                });
-                if (this.complete) {
-                    dfd.resolve();
-                }
-
-                imgdefereds.push(dfd);
-            });
-            $.when.apply(null, imgdefereds).done(function () {
-                callback && callback.call(null);
-            });
-        };
-
         CommonUtils.prototype.getChatName = function getChatName(name) {
             if (_.startsWith(name, '@')) {
                 return name.substr(1);
@@ -3260,7 +3240,7 @@ define('common/common-utils',['exports', 'wurl', 'common/common-diff'], function
 
     exports.default = new CommonUtils();
 });
-define('init/config',['exports', 'aurelia-templating-resources', 'aurelia-event-aggregator', 'aurelia-fetch-client', 'toastr', 'wurl', 'common/common-utils', 'marked', 'highlight', 'autosize', 'nprogress', 'isomorphic-fetch', 'common/common-plugin', 'common/common-constant'], function (exports, _aureliaTemplatingResources, _aureliaEventAggregator, _aureliaFetchClient, _toastr, _wurl, _commonUtils, _marked, _highlight, _autosize, _nprogress) {
+define('init/config',['exports', 'aurelia-templating-resources', 'aurelia-event-aggregator', 'aurelia-fetch-client', 'toastr', 'wurl', 'common/common-utils', 'marked', 'highlight', 'autosize', 'nprogress', 'isomorphic-fetch', 'common/common-plugin', 'common/common-constant', 'common/common-imgs-loaded'], function (exports, _aureliaTemplatingResources, _aureliaEventAggregator, _aureliaFetchClient, _toastr, _wurl, _commonUtils, _marked, _highlight, _autosize, _nprogress) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -25186,6 +25166,75 @@ define('highlight/lib/languages/zephir',['require','exports','module'],function 
 };
 });
 
+define('common/common-imgloaded',[], function () {
+    'use strict';
+
+    $.fn.imagesLoaded = function (callback) {
+        var elems = this.filter('img'),
+            len = elems.length;
+
+        elems.bind('load', function () {
+            if (--len <= 0) {
+                callback.call(elems, this);
+            }
+        }).each(function () {
+            if (this.complete || this.complete === undefined) {
+                var src = this.src;
+
+                this.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+                this.src = src;
+            }
+        });
+
+        return this;
+    };
+});
+define('common/common-imgsloaded',[], function () {
+    'use strict';
+
+    $.fn.imagesLoaded = function (callback) {
+        var elems = this.filter('img'),
+            len = elems.length;
+
+        elems.bind('load', function () {
+            if (--len <= 0) {
+                callback.call(elems, this);
+            }
+        }).each(function () {
+            if (this.complete || this.complete === undefined) {
+                var src = this.src;
+
+                this.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+                this.src = src;
+            }
+        });
+
+        return this;
+    };
+});
+define('common/common-imgs-loaded',[], function () {
+    'use strict';
+
+    $.fn.imagesLoaded = function (callback) {
+        var elems = this.filter('img'),
+            len = elems.length;
+
+        elems.bind('load', function () {
+            if (--len <= 0) {
+                callback.call(elems, this);
+            }
+        }).each(function () {
+            if (this.complete || this.complete === undefined) {
+                var src = this.src;
+
+                this.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+                this.src = src;
+            }
+        });
+
+        return this;
+    };
+});
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\r\n\t<require from=\"./app.css\"></require>\r\n\t<require from=\"./common.css\"></require>\r\n\t<require from=\"./override.css\"></require>\r\n\t<require from=\"common/common-scrollbar.css\"></require>\r\n\t<require from=\"nprogress/nprogress.css\"></require>\r\n\t<require from=\"toastr/build/toastr.css\"></require>\r\n    <require from=\"tms-semantic-ui/semantic.min.css\"></require>\r\n    <router-view></router-view>\r\n</template>\r\n"; });
 define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <require from=\"./md-github.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" channel.bind=\"channel\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div ref=\"scrollbarRef\" scrollbar>\r\n                    <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                        <div if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</div>\r\n                        <em-chat-content-item mark-id.bind=\"markId\" channel.bind=\"channel\" is-at.bind=\"isAt\" chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                        <div if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})</div>\r\n                    </div>\r\n                </div>\r\n                <em-chat-input channel.bind=\"channel\" is-at.bind=\"isAt\" chat-to.bind=\"chatTo\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n"; });

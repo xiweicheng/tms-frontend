@@ -11,6 +11,7 @@ import {
 import utils from 'common/common-utils';
 import 'common/common-plugin'
 import 'common/common-constant';
+import 'common/common-imgs-loaded';
 import {
     default as marked
 } from 'marked'; // https://github.com/chjj/marked

@@ -157,36 +157,6 @@ export class CommonUtils {
     }
 
     /**
-     * 判断图片是否加载完毕
-     * @param  {[type]}   $imgs    [description]
-     * @param  {Function} callback [description]
-     * @return {[type]}            [description]
-     */
-    imgLoaded($imgs, callback) {
-        var imgdefereds = [];
-        $imgs.each(function() {
-            var dfd = $.Deferred();
-            $(this).bind('load', function() {
-                dfd.resolve();
-            }).bind('error', function() {
-                //图片加载错误，加入错误处理
-                dfd.resolve();
-            })
-            if (this.complete) {
-                // setTimeout(function() {
-                //     dfd.resolve();
-                // }, 1000);
-                dfd.resolve();
-            }
-
-            imgdefereds.push(dfd);
-        })
-        $.when.apply(null, imgdefereds).done(function() {
-            callback && callback.call(null);
-        });
-    }
-
-    /**
      * 获取聊天对象标识
      * @param  {[type]} name [description]
      * @return {[type]}      [description]

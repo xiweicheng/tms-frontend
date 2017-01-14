@@ -329,7 +329,7 @@ export class ChatDirect {
 
     scrollToAfterImgLoaded(to) {
         _.defer(() => {
-            utils.imgLoaded($(this.commentsRef).find('.comment img'), () => {
+            $('.comment img', this.commentsRef).imagesLoaded(() => {
                 if (to == 'b') {
                     $(this.commentsRef).parent('.scroll-content').scrollTo('max');
                 } else if (to == 't') {
@@ -341,6 +341,18 @@ export class ChatDirect {
                 }
 
             });
+            // utils.imgLoaded($(this.commentsRef).find('.comment img'), () => {
+            //     if (to == 'b') {
+            //         $(this.commentsRef).parent('.scroll-content').scrollTo('max');
+            //     } else if (to == 't') {
+            //         $(this.commentsRef).parent('.scroll-content').scrollTo(0);
+            //     } else {
+            //         $(this.commentsRef).parent('.scroll-content').scrollTo(`.comment[data-id="${to}"]`, {
+            //             offset: this.offset
+            //         });
+            //     }
+
+            // });
 
         });
     }
