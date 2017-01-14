@@ -30,12 +30,12 @@
             </div>
         </div>
         <div class="right menu">
-            <div class="item tms-item">
+            <div class="item tms-item ${isActiveSearch ? 'tms-hide' : ''}">
                 <button click.delegate="showAtHandler()" title="@消息查看" class="basic ${isRightSidebarShow && (activeType == ACTION_TYPE_AT) ? 'active' : ''} ui icon button">
                     <i class="at icon"></i>
                 </button>
             </div>
-            <div class="item tms-item">
+            <div class="item tms-item ${isActiveSearch ? 'tms-hide' : ''}">
                 <button click.delegate="showStowHandler()" title="收藏消息查看" class="basic ${isRightSidebarShow && (activeType == ACTION_TYPE_STOW) ? 'active' : ''} ui icon button">
                     <i class="empty star icon"></i>
                 </button>
