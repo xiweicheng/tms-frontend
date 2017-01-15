@@ -218,4 +218,10 @@ export class EmChatTopMenu {
             }
         });
     }
+
+    logoutHandler() {
+        $.post('/admin/logout').always(() => {
+            utils.redirect2Login();
+        });
+    }
 }

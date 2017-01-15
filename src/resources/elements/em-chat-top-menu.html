@@ -54,9 +54,15 @@
                     </div>
                 </div>
             </div>
-            <a class="item tms-login-user">
+            <div ui-dropdown class="ui top right dropdown item tms-login-user">
                 <i class="circular user icon"></i> ${loginUser.name}
-            </a>
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    <div class="header">账户操作</div>
+                    <div class="divider"></div>
+                    <a class="item" click.delegate="logoutHandler()">退出</a>
+                </div>
+            </div>
         </div>
     </div>
     <em-chat-channel-create login-user.bind="loginUser" trigger.bind="createChannelRef"></em-chat-channel-create>

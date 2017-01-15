@@ -152,7 +152,7 @@ export class ChatDirect {
 
         this.chatTo = utils.getChatName(params.username);
 
-        chatService.loginUser(true).then((user) => {
+        chatService.loginUser(false).then((user) => {
             this.loginUser = user;
         });
 

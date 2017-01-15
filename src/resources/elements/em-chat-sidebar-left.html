@@ -21,7 +21,6 @@
                             </div>
                             <div class="actions">
                                 <div if.bind="item.owner.username == loginUser.username" ui-dropdown class="ui right pointing dropdown">
-                                    <!-- <i class="ellipsis vertical icon"></i> -->
                                     <i class="large ellipsis horizontal icon"></i>
                                     <div class="menu">
                                         <div class="item" click.delegate="membersMgrHandler(item)">成员管理</div>
@@ -30,9 +29,9 @@
                                     </div>
                                 </div>
                                 <div if.bind="item.owner.username != loginUser.username" ui-dropdown class="ui right pointing dropdown">
-                                    <!-- <i class="ellipsis vertical icon"></i> -->
                                     <i class="large ellipsis horizontal icon"></i>
                                     <div class="menu">
+                                        <div class="item" click.delegate="membersShowHandler(item)">成员查看</div>
                                         <div class="item" click.delegate="leaveHandler(item)">离开</div>
                                     </div>
                                 </div>
@@ -62,4 +61,5 @@
     <em-chat-channel-create login-user.bind="loginUser" trigger.bind="createChannelRef"></em-chat-channel-create>
     <em-chat-channel-edit channel.bind="selectedChannel" em-chat-channel-edit.ref="channelEditMd"></em-chat-channel-edit>
     <em-chat-channel-members-mgr users.bind="users" channel.bind="selectedChannel" em-chat-channel-members-mgr.ref="channelMembersMgrMd"></em-chat-channel-members-mgr>
+    <em-chat-channel-members-show channel.bind="selectedChannel" em-chat-channel-members-show.ref="channelMembersShowMd"></em-chat-channel-members-show>
 </template>

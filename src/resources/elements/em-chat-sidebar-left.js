@@ -87,6 +87,11 @@ export class EmChatSidebarLeft {
         this.channelMembersMgrMd.show();
     }
 
+    membersShowHandler(item) {
+        this.selectedChannel = item;
+        this.channelMembersShowMd.show();
+    }
+
     leaveHandler(item) {
         this.confirmMd.show({
             content: `确定要离开频道<code class="nx">${item.title}</code>吗?`,
