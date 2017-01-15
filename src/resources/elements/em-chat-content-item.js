@@ -154,7 +154,7 @@ export class EmChatContentItem {
     }
 
     stowHandler(item) {
-        $.post('admin/chat/channel/stow', {
+        $.post('/admin/chat/channel/stow', {
             id: item.id
         }, (data, textStatus, xhr) => {
             if (data.success) {

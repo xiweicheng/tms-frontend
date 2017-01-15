@@ -5517,7 +5517,7 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
         };
 
         EmChatContentItem.prototype.stowHandler = function stowHandler(item) {
-            $.post('admin/chat/channel/stow', {
+            $.post('/admin/chat/channel/stow', {
                 id: item.id
             }, function (data, textStatus, xhr) {
                 if (data.success) {
