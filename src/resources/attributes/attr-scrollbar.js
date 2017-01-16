@@ -11,7 +11,7 @@ export class AttrScrollbarCustomAttribute {
     }
 
     valueChanged(newValue, oldValue) {
-        this.cls = newValue ? newValue : 'scrollbar-outer';
+        this.cls = newValue ? newValue : ($(window).width() < 768 ? 'scrollbar-macosx' : 'scrollbar-outer');
         jQuery(this.element).addClass(this.cls).scrollbar();
     }
 
