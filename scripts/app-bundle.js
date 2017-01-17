@@ -5630,7 +5630,7 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
                 if (data.success) {
                     toastr.success('更新消息成功!');
                     item.isEditing = false;
-                    item.version = data.version;
+                    item.version = data.data.version;
                 } else {
                     toastr.error(data.data, '更新消息失败!');
                 }
