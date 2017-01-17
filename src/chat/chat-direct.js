@@ -447,7 +447,7 @@ export class ChatDirect {
                 let $t = $(event.currentTarget).find('.content > textarea');
                 let item = _.find(this.chats, { id: Number.parseInt(chatId) });
 
-                if (item.creator.username != this.loginUser.username) {
+                if (!item.openEdit && (item.creator.username != this.loginUser.username)) {
                     return;
                 }
 

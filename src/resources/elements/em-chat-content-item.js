@@ -114,6 +114,7 @@ export class EmChatContentItem {
             data = {
                 url: utils.getUrl(),
                 id: item.id,
+                version: item.version,
                 usernames: utils.parseUsernames(item.content, this.members).join(','),
                 content: item.content,
                 diff: utils.diffS(item.contentOld, item.content),
@@ -173,6 +174,20 @@ export class EmChatContentItem {
                 toastr.success('收藏消息成功!');
             } else {
                 toastr.error(data.data, '收藏消息失败!');
+            }
+        });
+    }
+
+    openEditHandler(item) {
+        $.post('/admin/chat/channel/openEdit', {
+            id: item.id,
+            open: !item.openEdit
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                item.openEdit = !item.openEdit;
+                toastr.success(`${item.openEdit ? '开启' : '关闭'}协作编辑成功!`);
+            } else {
+                toastr.success(`${!item.openEdit ? '开启' : '关闭'}协作编辑失败!`);
             }
         });
     }
