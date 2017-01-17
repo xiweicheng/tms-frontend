@@ -112,6 +112,14 @@ export class ChatDirect {
             }
 
         });
+
+        this.subscribe9 = ea.subscribe(nsCons.EVENT_SCROLLBAR_SCROLL_TO_BOTTOM, (payload) => {
+
+            if (this.scrollbarRef == payload.element) {
+                poll.reset();
+            }
+
+        });
     }
 
     /**
@@ -127,6 +135,7 @@ export class ChatDirect {
         this.subscribe6.dispose();
         this.subscribe7.dispose();
         this.subscribe8.dispose();
+        this.subscribe9.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();

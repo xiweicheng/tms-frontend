@@ -12,7 +12,17 @@ export class AttrScrollbarCustomAttribute {
 
     valueChanged(newValue, oldValue) {
         this.cls = newValue ? newValue : ($(window).width() < 768 ? 'scrollbar-macosx' : 'scrollbar-outer');
-        jQuery(this.element).addClass(this.cls).scrollbar();
+        jQuery(this.element).addClass(this.cls).scrollbar({
+            "onScroll": (y, x) => {
+                if (y.scroll == y.maxScroll) { // Scrolled to bottom
+                    ea.publish(nsCons.EVENT_SCROLLBAR_SCROLL_TO_BOTTOM, {
+                        element: this.element,
+                        x: x,
+                        y: y
+                    });
+                }
+            }
+        });
     }
 
     /**

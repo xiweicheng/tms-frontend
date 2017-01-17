@@ -1,3 +1,1290 @@
+/**
+ * marked - a markdown parser
+ * Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
+ * https://github.com/chjj/marked
+ */
+
+;(function() {
+
+/**
+ * Block-Level Grammar
+ */
+
+var block = {
+  newline: /^\n+/,
+  code: /^( {4}[^\n]+\n*)+/,
+  fences: noop,
+  hr: /^( *[-*_]){3,} *(?:\n+|$)/,
+  heading: /^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)/,
+  nptable: noop,
+  lheading: /^([^\n]+)\n *(=|-){2,} *(?:\n+|$)/,
+  blockquote: /^( *>[^\n]+(\n(?!def)[^\n]+)*\n*)+/,
+  list: /^( *)(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?!\1bull )\n*|\s*$)/,
+  html: /^ *(?:comment *(?:\n|\s*$)|closed *(?:\n{2,}|\s*$)|closing *(?:\n{2,}|\s*$))/,
+  def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +["(]([^\n]+)[")])? *(?:\n+|$)/,
+  table: noop,
+  paragraph: /^((?:[^\n]+\n?(?!hr|heading|lheading|blockquote|tag|def))+)\n*/,
+  text: /^[^\n]+/
+};
+
+block.bullet = /(?:[*+-]|\d+\.)/;
+block.item = /^( *)(bull) [^\n]*(?:\n(?!\1bull )[^\n]*)*/;
+block.item = replace(block.item, 'gm')
+  (/bull/g, block.bullet)
+  ();
+
+block.list = replace(block.list)
+  (/bull/g, block.bullet)
+  ('hr', '\\n+(?=\\1?(?:[-*_] *){3,}(?:\\n+|$))')
+  ('def', '\\n+(?=' + block.def.source + ')')
+  ();
+
+block.blockquote = replace(block.blockquote)
+  ('def', block.def)
+  ();
+
+block._tag = '(?!(?:'
+  + 'a|em|strong|small|s|cite|q|dfn|abbr|data|time|code'
+  + '|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo'
+  + '|span|br|wbr|ins|del|img)\\b)\\w+(?!:/|[^\\w\\s@]*@)\\b';
+
+block.html = replace(block.html)
+  ('comment', /<!--[\s\S]*?-->/)
+  ('closed', /<(tag)[\s\S]+?<\/\1>/)
+  ('closing', /<tag(?:"[^"]*"|'[^']*'|[^'">])*?>/)
+  (/tag/g, block._tag)
+  ();
+
+block.paragraph = replace(block.paragraph)
+  ('hr', block.hr)
+  ('heading', block.heading)
+  ('lheading', block.lheading)
+  ('blockquote', block.blockquote)
+  ('tag', '<' + block._tag)
+  ('def', block.def)
+  ();
+
+/**
+ * Normal Block Grammar
+ */
+
+block.normal = merge({}, block);
+
+/**
+ * GFM Block Grammar
+ */
+
+block.gfm = merge({}, block.normal, {
+  fences: /^ *(`{3,}|~{3,})[ \.]*(\S+)? *\n([\s\S]*?)\s*\1 *(?:\n+|$)/,
+  paragraph: /^/,
+  heading: /^ *(#{1,6}) +([^\n]+?) *#* *(?:\n+|$)/
+});
+
+block.gfm.paragraph = replace(block.paragraph)
+  ('(?!', '(?!'
+    + block.gfm.fences.source.replace('\\1', '\\2') + '|'
+    + block.list.source.replace('\\1', '\\3') + '|')
+  ();
+
+/**
+ * GFM + Tables Block Grammar
+ */
+
+block.tables = merge({}, block.gfm, {
+  nptable: /^ *(\S.*\|.*)\n *([-:]+ *\|[-| :]*)\n((?:.*\|.*(?:\n|$))*)\n*/,
+  table: /^ *\|(.+)\n *\|( *[-:]+[-| :]*)\n((?: *\|.*(?:\n|$))*)\n*/
+});
+
+/**
+ * Block Lexer
+ */
+
+function Lexer(options) {
+  this.tokens = [];
+  this.tokens.links = {};
+  this.options = options || marked.defaults;
+  this.rules = block.normal;
+
+  if (this.options.gfm) {
+    if (this.options.tables) {
+      this.rules = block.tables;
+    } else {
+      this.rules = block.gfm;
+    }
+  }
+}
+
+/**
+ * Expose Block Rules
+ */
+
+Lexer.rules = block;
+
+/**
+ * Static Lex Method
+ */
+
+Lexer.lex = function(src, options) {
+  var lexer = new Lexer(options);
+  return lexer.lex(src);
+};
+
+/**
+ * Preprocessing
+ */
+
+Lexer.prototype.lex = function(src) {
+  src = src
+    .replace(/\r\n|\r/g, '\n')
+    .replace(/\t/g, '    ')
+    .replace(/\u00a0/g, ' ')
+    .replace(/\u2424/g, '\n');
+
+  return this.token(src, true);
+};
+
+/**
+ * Lexing
+ */
+
+Lexer.prototype.token = function(src, top, bq) {
+  var src = src.replace(/^ +$/gm, '')
+    , next
+    , loose
+    , cap
+    , bull
+    , b
+    , item
+    , space
+    , i
+    , l;
+
+  while (src) {
+    // newline
+    if (cap = this.rules.newline.exec(src)) {
+      src = src.substring(cap[0].length);
+      if (cap[0].length > 1) {
+        this.tokens.push({
+          type: 'space'
+        });
+      }
+    }
+
+    // code
+    if (cap = this.rules.code.exec(src)) {
+      src = src.substring(cap[0].length);
+      cap = cap[0].replace(/^ {4}/gm, '');
+      this.tokens.push({
+        type: 'code',
+        text: !this.options.pedantic
+          ? cap.replace(/\n+$/, '')
+          : cap
+      });
+      continue;
+    }
+
+    // fences (gfm)
+    if (cap = this.rules.fences.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'code',
+        lang: cap[2],
+        text: cap[3] || ''
+      });
+      continue;
+    }
+
+    // heading
+    if (cap = this.rules.heading.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'heading',
+        depth: cap[1].length,
+        text: cap[2]
+      });
+      continue;
+    }
+
+    // table no leading pipe (gfm)
+    if (top && (cap = this.rules.nptable.exec(src))) {
+      src = src.substring(cap[0].length);
+
+      item = {
+        type: 'table',
+        header: cap[1].replace(/^ *| *\| *$/g, '').split(/ *\| */),
+        align: cap[2].replace(/^ *|\| *$/g, '').split(/ *\| */),
+        cells: cap[3].replace(/\n$/, '').split('\n')
+      };
+
+      for (i = 0; i < item.align.length; i++) {
+        if (/^ *-+: *$/.test(item.align[i])) {
+          item.align[i] = 'right';
+        } else if (/^ *:-+: *$/.test(item.align[i])) {
+          item.align[i] = 'center';
+        } else if (/^ *:-+ *$/.test(item.align[i])) {
+          item.align[i] = 'left';
+        } else {
+          item.align[i] = null;
+        }
+      }
+
+      for (i = 0; i < item.cells.length; i++) {
+        item.cells[i] = item.cells[i].split(/ *\| */);
+      }
+
+      this.tokens.push(item);
+
+      continue;
+    }
+
+    // lheading
+    if (cap = this.rules.lheading.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'heading',
+        depth: cap[2] === '=' ? 1 : 2,
+        text: cap[1]
+      });
+      continue;
+    }
+
+    // hr
+    if (cap = this.rules.hr.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'hr'
+      });
+      continue;
+    }
+
+    // blockquote
+    if (cap = this.rules.blockquote.exec(src)) {
+      src = src.substring(cap[0].length);
+
+      this.tokens.push({
+        type: 'blockquote_start'
+      });
+
+      cap = cap[0].replace(/^ *> ?/gm, '');
+
+      // Pass `top` to keep the current
+      // "toplevel" state. This is exactly
+      // how markdown.pl works.
+      this.token(cap, top, true);
+
+      this.tokens.push({
+        type: 'blockquote_end'
+      });
+
+      continue;
+    }
+
+    // list
+    if (cap = this.rules.list.exec(src)) {
+      src = src.substring(cap[0].length);
+      bull = cap[2];
+
+      this.tokens.push({
+        type: 'list_start',
+        ordered: bull.length > 1
+      });
+
+      // Get each top-level item.
+      cap = cap[0].match(this.rules.item);
+
+      next = false;
+      l = cap.length;
+      i = 0;
+
+      for (; i < l; i++) {
+        item = cap[i];
+
+        // Remove the list item's bullet
+        // so it is seen as the next token.
+        space = item.length;
+        item = item.replace(/^ *([*+-]|\d+\.) +/, '');
+
+        // Outdent whatever the
+        // list item contains. Hacky.
+        if (~item.indexOf('\n ')) {
+          space -= item.length;
+          item = !this.options.pedantic
+            ? item.replace(new RegExp('^ {1,' + space + '}', 'gm'), '')
+            : item.replace(/^ {1,4}/gm, '');
+        }
+
+        // Determine whether the next list item belongs here.
+        // Backpedal if it does not belong in this list.
+        if (this.options.smartLists && i !== l - 1) {
+          b = block.bullet.exec(cap[i + 1])[0];
+          if (bull !== b && !(bull.length > 1 && b.length > 1)) {
+            src = cap.slice(i + 1).join('\n') + src;
+            i = l - 1;
+          }
+        }
+
+        // Determine whether item is loose or not.
+        // Use: /(^|\n)(?! )[^\n]+\n\n(?!\s*$)/
+        // for discount behavior.
+        loose = next || /\n\n(?!\s*$)/.test(item);
+        if (i !== l - 1) {
+          next = item.charAt(item.length - 1) === '\n';
+          if (!loose) loose = next;
+        }
+
+        this.tokens.push({
+          type: loose
+            ? 'loose_item_start'
+            : 'list_item_start'
+        });
+
+        // Recurse.
+        this.token(item, false, bq);
+
+        this.tokens.push({
+          type: 'list_item_end'
+        });
+      }
+
+      this.tokens.push({
+        type: 'list_end'
+      });
+
+      continue;
+    }
+
+    // html
+    if (cap = this.rules.html.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: this.options.sanitize
+          ? 'paragraph'
+          : 'html',
+        pre: !this.options.sanitizer
+          && (cap[1] === 'pre' || cap[1] === 'script' || cap[1] === 'style'),
+        text: cap[0]
+      });
+      continue;
+    }
+
+    // def
+    if ((!bq && top) && (cap = this.rules.def.exec(src))) {
+      src = src.substring(cap[0].length);
+      this.tokens.links[cap[1].toLowerCase()] = {
+        href: cap[2],
+        title: cap[3]
+      };
+      continue;
+    }
+
+    // table (gfm)
+    if (top && (cap = this.rules.table.exec(src))) {
+      src = src.substring(cap[0].length);
+
+      item = {
+        type: 'table',
+        header: cap[1].replace(/^ *| *\| *$/g, '').split(/ *\| */),
+        align: cap[2].replace(/^ *|\| *$/g, '').split(/ *\| */),
+        cells: cap[3].replace(/(?: *\| *)?\n$/, '').split('\n')
+      };
+
+      for (i = 0; i < item.align.length; i++) {
+        if (/^ *-+: *$/.test(item.align[i])) {
+          item.align[i] = 'right';
+        } else if (/^ *:-+: *$/.test(item.align[i])) {
+          item.align[i] = 'center';
+        } else if (/^ *:-+ *$/.test(item.align[i])) {
+          item.align[i] = 'left';
+        } else {
+          item.align[i] = null;
+        }
+      }
+
+      for (i = 0; i < item.cells.length; i++) {
+        item.cells[i] = item.cells[i]
+          .replace(/^ *\| *| *\| *$/g, '')
+          .split(/ *\| */);
+      }
+
+      this.tokens.push(item);
+
+      continue;
+    }
+
+    // top-level paragraph
+    if (top && (cap = this.rules.paragraph.exec(src))) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'paragraph',
+        text: cap[1].charAt(cap[1].length - 1) === '\n'
+          ? cap[1].slice(0, -1)
+          : cap[1]
+      });
+      continue;
+    }
+
+    // text
+    if (cap = this.rules.text.exec(src)) {
+      // Top-level should never reach here.
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'text',
+        text: cap[0]
+      });
+      continue;
+    }
+
+    if (src) {
+      throw new
+        Error('Infinite loop on byte: ' + src.charCodeAt(0));
+    }
+  }
+
+  return this.tokens;
+};
+
+/**
+ * Inline-Level Grammar
+ */
+
+var inline = {
+  escape: /^\\([\\`*{}\[\]()#+\-.!_>])/,
+  autolink: /^<([^ >]+(@|:\/)[^ >]+)>/,
+  url: noop,
+  tag: /^<!--[\s\S]*?-->|^<\/?\w+(?:"[^"]*"|'[^']*'|[^'">])*?>/,
+  link: /^!?\[(inside)\]\(href\)/,
+  reflink: /^!?\[(inside)\]\s*\[([^\]]*)\]/,
+  nolink: /^!?\[((?:\[[^\]]*\]|[^\[\]])*)\]/,
+  strong: /^__([\s\S]+?)__(?!_)|^\*\*([\s\S]+?)\*\*(?!\*)/,
+  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,
+  code: /^(`+)\s*([\s\S]*?[^`])\s*\1(?!`)/,
+  br: /^ {2,}\n(?!\s*$)/,
+  del: noop,
+  text: /^[\s\S]+?(?=[\\<!\[_*`]| {2,}\n|$)/
+};
+
+inline._inside = /(?:\[[^\]]*\]|[^\[\]]|\](?=[^\[]*\]))*/;
+inline._href = /\s*<?([\s\S]*?)>?(?:\s+['"]([\s\S]*?)['"])?\s*/;
+
+inline.link = replace(inline.link)
+  ('inside', inline._inside)
+  ('href', inline._href)
+  ();
+
+inline.reflink = replace(inline.reflink)
+  ('inside', inline._inside)
+  ();
+
+/**
+ * Normal Inline Grammar
+ */
+
+inline.normal = merge({}, inline);
+
+/**
+ * Pedantic Inline Grammar
+ */
+
+inline.pedantic = merge({}, inline.normal, {
+  strong: /^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,
+  em: /^_(?=\S)([\s\S]*?\S)_(?!_)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/
+});
+
+/**
+ * GFM Inline Grammar
+ */
+
+inline.gfm = merge({}, inline.normal, {
+  escape: replace(inline.escape)('])', '~|])')(),
+  url: /^(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/,
+  del: /^~~(?=\S)([\s\S]*?\S)~~/,
+  text: replace(inline.text)
+    (']|', '~]|')
+    ('|', '|https?://|')
+    ()
+});
+
+/**
+ * GFM + Line Breaks Inline Grammar
+ */
+
+inline.breaks = merge({}, inline.gfm, {
+  br: replace(inline.br)('{2,}', '*')(),
+  text: replace(inline.gfm.text)('{2,}', '*')()
+});
+
+/**
+ * Inline Lexer & Compiler
+ */
+
+function InlineLexer(links, options) {
+  this.options = options || marked.defaults;
+  this.links = links;
+  this.rules = inline.normal;
+  this.renderer = this.options.renderer || new Renderer;
+  this.renderer.options = this.options;
+
+  if (!this.links) {
+    throw new
+      Error('Tokens array requires a `links` property.');
+  }
+
+  if (this.options.gfm) {
+    if (this.options.breaks) {
+      this.rules = inline.breaks;
+    } else {
+      this.rules = inline.gfm;
+    }
+  } else if (this.options.pedantic) {
+    this.rules = inline.pedantic;
+  }
+}
+
+/**
+ * Expose Inline Rules
+ */
+
+InlineLexer.rules = inline;
+
+/**
+ * Static Lexing/Compiling Method
+ */
+
+InlineLexer.output = function(src, links, options) {
+  var inline = new InlineLexer(links, options);
+  return inline.output(src);
+};
+
+/**
+ * Lexing/Compiling
+ */
+
+InlineLexer.prototype.output = function(src) {
+  var out = ''
+    , link
+    , text
+    , href
+    , cap;
+
+  while (src) {
+    // escape
+    if (cap = this.rules.escape.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += cap[1];
+      continue;
+    }
+
+    // autolink
+    if (cap = this.rules.autolink.exec(src)) {
+      src = src.substring(cap[0].length);
+      if (cap[2] === '@') {
+        text = cap[1].charAt(6) === ':'
+          ? this.mangle(cap[1].substring(7))
+          : this.mangle(cap[1]);
+        href = this.mangle('mailto:') + text;
+      } else {
+        text = escape(cap[1]);
+        href = text;
+      }
+      out += this.renderer.link(href, null, text);
+      continue;
+    }
+
+    // url (gfm)
+    if (!this.inLink && (cap = this.rules.url.exec(src))) {
+      src = src.substring(cap[0].length);
+      text = escape(cap[1]);
+      href = text;
+      out += this.renderer.link(href, null, text);
+      continue;
+    }
+
+    // tag
+    if (cap = this.rules.tag.exec(src)) {
+      if (!this.inLink && /^<a /i.test(cap[0])) {
+        this.inLink = true;
+      } else if (this.inLink && /^<\/a>/i.test(cap[0])) {
+        this.inLink = false;
+      }
+      src = src.substring(cap[0].length);
+      out += this.options.sanitize
+        ? this.options.sanitizer
+          ? this.options.sanitizer(cap[0])
+          : escape(cap[0])
+        : cap[0]
+      continue;
+    }
+
+    // link
+    if (cap = this.rules.link.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.inLink = true;
+      out += this.outputLink(cap, {
+        href: cap[2],
+        title: cap[3]
+      });
+      this.inLink = false;
+      continue;
+    }
+
+    // reflink, nolink
+    if ((cap = this.rules.reflink.exec(src))
+        || (cap = this.rules.nolink.exec(src))) {
+      src = src.substring(cap[0].length);
+      link = (cap[2] || cap[1]).replace(/\s+/g, ' ');
+      link = this.links[link.toLowerCase()];
+      if (!link || !link.href) {
+        out += cap[0].charAt(0);
+        src = cap[0].substring(1) + src;
+        continue;
+      }
+      this.inLink = true;
+      out += this.outputLink(cap, link);
+      this.inLink = false;
+      continue;
+    }
+
+    // strong
+    if (cap = this.rules.strong.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.strong(this.output(cap[2] || cap[1]));
+      continue;
+    }
+
+    // em
+    if (cap = this.rules.em.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.em(this.output(cap[2] || cap[1]));
+      continue;
+    }
+
+    // code
+    if (cap = this.rules.code.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.codespan(escape(cap[2], true));
+      continue;
+    }
+
+    // br
+    if (cap = this.rules.br.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.br();
+      continue;
+    }
+
+    // del (gfm)
+    if (cap = this.rules.del.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.del(this.output(cap[1]));
+      continue;
+    }
+
+    // text
+    if (cap = this.rules.text.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.text(escape(this.smartypants(cap[0])));
+      continue;
+    }
+
+    if (src) {
+      throw new
+        Error('Infinite loop on byte: ' + src.charCodeAt(0));
+    }
+  }
+
+  return out;
+};
+
+/**
+ * Compile Link
+ */
+
+InlineLexer.prototype.outputLink = function(cap, link) {
+  var href = escape(link.href)
+    , title = link.title ? escape(link.title) : null;
+
+  return cap[0].charAt(0) !== '!'
+    ? this.renderer.link(href, title, this.output(cap[1]))
+    : this.renderer.image(href, title, escape(cap[1]));
+};
+
+/**
+ * Smartypants Transformations
+ */
+
+InlineLexer.prototype.smartypants = function(text) {
+  if (!this.options.smartypants) return text;
+  return text
+    // em-dashes
+    .replace(/---/g, '\u2014')
+    // en-dashes
+    .replace(/--/g, '\u2013')
+    // opening singles
+    .replace(/(^|[-\u2014/(\[{"\s])'/g, '$1\u2018')
+    // closing singles & apostrophes
+    .replace(/'/g, '\u2019')
+    // opening doubles
+    .replace(/(^|[-\u2014/(\[{\u2018\s])"/g, '$1\u201c')
+    // closing doubles
+    .replace(/"/g, '\u201d')
+    // ellipses
+    .replace(/\.{3}/g, '\u2026');
+};
+
+/**
+ * Mangle Links
+ */
+
+InlineLexer.prototype.mangle = function(text) {
+  if (!this.options.mangle) return text;
+  var out = ''
+    , l = text.length
+    , i = 0
+    , ch;
+
+  for (; i < l; i++) {
+    ch = text.charCodeAt(i);
+    if (Math.random() > 0.5) {
+      ch = 'x' + ch.toString(16);
+    }
+    out += '&#' + ch + ';';
+  }
+
+  return out;
+};
+
+/**
+ * Renderer
+ */
+
+function Renderer(options) {
+  this.options = options || {};
+}
+
+Renderer.prototype.code = function(code, lang, escaped) {
+  if (this.options.highlight) {
+    var out = this.options.highlight(code, lang);
+    if (out != null && out !== code) {
+      escaped = true;
+      code = out;
+    }
+  }
+
+  if (!lang) {
+    return '<pre><code>'
+      + (escaped ? code : escape(code, true))
+      + '\n</code></pre>';
+  }
+
+  return '<pre><code class="'
+    + this.options.langPrefix
+    + escape(lang, true)
+    + '">'
+    + (escaped ? code : escape(code, true))
+    + '\n</code></pre>\n';
+};
+
+Renderer.prototype.blockquote = function(quote) {
+  return '<blockquote>\n' + quote + '</blockquote>\n';
+};
+
+Renderer.prototype.html = function(html) {
+  return html;
+};
+
+Renderer.prototype.heading = function(text, level, raw) {
+  return '<h'
+    + level
+    + ' id="'
+    + this.options.headerPrefix
+    + raw.toLowerCase().replace(/[^\w]+/g, '-')
+    + '">'
+    + text
+    + '</h'
+    + level
+    + '>\n';
+};
+
+Renderer.prototype.hr = function() {
+  return this.options.xhtml ? '<hr/>\n' : '<hr>\n';
+};
+
+Renderer.prototype.list = function(body, ordered) {
+  var type = ordered ? 'ol' : 'ul';
+  return '<' + type + '>\n' + body + '</' + type + '>\n';
+};
+
+Renderer.prototype.listitem = function(text) {
+  return '<li>' + text + '</li>\n';
+};
+
+Renderer.prototype.paragraph = function(text) {
+  return '<p>' + text + '</p>\n';
+};
+
+Renderer.prototype.table = function(header, body) {
+  return '<table>\n'
+    + '<thead>\n'
+    + header
+    + '</thead>\n'
+    + '<tbody>\n'
+    + body
+    + '</tbody>\n'
+    + '</table>\n';
+};
+
+Renderer.prototype.tablerow = function(content) {
+  return '<tr>\n' + content + '</tr>\n';
+};
+
+Renderer.prototype.tablecell = function(content, flags) {
+  var type = flags.header ? 'th' : 'td';
+  var tag = flags.align
+    ? '<' + type + ' style="text-align:' + flags.align + '">'
+    : '<' + type + '>';
+  return tag + content + '</' + type + '>\n';
+};
+
+// span level renderer
+Renderer.prototype.strong = function(text) {
+  return '<strong>' + text + '</strong>';
+};
+
+Renderer.prototype.em = function(text) {
+  return '<em>' + text + '</em>';
+};
+
+Renderer.prototype.codespan = function(text) {
+  return '<code>' + text + '</code>';
+};
+
+Renderer.prototype.br = function() {
+  return this.options.xhtml ? '<br/>' : '<br>';
+};
+
+Renderer.prototype.del = function(text) {
+  return '<del>' + text + '</del>';
+};
+
+Renderer.prototype.link = function(href, title, text) {
+  if (this.options.sanitize) {
+    try {
+      var prot = decodeURIComponent(unescape(href))
+        .replace(/[^\w:]/g, '')
+        .toLowerCase();
+    } catch (e) {
+      return '';
+    }
+    if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0) {
+      return '';
+    }
+  }
+  var out = '<a href="' + href + '"';
+  if (title) {
+    out += ' title="' + title + '"';
+  }
+  out += '>' + text + '</a>';
+  return out;
+};
+
+Renderer.prototype.image = function(href, title, text) {
+  var out = '<img src="' + href + '" alt="' + text + '"';
+  if (title) {
+    out += ' title="' + title + '"';
+  }
+  out += this.options.xhtml ? '/>' : '>';
+  return out;
+};
+
+Renderer.prototype.text = function(text) {
+  return text;
+};
+
+/**
+ * Parsing & Compiling
+ */
+
+function Parser(options) {
+  this.tokens = [];
+  this.token = null;
+  this.options = options || marked.defaults;
+  this.options.renderer = this.options.renderer || new Renderer;
+  this.renderer = this.options.renderer;
+  this.renderer.options = this.options;
+}
+
+/**
+ * Static Parse Method
+ */
+
+Parser.parse = function(src, options, renderer) {
+  var parser = new Parser(options, renderer);
+  return parser.parse(src);
+};
+
+/**
+ * Parse Loop
+ */
+
+Parser.prototype.parse = function(src) {
+  this.inline = new InlineLexer(src.links, this.options, this.renderer);
+  this.tokens = src.reverse();
+
+  var out = '';
+  while (this.next()) {
+    out += this.tok();
+  }
+
+  return out;
+};
+
+/**
+ * Next Token
+ */
+
+Parser.prototype.next = function() {
+  return this.token = this.tokens.pop();
+};
+
+/**
+ * Preview Next Token
+ */
+
+Parser.prototype.peek = function() {
+  return this.tokens[this.tokens.length - 1] || 0;
+};
+
+/**
+ * Parse Text Tokens
+ */
+
+Parser.prototype.parseText = function() {
+  var body = this.token.text;
+
+  while (this.peek().type === 'text') {
+    body += '\n' + this.next().text;
+  }
+
+  return this.inline.output(body);
+};
+
+/**
+ * Parse Current Token
+ */
+
+Parser.prototype.tok = function() {
+  switch (this.token.type) {
+    case 'space': {
+      return '';
+    }
+    case 'hr': {
+      return this.renderer.hr();
+    }
+    case 'heading': {
+      return this.renderer.heading(
+        this.inline.output(this.token.text),
+        this.token.depth,
+        this.token.text);
+    }
+    case 'code': {
+      return this.renderer.code(this.token.text,
+        this.token.lang,
+        this.token.escaped);
+    }
+    case 'table': {
+      var header = ''
+        , body = ''
+        , i
+        , row
+        , cell
+        , flags
+        , j;
+
+      // header
+      cell = '';
+      for (i = 0; i < this.token.header.length; i++) {
+        flags = { header: true, align: this.token.align[i] };
+        cell += this.renderer.tablecell(
+          this.inline.output(this.token.header[i]),
+          { header: true, align: this.token.align[i] }
+        );
+      }
+      header += this.renderer.tablerow(cell);
+
+      for (i = 0; i < this.token.cells.length; i++) {
+        row = this.token.cells[i];
+
+        cell = '';
+        for (j = 0; j < row.length; j++) {
+          cell += this.renderer.tablecell(
+            this.inline.output(row[j]),
+            { header: false, align: this.token.align[j] }
+          );
+        }
+
+        body += this.renderer.tablerow(cell);
+      }
+      return this.renderer.table(header, body);
+    }
+    case 'blockquote_start': {
+      var body = '';
+
+      while (this.next().type !== 'blockquote_end') {
+        body += this.tok();
+      }
+
+      return this.renderer.blockquote(body);
+    }
+    case 'list_start': {
+      var body = ''
+        , ordered = this.token.ordered;
+
+      while (this.next().type !== 'list_end') {
+        body += this.tok();
+      }
+
+      return this.renderer.list(body, ordered);
+    }
+    case 'list_item_start': {
+      var body = '';
+
+      while (this.next().type !== 'list_item_end') {
+        body += this.token.type === 'text'
+          ? this.parseText()
+          : this.tok();
+      }
+
+      return this.renderer.listitem(body);
+    }
+    case 'loose_item_start': {
+      var body = '';
+
+      while (this.next().type !== 'list_item_end') {
+        body += this.tok();
+      }
+
+      return this.renderer.listitem(body);
+    }
+    case 'html': {
+      var html = !this.token.pre && !this.options.pedantic
+        ? this.inline.output(this.token.text)
+        : this.token.text;
+      return this.renderer.html(html);
+    }
+    case 'paragraph': {
+      return this.renderer.paragraph(this.inline.output(this.token.text));
+    }
+    case 'text': {
+      return this.renderer.paragraph(this.parseText());
+    }
+  }
+};
+
+/**
+ * Helpers
+ */
+
+function escape(html, encode) {
+  return html
+    .replace(!encode ? /&(?!#?\w+;)/g : /&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function unescape(html) {
+	// explicitly match decimal, hex, and named HTML entities 
+  return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/g, function(_, n) {
+    n = n.toLowerCase();
+    if (n === 'colon') return ':';
+    if (n.charAt(0) === '#') {
+      return n.charAt(1) === 'x'
+        ? String.fromCharCode(parseInt(n.substring(2), 16))
+        : String.fromCharCode(+n.substring(1));
+    }
+    return '';
+  });
+}
+
+function replace(regex, opt) {
+  regex = regex.source;
+  opt = opt || '';
+  return function self(name, val) {
+    if (!name) return new RegExp(regex, opt);
+    val = val.source || val;
+    val = val.replace(/(^|[^\[])\^/g, '$1');
+    regex = regex.replace(name, val);
+    return self;
+  };
+}
+
+function noop() {}
+noop.exec = noop;
+
+function merge(obj) {
+  var i = 1
+    , target
+    , key;
+
+  for (; i < arguments.length; i++) {
+    target = arguments[i];
+    for (key in target) {
+      if (Object.prototype.hasOwnProperty.call(target, key)) {
+        obj[key] = target[key];
+      }
+    }
+  }
+
+  return obj;
+}
+
+
+/**
+ * Marked
+ */
+
+function marked(src, opt, callback) {
+  if (callback || typeof opt === 'function') {
+    if (!callback) {
+      callback = opt;
+      opt = null;
+    }
+
+    opt = merge({}, marked.defaults, opt || {});
+
+    var highlight = opt.highlight
+      , tokens
+      , pending
+      , i = 0;
+
+    try {
+      tokens = Lexer.lex(src, opt)
+    } catch (e) {
+      return callback(e);
+    }
+
+    pending = tokens.length;
+
+    var done = function(err) {
+      if (err) {
+        opt.highlight = highlight;
+        return callback(err);
+      }
+
+      var out;
+
+      try {
+        out = Parser.parse(tokens, opt);
+      } catch (e) {
+        err = e;
+      }
+
+      opt.highlight = highlight;
+
+      return err
+        ? callback(err)
+        : callback(null, out);
+    };
+
+    if (!highlight || highlight.length < 3) {
+      return done();
+    }
+
+    delete opt.highlight;
+
+    if (!pending) return done();
+
+    for (; i < tokens.length; i++) {
+      (function(token) {
+        if (token.type !== 'code') {
+          return --pending || done();
+        }
+        return highlight(token.text, token.lang, function(err, code) {
+          if (err) return done(err);
+          if (code == null || code === token.text) {
+            return --pending || done();
+          }
+          token.text = code;
+          token.escaped = true;
+          --pending || done();
+        });
+      })(tokens[i]);
+    }
+
+    return;
+  }
+  try {
+    if (opt) opt = merge({}, marked.defaults, opt);
+    return Parser.parse(Lexer.lex(src, opt), opt);
+  } catch (e) {
+    e.message += '\nPlease report this to https://github.com/chjj/marked.';
+    if ((opt || marked.defaults).silent) {
+      return '<p>An error occured:</p><pre>'
+        + escape(e.message + '', true)
+        + '</pre>';
+    }
+    throw e;
+  }
+}
+
+/**
+ * Options
+ */
+
+marked.options =
+marked.setOptions = function(opt) {
+  merge(marked.defaults, opt);
+  return marked;
+};
+
+marked.defaults = {
+  gfm: true,
+  tables: true,
+  breaks: false,
+  pedantic: false,
+  sanitize: false,
+  sanitizer: null,
+  mangle: true,
+  smartLists: false,
+  silent: false,
+  highlight: null,
+  langPrefix: 'lang-',
+  smartypants: false,
+  headerPrefix: '',
+  renderer: new Renderer,
+  xhtml: false
+};
+
+/**
+ * Expose
+ */
+
+marked.Parser = Parser;
+marked.parser = Parser.parse;
+
+marked.Renderer = Renderer;
+
+marked.Lexer = Lexer;
+marked.lexer = Lexer.lex;
+
+marked.InlineLexer = InlineLexer;
+marked.inlineLexer = InlineLexer.output;
+
+marked.parse = marked;
+
+if (typeof module !== 'undefined' && typeof exports === 'object') {
+  module.exports = marked;
+} else if (typeof define === 'function' && define.amd) {
+  define('marked',[],function() { return marked; });
+} else {
+  this.marked = marked;
+}
+
+}).call(function() {
+  return this || (typeof window !== 'undefined' ? window : global);
+}());
+
 /*!
 	Autosize 3.0.17
 	license: MIT
@@ -260,184 +1547,6 @@
 
 	module.exports = autosize;
 });
-!function(t,e){"object"==typeof module&&module.exports?module.exports=e(t):t.timeago=e(t)}("undefined"!=typeof window?window:this,function(){function t(t){return t instanceof Date?t:isNaN(t)?/^\d+$/.test(t)?new Date(e(t,10)):(t=(t||"").trim().replace(/\.\d+/,"").replace(/-/,"/").replace(/-/,"/").replace(/T/," ").replace(/Z/," UTC").replace(/([\+\-]\d\d)\:?(\d\d)/," $1$2"),new Date(t)):new Date(e(t))}function e(t){return parseInt(t)}function n(t,n,r){n=d[n]?n:d[r]?r:"en";var i=0;for(agoin=t<0?1:0,t=Math.abs(t);t>=l[i]&&i<p;i++)t/=l[i];return t=e(t),i*=2,t>(0===i?9:1)&&(i+=1),d[n](t,i)[agoin].replace("%s",t)}function r(e,n){return n=n?t(n):new Date,(n-t(e))/1e3}function i(t){for(var e=1,n=0,r=Math.abs(t);t>=l[n]&&n<p;n++)t/=l[n],e*=l[n];return r%=e,r=r?e-r:e,Math.ceil(r)}function o(t){return t.getAttribute?t.getAttribute(h):t.attr?t.attr(h):void 0}function a(t,e){function a(o,c,f,s){var d=r(c,t);o.innerHTML=n(d,f,e),u["k"+s]=setTimeout(function(){a(o,c,f,s)},1e3*i(d))}var u={};return e||(e="en"),this.format=function(i,o){return n(r(i,t),o,e)},this.render=function(t,e){void 0===t.length&&(t=[t]);for(var n=0;n<t.length;n++)a(t[n],o(t[n]),e,++c)},this.cancel=function(){for(var t in u)clearTimeout(u[t]);u={}},this.setLocale=function(t){e=t},this}function u(t,e){return new a(t,e)}var c=0,f="second_minute_hour_day_week_month_year".split("_"),s="秒_分钟_小时_天_周_月_年".split("_"),d={en:function(t,e){if(0===e)return["just now","right now"];var n=f[parseInt(e/2)];return t>1&&(n+="s"),[t+" "+n+" ago","in "+t+" "+n]},zh_CN:function(t,e){if(0===e)return["刚刚","片刻后"];var n=s[parseInt(e/2)];return[t+n+"前",t+n+"后"]}},l=[60,60,24,7,365/7/12,12],p=6,h="datetime";return u.register=function(t,e){d[t]=e},u});
-define("timeago/dist/timeago.min", [],function(){});
-;define('timeago', ['timeago/dist/timeago.min'], function (main) { return main; });
-
-define('highlight/lib/index',['require','exports','module','./highlight','./languages/1c','./languages/abnf','./languages/accesslog','./languages/actionscript','./languages/ada','./languages/apache','./languages/applescript','./languages/cpp','./languages/arduino','./languages/armasm','./languages/xml','./languages/asciidoc','./languages/aspectj','./languages/autohotkey','./languages/autoit','./languages/avrasm','./languages/awk','./languages/axapta','./languages/bash','./languages/basic','./languages/bnf','./languages/brainfuck','./languages/cal','./languages/capnproto','./languages/ceylon','./languages/clojure','./languages/clojure-repl','./languages/cmake','./languages/coffeescript','./languages/coq','./languages/cos','./languages/crmsh','./languages/crystal','./languages/cs','./languages/csp','./languages/css','./languages/d','./languages/markdown','./languages/dart','./languages/delphi','./languages/diff','./languages/django','./languages/dns','./languages/dockerfile','./languages/dos','./languages/dsconfig','./languages/dts','./languages/dust','./languages/ebnf','./languages/elixir','./languages/elm','./languages/ruby','./languages/erb','./languages/erlang-repl','./languages/erlang','./languages/excel','./languages/fix','./languages/fortran','./languages/fsharp','./languages/gams','./languages/gauss','./languages/gcode','./languages/gherkin','./languages/glsl','./languages/go','./languages/golo','./languages/gradle','./languages/groovy','./languages/haml','./languages/handlebars','./languages/haskell','./languages/haxe','./languages/hsp','./languages/htmlbars','./languages/http','./languages/inform7','./languages/ini','./languages/irpf90','./languages/java','./languages/javascript','./languages/json','./languages/julia','./languages/kotlin','./languages/lasso','./languages/ldif','./languages/less','./languages/lisp','./languages/livecodeserver','./languages/livescript','./languages/lsl','./languages/lua','./languages/makefile','./languages/mathematica','./languages/matlab','./languages/maxima','./languages/mel','./languages/mercury','./languages/mipsasm','./languages/mizar','./languages/perl','./languages/mojolicious','./languages/monkey','./languages/moonscript','./languages/nginx','./languages/nimrod','./languages/nix','./languages/nsis','./languages/objectivec','./languages/ocaml','./languages/openscad','./languages/oxygene','./languages/parser3','./languages/pf','./languages/php','./languages/pony','./languages/powershell','./languages/processing','./languages/profile','./languages/prolog','./languages/protobuf','./languages/puppet','./languages/purebasic','./languages/python','./languages/q','./languages/qml','./languages/r','./languages/rib','./languages/roboconf','./languages/rsl','./languages/ruleslanguage','./languages/rust','./languages/scala','./languages/scheme','./languages/scilab','./languages/scss','./languages/smali','./languages/smalltalk','./languages/sml','./languages/sqf','./languages/sql','./languages/stan','./languages/stata','./languages/step21','./languages/stylus','./languages/subunit','./languages/swift','./languages/taggerscript','./languages/yaml','./languages/tap','./languages/tcl','./languages/tex','./languages/thrift','./languages/tp','./languages/twig','./languages/typescript','./languages/vala','./languages/vbnet','./languages/vbscript','./languages/vbscript-html','./languages/verilog','./languages/vhdl','./languages/vim','./languages/x86asm','./languages/xl','./languages/xquery','./languages/zephir'],function (require, exports, module) {var hljs = require('./highlight');
-
-hljs.registerLanguage('1c', require('./languages/1c'));
-hljs.registerLanguage('abnf', require('./languages/abnf'));
-hljs.registerLanguage('accesslog', require('./languages/accesslog'));
-hljs.registerLanguage('actionscript', require('./languages/actionscript'));
-hljs.registerLanguage('ada', require('./languages/ada'));
-hljs.registerLanguage('apache', require('./languages/apache'));
-hljs.registerLanguage('applescript', require('./languages/applescript'));
-hljs.registerLanguage('cpp', require('./languages/cpp'));
-hljs.registerLanguage('arduino', require('./languages/arduino'));
-hljs.registerLanguage('armasm', require('./languages/armasm'));
-hljs.registerLanguage('xml', require('./languages/xml'));
-hljs.registerLanguage('asciidoc', require('./languages/asciidoc'));
-hljs.registerLanguage('aspectj', require('./languages/aspectj'));
-hljs.registerLanguage('autohotkey', require('./languages/autohotkey'));
-hljs.registerLanguage('autoit', require('./languages/autoit'));
-hljs.registerLanguage('avrasm', require('./languages/avrasm'));
-hljs.registerLanguage('awk', require('./languages/awk'));
-hljs.registerLanguage('axapta', require('./languages/axapta'));
-hljs.registerLanguage('bash', require('./languages/bash'));
-hljs.registerLanguage('basic', require('./languages/basic'));
-hljs.registerLanguage('bnf', require('./languages/bnf'));
-hljs.registerLanguage('brainfuck', require('./languages/brainfuck'));
-hljs.registerLanguage('cal', require('./languages/cal'));
-hljs.registerLanguage('capnproto', require('./languages/capnproto'));
-hljs.registerLanguage('ceylon', require('./languages/ceylon'));
-hljs.registerLanguage('clojure', require('./languages/clojure'));
-hljs.registerLanguage('clojure-repl', require('./languages/clojure-repl'));
-hljs.registerLanguage('cmake', require('./languages/cmake'));
-hljs.registerLanguage('coffeescript', require('./languages/coffeescript'));
-hljs.registerLanguage('coq', require('./languages/coq'));
-hljs.registerLanguage('cos', require('./languages/cos'));
-hljs.registerLanguage('crmsh', require('./languages/crmsh'));
-hljs.registerLanguage('crystal', require('./languages/crystal'));
-hljs.registerLanguage('cs', require('./languages/cs'));
-hljs.registerLanguage('csp', require('./languages/csp'));
-hljs.registerLanguage('css', require('./languages/css'));
-hljs.registerLanguage('d', require('./languages/d'));
-hljs.registerLanguage('markdown', require('./languages/markdown'));
-hljs.registerLanguage('dart', require('./languages/dart'));
-hljs.registerLanguage('delphi', require('./languages/delphi'));
-hljs.registerLanguage('diff', require('./languages/diff'));
-hljs.registerLanguage('django', require('./languages/django'));
-hljs.registerLanguage('dns', require('./languages/dns'));
-hljs.registerLanguage('dockerfile', require('./languages/dockerfile'));
-hljs.registerLanguage('dos', require('./languages/dos'));
-hljs.registerLanguage('dsconfig', require('./languages/dsconfig'));
-hljs.registerLanguage('dts', require('./languages/dts'));
-hljs.registerLanguage('dust', require('./languages/dust'));
-hljs.registerLanguage('ebnf', require('./languages/ebnf'));
-hljs.registerLanguage('elixir', require('./languages/elixir'));
-hljs.registerLanguage('elm', require('./languages/elm'));
-hljs.registerLanguage('ruby', require('./languages/ruby'));
-hljs.registerLanguage('erb', require('./languages/erb'));
-hljs.registerLanguage('erlang-repl', require('./languages/erlang-repl'));
-hljs.registerLanguage('erlang', require('./languages/erlang'));
-hljs.registerLanguage('excel', require('./languages/excel'));
-hljs.registerLanguage('fix', require('./languages/fix'));
-hljs.registerLanguage('fortran', require('./languages/fortran'));
-hljs.registerLanguage('fsharp', require('./languages/fsharp'));
-hljs.registerLanguage('gams', require('./languages/gams'));
-hljs.registerLanguage('gauss', require('./languages/gauss'));
-hljs.registerLanguage('gcode', require('./languages/gcode'));
-hljs.registerLanguage('gherkin', require('./languages/gherkin'));
-hljs.registerLanguage('glsl', require('./languages/glsl'));
-hljs.registerLanguage('go', require('./languages/go'));
-hljs.registerLanguage('golo', require('./languages/golo'));
-hljs.registerLanguage('gradle', require('./languages/gradle'));
-hljs.registerLanguage('groovy', require('./languages/groovy'));
-hljs.registerLanguage('haml', require('./languages/haml'));
-hljs.registerLanguage('handlebars', require('./languages/handlebars'));
-hljs.registerLanguage('haskell', require('./languages/haskell'));
-hljs.registerLanguage('haxe', require('./languages/haxe'));
-hljs.registerLanguage('hsp', require('./languages/hsp'));
-hljs.registerLanguage('htmlbars', require('./languages/htmlbars'));
-hljs.registerLanguage('http', require('./languages/http'));
-hljs.registerLanguage('inform7', require('./languages/inform7'));
-hljs.registerLanguage('ini', require('./languages/ini'));
-hljs.registerLanguage('irpf90', require('./languages/irpf90'));
-hljs.registerLanguage('java', require('./languages/java'));
-hljs.registerLanguage('javascript', require('./languages/javascript'));
-hljs.registerLanguage('json', require('./languages/json'));
-hljs.registerLanguage('julia', require('./languages/julia'));
-hljs.registerLanguage('kotlin', require('./languages/kotlin'));
-hljs.registerLanguage('lasso', require('./languages/lasso'));
-hljs.registerLanguage('ldif', require('./languages/ldif'));
-hljs.registerLanguage('less', require('./languages/less'));
-hljs.registerLanguage('lisp', require('./languages/lisp'));
-hljs.registerLanguage('livecodeserver', require('./languages/livecodeserver'));
-hljs.registerLanguage('livescript', require('./languages/livescript'));
-hljs.registerLanguage('lsl', require('./languages/lsl'));
-hljs.registerLanguage('lua', require('./languages/lua'));
-hljs.registerLanguage('makefile', require('./languages/makefile'));
-hljs.registerLanguage('mathematica', require('./languages/mathematica'));
-hljs.registerLanguage('matlab', require('./languages/matlab'));
-hljs.registerLanguage('maxima', require('./languages/maxima'));
-hljs.registerLanguage('mel', require('./languages/mel'));
-hljs.registerLanguage('mercury', require('./languages/mercury'));
-hljs.registerLanguage('mipsasm', require('./languages/mipsasm'));
-hljs.registerLanguage('mizar', require('./languages/mizar'));
-hljs.registerLanguage('perl', require('./languages/perl'));
-hljs.registerLanguage('mojolicious', require('./languages/mojolicious'));
-hljs.registerLanguage('monkey', require('./languages/monkey'));
-hljs.registerLanguage('moonscript', require('./languages/moonscript'));
-hljs.registerLanguage('nginx', require('./languages/nginx'));
-hljs.registerLanguage('nimrod', require('./languages/nimrod'));
-hljs.registerLanguage('nix', require('./languages/nix'));
-hljs.registerLanguage('nsis', require('./languages/nsis'));
-hljs.registerLanguage('objectivec', require('./languages/objectivec'));
-hljs.registerLanguage('ocaml', require('./languages/ocaml'));
-hljs.registerLanguage('openscad', require('./languages/openscad'));
-hljs.registerLanguage('oxygene', require('./languages/oxygene'));
-hljs.registerLanguage('parser3', require('./languages/parser3'));
-hljs.registerLanguage('pf', require('./languages/pf'));
-hljs.registerLanguage('php', require('./languages/php'));
-hljs.registerLanguage('pony', require('./languages/pony'));
-hljs.registerLanguage('powershell', require('./languages/powershell'));
-hljs.registerLanguage('processing', require('./languages/processing'));
-hljs.registerLanguage('profile', require('./languages/profile'));
-hljs.registerLanguage('prolog', require('./languages/prolog'));
-hljs.registerLanguage('protobuf', require('./languages/protobuf'));
-hljs.registerLanguage('puppet', require('./languages/puppet'));
-hljs.registerLanguage('purebasic', require('./languages/purebasic'));
-hljs.registerLanguage('python', require('./languages/python'));
-hljs.registerLanguage('q', require('./languages/q'));
-hljs.registerLanguage('qml', require('./languages/qml'));
-hljs.registerLanguage('r', require('./languages/r'));
-hljs.registerLanguage('rib', require('./languages/rib'));
-hljs.registerLanguage('roboconf', require('./languages/roboconf'));
-hljs.registerLanguage('rsl', require('./languages/rsl'));
-hljs.registerLanguage('ruleslanguage', require('./languages/ruleslanguage'));
-hljs.registerLanguage('rust', require('./languages/rust'));
-hljs.registerLanguage('scala', require('./languages/scala'));
-hljs.registerLanguage('scheme', require('./languages/scheme'));
-hljs.registerLanguage('scilab', require('./languages/scilab'));
-hljs.registerLanguage('scss', require('./languages/scss'));
-hljs.registerLanguage('smali', require('./languages/smali'));
-hljs.registerLanguage('smalltalk', require('./languages/smalltalk'));
-hljs.registerLanguage('sml', require('./languages/sml'));
-hljs.registerLanguage('sqf', require('./languages/sqf'));
-hljs.registerLanguage('sql', require('./languages/sql'));
-hljs.registerLanguage('stan', require('./languages/stan'));
-hljs.registerLanguage('stata', require('./languages/stata'));
-hljs.registerLanguage('step21', require('./languages/step21'));
-hljs.registerLanguage('stylus', require('./languages/stylus'));
-hljs.registerLanguage('subunit', require('./languages/subunit'));
-hljs.registerLanguage('swift', require('./languages/swift'));
-hljs.registerLanguage('taggerscript', require('./languages/taggerscript'));
-hljs.registerLanguage('yaml', require('./languages/yaml'));
-hljs.registerLanguage('tap', require('./languages/tap'));
-hljs.registerLanguage('tcl', require('./languages/tcl'));
-hljs.registerLanguage('tex', require('./languages/tex'));
-hljs.registerLanguage('thrift', require('./languages/thrift'));
-hljs.registerLanguage('tp', require('./languages/tp'));
-hljs.registerLanguage('twig', require('./languages/twig'));
-hljs.registerLanguage('typescript', require('./languages/typescript'));
-hljs.registerLanguage('vala', require('./languages/vala'));
-hljs.registerLanguage('vbnet', require('./languages/vbnet'));
-hljs.registerLanguage('vbscript', require('./languages/vbscript'));
-hljs.registerLanguage('vbscript-html', require('./languages/vbscript-html'));
-hljs.registerLanguage('verilog', require('./languages/verilog'));
-hljs.registerLanguage('vhdl', require('./languages/vhdl'));
-hljs.registerLanguage('vim', require('./languages/vim'));
-hljs.registerLanguage('x86asm', require('./languages/x86asm'));
-hljs.registerLanguage('xl', require('./languages/xl'));
-hljs.registerLanguage('xquery', require('./languages/xquery'));
-hljs.registerLanguage('zephir', require('./languages/zephir'));
-
-module.exports = hljs;
-});
-;define('highlight', ['highlight/lib/index'], function (main) { return main; });
-
-define('text!highlight/styles/github.css', ['module'], function(module) { module.exports = "/*\n\ngithub.com style (c) Vasily Polovnyov <vast@whiteants.net>\n\n*/\n\n.hljs {\n  display: block;\n  overflow-x: auto;\n  padding: 0.5em;\n  color: #333;\n  background: #f8f8f8;\n}\n\n.hljs-comment,\n.hljs-quote {\n  color: #998;\n  font-style: italic;\n}\n\n.hljs-keyword,\n.hljs-selector-tag,\n.hljs-subst {\n  color: #333;\n  font-weight: bold;\n}\n\n.hljs-number,\n.hljs-literal,\n.hljs-variable,\n.hljs-template-variable,\n.hljs-tag .hljs-attr {\n  color: #008080;\n}\n\n.hljs-string,\n.hljs-doctag {\n  color: #d14;\n}\n\n.hljs-title,\n.hljs-section,\n.hljs-selector-id {\n  color: #900;\n  font-weight: bold;\n}\n\n.hljs-subst {\n  font-weight: normal;\n}\n\n.hljs-type,\n.hljs-class .hljs-title {\n  color: #458;\n  font-weight: bold;\n}\n\n.hljs-tag,\n.hljs-name,\n.hljs-attribute {\n  color: #000080;\n  font-weight: normal;\n}\n\n.hljs-regexp,\n.hljs-link {\n  color: #009926;\n}\n\n.hljs-symbol,\n.hljs-bullet {\n  color: #990073;\n}\n\n.hljs-built_in,\n.hljs-builtin-name {\n  color: #0086b3;\n}\n\n.hljs-meta {\n  color: #999;\n  font-weight: bold;\n}\n\n.hljs-deletion {\n  background: #fdd;\n}\n\n.hljs-addition {\n  background: #dfd;\n}\n\n.hljs-emphasis {\n  font-style: italic;\n}\n\n.hljs-strong {\n  font-weight: bold;\n}\n"; });
 /*!
  * clipboard.js v1.5.12
  * https://zenorocha.github.io/clipboard.js
@@ -445,6 +1554,10 @@ define('text!highlight/styles/github.css', ['module'], function(module) { module
  * Licensed MIT © Zeno Rocha
  */
 !function(t){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=t();else if("function"==typeof define&&define.amd)define('clipboard/dist/clipboard.min',[],t);else{var e;e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,e.Clipboard=t()}}(function(){var t,e,n;return function t(e,n,o){function i(a,c){if(!n[a]){if(!e[a]){var s="function"==typeof require&&require;if(!c&&s)return s(a,!0);if(r)return r(a,!0);var l=new Error("Cannot find module '"+a+"'");throw l.code="MODULE_NOT_FOUND",l}var u=n[a]={exports:{}};e[a][0].call(u.exports,function(t){var n=e[a][1][t];return i(n?n:t)},u,u.exports,t,e,n,o)}return n[a].exports}for(var r="function"==typeof require&&require,a=0;a<o.length;a++)i(o[a]);return i}({1:[function(t,e,n){var o=t("matches-selector");e.exports=function(t,e,n){for(var i=n?t:t.parentNode;i&&i!==document;){if(o(i,e))return i;i=i.parentNode}}},{"matches-selector":5}],2:[function(t,e,n){function o(t,e,n,o,r){var a=i.apply(this,arguments);return t.addEventListener(n,a,r),{destroy:function(){t.removeEventListener(n,a,r)}}}function i(t,e,n,o){return function(n){n.delegateTarget=r(n.target,e,!0),n.delegateTarget&&o.call(t,n)}}var r=t("closest");e.exports=o},{closest:1}],3:[function(t,e,n){n.node=function(t){return void 0!==t&&t instanceof HTMLElement&&1===t.nodeType},n.nodeList=function(t){var e=Object.prototype.toString.call(t);return void 0!==t&&("[object NodeList]"===e||"[object HTMLCollection]"===e)&&"length"in t&&(0===t.length||n.node(t[0]))},n.string=function(t){return"string"==typeof t||t instanceof String},n.fn=function(t){var e=Object.prototype.toString.call(t);return"[object Function]"===e}},{}],4:[function(t,e,n){function o(t,e,n){if(!t&&!e&&!n)throw new Error("Missing required arguments");if(!c.string(e))throw new TypeError("Second argument must be a String");if(!c.fn(n))throw new TypeError("Third argument must be a Function");if(c.node(t))return i(t,e,n);if(c.nodeList(t))return r(t,e,n);if(c.string(t))return a(t,e,n);throw new TypeError("First argument must be a String, HTMLElement, HTMLCollection, or NodeList")}function i(t,e,n){return t.addEventListener(e,n),{destroy:function(){t.removeEventListener(e,n)}}}function r(t,e,n){return Array.prototype.forEach.call(t,function(t){t.addEventListener(e,n)}),{destroy:function(){Array.prototype.forEach.call(t,function(t){t.removeEventListener(e,n)})}}}function a(t,e,n){return s(document.body,t,e,n)}var c=t("./is"),s=t("delegate");e.exports=o},{"./is":3,delegate:2}],5:[function(t,e,n){function o(t,e){if(r)return r.call(t,e);for(var n=t.parentNode.querySelectorAll(e),o=0;o<n.length;++o)if(n[o]==t)return!0;return!1}var i=Element.prototype,r=i.matchesSelector||i.webkitMatchesSelector||i.mozMatchesSelector||i.msMatchesSelector||i.oMatchesSelector;e.exports=o},{}],6:[function(t,e,n){function o(t){var e;if("INPUT"===t.nodeName||"TEXTAREA"===t.nodeName)t.focus(),t.setSelectionRange(0,t.value.length),e=t.value;else{t.hasAttribute("contenteditable")&&t.focus();var n=window.getSelection(),o=document.createRange();o.selectNodeContents(t),n.removeAllRanges(),n.addRange(o),e=n.toString()}return e}e.exports=o},{}],7:[function(t,e,n){function o(){}o.prototype={on:function(t,e,n){var o=this.e||(this.e={});return(o[t]||(o[t]=[])).push({fn:e,ctx:n}),this},once:function(t,e,n){function o(){i.off(t,o),e.apply(n,arguments)}var i=this;return o._=e,this.on(t,o,n)},emit:function(t){var e=[].slice.call(arguments,1),n=((this.e||(this.e={}))[t]||[]).slice(),o=0,i=n.length;for(o;i>o;o++)n[o].fn.apply(n[o].ctx,e);return this},off:function(t,e){var n=this.e||(this.e={}),o=n[t],i=[];if(o&&e)for(var r=0,a=o.length;a>r;r++)o[r].fn!==e&&o[r].fn._!==e&&i.push(o[r]);return i.length?n[t]=i:delete n[t],this}},e.exports=o},{}],8:[function(e,n,o){!function(i,r){if("function"==typeof t&&t.amd)t(["module","select"],r);else if("undefined"!=typeof o)r(n,e("select"));else{var a={exports:{}};r(a,i.select),i.clipboardAction=a.exports}}(this,function(t,e){"use strict";function n(t){return t&&t.__esModule?t:{"default":t}}function o(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}var i=n(e),r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol?"symbol":typeof t},a=function(){function t(t,e){for(var n=0;n<e.length;n++){var o=e[n];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(t,o.key,o)}}return function(e,n,o){return n&&t(e.prototype,n),o&&t(e,o),e}}(),c=function(){function t(e){o(this,t),this.resolveOptions(e),this.initSelection()}return t.prototype.resolveOptions=function t(){var e=arguments.length<=0||void 0===arguments[0]?{}:arguments[0];this.action=e.action,this.emitter=e.emitter,this.target=e.target,this.text=e.text,this.trigger=e.trigger,this.selectedText=""},t.prototype.initSelection=function t(){this.text?this.selectFake():this.target&&this.selectTarget()},t.prototype.selectFake=function t(){var e=this,n="rtl"==document.documentElement.getAttribute("dir");this.removeFake(),this.fakeHandlerCallback=function(){return e.removeFake()},this.fakeHandler=document.body.addEventListener("click",this.fakeHandlerCallback)||!0,this.fakeElem=document.createElement("textarea"),this.fakeElem.style.fontSize="12pt",this.fakeElem.style.border="0",this.fakeElem.style.padding="0",this.fakeElem.style.margin="0",this.fakeElem.style.position="absolute",this.fakeElem.style[n?"right":"left"]="-9999px",this.fakeElem.style.top=(window.pageYOffset||document.documentElement.scrollTop)+"px",this.fakeElem.setAttribute("readonly",""),this.fakeElem.value=this.text,document.body.appendChild(this.fakeElem),this.selectedText=(0,i.default)(this.fakeElem),this.copyText()},t.prototype.removeFake=function t(){this.fakeHandler&&(document.body.removeEventListener("click",this.fakeHandlerCallback),this.fakeHandler=null,this.fakeHandlerCallback=null),this.fakeElem&&(document.body.removeChild(this.fakeElem),this.fakeElem=null)},t.prototype.selectTarget=function t(){this.selectedText=(0,i.default)(this.target),this.copyText()},t.prototype.copyText=function t(){var e=void 0;try{e=document.execCommand(this.action)}catch(n){e=!1}this.handleResult(e)},t.prototype.handleResult=function t(e){e?this.emitter.emit("success",{action:this.action,text:this.selectedText,trigger:this.trigger,clearSelection:this.clearSelection.bind(this)}):this.emitter.emit("error",{action:this.action,trigger:this.trigger,clearSelection:this.clearSelection.bind(this)})},t.prototype.clearSelection=function t(){this.target&&this.target.blur(),window.getSelection().removeAllRanges()},t.prototype.destroy=function t(){this.removeFake()},a(t,[{key:"action",set:function t(){var e=arguments.length<=0||void 0===arguments[0]?"copy":arguments[0];if(this._action=e,"copy"!==this._action&&"cut"!==this._action)throw new Error('Invalid "action" value, use either "copy" or "cut"')},get:function t(){return this._action}},{key:"target",set:function t(e){if(void 0!==e){if(!e||"object"!==("undefined"==typeof e?"undefined":r(e))||1!==e.nodeType)throw new Error('Invalid "target" value, use a valid Element');if("copy"===this.action&&e.hasAttribute("disabled"))throw new Error('Invalid "target" attribute. Please use "readonly" instead of "disabled" attribute');if("cut"===this.action&&(e.hasAttribute("readonly")||e.hasAttribute("disabled")))throw new Error('Invalid "target" attribute. You can\'t cut text from elements with "readonly" or "disabled" attributes');this._target=e}},get:function t(){return this._target}}]),t}();t.exports=c})},{select:6}],9:[function(e,n,o){!function(i,r){if("function"==typeof t&&t.amd)t(["module","./clipboard-action","tiny-emitter","good-listener"],r);else if("undefined"!=typeof o)r(n,e("./clipboard-action"),e("tiny-emitter"),e("good-listener"));else{var a={exports:{}};r(a,i.clipboardAction,i.tinyEmitter,i.goodListener),i.clipboard=a.exports}}(this,function(t,e,n,o){"use strict";function i(t){return t&&t.__esModule?t:{"default":t}}function r(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function a(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function c(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}function s(t,e){var n="data-clipboard-"+t;if(e.hasAttribute(n))return e.getAttribute(n)}var l=i(e),u=i(n),f=i(o),d=function(t){function e(n,o){r(this,e);var i=a(this,t.call(this));return i.resolveOptions(o),i.listenClick(n),i}return c(e,t),e.prototype.resolveOptions=function t(){var e=arguments.length<=0||void 0===arguments[0]?{}:arguments[0];this.action="function"==typeof e.action?e.action:this.defaultAction,this.target="function"==typeof e.target?e.target:this.defaultTarget,this.text="function"==typeof e.text?e.text:this.defaultText},e.prototype.listenClick=function t(e){var n=this;this.listener=(0,f.default)(e,"click",function(t){return n.onClick(t)})},e.prototype.onClick=function t(e){var n=e.delegateTarget||e.currentTarget;this.clipboardAction&&(this.clipboardAction=null),this.clipboardAction=new l.default({action:this.action(n),target:this.target(n),text:this.text(n),trigger:n,emitter:this})},e.prototype.defaultAction=function t(e){return s("action",e)},e.prototype.defaultTarget=function t(e){var n=s("target",e);return n?document.querySelector(n):void 0},e.prototype.defaultText=function t(e){return s("text",e)},e.prototype.destroy=function t(){this.listener.destroy(),this.clipboardAction&&(this.clipboardAction.destroy(),this.clipboardAction=null)},e}(u.default);t.exports=d})},{"./clipboard-action":8,"good-listener":4,"tiny-emitter":7}]},{},[9])(9)});;define('clipboard', ['clipboard/dist/clipboard.min'], function (main) { return main; });
+
+!function(t,e){"object"==typeof module&&module.exports?module.exports=e(t):t.timeago=e(t)}("undefined"!=typeof window?window:this,function(){function t(t){return t instanceof Date?t:isNaN(t)?/^\d+$/.test(t)?new Date(e(t,10)):(t=(t||"").trim().replace(/\.\d+/,"").replace(/-/,"/").replace(/-/,"/").replace(/T/," ").replace(/Z/," UTC").replace(/([\+\-]\d\d)\:?(\d\d)/," $1$2"),new Date(t)):new Date(e(t))}function e(t){return parseInt(t)}function n(t,n,r){n=d[n]?n:d[r]?r:"en";var i=0;for(agoin=t<0?1:0,t=Math.abs(t);t>=l[i]&&i<p;i++)t/=l[i];return t=e(t),i*=2,t>(0===i?9:1)&&(i+=1),d[n](t,i)[agoin].replace("%s",t)}function r(e,n){return n=n?t(n):new Date,(n-t(e))/1e3}function i(t){for(var e=1,n=0,r=Math.abs(t);t>=l[n]&&n<p;n++)t/=l[n],e*=l[n];return r%=e,r=r?e-r:e,Math.ceil(r)}function o(t){return t.getAttribute?t.getAttribute(h):t.attr?t.attr(h):void 0}function a(t,e){function a(o,c,f,s){var d=r(c,t);o.innerHTML=n(d,f,e),u["k"+s]=setTimeout(function(){a(o,c,f,s)},1e3*i(d))}var u={};return e||(e="en"),this.format=function(i,o){return n(r(i,t),o,e)},this.render=function(t,e){void 0===t.length&&(t=[t]);for(var n=0;n<t.length;n++)a(t[n],o(t[n]),e,++c)},this.cancel=function(){for(var t in u)clearTimeout(u[t]);u={}},this.setLocale=function(t){e=t},this}function u(t,e){return new a(t,e)}var c=0,f="second_minute_hour_day_week_month_year".split("_"),s="秒_分钟_小时_天_周_月_年".split("_"),d={en:function(t,e){if(0===e)return["just now","right now"];var n=f[parseInt(e/2)];return t>1&&(n+="s"),[t+" "+n+" ago","in "+t+" "+n]},zh_CN:function(t,e){if(0===e)return["刚刚","片刻后"];var n=s[parseInt(e/2)];return[t+n+"前",t+n+"后"]}},l=[60,60,24,7,365/7/12,12],p=6,h="datetime";return u.register=function(t,e){d[t]=e},u});
+define("timeago/dist/timeago.min", [],function(){});
+;define('timeago', ['timeago/dist/timeago.min'], function (main) { return main; });
 
 define('dropzone/dist/dropzone',['require','exports','module'],function (require, exports, module) {
 /*
@@ -2225,1293 +3338,6 @@ define("swipebox/src/js/jquery.swipebox.min", ["jquery"], function(){});
 
 define('text!swipebox/src/css/swipebox.min.css', ['module'], function(module) { module.exports = "/*! Swipebox v1.3.0 | Constantin Saguin csag.co | MIT License | github.com/brutaldesign/swipebox */html.swipebox-html.swipebox-touch{overflow:hidden!important}#swipebox-overlay img{border:none!important}#swipebox-overlay{width:100%;height:100%;position:fixed;top:0;left:0;z-index:99999!important;overflow:hidden;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}#swipebox-container{position:relative;width:100%;height:100%}#swipebox-slider{-webkit-transition:-webkit-transform .4s ease;transition:transform .4s ease;height:100%;left:0;top:0;width:100%;white-space:nowrap;position:absolute;display:none;cursor:pointer}#swipebox-slider .slide{height:100%;width:100%;line-height:1px;text-align:center;display:inline-block}#swipebox-slider .slide:before{content:\"\";display:inline-block;height:50%;width:1px;margin-right:-1px}#swipebox-slider .slide .swipebox-inline-container,#swipebox-slider .slide .swipebox-video-container,#swipebox-slider .slide img{display:inline-block;max-height:100%;max-width:100%;margin:0;padding:0;width:auto;height:auto;vertical-align:middle}#swipebox-slider .slide .swipebox-video-container{background:0 0;max-width:1140px;max-height:100%;width:100%;padding:5%;-webkit-box-sizing:border-box;box-sizing:border-box}#swipebox-slider .slide .swipebox-video-container .swipebox-video{width:100%;height:0;padding-bottom:56.25%;overflow:hidden;position:relative}#swipebox-slider .slide .swipebox-video-container .swipebox-video iframe{width:100%!important;height:100%!important;position:absolute;top:0;left:0}#swipebox-slider .slide-loading{background:url(../img/loader.gif) center center no-repeat}#swipebox-bottom-bar,#swipebox-top-bar{-webkit-transition:.5s;transition:.5s;position:absolute;left:0;z-index:999;height:50px;width:100%}#swipebox-bottom-bar{bottom:-50px}#swipebox-bottom-bar.visible-bars{-webkit-transform:translate3d(0,-50px,0);transform:translate3d(0,-50px,0)}#swipebox-top-bar{top:-50px}#swipebox-top-bar.visible-bars{-webkit-transform:translate3d(0,50px,0);transform:translate3d(0,50px,0)}#swipebox-title{display:block;width:100%;text-align:center}#swipebox-close,#swipebox-next,#swipebox-prev{background-image:url(../img/icons.png);background-repeat:no-repeat;border:none!important;text-decoration:none!important;cursor:pointer;width:50px;height:50px;top:0}#swipebox-arrows{display:block;margin:0 auto;width:100%;height:50px}#swipebox-prev{background-position:-32px 13px;float:left}#swipebox-next{background-position:-78px 13px;float:right}#swipebox-close{top:0;right:0;position:absolute;z-index:9999;background-position:15px 12px}.swipebox-no-close-button #swipebox-close{display:none}#swipebox-next.disabled,#swipebox-prev.disabled{opacity:.3}.swipebox-no-touch #swipebox-overlay.rightSpring #swipebox-slider{-webkit-animation:rightSpring .3s;animation:rightSpring .3s}.swipebox-no-touch #swipebox-overlay.leftSpring #swipebox-slider{-webkit-animation:leftSpring .3s;animation:leftSpring .3s}.swipebox-touch #swipebox-container:after,.swipebox-touch #swipebox-container:before{-webkit-backface-visibility:hidden;backface-visibility:hidden;-webkit-transition:all .3s ease;transition:all .3s ease;content:' ';position:absolute;z-index:999;top:0;height:100%;width:20px;opacity:0}.swipebox-touch #swipebox-container:before{left:0;-webkit-box-shadow:inset 10px 0 10px -8px #656565;box-shadow:inset 10px 0 10px -8px #656565}.swipebox-touch #swipebox-container:after{right:0;-webkit-box-shadow:inset -10px 0 10px -8px #656565;box-shadow:inset -10px 0 10px -8px #656565}.swipebox-touch #swipebox-overlay.leftSpringTouch #swipebox-container:before,.swipebox-touch #swipebox-overlay.rightSpringTouch #swipebox-container:after{opacity:1}@-webkit-keyframes rightSpring{0%{left:0}50%{left:-30px}100%{left:0}}@keyframes rightSpring{0%{left:0}50%{left:-30px}100%{left:0}}@-webkit-keyframes leftSpring{0%{left:0}50%{left:30px}100%{left:0}}@keyframes leftSpring{0%{left:0}50%{left:30px}100%{left:0}}@media screen and (min-width:800px){#swipebox-close{right:10px}#swipebox-arrows{width:92%;max-width:800px}}#swipebox-overlay{background:#0d0d0d}#swipebox-bottom-bar,#swipebox-top-bar{text-shadow:1px 1px 1px #000;background:#000;opacity:.95}#swipebox-top-bar{color:#fff!important;font-size:15px;line-height:43px;font-family:Helvetica,Arial,sans-serif}"; });
 /**
- * marked - a markdown parser
- * Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
- * https://github.com/chjj/marked
- */
-
-;(function() {
-
-/**
- * Block-Level Grammar
- */
-
-var block = {
-  newline: /^\n+/,
-  code: /^( {4}[^\n]+\n*)+/,
-  fences: noop,
-  hr: /^( *[-*_]){3,} *(?:\n+|$)/,
-  heading: /^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)/,
-  nptable: noop,
-  lheading: /^([^\n]+)\n *(=|-){2,} *(?:\n+|$)/,
-  blockquote: /^( *>[^\n]+(\n(?!def)[^\n]+)*\n*)+/,
-  list: /^( *)(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?!\1bull )\n*|\s*$)/,
-  html: /^ *(?:comment *(?:\n|\s*$)|closed *(?:\n{2,}|\s*$)|closing *(?:\n{2,}|\s*$))/,
-  def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +["(]([^\n]+)[")])? *(?:\n+|$)/,
-  table: noop,
-  paragraph: /^((?:[^\n]+\n?(?!hr|heading|lheading|blockquote|tag|def))+)\n*/,
-  text: /^[^\n]+/
-};
-
-block.bullet = /(?:[*+-]|\d+\.)/;
-block.item = /^( *)(bull) [^\n]*(?:\n(?!\1bull )[^\n]*)*/;
-block.item = replace(block.item, 'gm')
-  (/bull/g, block.bullet)
-  ();
-
-block.list = replace(block.list)
-  (/bull/g, block.bullet)
-  ('hr', '\\n+(?=\\1?(?:[-*_] *){3,}(?:\\n+|$))')
-  ('def', '\\n+(?=' + block.def.source + ')')
-  ();
-
-block.blockquote = replace(block.blockquote)
-  ('def', block.def)
-  ();
-
-block._tag = '(?!(?:'
-  + 'a|em|strong|small|s|cite|q|dfn|abbr|data|time|code'
-  + '|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo'
-  + '|span|br|wbr|ins|del|img)\\b)\\w+(?!:/|[^\\w\\s@]*@)\\b';
-
-block.html = replace(block.html)
-  ('comment', /<!--[\s\S]*?-->/)
-  ('closed', /<(tag)[\s\S]+?<\/\1>/)
-  ('closing', /<tag(?:"[^"]*"|'[^']*'|[^'">])*?>/)
-  (/tag/g, block._tag)
-  ();
-
-block.paragraph = replace(block.paragraph)
-  ('hr', block.hr)
-  ('heading', block.heading)
-  ('lheading', block.lheading)
-  ('blockquote', block.blockquote)
-  ('tag', '<' + block._tag)
-  ('def', block.def)
-  ();
-
-/**
- * Normal Block Grammar
- */
-
-block.normal = merge({}, block);
-
-/**
- * GFM Block Grammar
- */
-
-block.gfm = merge({}, block.normal, {
-  fences: /^ *(`{3,}|~{3,})[ \.]*(\S+)? *\n([\s\S]*?)\s*\1 *(?:\n+|$)/,
-  paragraph: /^/,
-  heading: /^ *(#{1,6}) +([^\n]+?) *#* *(?:\n+|$)/
-});
-
-block.gfm.paragraph = replace(block.paragraph)
-  ('(?!', '(?!'
-    + block.gfm.fences.source.replace('\\1', '\\2') + '|'
-    + block.list.source.replace('\\1', '\\3') + '|')
-  ();
-
-/**
- * GFM + Tables Block Grammar
- */
-
-block.tables = merge({}, block.gfm, {
-  nptable: /^ *(\S.*\|.*)\n *([-:]+ *\|[-| :]*)\n((?:.*\|.*(?:\n|$))*)\n*/,
-  table: /^ *\|(.+)\n *\|( *[-:]+[-| :]*)\n((?: *\|.*(?:\n|$))*)\n*/
-});
-
-/**
- * Block Lexer
- */
-
-function Lexer(options) {
-  this.tokens = [];
-  this.tokens.links = {};
-  this.options = options || marked.defaults;
-  this.rules = block.normal;
-
-  if (this.options.gfm) {
-    if (this.options.tables) {
-      this.rules = block.tables;
-    } else {
-      this.rules = block.gfm;
-    }
-  }
-}
-
-/**
- * Expose Block Rules
- */
-
-Lexer.rules = block;
-
-/**
- * Static Lex Method
- */
-
-Lexer.lex = function(src, options) {
-  var lexer = new Lexer(options);
-  return lexer.lex(src);
-};
-
-/**
- * Preprocessing
- */
-
-Lexer.prototype.lex = function(src) {
-  src = src
-    .replace(/\r\n|\r/g, '\n')
-    .replace(/\t/g, '    ')
-    .replace(/\u00a0/g, ' ')
-    .replace(/\u2424/g, '\n');
-
-  return this.token(src, true);
-};
-
-/**
- * Lexing
- */
-
-Lexer.prototype.token = function(src, top, bq) {
-  var src = src.replace(/^ +$/gm, '')
-    , next
-    , loose
-    , cap
-    , bull
-    , b
-    , item
-    , space
-    , i
-    , l;
-
-  while (src) {
-    // newline
-    if (cap = this.rules.newline.exec(src)) {
-      src = src.substring(cap[0].length);
-      if (cap[0].length > 1) {
-        this.tokens.push({
-          type: 'space'
-        });
-      }
-    }
-
-    // code
-    if (cap = this.rules.code.exec(src)) {
-      src = src.substring(cap[0].length);
-      cap = cap[0].replace(/^ {4}/gm, '');
-      this.tokens.push({
-        type: 'code',
-        text: !this.options.pedantic
-          ? cap.replace(/\n+$/, '')
-          : cap
-      });
-      continue;
-    }
-
-    // fences (gfm)
-    if (cap = this.rules.fences.exec(src)) {
-      src = src.substring(cap[0].length);
-      this.tokens.push({
-        type: 'code',
-        lang: cap[2],
-        text: cap[3] || ''
-      });
-      continue;
-    }
-
-    // heading
-    if (cap = this.rules.heading.exec(src)) {
-      src = src.substring(cap[0].length);
-      this.tokens.push({
-        type: 'heading',
-        depth: cap[1].length,
-        text: cap[2]
-      });
-      continue;
-    }
-
-    // table no leading pipe (gfm)
-    if (top && (cap = this.rules.nptable.exec(src))) {
-      src = src.substring(cap[0].length);
-
-      item = {
-        type: 'table',
-        header: cap[1].replace(/^ *| *\| *$/g, '').split(/ *\| */),
-        align: cap[2].replace(/^ *|\| *$/g, '').split(/ *\| */),
-        cells: cap[3].replace(/\n$/, '').split('\n')
-      };
-
-      for (i = 0; i < item.align.length; i++) {
-        if (/^ *-+: *$/.test(item.align[i])) {
-          item.align[i] = 'right';
-        } else if (/^ *:-+: *$/.test(item.align[i])) {
-          item.align[i] = 'center';
-        } else if (/^ *:-+ *$/.test(item.align[i])) {
-          item.align[i] = 'left';
-        } else {
-          item.align[i] = null;
-        }
-      }
-
-      for (i = 0; i < item.cells.length; i++) {
-        item.cells[i] = item.cells[i].split(/ *\| */);
-      }
-
-      this.tokens.push(item);
-
-      continue;
-    }
-
-    // lheading
-    if (cap = this.rules.lheading.exec(src)) {
-      src = src.substring(cap[0].length);
-      this.tokens.push({
-        type: 'heading',
-        depth: cap[2] === '=' ? 1 : 2,
-        text: cap[1]
-      });
-      continue;
-    }
-
-    // hr
-    if (cap = this.rules.hr.exec(src)) {
-      src = src.substring(cap[0].length);
-      this.tokens.push({
-        type: 'hr'
-      });
-      continue;
-    }
-
-    // blockquote
-    if (cap = this.rules.blockquote.exec(src)) {
-      src = src.substring(cap[0].length);
-
-      this.tokens.push({
-        type: 'blockquote_start'
-      });
-
-      cap = cap[0].replace(/^ *> ?/gm, '');
-
-      // Pass `top` to keep the current
-      // "toplevel" state. This is exactly
-      // how markdown.pl works.
-      this.token(cap, top, true);
-
-      this.tokens.push({
-        type: 'blockquote_end'
-      });
-
-      continue;
-    }
-
-    // list
-    if (cap = this.rules.list.exec(src)) {
-      src = src.substring(cap[0].length);
-      bull = cap[2];
-
-      this.tokens.push({
-        type: 'list_start',
-        ordered: bull.length > 1
-      });
-
-      // Get each top-level item.
-      cap = cap[0].match(this.rules.item);
-
-      next = false;
-      l = cap.length;
-      i = 0;
-
-      for (; i < l; i++) {
-        item = cap[i];
-
-        // Remove the list item's bullet
-        // so it is seen as the next token.
-        space = item.length;
-        item = item.replace(/^ *([*+-]|\d+\.) +/, '');
-
-        // Outdent whatever the
-        // list item contains. Hacky.
-        if (~item.indexOf('\n ')) {
-          space -= item.length;
-          item = !this.options.pedantic
-            ? item.replace(new RegExp('^ {1,' + space + '}', 'gm'), '')
-            : item.replace(/^ {1,4}/gm, '');
-        }
-
-        // Determine whether the next list item belongs here.
-        // Backpedal if it does not belong in this list.
-        if (this.options.smartLists && i !== l - 1) {
-          b = block.bullet.exec(cap[i + 1])[0];
-          if (bull !== b && !(bull.length > 1 && b.length > 1)) {
-            src = cap.slice(i + 1).join('\n') + src;
-            i = l - 1;
-          }
-        }
-
-        // Determine whether item is loose or not.
-        // Use: /(^|\n)(?! )[^\n]+\n\n(?!\s*$)/
-        // for discount behavior.
-        loose = next || /\n\n(?!\s*$)/.test(item);
-        if (i !== l - 1) {
-          next = item.charAt(item.length - 1) === '\n';
-          if (!loose) loose = next;
-        }
-
-        this.tokens.push({
-          type: loose
-            ? 'loose_item_start'
-            : 'list_item_start'
-        });
-
-        // Recurse.
-        this.token(item, false, bq);
-
-        this.tokens.push({
-          type: 'list_item_end'
-        });
-      }
-
-      this.tokens.push({
-        type: 'list_end'
-      });
-
-      continue;
-    }
-
-    // html
-    if (cap = this.rules.html.exec(src)) {
-      src = src.substring(cap[0].length);
-      this.tokens.push({
-        type: this.options.sanitize
-          ? 'paragraph'
-          : 'html',
-        pre: !this.options.sanitizer
-          && (cap[1] === 'pre' || cap[1] === 'script' || cap[1] === 'style'),
-        text: cap[0]
-      });
-      continue;
-    }
-
-    // def
-    if ((!bq && top) && (cap = this.rules.def.exec(src))) {
-      src = src.substring(cap[0].length);
-      this.tokens.links[cap[1].toLowerCase()] = {
-        href: cap[2],
-        title: cap[3]
-      };
-      continue;
-    }
-
-    // table (gfm)
-    if (top && (cap = this.rules.table.exec(src))) {
-      src = src.substring(cap[0].length);
-
-      item = {
-        type: 'table',
-        header: cap[1].replace(/^ *| *\| *$/g, '').split(/ *\| */),
-        align: cap[2].replace(/^ *|\| *$/g, '').split(/ *\| */),
-        cells: cap[3].replace(/(?: *\| *)?\n$/, '').split('\n')
-      };
-
-      for (i = 0; i < item.align.length; i++) {
-        if (/^ *-+: *$/.test(item.align[i])) {
-          item.align[i] = 'right';
-        } else if (/^ *:-+: *$/.test(item.align[i])) {
-          item.align[i] = 'center';
-        } else if (/^ *:-+ *$/.test(item.align[i])) {
-          item.align[i] = 'left';
-        } else {
-          item.align[i] = null;
-        }
-      }
-
-      for (i = 0; i < item.cells.length; i++) {
-        item.cells[i] = item.cells[i]
-          .replace(/^ *\| *| *\| *$/g, '')
-          .split(/ *\| */);
-      }
-
-      this.tokens.push(item);
-
-      continue;
-    }
-
-    // top-level paragraph
-    if (top && (cap = this.rules.paragraph.exec(src))) {
-      src = src.substring(cap[0].length);
-      this.tokens.push({
-        type: 'paragraph',
-        text: cap[1].charAt(cap[1].length - 1) === '\n'
-          ? cap[1].slice(0, -1)
-          : cap[1]
-      });
-      continue;
-    }
-
-    // text
-    if (cap = this.rules.text.exec(src)) {
-      // Top-level should never reach here.
-      src = src.substring(cap[0].length);
-      this.tokens.push({
-        type: 'text',
-        text: cap[0]
-      });
-      continue;
-    }
-
-    if (src) {
-      throw new
-        Error('Infinite loop on byte: ' + src.charCodeAt(0));
-    }
-  }
-
-  return this.tokens;
-};
-
-/**
- * Inline-Level Grammar
- */
-
-var inline = {
-  escape: /^\\([\\`*{}\[\]()#+\-.!_>])/,
-  autolink: /^<([^ >]+(@|:\/)[^ >]+)>/,
-  url: noop,
-  tag: /^<!--[\s\S]*?-->|^<\/?\w+(?:"[^"]*"|'[^']*'|[^'">])*?>/,
-  link: /^!?\[(inside)\]\(href\)/,
-  reflink: /^!?\[(inside)\]\s*\[([^\]]*)\]/,
-  nolink: /^!?\[((?:\[[^\]]*\]|[^\[\]])*)\]/,
-  strong: /^__([\s\S]+?)__(?!_)|^\*\*([\s\S]+?)\*\*(?!\*)/,
-  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,
-  code: /^(`+)\s*([\s\S]*?[^`])\s*\1(?!`)/,
-  br: /^ {2,}\n(?!\s*$)/,
-  del: noop,
-  text: /^[\s\S]+?(?=[\\<!\[_*`]| {2,}\n|$)/
-};
-
-inline._inside = /(?:\[[^\]]*\]|[^\[\]]|\](?=[^\[]*\]))*/;
-inline._href = /\s*<?([\s\S]*?)>?(?:\s+['"]([\s\S]*?)['"])?\s*/;
-
-inline.link = replace(inline.link)
-  ('inside', inline._inside)
-  ('href', inline._href)
-  ();
-
-inline.reflink = replace(inline.reflink)
-  ('inside', inline._inside)
-  ();
-
-/**
- * Normal Inline Grammar
- */
-
-inline.normal = merge({}, inline);
-
-/**
- * Pedantic Inline Grammar
- */
-
-inline.pedantic = merge({}, inline.normal, {
-  strong: /^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,
-  em: /^_(?=\S)([\s\S]*?\S)_(?!_)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/
-});
-
-/**
- * GFM Inline Grammar
- */
-
-inline.gfm = merge({}, inline.normal, {
-  escape: replace(inline.escape)('])', '~|])')(),
-  url: /^(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/,
-  del: /^~~(?=\S)([\s\S]*?\S)~~/,
-  text: replace(inline.text)
-    (']|', '~]|')
-    ('|', '|https?://|')
-    ()
-});
-
-/**
- * GFM + Line Breaks Inline Grammar
- */
-
-inline.breaks = merge({}, inline.gfm, {
-  br: replace(inline.br)('{2,}', '*')(),
-  text: replace(inline.gfm.text)('{2,}', '*')()
-});
-
-/**
- * Inline Lexer & Compiler
- */
-
-function InlineLexer(links, options) {
-  this.options = options || marked.defaults;
-  this.links = links;
-  this.rules = inline.normal;
-  this.renderer = this.options.renderer || new Renderer;
-  this.renderer.options = this.options;
-
-  if (!this.links) {
-    throw new
-      Error('Tokens array requires a `links` property.');
-  }
-
-  if (this.options.gfm) {
-    if (this.options.breaks) {
-      this.rules = inline.breaks;
-    } else {
-      this.rules = inline.gfm;
-    }
-  } else if (this.options.pedantic) {
-    this.rules = inline.pedantic;
-  }
-}
-
-/**
- * Expose Inline Rules
- */
-
-InlineLexer.rules = inline;
-
-/**
- * Static Lexing/Compiling Method
- */
-
-InlineLexer.output = function(src, links, options) {
-  var inline = new InlineLexer(links, options);
-  return inline.output(src);
-};
-
-/**
- * Lexing/Compiling
- */
-
-InlineLexer.prototype.output = function(src) {
-  var out = ''
-    , link
-    , text
-    , href
-    , cap;
-
-  while (src) {
-    // escape
-    if (cap = this.rules.escape.exec(src)) {
-      src = src.substring(cap[0].length);
-      out += cap[1];
-      continue;
-    }
-
-    // autolink
-    if (cap = this.rules.autolink.exec(src)) {
-      src = src.substring(cap[0].length);
-      if (cap[2] === '@') {
-        text = cap[1].charAt(6) === ':'
-          ? this.mangle(cap[1].substring(7))
-          : this.mangle(cap[1]);
-        href = this.mangle('mailto:') + text;
-      } else {
-        text = escape(cap[1]);
-        href = text;
-      }
-      out += this.renderer.link(href, null, text);
-      continue;
-    }
-
-    // url (gfm)
-    if (!this.inLink && (cap = this.rules.url.exec(src))) {
-      src = src.substring(cap[0].length);
-      text = escape(cap[1]);
-      href = text;
-      out += this.renderer.link(href, null, text);
-      continue;
-    }
-
-    // tag
-    if (cap = this.rules.tag.exec(src)) {
-      if (!this.inLink && /^<a /i.test(cap[0])) {
-        this.inLink = true;
-      } else if (this.inLink && /^<\/a>/i.test(cap[0])) {
-        this.inLink = false;
-      }
-      src = src.substring(cap[0].length);
-      out += this.options.sanitize
-        ? this.options.sanitizer
-          ? this.options.sanitizer(cap[0])
-          : escape(cap[0])
-        : cap[0]
-      continue;
-    }
-
-    // link
-    if (cap = this.rules.link.exec(src)) {
-      src = src.substring(cap[0].length);
-      this.inLink = true;
-      out += this.outputLink(cap, {
-        href: cap[2],
-        title: cap[3]
-      });
-      this.inLink = false;
-      continue;
-    }
-
-    // reflink, nolink
-    if ((cap = this.rules.reflink.exec(src))
-        || (cap = this.rules.nolink.exec(src))) {
-      src = src.substring(cap[0].length);
-      link = (cap[2] || cap[1]).replace(/\s+/g, ' ');
-      link = this.links[link.toLowerCase()];
-      if (!link || !link.href) {
-        out += cap[0].charAt(0);
-        src = cap[0].substring(1) + src;
-        continue;
-      }
-      this.inLink = true;
-      out += this.outputLink(cap, link);
-      this.inLink = false;
-      continue;
-    }
-
-    // strong
-    if (cap = this.rules.strong.exec(src)) {
-      src = src.substring(cap[0].length);
-      out += this.renderer.strong(this.output(cap[2] || cap[1]));
-      continue;
-    }
-
-    // em
-    if (cap = this.rules.em.exec(src)) {
-      src = src.substring(cap[0].length);
-      out += this.renderer.em(this.output(cap[2] || cap[1]));
-      continue;
-    }
-
-    // code
-    if (cap = this.rules.code.exec(src)) {
-      src = src.substring(cap[0].length);
-      out += this.renderer.codespan(escape(cap[2], true));
-      continue;
-    }
-
-    // br
-    if (cap = this.rules.br.exec(src)) {
-      src = src.substring(cap[0].length);
-      out += this.renderer.br();
-      continue;
-    }
-
-    // del (gfm)
-    if (cap = this.rules.del.exec(src)) {
-      src = src.substring(cap[0].length);
-      out += this.renderer.del(this.output(cap[1]));
-      continue;
-    }
-
-    // text
-    if (cap = this.rules.text.exec(src)) {
-      src = src.substring(cap[0].length);
-      out += this.renderer.text(escape(this.smartypants(cap[0])));
-      continue;
-    }
-
-    if (src) {
-      throw new
-        Error('Infinite loop on byte: ' + src.charCodeAt(0));
-    }
-  }
-
-  return out;
-};
-
-/**
- * Compile Link
- */
-
-InlineLexer.prototype.outputLink = function(cap, link) {
-  var href = escape(link.href)
-    , title = link.title ? escape(link.title) : null;
-
-  return cap[0].charAt(0) !== '!'
-    ? this.renderer.link(href, title, this.output(cap[1]))
-    : this.renderer.image(href, title, escape(cap[1]));
-};
-
-/**
- * Smartypants Transformations
- */
-
-InlineLexer.prototype.smartypants = function(text) {
-  if (!this.options.smartypants) return text;
-  return text
-    // em-dashes
-    .replace(/---/g, '\u2014')
-    // en-dashes
-    .replace(/--/g, '\u2013')
-    // opening singles
-    .replace(/(^|[-\u2014/(\[{"\s])'/g, '$1\u2018')
-    // closing singles & apostrophes
-    .replace(/'/g, '\u2019')
-    // opening doubles
-    .replace(/(^|[-\u2014/(\[{\u2018\s])"/g, '$1\u201c')
-    // closing doubles
-    .replace(/"/g, '\u201d')
-    // ellipses
-    .replace(/\.{3}/g, '\u2026');
-};
-
-/**
- * Mangle Links
- */
-
-InlineLexer.prototype.mangle = function(text) {
-  if (!this.options.mangle) return text;
-  var out = ''
-    , l = text.length
-    , i = 0
-    , ch;
-
-  for (; i < l; i++) {
-    ch = text.charCodeAt(i);
-    if (Math.random() > 0.5) {
-      ch = 'x' + ch.toString(16);
-    }
-    out += '&#' + ch + ';';
-  }
-
-  return out;
-};
-
-/**
- * Renderer
- */
-
-function Renderer(options) {
-  this.options = options || {};
-}
-
-Renderer.prototype.code = function(code, lang, escaped) {
-  if (this.options.highlight) {
-    var out = this.options.highlight(code, lang);
-    if (out != null && out !== code) {
-      escaped = true;
-      code = out;
-    }
-  }
-
-  if (!lang) {
-    return '<pre><code>'
-      + (escaped ? code : escape(code, true))
-      + '\n</code></pre>';
-  }
-
-  return '<pre><code class="'
-    + this.options.langPrefix
-    + escape(lang, true)
-    + '">'
-    + (escaped ? code : escape(code, true))
-    + '\n</code></pre>\n';
-};
-
-Renderer.prototype.blockquote = function(quote) {
-  return '<blockquote>\n' + quote + '</blockquote>\n';
-};
-
-Renderer.prototype.html = function(html) {
-  return html;
-};
-
-Renderer.prototype.heading = function(text, level, raw) {
-  return '<h'
-    + level
-    + ' id="'
-    + this.options.headerPrefix
-    + raw.toLowerCase().replace(/[^\w]+/g, '-')
-    + '">'
-    + text
-    + '</h'
-    + level
-    + '>\n';
-};
-
-Renderer.prototype.hr = function() {
-  return this.options.xhtml ? '<hr/>\n' : '<hr>\n';
-};
-
-Renderer.prototype.list = function(body, ordered) {
-  var type = ordered ? 'ol' : 'ul';
-  return '<' + type + '>\n' + body + '</' + type + '>\n';
-};
-
-Renderer.prototype.listitem = function(text) {
-  return '<li>' + text + '</li>\n';
-};
-
-Renderer.prototype.paragraph = function(text) {
-  return '<p>' + text + '</p>\n';
-};
-
-Renderer.prototype.table = function(header, body) {
-  return '<table>\n'
-    + '<thead>\n'
-    + header
-    + '</thead>\n'
-    + '<tbody>\n'
-    + body
-    + '</tbody>\n'
-    + '</table>\n';
-};
-
-Renderer.prototype.tablerow = function(content) {
-  return '<tr>\n' + content + '</tr>\n';
-};
-
-Renderer.prototype.tablecell = function(content, flags) {
-  var type = flags.header ? 'th' : 'td';
-  var tag = flags.align
-    ? '<' + type + ' style="text-align:' + flags.align + '">'
-    : '<' + type + '>';
-  return tag + content + '</' + type + '>\n';
-};
-
-// span level renderer
-Renderer.prototype.strong = function(text) {
-  return '<strong>' + text + '</strong>';
-};
-
-Renderer.prototype.em = function(text) {
-  return '<em>' + text + '</em>';
-};
-
-Renderer.prototype.codespan = function(text) {
-  return '<code>' + text + '</code>';
-};
-
-Renderer.prototype.br = function() {
-  return this.options.xhtml ? '<br/>' : '<br>';
-};
-
-Renderer.prototype.del = function(text) {
-  return '<del>' + text + '</del>';
-};
-
-Renderer.prototype.link = function(href, title, text) {
-  if (this.options.sanitize) {
-    try {
-      var prot = decodeURIComponent(unescape(href))
-        .replace(/[^\w:]/g, '')
-        .toLowerCase();
-    } catch (e) {
-      return '';
-    }
-    if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0) {
-      return '';
-    }
-  }
-  var out = '<a href="' + href + '"';
-  if (title) {
-    out += ' title="' + title + '"';
-  }
-  out += '>' + text + '</a>';
-  return out;
-};
-
-Renderer.prototype.image = function(href, title, text) {
-  var out = '<img src="' + href + '" alt="' + text + '"';
-  if (title) {
-    out += ' title="' + title + '"';
-  }
-  out += this.options.xhtml ? '/>' : '>';
-  return out;
-};
-
-Renderer.prototype.text = function(text) {
-  return text;
-};
-
-/**
- * Parsing & Compiling
- */
-
-function Parser(options) {
-  this.tokens = [];
-  this.token = null;
-  this.options = options || marked.defaults;
-  this.options.renderer = this.options.renderer || new Renderer;
-  this.renderer = this.options.renderer;
-  this.renderer.options = this.options;
-}
-
-/**
- * Static Parse Method
- */
-
-Parser.parse = function(src, options, renderer) {
-  var parser = new Parser(options, renderer);
-  return parser.parse(src);
-};
-
-/**
- * Parse Loop
- */
-
-Parser.prototype.parse = function(src) {
-  this.inline = new InlineLexer(src.links, this.options, this.renderer);
-  this.tokens = src.reverse();
-
-  var out = '';
-  while (this.next()) {
-    out += this.tok();
-  }
-
-  return out;
-};
-
-/**
- * Next Token
- */
-
-Parser.prototype.next = function() {
-  return this.token = this.tokens.pop();
-};
-
-/**
- * Preview Next Token
- */
-
-Parser.prototype.peek = function() {
-  return this.tokens[this.tokens.length - 1] || 0;
-};
-
-/**
- * Parse Text Tokens
- */
-
-Parser.prototype.parseText = function() {
-  var body = this.token.text;
-
-  while (this.peek().type === 'text') {
-    body += '\n' + this.next().text;
-  }
-
-  return this.inline.output(body);
-};
-
-/**
- * Parse Current Token
- */
-
-Parser.prototype.tok = function() {
-  switch (this.token.type) {
-    case 'space': {
-      return '';
-    }
-    case 'hr': {
-      return this.renderer.hr();
-    }
-    case 'heading': {
-      return this.renderer.heading(
-        this.inline.output(this.token.text),
-        this.token.depth,
-        this.token.text);
-    }
-    case 'code': {
-      return this.renderer.code(this.token.text,
-        this.token.lang,
-        this.token.escaped);
-    }
-    case 'table': {
-      var header = ''
-        , body = ''
-        , i
-        , row
-        , cell
-        , flags
-        , j;
-
-      // header
-      cell = '';
-      for (i = 0; i < this.token.header.length; i++) {
-        flags = { header: true, align: this.token.align[i] };
-        cell += this.renderer.tablecell(
-          this.inline.output(this.token.header[i]),
-          { header: true, align: this.token.align[i] }
-        );
-      }
-      header += this.renderer.tablerow(cell);
-
-      for (i = 0; i < this.token.cells.length; i++) {
-        row = this.token.cells[i];
-
-        cell = '';
-        for (j = 0; j < row.length; j++) {
-          cell += this.renderer.tablecell(
-            this.inline.output(row[j]),
-            { header: false, align: this.token.align[j] }
-          );
-        }
-
-        body += this.renderer.tablerow(cell);
-      }
-      return this.renderer.table(header, body);
-    }
-    case 'blockquote_start': {
-      var body = '';
-
-      while (this.next().type !== 'blockquote_end') {
-        body += this.tok();
-      }
-
-      return this.renderer.blockquote(body);
-    }
-    case 'list_start': {
-      var body = ''
-        , ordered = this.token.ordered;
-
-      while (this.next().type !== 'list_end') {
-        body += this.tok();
-      }
-
-      return this.renderer.list(body, ordered);
-    }
-    case 'list_item_start': {
-      var body = '';
-
-      while (this.next().type !== 'list_item_end') {
-        body += this.token.type === 'text'
-          ? this.parseText()
-          : this.tok();
-      }
-
-      return this.renderer.listitem(body);
-    }
-    case 'loose_item_start': {
-      var body = '';
-
-      while (this.next().type !== 'list_item_end') {
-        body += this.tok();
-      }
-
-      return this.renderer.listitem(body);
-    }
-    case 'html': {
-      var html = !this.token.pre && !this.options.pedantic
-        ? this.inline.output(this.token.text)
-        : this.token.text;
-      return this.renderer.html(html);
-    }
-    case 'paragraph': {
-      return this.renderer.paragraph(this.inline.output(this.token.text));
-    }
-    case 'text': {
-      return this.renderer.paragraph(this.parseText());
-    }
-  }
-};
-
-/**
- * Helpers
- */
-
-function escape(html, encode) {
-  return html
-    .replace(!encode ? /&(?!#?\w+;)/g : /&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-function unescape(html) {
-	// explicitly match decimal, hex, and named HTML entities 
-  return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/g, function(_, n) {
-    n = n.toLowerCase();
-    if (n === 'colon') return ':';
-    if (n.charAt(0) === '#') {
-      return n.charAt(1) === 'x'
-        ? String.fromCharCode(parseInt(n.substring(2), 16))
-        : String.fromCharCode(+n.substring(1));
-    }
-    return '';
-  });
-}
-
-function replace(regex, opt) {
-  regex = regex.source;
-  opt = opt || '';
-  return function self(name, val) {
-    if (!name) return new RegExp(regex, opt);
-    val = val.source || val;
-    val = val.replace(/(^|[^\[])\^/g, '$1');
-    regex = regex.replace(name, val);
-    return self;
-  };
-}
-
-function noop() {}
-noop.exec = noop;
-
-function merge(obj) {
-  var i = 1
-    , target
-    , key;
-
-  for (; i < arguments.length; i++) {
-    target = arguments[i];
-    for (key in target) {
-      if (Object.prototype.hasOwnProperty.call(target, key)) {
-        obj[key] = target[key];
-      }
-    }
-  }
-
-  return obj;
-}
-
-
-/**
- * Marked
- */
-
-function marked(src, opt, callback) {
-  if (callback || typeof opt === 'function') {
-    if (!callback) {
-      callback = opt;
-      opt = null;
-    }
-
-    opt = merge({}, marked.defaults, opt || {});
-
-    var highlight = opt.highlight
-      , tokens
-      , pending
-      , i = 0;
-
-    try {
-      tokens = Lexer.lex(src, opt)
-    } catch (e) {
-      return callback(e);
-    }
-
-    pending = tokens.length;
-
-    var done = function(err) {
-      if (err) {
-        opt.highlight = highlight;
-        return callback(err);
-      }
-
-      var out;
-
-      try {
-        out = Parser.parse(tokens, opt);
-      } catch (e) {
-        err = e;
-      }
-
-      opt.highlight = highlight;
-
-      return err
-        ? callback(err)
-        : callback(null, out);
-    };
-
-    if (!highlight || highlight.length < 3) {
-      return done();
-    }
-
-    delete opt.highlight;
-
-    if (!pending) return done();
-
-    for (; i < tokens.length; i++) {
-      (function(token) {
-        if (token.type !== 'code') {
-          return --pending || done();
-        }
-        return highlight(token.text, token.lang, function(err, code) {
-          if (err) return done(err);
-          if (code == null || code === token.text) {
-            return --pending || done();
-          }
-          token.text = code;
-          token.escaped = true;
-          --pending || done();
-        });
-      })(tokens[i]);
-    }
-
-    return;
-  }
-  try {
-    if (opt) opt = merge({}, marked.defaults, opt);
-    return Parser.parse(Lexer.lex(src, opt), opt);
-  } catch (e) {
-    e.message += '\nPlease report this to https://github.com/chjj/marked.';
-    if ((opt || marked.defaults).silent) {
-      return '<p>An error occured:</p><pre>'
-        + escape(e.message + '', true)
-        + '</pre>';
-    }
-    throw e;
-  }
-}
-
-/**
- * Options
- */
-
-marked.options =
-marked.setOptions = function(opt) {
-  merge(marked.defaults, opt);
-  return marked;
-};
-
-marked.defaults = {
-  gfm: true,
-  tables: true,
-  breaks: false,
-  pedantic: false,
-  sanitize: false,
-  sanitizer: null,
-  mangle: true,
-  smartLists: false,
-  silent: false,
-  highlight: null,
-  langPrefix: 'lang-',
-  smartypants: false,
-  headerPrefix: '',
-  renderer: new Renderer,
-  xhtml: false
-};
-
-/**
- * Expose
- */
-
-marked.Parser = Parser;
-marked.parser = Parser.parse;
-
-marked.Renderer = Renderer;
-
-marked.Lexer = Lexer;
-marked.lexer = Lexer.lex;
-
-marked.InlineLexer = InlineLexer;
-marked.inlineLexer = InlineLexer.output;
-
-marked.parse = marked;
-
-if (typeof module !== 'undefined' && typeof exports === 'object') {
-  module.exports = marked;
-} else if (typeof define === 'function' && define.amd) {
-  define('marked',[],function() { return marked; });
-} else {
-  this.marked = marked;
-}
-
-}).call(function() {
-  return this || (typeof window !== 'undefined' ? window : global);
-}());
-
-/**
  * simplemde v1.11.2
  * Copyright Next Step Webs, Inc.
  * @link https://github.com/NextStepWebs/simplemde-markdown-editor
@@ -3528,142 +3354,180 @@ header:o[1].replace(/^ *| *\| *$/g,"").split(/ *\| */),align:o[2].replace(/^ *|\
 }(navigator.userAgent||navigator.vendor||window.opera),e},V="",K={bold:{name:"bold",action:c,className:"fa fa-bold",title:"Bold","default":!0},italic:{name:"italic",action:u,className:"fa fa-italic",title:"Italic","default":!0},strikethrough:{name:"strikethrough",action:f,className:"fa fa-strikethrough",title:"Strikethrough"},heading:{name:"heading",action:p,className:"fa fa-header",title:"Heading","default":!0},"heading-smaller":{name:"heading-smaller",action:p,className:"fa fa-header fa-header-x fa-header-smaller",title:"Smaller Heading"},"heading-bigger":{name:"heading-bigger",action:m,className:"fa fa-header fa-header-x fa-header-bigger",title:"Bigger Heading"},"heading-1":{name:"heading-1",action:g,className:"fa fa-header fa-header-x fa-header-1",title:"Big Heading"},"heading-2":{name:"heading-2",action:v,className:"fa fa-header fa-header-x fa-header-2",title:"Medium Heading"},"heading-3":{name:"heading-3",action:y,className:"fa fa-header fa-header-x fa-header-3",title:"Small Heading"},"separator-1":{name:"separator-1"},code:{name:"code",action:h,className:"fa fa-code",title:"Code"},quote:{name:"quote",action:d,className:"fa fa-quote-left",title:"Quote","default":!0},"unordered-list":{name:"unordered-list",action:x,className:"fa fa-list-ul",title:"Generic List","default":!0},"ordered-list":{name:"ordered-list",action:b,className:"fa fa-list-ol",title:"Numbered List","default":!0},"clean-block":{name:"clean-block",action:w,className:"fa fa-eraser fa-clean-block",title:"Clean block"},"separator-2":{name:"separator-2"},link:{name:"link",action:k,className:"fa fa-link",title:"Create Link","default":!0},image:{name:"image",action:S,className:"fa fa-picture-o",title:"Insert Image","default":!0},table:{name:"table",action:C,className:"fa fa-table",title:"Insert Table"},"horizontal-rule":{name:"horizontal-rule",action:L,className:"fa fa-minus",title:"Insert Horizontal Line"},"separator-3":{name:"separator-3"},preview:{name:"preview",action:A,className:"fa fa-eye no-disable",title:"Toggle Preview","default":!0},"side-by-side":{name:"side-by-side",action:N,className:"fa fa-columns no-disable no-mobile",title:"Toggle Side by Side","default":!0},fullscreen:{name:"fullscreen",action:s,className:"fa fa-arrows-alt no-disable no-mobile",title:"Toggle Fullscreen","default":!0},"separator-4":{name:"separator-4"},guide:{name:"guide",action:"https://simplemde.com/markdown-guide",className:"fa fa-question-circle",title:"Markdown Guide","default":!0},"separator-5":{name:"separator-5"},undo:{name:"undo",action:T,className:"fa fa-undo no-disable",title:"Undo"},redo:{name:"redo",action:M,className:"fa fa-repeat no-disable",title:"Redo"}},X={link:["[","](#url#)"],image:["![](","#url#)"],table:["","\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text     | Text     |\n\n"],horizontalRule:["","\n\n-----\n\n"]},Z={link:"URL for the link:",image:"URL of the image:"},J={bold:"**",code:"```",italic:"*"};B.prototype.markdown=function(e){if(j){var t={};return this.options&&this.options.renderingConfig&&this.options.renderingConfig.singleLineBreaks===!1?t.breaks=!1:t.breaks=!0,this.options&&this.options.renderingConfig&&this.options.renderingConfig.codeSyntaxHighlighting===!0&&window.hljs&&(t.highlight=function(e){return window.hljs.highlightAuto(e).value}),j.setOptions(t),j(e)}},B.prototype.render=function(e){if(e||(e=this.element||document.getElementsByTagName("textarea")[0]),!this._rendered||this._rendered!==e){this.element=e;var t=this.options,n=this,i={};for(var o in t.shortcuts)null!==t.shortcuts[o]&&null!==q[o]&&!function(e){i[r(t.shortcuts[e])]=function(){q[e](n)}}(o);i.Enter="newlineAndIndentContinueMarkdownList",i.Tab="tabAndIndentMarkdownList",i["Shift-Tab"]="shiftTabAndUnindentMarkdownList",i.Esc=function(e){e.getOption("fullScreen")&&s(n)},document.addEventListener("keydown",function(e){e=e||window.event,27==e.keyCode&&n.codemirror.getOption("fullScreen")&&s(n)},!1);var a,l;if(t.spellChecker!==!1?(a="spell-checker",l=t.parsingConfig,l.name="gfm",l.gitHubSpice=!1,z({codeMirrorInstance:F})):(a=t.parsingConfig,a.name="gfm",a.gitHubSpice=!1),this.codemirror=F.fromTextArea(e,{mode:a,backdrop:l,theme:"paper",tabSize:void 0!=t.tabSize?t.tabSize:2,indentUnit:void 0!=t.tabSize?t.tabSize:2,indentWithTabs:t.indentWithTabs!==!1,lineNumbers:!1,autofocus:t.autofocus===!0,extraKeys:i,lineWrapping:t.lineWrapping!==!1,allowDropFileTypes:["text/plain"],placeholder:t.placeholder||e.getAttribute("placeholder")||"",styleSelectedText:void 0!=t.styleSelectedText?t.styleSelectedText:!0}),t.forceSync===!0){var c=this.codemirror;c.on("change",function(){c.save()})}this.gui={},t.toolbar!==!1&&(this.gui.toolbar=this.createToolbar()),t.status!==!1&&(this.gui.statusbar=this.createStatusbar()),void 0!=t.autosave&&t.autosave.enabled===!0&&this.autosave(),this.gui.sideBySide=this.createSideBySide(),this._rendered=this.element;var u=this.codemirror;setTimeout(function(){u.refresh()}.bind(u),0)}},B.prototype.autosave=function(){if(_()){var e=this;if(void 0==this.options.autosave.uniqueId||""==this.options.autosave.uniqueId)return void console.log("SimpleMDE: You must set a uniqueId to use the autosave feature");null!=e.element.form&&void 0!=e.element.form&&e.element.form.addEventListener("submit",function(){localStorage.removeItem("smde_"+e.options.autosave.uniqueId)}),this.options.autosave.loaded!==!0&&("string"==typeof localStorage.getItem("smde_"+this.options.autosave.uniqueId)&&""!=localStorage.getItem("smde_"+this.options.autosave.uniqueId)&&(this.codemirror.setValue(localStorage.getItem("smde_"+this.options.autosave.uniqueId)),this.options.autosave.foundSavedValue=!0),this.options.autosave.loaded=!0),localStorage.setItem("smde_"+this.options.autosave.uniqueId,e.value());var t=document.getElementById("autosaved");if(null!=t&&void 0!=t&&""!=t){var n=new Date,r=n.getHours(),i=n.getMinutes(),o="am",a=r;a>=12&&(a=r-12,o="pm"),0==a&&(a=12),i=10>i?"0"+i:i,t.innerHTML="Autosaved: "+a+":"+i+" "+o}this.autosaveTimeoutId=setTimeout(function(){e.autosave()},this.options.autosave.delay||1e4)}else console.log("SimpleMDE: localStorage not available, cannot autosave")},B.prototype.clearAutosavedValue=function(){if(_()){if(void 0==this.options.autosave||void 0==this.options.autosave.uniqueId||""==this.options.autosave.uniqueId)return void console.log("SimpleMDE: You must set a uniqueId to clear the autosave value");localStorage.removeItem("smde_"+this.options.autosave.uniqueId)}else console.log("SimpleMDE: localStorage not available, cannot autosave")},B.prototype.createSideBySide=function(){var e=this.codemirror,t=e.getWrapperElement(),n=t.nextSibling;n&&/editor-preview-side/.test(n.className)||(n=document.createElement("div"),n.className="editor-preview-side",t.parentNode.insertBefore(n,t.nextSibling));var r=!1,i=!1;return e.on("scroll",function(e){if(r)return void(r=!1);i=!0;var t=e.getScrollInfo().height-e.getScrollInfo().clientHeight,o=parseFloat(e.getScrollInfo().top)/t,a=(n.scrollHeight-n.clientHeight)*o;n.scrollTop=a}),n.onscroll=function(){if(i)return void(i=!1);r=!0;var t=n.scrollHeight-n.clientHeight,o=parseFloat(n.scrollTop)/t,a=(e.getScrollInfo().height-e.getScrollInfo().clientHeight)*o;e.scrollTo(0,a)},n},B.prototype.createToolbar=function(e){if(e=e||this.options.toolbar,e&&0!==e.length){var t;for(t=0;t<e.length;t++)void 0!=K[e[t]]&&(e[t]=K[e[t]]);var n=document.createElement("div");n.className="editor-toolbar";var r=this,a={};for(r.toolbar=e,t=0;t<e.length;t++)if(("guide"!=e[t].name||r.options.toolbarGuideIcon!==!1)&&!(r.options.hideIcons&&-1!=r.options.hideIcons.indexOf(e[t].name)||("fullscreen"==e[t].name||"side-by-side"==e[t].name)&&$())){if("|"===e[t]){for(var s=!1,c=t+1;c<e.length;c++)"|"===e[c]||r.options.hideIcons&&-1!=r.options.hideIcons.indexOf(e[c].name)||(s=!0);if(!s)continue}!function(e){var t;t="|"===e?o():i(e,r.options.toolbarTips,r.options.shortcuts),e.action&&("function"==typeof e.action?t.onclick=function(t){t.preventDefault(),e.action(r)}:"string"==typeof e.action&&(t.href=e.action,t.target="_blank")),a[e.name||e]=t,n.appendChild(t)}(e[t])}r.toolbarElements=a;var u=this.codemirror;u.on("cursorActivity",function(){var e=l(u);for(var t in a)!function(t){var n=a[t];e[t]?n.className+=" active":"fullscreen"!=t&&"side-by-side"!=t&&(n.className=n.className.replace(/\s*active\s*/g,""))}(t)});var f=u.getWrapperElement();return f.parentNode.insertBefore(n,f),n}},B.prototype.createStatusbar=function(e){e=e||this.options.status;var t=this.options,n=this.codemirror;if(e&&0!==e.length){var r,i,o,a=[];for(r=0;r<e.length;r++)if(i=void 0,o=void 0,"object"==typeof e[r])a.push({className:e[r].className,defaultValue:e[r].defaultValue,onUpdate:e[r].onUpdate});else{var l=e[r];"words"===l?(o=function(e){e.innerHTML=W(n.getValue())},i=function(e){e.innerHTML=W(n.getValue())}):"lines"===l?(o=function(e){e.innerHTML=n.lineCount()},i=function(e){e.innerHTML=n.lineCount()}):"cursor"===l?(o=function(e){e.innerHTML="0:0"},i=function(e){var t=n.getCursor();e.innerHTML=t.line+":"+t.ch}):"autosave"===l&&(o=function(e){void 0!=t.autosave&&t.autosave.enabled===!0&&e.setAttribute("id","autosaved")}),a.push({className:l,defaultValue:o,onUpdate:i})}var s=document.createElement("div");for(s.className="editor-statusbar",r=0;r<a.length;r++){var c=a[r],u=document.createElement("span");u.className=c.className,"function"==typeof c.defaultValue&&c.defaultValue(u),"function"==typeof c.onUpdate&&this.codemirror.on("update",function(e,t){return function(){t.onUpdate(e)}}(u,c)),s.appendChild(u)}var f=this.codemirror.getWrapperElement();return f.parentNode.insertBefore(s,f.nextSibling),s}},B.prototype.value=function(e){return void 0===e?this.codemirror.getValue():(this.codemirror.getDoc().setValue(e),this)},B.toggleBold=c,B.toggleItalic=u,B.toggleStrikethrough=f,B.toggleBlockquote=d,B.toggleHeadingSmaller=p,B.toggleHeadingBigger=m,B.toggleHeading1=g,B.toggleHeading2=v,B.toggleHeading3=y,B.toggleCodeBlock=h,B.toggleUnorderedList=x,B.toggleOrderedList=b,B.cleanBlock=w,B.drawLink=k,B.drawImage=S,B.drawTable=C,B.drawHorizontalRule=L,B.undo=T,B.redo=M,B.togglePreview=A,B.toggleSideBySide=N,B.toggleFullScreen=s,B.prototype.toggleBold=function(){c(this)},B.prototype.toggleItalic=function(){u(this)},B.prototype.toggleStrikethrough=function(){f(this)},B.prototype.toggleBlockquote=function(){d(this)},B.prototype.toggleHeadingSmaller=function(){p(this)},B.prototype.toggleHeadingBigger=function(){m(this)},B.prototype.toggleHeading1=function(){g(this)},B.prototype.toggleHeading2=function(){v(this)},B.prototype.toggleHeading3=function(){y(this)},B.prototype.toggleCodeBlock=function(){h(this)},B.prototype.toggleUnorderedList=function(){x(this)},B.prototype.toggleOrderedList=function(){b(this)},B.prototype.cleanBlock=function(){w(this)},B.prototype.drawLink=function(){k(this)},B.prototype.drawImage=function(){S(this)},B.prototype.drawTable=function(){C(this)},B.prototype.drawHorizontalRule=function(){L(this)},B.prototype.undo=function(){T(this)},B.prototype.redo=function(){M(this)},B.prototype.togglePreview=function(){A(this)},B.prototype.toggleSideBySide=function(){N(this)},B.prototype.toggleFullScreen=function(){s(this)},B.prototype.isPreviewActive=function(){var e=this.codemirror,t=e.getWrapperElement(),n=t.lastChild;return/editor-preview-active/.test(n.className)},B.prototype.isSideBySideActive=function(){var e=this.codemirror,t=e.getWrapperElement(),n=t.nextSibling;return/editor-preview-active-side/.test(n.className)},B.prototype.isFullscreenActive=function(){var e=this.codemirror;return e.getOption("fullScreen")},B.prototype.getState=function(){var e=this.codemirror;return l(e)},B.prototype.toTextArea=function(){var e=this.codemirror,t=e.getWrapperElement();t.parentNode&&(this.gui.toolbar&&t.parentNode.removeChild(this.gui.toolbar),this.gui.statusbar&&t.parentNode.removeChild(this.gui.statusbar),this.gui.sideBySide&&t.parentNode.removeChild(this.gui.sideBySide)),e.toTextArea(),this.autosaveTimeoutId&&(clearTimeout(this.autosaveTimeoutId),this.autosaveTimeoutId=void 0,this.clearAutosavedValue())},t.exports=B},{"./codemirror/tablist":19,codemirror:10,"codemirror-spell-checker":4,"codemirror/addon/display/fullscreen.js":5,"codemirror/addon/display/placeholder.js":6,"codemirror/addon/edit/continuelist.js":7,"codemirror/addon/mode/overlay.js":8,"codemirror/addon/selection/mark-selection.js":9,"codemirror/mode/gfm/gfm.js":11,"codemirror/mode/markdown/markdown.js":12,"codemirror/mode/xml/xml.js":14,marked:17}]},{},[20])(20)});;define('simplemde', ['simplemde/dist/simplemde.min'], function (main) { return main; });
 
 define('text!simplemde/dist/simplemde.min.css', ['module'], function(module) { module.exports = "/**\n * simplemde v1.11.2\n * Copyright Next Step Webs, Inc.\n * @link https://github.com/NextStepWebs/simplemde-markdown-editor\n * @license MIT\n */\n.CodeMirror{color:#000}.CodeMirror-lines{padding:4px 0}.CodeMirror pre{padding:0 4px}.CodeMirror-gutter-filler,.CodeMirror-scrollbar-filler{background-color:#fff}.CodeMirror-gutters{border-right:1px solid #ddd;background-color:#f7f7f7;white-space:nowrap}.CodeMirror-linenumber{padding:0 3px 0 5px;min-width:20px;text-align:right;color:#999;white-space:nowrap}.CodeMirror-guttermarker{color:#000}.CodeMirror-guttermarker-subtle{color:#999}.CodeMirror-cursor{border-left:1px solid #000;border-right:none;width:0}.CodeMirror div.CodeMirror-secondarycursor{border-left:1px solid silver}.cm-fat-cursor .CodeMirror-cursor{width:auto;border:0!important;background:#7e7}.cm-fat-cursor div.CodeMirror-cursors{z-index:1}.cm-animate-fat-cursor{width:auto;border:0;-webkit-animation:blink 1.06s steps(1) infinite;-moz-animation:blink 1.06s steps(1) infinite;animation:blink 1.06s steps(1) infinite;background-color:#7e7}@-moz-keyframes blink{50%{background-color:transparent}}@-webkit-keyframes blink{50%{background-color:transparent}}@keyframes blink{50%{background-color:transparent}}.cm-tab{display:inline-block;text-decoration:inherit}.CodeMirror-ruler{border-left:1px solid #ccc;position:absolute}.cm-s-default .cm-header{color:#00f}.cm-s-default .cm-quote{color:#090}.cm-negative{color:#d44}.cm-positive{color:#292}.cm-header,.cm-strong{font-weight:700}.cm-em{font-style:italic}.cm-link{text-decoration:underline}.cm-strikethrough{text-decoration:line-through}.cm-s-default .cm-keyword{color:#708}.cm-s-default .cm-atom{color:#219}.cm-s-default .cm-number{color:#164}.cm-s-default .cm-def{color:#00f}.cm-s-default .cm-variable-2{color:#05a}.cm-s-default .cm-variable-3{color:#085}.cm-s-default .cm-comment{color:#a50}.cm-s-default .cm-string{color:#a11}.cm-s-default .cm-string-2{color:#f50}.cm-s-default .cm-meta,.cm-s-default .cm-qualifier{color:#555}.cm-s-default .cm-builtin{color:#30a}.cm-s-default .cm-bracket{color:#997}.cm-s-default .cm-tag{color:#170}.cm-s-default .cm-attribute{color:#00c}.cm-s-default .cm-hr{color:#999}.cm-s-default .cm-link{color:#00c}.cm-invalidchar,.cm-s-default .cm-error{color:red}.CodeMirror-composing{border-bottom:2px solid}div.CodeMirror span.CodeMirror-matchingbracket{color:#0f0}div.CodeMirror span.CodeMirror-nonmatchingbracket{color:#f22}.CodeMirror-matchingtag{background:rgba(255,150,0,.3)}.CodeMirror-activeline-background{background:#e8f2ff}.CodeMirror{position:relative;overflow:hidden;background:#fff}.CodeMirror-scroll{overflow:scroll!important;margin-bottom:-30px;margin-right:-30px;padding-bottom:30px;height:100%;outline:0;position:relative}.CodeMirror-sizer{position:relative;border-right:30px solid transparent}.CodeMirror-gutter-filler,.CodeMirror-hscrollbar,.CodeMirror-scrollbar-filler,.CodeMirror-vscrollbar{position:absolute;z-index:6;display:none}.CodeMirror-vscrollbar{right:0;top:0;overflow-x:hidden;overflow-y:scroll}.CodeMirror-hscrollbar{bottom:0;left:0;overflow-y:hidden;overflow-x:scroll}.CodeMirror-scrollbar-filler{right:0;bottom:0}.CodeMirror-gutter-filler{left:0;bottom:0}.CodeMirror-gutters{position:absolute;left:0;top:0;min-height:100%;z-index:3}.CodeMirror-gutter{white-space:normal;height:100%;display:inline-block;vertical-align:top;margin-bottom:-30px}.CodeMirror-gutter-wrapper{position:absolute;z-index:4;background:0 0!important;border:none!important;-webkit-user-select:none;-moz-user-select:none;user-select:none}.CodeMirror-gutter-background{position:absolute;top:0;bottom:0;z-index:4}.CodeMirror-gutter-elt{position:absolute;cursor:default;z-index:4}.CodeMirror-lines{cursor:text;min-height:1px}.CodeMirror pre{-moz-border-radius:0;-webkit-border-radius:0;border-radius:0;border-width:0;background:0 0;font-family:inherit;font-size:inherit;margin:0;white-space:pre;word-wrap:normal;line-height:inherit;color:inherit;z-index:2;position:relative;overflow:visible;-webkit-tap-highlight-color:transparent;-webkit-font-variant-ligatures:none;font-variant-ligatures:none}.CodeMirror-wrap pre{word-wrap:break-word;white-space:pre-wrap;word-break:normal}.CodeMirror-linebackground{position:absolute;left:0;right:0;top:0;bottom:0;z-index:0}.CodeMirror-linewidget{position:relative;z-index:2;overflow:auto}.CodeMirror-code{outline:0}.CodeMirror-gutter,.CodeMirror-gutters,.CodeMirror-linenumber,.CodeMirror-scroll,.CodeMirror-sizer{-moz-box-sizing:content-box;box-sizing:content-box}.CodeMirror-measure{position:absolute;width:100%;height:0;overflow:hidden;visibility:hidden}.CodeMirror-cursor{position:absolute}.CodeMirror-measure pre{position:static}div.CodeMirror-cursors{visibility:hidden;position:relative;z-index:3}.CodeMirror-focused div.CodeMirror-cursors,div.CodeMirror-dragcursors{visibility:visible}.CodeMirror-selected{background:#d9d9d9}.CodeMirror-focused .CodeMirror-selected,.CodeMirror-line::selection,.CodeMirror-line>span::selection,.CodeMirror-line>span>span::selection{background:#d7d4f0}.CodeMirror-crosshair{cursor:crosshair}.CodeMirror-line::-moz-selection,.CodeMirror-line>span::-moz-selection,.CodeMirror-line>span>span::-moz-selection{background:#d7d4f0}.cm-searching{background:#ffa;background:rgba(255,255,0,.4)}.cm-force-border{padding-right:.1px}@media print{.CodeMirror div.CodeMirror-cursors{visibility:hidden}}.cm-tab-wrap-hack:after{content:''}span.CodeMirror-selectedtext{background:0 0}.CodeMirror{height:auto;min-height:300px;border:1px solid #ddd;border-bottom-left-radius:4px;border-bottom-right-radius:4px;padding:10px;font:inherit;z-index:1}.CodeMirror-scroll{min-height:300px}.CodeMirror-fullscreen{background:#fff;position:fixed!important;top:50px;left:0;right:0;bottom:0;height:auto;z-index:9}.CodeMirror-sided{width:50%!important}.editor-toolbar{position:relative;opacity:.6;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;-o-user-select:none;user-select:none;padding:0 10px;border-top:1px solid #bbb;border-left:1px solid #bbb;border-right:1px solid #bbb;border-top-left-radius:4px;border-top-right-radius:4px}.editor-toolbar:after,.editor-toolbar:before{display:block;content:' ';height:1px}.editor-toolbar:before{margin-bottom:8px}.editor-toolbar:after{margin-top:8px}.editor-toolbar:hover,.editor-wrapper input.title:focus,.editor-wrapper input.title:hover{opacity:.8}.editor-toolbar.fullscreen{width:100%;height:50px;overflow-x:auto;overflow-y:hidden;white-space:nowrap;padding-top:10px;padding-bottom:10px;box-sizing:border-box;background:#fff;border:0;position:fixed;top:0;left:0;opacity:1;z-index:9}.editor-toolbar.fullscreen::before{width:20px;height:50px;background:-moz-linear-gradient(left,rgba(255,255,255,1) 0,rgba(255,255,255,0) 100%);background:-webkit-gradient(linear,left top,right top,color-stop(0,rgba(255,255,255,1)),color-stop(100%,rgba(255,255,255,0)));background:-webkit-linear-gradient(left,rgba(255,255,255,1) 0,rgba(255,255,255,0) 100%);background:-o-linear-gradient(left,rgba(255,255,255,1) 0,rgba(255,255,255,0) 100%);background:-ms-linear-gradient(left,rgba(255,255,255,1) 0,rgba(255,255,255,0) 100%);background:linear-gradient(to right,rgba(255,255,255,1) 0,rgba(255,255,255,0) 100%);position:fixed;top:0;left:0;margin:0;padding:0}.editor-toolbar.fullscreen::after{width:20px;height:50px;background:-moz-linear-gradient(left,rgba(255,255,255,0) 0,rgba(255,255,255,1) 100%);background:-webkit-gradient(linear,left top,right top,color-stop(0,rgba(255,255,255,0)),color-stop(100%,rgba(255,255,255,1)));background:-webkit-linear-gradient(left,rgba(255,255,255,0) 0,rgba(255,255,255,1) 100%);background:-o-linear-gradient(left,rgba(255,255,255,0) 0,rgba(255,255,255,1) 100%);background:-ms-linear-gradient(left,rgba(255,255,255,0) 0,rgba(255,255,255,1) 100%);background:linear-gradient(to right,rgba(255,255,255,0) 0,rgba(255,255,255,1) 100%);position:fixed;top:0;right:0;margin:0;padding:0}.editor-toolbar a{display:inline-block;text-align:center;text-decoration:none!important;color:#2c3e50!important;width:30px;height:30px;margin:0;border:1px solid transparent;border-radius:3px;cursor:pointer}.editor-toolbar a.active,.editor-toolbar a:hover{background:#fcfcfc;border-color:#95a5a6}.editor-toolbar a:before{line-height:30px}.editor-toolbar i.separator{display:inline-block;width:0;border-left:1px solid #d9d9d9;border-right:1px solid #fff;color:transparent;text-indent:-10px;margin:0 6px}.editor-toolbar a.fa-header-x:after{font-family:Arial,\"Helvetica Neue\",Helvetica,sans-serif;font-size:65%;vertical-align:text-bottom;position:relative;top:2px}.editor-toolbar a.fa-header-1:after{content:\"1\"}.editor-toolbar a.fa-header-2:after{content:\"2\"}.editor-toolbar a.fa-header-3:after{content:\"3\"}.editor-toolbar a.fa-header-bigger:after{content:\"▲\"}.editor-toolbar a.fa-header-smaller:after{content:\"▼\"}.editor-toolbar.disabled-for-preview a:not(.no-disable){pointer-events:none;background:#fff;border-color:transparent;text-shadow:inherit}@media only screen and (max-width:700px){.editor-toolbar a.no-mobile{display:none}}.editor-statusbar{padding:8px 10px;font-size:12px;color:#959694;text-align:right}.editor-statusbar span{display:inline-block;min-width:4em;margin-left:1em}.editor-preview,.editor-preview-side{padding:10px;background:#fafafa;overflow:auto;display:none;box-sizing:border-box}.editor-statusbar .lines:before{content:'lines: '}.editor-statusbar .words:before{content:'words: '}.editor-statusbar .characters:before{content:'characters: '}.editor-preview{position:absolute;width:100%;height:100%;top:0;left:0;z-index:7}.editor-preview-side{position:fixed;bottom:0;width:50%;top:50px;right:0;z-index:9;border:1px solid #ddd}.editor-preview-active,.editor-preview-active-side{display:block}.editor-preview-side>p,.editor-preview>p{margin-top:0}.editor-preview pre,.editor-preview-side pre{background:#eee;margin-bottom:10px}.editor-preview table td,.editor-preview table th,.editor-preview-side table td,.editor-preview-side table th{border:1px solid #ddd;padding:5px}.CodeMirror .CodeMirror-code .cm-tag{color:#63a35c}.CodeMirror .CodeMirror-code .cm-attribute{color:#795da3}.CodeMirror .CodeMirror-code .cm-string{color:#183691}.CodeMirror .CodeMirror-selected{background:#d9d9d9}.CodeMirror .CodeMirror-code .cm-header-1{font-size:200%;line-height:200%}.CodeMirror .CodeMirror-code .cm-header-2{font-size:160%;line-height:160%}.CodeMirror .CodeMirror-code .cm-header-3{font-size:125%;line-height:125%}.CodeMirror .CodeMirror-code .cm-header-4{font-size:110%;line-height:110%}.CodeMirror .CodeMirror-code .cm-comment{background:rgba(0,0,0,.05);border-radius:2px}.CodeMirror .CodeMirror-code .cm-link{color:#7f8c8d}.CodeMirror .CodeMirror-code .cm-url{color:#aab2b3}.CodeMirror .CodeMirror-code .cm-strikethrough{text-decoration:line-through}.CodeMirror .CodeMirror-placeholder{opacity:.5}.CodeMirror .cm-spell-error:not(.cm-url):not(.cm-comment):not(.cm-tag):not(.cm-word){background:rgba(255,0,0,.15)}"; });
-/*
-	A simple, lightweight jQuery plugin for creating sortable tables.
-	https://github.com/kylefox/jquery-tablesort
-	Version 0.0.11
-*/
+define('highlight/lib/index',['require','exports','module','./highlight','./languages/1c','./languages/abnf','./languages/accesslog','./languages/actionscript','./languages/ada','./languages/apache','./languages/applescript','./languages/cpp','./languages/arduino','./languages/armasm','./languages/xml','./languages/asciidoc','./languages/aspectj','./languages/autohotkey','./languages/autoit','./languages/avrasm','./languages/awk','./languages/axapta','./languages/bash','./languages/basic','./languages/bnf','./languages/brainfuck','./languages/cal','./languages/capnproto','./languages/ceylon','./languages/clojure','./languages/clojure-repl','./languages/cmake','./languages/coffeescript','./languages/coq','./languages/cos','./languages/crmsh','./languages/crystal','./languages/cs','./languages/csp','./languages/css','./languages/d','./languages/markdown','./languages/dart','./languages/delphi','./languages/diff','./languages/django','./languages/dns','./languages/dockerfile','./languages/dos','./languages/dsconfig','./languages/dts','./languages/dust','./languages/ebnf','./languages/elixir','./languages/elm','./languages/ruby','./languages/erb','./languages/erlang-repl','./languages/erlang','./languages/excel','./languages/fix','./languages/fortran','./languages/fsharp','./languages/gams','./languages/gauss','./languages/gcode','./languages/gherkin','./languages/glsl','./languages/go','./languages/golo','./languages/gradle','./languages/groovy','./languages/haml','./languages/handlebars','./languages/haskell','./languages/haxe','./languages/hsp','./languages/htmlbars','./languages/http','./languages/inform7','./languages/ini','./languages/irpf90','./languages/java','./languages/javascript','./languages/json','./languages/julia','./languages/kotlin','./languages/lasso','./languages/ldif','./languages/less','./languages/lisp','./languages/livecodeserver','./languages/livescript','./languages/lsl','./languages/lua','./languages/makefile','./languages/mathematica','./languages/matlab','./languages/maxima','./languages/mel','./languages/mercury','./languages/mipsasm','./languages/mizar','./languages/perl','./languages/mojolicious','./languages/monkey','./languages/moonscript','./languages/nginx','./languages/nimrod','./languages/nix','./languages/nsis','./languages/objectivec','./languages/ocaml','./languages/openscad','./languages/oxygene','./languages/parser3','./languages/pf','./languages/php','./languages/pony','./languages/powershell','./languages/processing','./languages/profile','./languages/prolog','./languages/protobuf','./languages/puppet','./languages/purebasic','./languages/python','./languages/q','./languages/qml','./languages/r','./languages/rib','./languages/roboconf','./languages/rsl','./languages/ruleslanguage','./languages/rust','./languages/scala','./languages/scheme','./languages/scilab','./languages/scss','./languages/smali','./languages/smalltalk','./languages/sml','./languages/sqf','./languages/sql','./languages/stan','./languages/stata','./languages/step21','./languages/stylus','./languages/subunit','./languages/swift','./languages/taggerscript','./languages/yaml','./languages/tap','./languages/tcl','./languages/tex','./languages/thrift','./languages/tp','./languages/twig','./languages/typescript','./languages/vala','./languages/vbnet','./languages/vbscript','./languages/vbscript-html','./languages/verilog','./languages/vhdl','./languages/vim','./languages/x86asm','./languages/xl','./languages/xquery','./languages/zephir'],function (require, exports, module) {var hljs = require('./highlight');
 
-(function($) {
-	$.tablesort = function ($table, settings) {
-		var self = this;
-		this.$table = $table;
-		this.$thead = this.$table.find('thead');
-		this.settings = $.extend({}, $.tablesort.defaults, settings);
-		this.$sortCells = this.$thead.length > 0 ? this.$thead.find('th:not(.no-sort)') : this.$table.find('th:not(.no-sort)');
-		this.$sortCells.on('click.tablesort', function() {
-			self.sort($(this));
-		});
-		this.index = null;
-		this.$th = null;
-		this.direction = null;
-	};
+hljs.registerLanguage('1c', require('./languages/1c'));
+hljs.registerLanguage('abnf', require('./languages/abnf'));
+hljs.registerLanguage('accesslog', require('./languages/accesslog'));
+hljs.registerLanguage('actionscript', require('./languages/actionscript'));
+hljs.registerLanguage('ada', require('./languages/ada'));
+hljs.registerLanguage('apache', require('./languages/apache'));
+hljs.registerLanguage('applescript', require('./languages/applescript'));
+hljs.registerLanguage('cpp', require('./languages/cpp'));
+hljs.registerLanguage('arduino', require('./languages/arduino'));
+hljs.registerLanguage('armasm', require('./languages/armasm'));
+hljs.registerLanguage('xml', require('./languages/xml'));
+hljs.registerLanguage('asciidoc', require('./languages/asciidoc'));
+hljs.registerLanguage('aspectj', require('./languages/aspectj'));
+hljs.registerLanguage('autohotkey', require('./languages/autohotkey'));
+hljs.registerLanguage('autoit', require('./languages/autoit'));
+hljs.registerLanguage('avrasm', require('./languages/avrasm'));
+hljs.registerLanguage('awk', require('./languages/awk'));
+hljs.registerLanguage('axapta', require('./languages/axapta'));
+hljs.registerLanguage('bash', require('./languages/bash'));
+hljs.registerLanguage('basic', require('./languages/basic'));
+hljs.registerLanguage('bnf', require('./languages/bnf'));
+hljs.registerLanguage('brainfuck', require('./languages/brainfuck'));
+hljs.registerLanguage('cal', require('./languages/cal'));
+hljs.registerLanguage('capnproto', require('./languages/capnproto'));
+hljs.registerLanguage('ceylon', require('./languages/ceylon'));
+hljs.registerLanguage('clojure', require('./languages/clojure'));
+hljs.registerLanguage('clojure-repl', require('./languages/clojure-repl'));
+hljs.registerLanguage('cmake', require('./languages/cmake'));
+hljs.registerLanguage('coffeescript', require('./languages/coffeescript'));
+hljs.registerLanguage('coq', require('./languages/coq'));
+hljs.registerLanguage('cos', require('./languages/cos'));
+hljs.registerLanguage('crmsh', require('./languages/crmsh'));
+hljs.registerLanguage('crystal', require('./languages/crystal'));
+hljs.registerLanguage('cs', require('./languages/cs'));
+hljs.registerLanguage('csp', require('./languages/csp'));
+hljs.registerLanguage('css', require('./languages/css'));
+hljs.registerLanguage('d', require('./languages/d'));
+hljs.registerLanguage('markdown', require('./languages/markdown'));
+hljs.registerLanguage('dart', require('./languages/dart'));
+hljs.registerLanguage('delphi', require('./languages/delphi'));
+hljs.registerLanguage('diff', require('./languages/diff'));
+hljs.registerLanguage('django', require('./languages/django'));
+hljs.registerLanguage('dns', require('./languages/dns'));
+hljs.registerLanguage('dockerfile', require('./languages/dockerfile'));
+hljs.registerLanguage('dos', require('./languages/dos'));
+hljs.registerLanguage('dsconfig', require('./languages/dsconfig'));
+hljs.registerLanguage('dts', require('./languages/dts'));
+hljs.registerLanguage('dust', require('./languages/dust'));
+hljs.registerLanguage('ebnf', require('./languages/ebnf'));
+hljs.registerLanguage('elixir', require('./languages/elixir'));
+hljs.registerLanguage('elm', require('./languages/elm'));
+hljs.registerLanguage('ruby', require('./languages/ruby'));
+hljs.registerLanguage('erb', require('./languages/erb'));
+hljs.registerLanguage('erlang-repl', require('./languages/erlang-repl'));
+hljs.registerLanguage('erlang', require('./languages/erlang'));
+hljs.registerLanguage('excel', require('./languages/excel'));
+hljs.registerLanguage('fix', require('./languages/fix'));
+hljs.registerLanguage('fortran', require('./languages/fortran'));
+hljs.registerLanguage('fsharp', require('./languages/fsharp'));
+hljs.registerLanguage('gams', require('./languages/gams'));
+hljs.registerLanguage('gauss', require('./languages/gauss'));
+hljs.registerLanguage('gcode', require('./languages/gcode'));
+hljs.registerLanguage('gherkin', require('./languages/gherkin'));
+hljs.registerLanguage('glsl', require('./languages/glsl'));
+hljs.registerLanguage('go', require('./languages/go'));
+hljs.registerLanguage('golo', require('./languages/golo'));
+hljs.registerLanguage('gradle', require('./languages/gradle'));
+hljs.registerLanguage('groovy', require('./languages/groovy'));
+hljs.registerLanguage('haml', require('./languages/haml'));
+hljs.registerLanguage('handlebars', require('./languages/handlebars'));
+hljs.registerLanguage('haskell', require('./languages/haskell'));
+hljs.registerLanguage('haxe', require('./languages/haxe'));
+hljs.registerLanguage('hsp', require('./languages/hsp'));
+hljs.registerLanguage('htmlbars', require('./languages/htmlbars'));
+hljs.registerLanguage('http', require('./languages/http'));
+hljs.registerLanguage('inform7', require('./languages/inform7'));
+hljs.registerLanguage('ini', require('./languages/ini'));
+hljs.registerLanguage('irpf90', require('./languages/irpf90'));
+hljs.registerLanguage('java', require('./languages/java'));
+hljs.registerLanguage('javascript', require('./languages/javascript'));
+hljs.registerLanguage('json', require('./languages/json'));
+hljs.registerLanguage('julia', require('./languages/julia'));
+hljs.registerLanguage('kotlin', require('./languages/kotlin'));
+hljs.registerLanguage('lasso', require('./languages/lasso'));
+hljs.registerLanguage('ldif', require('./languages/ldif'));
+hljs.registerLanguage('less', require('./languages/less'));
+hljs.registerLanguage('lisp', require('./languages/lisp'));
+hljs.registerLanguage('livecodeserver', require('./languages/livecodeserver'));
+hljs.registerLanguage('livescript', require('./languages/livescript'));
+hljs.registerLanguage('lsl', require('./languages/lsl'));
+hljs.registerLanguage('lua', require('./languages/lua'));
+hljs.registerLanguage('makefile', require('./languages/makefile'));
+hljs.registerLanguage('mathematica', require('./languages/mathematica'));
+hljs.registerLanguage('matlab', require('./languages/matlab'));
+hljs.registerLanguage('maxima', require('./languages/maxima'));
+hljs.registerLanguage('mel', require('./languages/mel'));
+hljs.registerLanguage('mercury', require('./languages/mercury'));
+hljs.registerLanguage('mipsasm', require('./languages/mipsasm'));
+hljs.registerLanguage('mizar', require('./languages/mizar'));
+hljs.registerLanguage('perl', require('./languages/perl'));
+hljs.registerLanguage('mojolicious', require('./languages/mojolicious'));
+hljs.registerLanguage('monkey', require('./languages/monkey'));
+hljs.registerLanguage('moonscript', require('./languages/moonscript'));
+hljs.registerLanguage('nginx', require('./languages/nginx'));
+hljs.registerLanguage('nimrod', require('./languages/nimrod'));
+hljs.registerLanguage('nix', require('./languages/nix'));
+hljs.registerLanguage('nsis', require('./languages/nsis'));
+hljs.registerLanguage('objectivec', require('./languages/objectivec'));
+hljs.registerLanguage('ocaml', require('./languages/ocaml'));
+hljs.registerLanguage('openscad', require('./languages/openscad'));
+hljs.registerLanguage('oxygene', require('./languages/oxygene'));
+hljs.registerLanguage('parser3', require('./languages/parser3'));
+hljs.registerLanguage('pf', require('./languages/pf'));
+hljs.registerLanguage('php', require('./languages/php'));
+hljs.registerLanguage('pony', require('./languages/pony'));
+hljs.registerLanguage('powershell', require('./languages/powershell'));
+hljs.registerLanguage('processing', require('./languages/processing'));
+hljs.registerLanguage('profile', require('./languages/profile'));
+hljs.registerLanguage('prolog', require('./languages/prolog'));
+hljs.registerLanguage('protobuf', require('./languages/protobuf'));
+hljs.registerLanguage('puppet', require('./languages/puppet'));
+hljs.registerLanguage('purebasic', require('./languages/purebasic'));
+hljs.registerLanguage('python', require('./languages/python'));
+hljs.registerLanguage('q', require('./languages/q'));
+hljs.registerLanguage('qml', require('./languages/qml'));
+hljs.registerLanguage('r', require('./languages/r'));
+hljs.registerLanguage('rib', require('./languages/rib'));
+hljs.registerLanguage('roboconf', require('./languages/roboconf'));
+hljs.registerLanguage('rsl', require('./languages/rsl'));
+hljs.registerLanguage('ruleslanguage', require('./languages/ruleslanguage'));
+hljs.registerLanguage('rust', require('./languages/rust'));
+hljs.registerLanguage('scala', require('./languages/scala'));
+hljs.registerLanguage('scheme', require('./languages/scheme'));
+hljs.registerLanguage('scilab', require('./languages/scilab'));
+hljs.registerLanguage('scss', require('./languages/scss'));
+hljs.registerLanguage('smali', require('./languages/smali'));
+hljs.registerLanguage('smalltalk', require('./languages/smalltalk'));
+hljs.registerLanguage('sml', require('./languages/sml'));
+hljs.registerLanguage('sqf', require('./languages/sqf'));
+hljs.registerLanguage('sql', require('./languages/sql'));
+hljs.registerLanguage('stan', require('./languages/stan'));
+hljs.registerLanguage('stata', require('./languages/stata'));
+hljs.registerLanguage('step21', require('./languages/step21'));
+hljs.registerLanguage('stylus', require('./languages/stylus'));
+hljs.registerLanguage('subunit', require('./languages/subunit'));
+hljs.registerLanguage('swift', require('./languages/swift'));
+hljs.registerLanguage('taggerscript', require('./languages/taggerscript'));
+hljs.registerLanguage('yaml', require('./languages/yaml'));
+hljs.registerLanguage('tap', require('./languages/tap'));
+hljs.registerLanguage('tcl', require('./languages/tcl'));
+hljs.registerLanguage('tex', require('./languages/tex'));
+hljs.registerLanguage('thrift', require('./languages/thrift'));
+hljs.registerLanguage('tp', require('./languages/tp'));
+hljs.registerLanguage('twig', require('./languages/twig'));
+hljs.registerLanguage('typescript', require('./languages/typescript'));
+hljs.registerLanguage('vala', require('./languages/vala'));
+hljs.registerLanguage('vbnet', require('./languages/vbnet'));
+hljs.registerLanguage('vbscript', require('./languages/vbscript'));
+hljs.registerLanguage('vbscript-html', require('./languages/vbscript-html'));
+hljs.registerLanguage('verilog', require('./languages/verilog'));
+hljs.registerLanguage('vhdl', require('./languages/vhdl'));
+hljs.registerLanguage('vim', require('./languages/vim'));
+hljs.registerLanguage('x86asm', require('./languages/x86asm'));
+hljs.registerLanguage('xl', require('./languages/xl'));
+hljs.registerLanguage('xquery', require('./languages/xquery'));
+hljs.registerLanguage('zephir', require('./languages/zephir'));
 
-	$.tablesort.prototype = {
+module.exports = hljs;
+});
+;define('highlight', ['highlight/lib/index'], function (main) { return main; });
 
-		sort: function(th, direction) {
-			var start = new Date(),
-				self = this,
-				table = this.$table,
-				rowsContainer = table.find('tbody').length > 0 ? table.find('tbody') : table,
-				rows = rowsContainer.find('tr').has('td, th'),
-				cells = rows.find(':nth-child(' + (th.index() + 1) + ')').filter('td, th'),
-				sortBy = th.data().sortBy,
-				sortedMap = [];
-
-			var unsortedValues = cells.map(function(idx, cell) {
-				if (sortBy)
-					return (typeof sortBy === 'function') ? sortBy($(th), $(cell), self) : sortBy;
-				return ($(this).data().sortValue != null ? $(this).data().sortValue : $(this).text());
-			});
-			if (unsortedValues.length === 0) return;
-
-			//click on a different column
-			if (this.index !== th.index()) {
-				this.direction = 'asc';
-				this.index = th.index();
-			}
-			else if (direction !== 'asc' && direction !== 'desc')
-				this.direction = this.direction === 'asc' ? 'desc' : 'asc';
-			else
-				this.direction = direction;
-
-			direction = this.direction == 'asc' ? 1 : -1;
-
-			self.$table.trigger('tablesort:start', [self]);
-			self.log("Sorting by " + this.index + ' ' + this.direction);
-
-			// Try to force a browser redraw
-			self.$table.css("display");
-			// Run sorting asynchronously on a timeout to force browser redraw after
-			// `tablesort:start` callback. Also avoids locking up the browser too much.
-			setTimeout(function() {
-				self.$sortCells.removeClass(self.settings.asc + ' ' + self.settings.desc);
-				for (var i = 0, length = unsortedValues.length; i < length; i++)
-				{
-					sortedMap.push({
-						index: i,
-						cell: cells[i],
-						row: rows[i],
-						value: unsortedValues[i]
-					});
-				}
-
-				sortedMap.sort(function(a, b) {
-					return self.settings.compare(a.value, b.value) * direction;
-				});
-
-				$.each(sortedMap, function(i, entry) {
-					rowsContainer.append(entry.row);
-				});
-
-				th.addClass(self.settings[self.direction]);
-
-				self.log('Sort finished in ' + ((new Date()).getTime() - start.getTime()) + 'ms');
-				self.$table.trigger('tablesort:complete', [self]);
-				//Try to force a browser redraw
-				self.$table.css("display");
-			}, unsortedValues.length > 2000 ? 200 : 10);
-		},
-
-		log: function(msg) {
-			if(($.tablesort.DEBUG || this.settings.debug) && console && console.log) {
-				console.log('[tablesort] ' + msg);
-			}
-		},
-
-		destroy: function() {
-			this.$sortCells.off('click.tablesort');
-			this.$table.data('tablesort', null);
-			return null;
-		}
-
-	};
-
-	$.tablesort.DEBUG = false;
-
-	$.tablesort.defaults = {
-		debug: $.tablesort.DEBUG,
-		asc: 'sorted ascending',
-		desc: 'sorted descending',
-		compare: function(a, b) {
-			if (a > b) {
-				return 1;
-			} else if (a < b) {
-				return -1;
-			} else {
-				return 0;
-			}
-		}
-	};
-
-	$.fn.tablesort = function(settings) {
-		var table, sortable, previous;
-		return this.each(function() {
-			table = $(this);
-			previous = table.data('tablesort');
-			if(previous) {
-				previous.destroy();
-			}
-			table.data('tablesort', new $.tablesort(table, settings));
-		});
-	};
-
-})(window.Zepto || window.jQuery);
-
-define("tablesort/jquery.tablesort", ["jquery"], function(){});
-;define('tablesort', ['tablesort/jquery.tablesort'], function (main) { return main; });
-
+define('text!highlight/styles/github.css', ['module'], function(module) { module.exports = "/*\n\ngithub.com style (c) Vasily Polovnyov <vast@whiteants.net>\n\n*/\n\n.hljs {\n  display: block;\n  overflow-x: auto;\n  padding: 0.5em;\n  color: #333;\n  background: #f8f8f8;\n}\n\n.hljs-comment,\n.hljs-quote {\n  color: #998;\n  font-style: italic;\n}\n\n.hljs-keyword,\n.hljs-selector-tag,\n.hljs-subst {\n  color: #333;\n  font-weight: bold;\n}\n\n.hljs-number,\n.hljs-literal,\n.hljs-variable,\n.hljs-template-variable,\n.hljs-tag .hljs-attr {\n  color: #008080;\n}\n\n.hljs-string,\n.hljs-doctag {\n  color: #d14;\n}\n\n.hljs-title,\n.hljs-section,\n.hljs-selector-id {\n  color: #900;\n  font-weight: bold;\n}\n\n.hljs-subst {\n  font-weight: normal;\n}\n\n.hljs-type,\n.hljs-class .hljs-title {\n  color: #458;\n  font-weight: bold;\n}\n\n.hljs-tag,\n.hljs-name,\n.hljs-attribute {\n  color: #000080;\n  font-weight: normal;\n}\n\n.hljs-regexp,\n.hljs-link {\n  color: #009926;\n}\n\n.hljs-symbol,\n.hljs-bullet {\n  color: #990073;\n}\n\n.hljs-built_in,\n.hljs-builtin-name {\n  color: #0086b3;\n}\n\n.hljs-meta {\n  color: #999;\n  font-weight: bold;\n}\n\n.hljs-deletion {\n  background: #fdd;\n}\n\n.hljs-addition {\n  background: #dfd;\n}\n\n.hljs-emphasis {\n  font-style: italic;\n}\n\n.hljs-strong {\n  font-weight: bold;\n}\n"; });
 /*jslint browser: true*/
 /*jslint jquery: true*/
 
@@ -3871,3 +3735,139 @@ define("tablesort/jquery.tablesort", ["jquery"], function(){});
 
 define("hotkeys/jquery.hotkeys", ["jquery"], function(){});
 ;define('hotkeys', ['hotkeys/jquery.hotkeys'], function (main) { return main; });
+
+/*
+	A simple, lightweight jQuery plugin for creating sortable tables.
+	https://github.com/kylefox/jquery-tablesort
+	Version 0.0.11
+*/
+
+(function($) {
+	$.tablesort = function ($table, settings) {
+		var self = this;
+		this.$table = $table;
+		this.$thead = this.$table.find('thead');
+		this.settings = $.extend({}, $.tablesort.defaults, settings);
+		this.$sortCells = this.$thead.length > 0 ? this.$thead.find('th:not(.no-sort)') : this.$table.find('th:not(.no-sort)');
+		this.$sortCells.on('click.tablesort', function() {
+			self.sort($(this));
+		});
+		this.index = null;
+		this.$th = null;
+		this.direction = null;
+	};
+
+	$.tablesort.prototype = {
+
+		sort: function(th, direction) {
+			var start = new Date(),
+				self = this,
+				table = this.$table,
+				rowsContainer = table.find('tbody').length > 0 ? table.find('tbody') : table,
+				rows = rowsContainer.find('tr').has('td, th'),
+				cells = rows.find(':nth-child(' + (th.index() + 1) + ')').filter('td, th'),
+				sortBy = th.data().sortBy,
+				sortedMap = [];
+
+			var unsortedValues = cells.map(function(idx, cell) {
+				if (sortBy)
+					return (typeof sortBy === 'function') ? sortBy($(th), $(cell), self) : sortBy;
+				return ($(this).data().sortValue != null ? $(this).data().sortValue : $(this).text());
+			});
+			if (unsortedValues.length === 0) return;
+
+			//click on a different column
+			if (this.index !== th.index()) {
+				this.direction = 'asc';
+				this.index = th.index();
+			}
+			else if (direction !== 'asc' && direction !== 'desc')
+				this.direction = this.direction === 'asc' ? 'desc' : 'asc';
+			else
+				this.direction = direction;
+
+			direction = this.direction == 'asc' ? 1 : -1;
+
+			self.$table.trigger('tablesort:start', [self]);
+			self.log("Sorting by " + this.index + ' ' + this.direction);
+
+			// Try to force a browser redraw
+			self.$table.css("display");
+			// Run sorting asynchronously on a timeout to force browser redraw after
+			// `tablesort:start` callback. Also avoids locking up the browser too much.
+			setTimeout(function() {
+				self.$sortCells.removeClass(self.settings.asc + ' ' + self.settings.desc);
+				for (var i = 0, length = unsortedValues.length; i < length; i++)
+				{
+					sortedMap.push({
+						index: i,
+						cell: cells[i],
+						row: rows[i],
+						value: unsortedValues[i]
+					});
+				}
+
+				sortedMap.sort(function(a, b) {
+					return self.settings.compare(a.value, b.value) * direction;
+				});
+
+				$.each(sortedMap, function(i, entry) {
+					rowsContainer.append(entry.row);
+				});
+
+				th.addClass(self.settings[self.direction]);
+
+				self.log('Sort finished in ' + ((new Date()).getTime() - start.getTime()) + 'ms');
+				self.$table.trigger('tablesort:complete', [self]);
+				//Try to force a browser redraw
+				self.$table.css("display");
+			}, unsortedValues.length > 2000 ? 200 : 10);
+		},
+
+		log: function(msg) {
+			if(($.tablesort.DEBUG || this.settings.debug) && console && console.log) {
+				console.log('[tablesort] ' + msg);
+			}
+		},
+
+		destroy: function() {
+			this.$sortCells.off('click.tablesort');
+			this.$table.data('tablesort', null);
+			return null;
+		}
+
+	};
+
+	$.tablesort.DEBUG = false;
+
+	$.tablesort.defaults = {
+		debug: $.tablesort.DEBUG,
+		asc: 'sorted ascending',
+		desc: 'sorted descending',
+		compare: function(a, b) {
+			if (a > b) {
+				return 1;
+			} else if (a < b) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+	};
+
+	$.fn.tablesort = function(settings) {
+		var table, sortable, previous;
+		return this.each(function() {
+			table = $(this);
+			previous = table.data('tablesort');
+			if(previous) {
+				previous.destroy();
+			}
+			table.data('tablesort', new $.tablesort(table, settings));
+		});
+	};
+
+})(window.Zepto || window.jQuery);
+
+define("tablesort/jquery.tablesort", ["jquery"], function(){});
+;define('tablesort', ['tablesort/jquery.tablesort'], function (main) { return main; });
