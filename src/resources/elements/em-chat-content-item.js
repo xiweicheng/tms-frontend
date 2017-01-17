@@ -127,6 +127,7 @@ export class EmChatContentItem {
             if (data.success) {
                 toastr.success('更新消息成功!');
                 item.isEditing = false;
+                item.version = data.version;
             } else {
                 toastr.error(data.data, '更新消息失败!');
             }
