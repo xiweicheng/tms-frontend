@@ -33,6 +33,9 @@ export class EmChatInput {
         this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_MEMBER_ADD_OR_REMOVE, (payload) => {
             this.members = [nsCtx.memberAll, ...payload.members];
         });
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_MSG_INSERT, (payload) => {
+            this.insertContent(payload.content);
+        });
     }
 
     /**
@@ -41,6 +44,7 @@ export class EmChatInput {
     unbind() {
         this.subscribe.dispose();
         this.subscribe1.dispose();
+        this.subscribe2.dispose();
     }
 
     initHotkeys() {

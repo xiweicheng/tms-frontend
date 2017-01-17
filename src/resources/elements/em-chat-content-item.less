@@ -8,7 +8,21 @@
             width: 100%;
         }
     }
-    .ui.comments &.comment>.avatar~.content {
-        margin-left: 3em;
+    .ui.comments &.comment {
+        >.avatar~.content {
+            margin-left: 3em;
+        }
+        .actions {
+            > a {
+                margin-right: 5px;
+            }
+        }
+    }
+    > .content {
+        > .markdown-body {
+            span.at-user {
+                cursor: pointer;
+            }
+        }
     }
 }

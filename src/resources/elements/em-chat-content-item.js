@@ -27,6 +27,28 @@ export class EmChatContentItem {
         this.subscribe.dispose();
     }
 
+    /**
+     * 当视图被附加到DOM中时被调用
+     */
+    attached() {
+        $('body').on('click', '.markdown-body .at-user', (event) => {
+            event.preventDefault();
+            ea.publish(nsCons.EVENT_CHAT_MSG_INSERT, {
+                content: `{~${$(event.currentTarget).attr('data-value')}} `
+            });
+        });
+
+        // 消息popup
+        $('body').on('mouseenter', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', (event) => {
+            event.preventDefault();
+            var $a = $(event.currentTarget);
+            ea.publish(nsCons.EVENT_CHAT_MSG_POPUP_SHOW, {
+                id: utils.urlQuery('id', $a.attr('href')),
+                target: event.currentTarget
+            });
+        });
+    }
+
     channelChanged() {
 
         if (this.channel) {
@@ -190,6 +212,18 @@ export class EmChatContentItem {
             } else {
                 toastr.success(`${!item.openEdit ? '开启' : '关闭'}协作编辑失败!`);
             }
+        });
+    }
+
+    replyHandler(item) {
+        ea.publish(nsCons.EVENT_CHAT_MSG_INSERT, {
+            content: `[[回复#${item.id}](${utils.getUrl()}?id=${item.id}){~${item.creator.username}}]\n\n`
+        });
+    }
+
+    creatorNameHandler(item) {
+        ea.publish(nsCons.EVENT_CHAT_MSG_INSERT, {
+            content: `{~${item.creator.username}} `
         });
     }
 }

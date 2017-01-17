@@ -65,6 +65,6 @@ export class TimeagoValueConverter {
  */
 export class ParseMdValueConverter {
     toView(value) {
-        return marked(utils.preParse(value));
+        return value ? marked(utils.preParse(value)) : '';
     }
 }

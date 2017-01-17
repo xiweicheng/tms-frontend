@@ -26,7 +26,12 @@ export class CommonUtils {
      * @return {[type]} [description]
      */
     getUrl() {
-        return this.getBaseUrl() + wurl('path') + '#' + wurl('hash');
+        return this.getBaseUrl() + wurl('path') + '#' + this.getHash();
+    }
+
+    getHash() {
+        let hash = wurl('hash');
+        return hash ? hash.split('?')[0] : '';
     }
 
     getBasePath() {
@@ -45,25 +50,18 @@ export class CommonUtils {
     }
 
     /**
-     * 获取URL hash
-     * @return {[type]} [description]
-     */
-    getHash() {
-        let hash = wurl('hash');
-        let index = hash.indexOf('?');
-        if (index != -1) {
-            return hash.substring(0, index);
-        }
-
-        return hash;
-    }
-
-    /**
      * 获取url中的查询参数值
      * @param  {[type]} name 查询参数名称
      * @return {[type]}      查询参数值
      */
-    urlQuery(name) {
+    urlQuery(name, url) {
+        if (url) {
+            let query = wurl('?' + name, url);
+            if (!query) {
+                query = wurl('?' + name, wurl('hash', url));
+            }
+            return query;
+        }
         return wurl('?' + name) || wurl('?' + name, wurl('hash'));
     }
 
