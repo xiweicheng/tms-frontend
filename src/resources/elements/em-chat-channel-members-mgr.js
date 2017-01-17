@@ -22,6 +22,10 @@ export class EmChatChannelMembersMgr {
                     if (data.success) {
                         toastr.success('添加成员成功!');
                         this.channel.members = data.data.members;
+                        ea.publish(nsCons.EVENT_CHAT_CHANNEL_MEMBER_ADD_OR_REMOVE, {
+                            type: 'add',
+                            members: data.data.members
+                        });
                     } else {
                         toastr.error(data.data, '添加成员失败!');
                     }
@@ -44,6 +48,10 @@ export class EmChatChannelMembersMgr {
                     if (data.success) {
                         toastr.success('移除成员成功!');
                         this.channel.members = data.data.members;
+                        ea.publish(nsCons.EVENT_CHAT_CHANNEL_MEMBER_ADD_OR_REMOVE, {
+                            type: 'remove',
+                            members: data.data.members
+                        });
                     } else {
                         toastr.error(data.data, '移除成员失败!');
                     }

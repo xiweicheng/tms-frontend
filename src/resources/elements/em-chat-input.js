@@ -16,11 +16,7 @@ export class EmChatInput {
     channelChanged() {
 
         if (this.channel) {
-            this.members = [{
-                username: 'all',
-                mails: '',
-                name: '全员'
-            }, ...this.channel.members];
+            this.members = [nsCtx.memberAll, ...this.channel.members];
         } else {
             this.members = [];
         }
@@ -34,6 +30,9 @@ export class EmChatInput {
         this.subscribe = ea.subscribe(nsCons.EVENT_SHOW_HOTKEYS_MODAL, (payload) => {
             this.emHotkeysModal.show();
         });
+        this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_MEMBER_ADD_OR_REMOVE, (payload) => {
+            this.members = [nsCtx.memberAll, ...payload.members];
+        });
     }
 
     /**
@@ -41,6 +40,7 @@ export class EmChatInput {
      */
     unbind() {
         this.subscribe.dispose();
+        this.subscribe1.dispose();
     }
 
     initHotkeys() {
