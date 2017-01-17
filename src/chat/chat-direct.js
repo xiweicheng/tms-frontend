@@ -191,7 +191,7 @@ export class ChatDirect {
                 });
 
                 if (this.channel) {
-                    routeConfig.navModel.setTitle(`${this.channel.name} | 私聊 | TMS`);
+                    routeConfig.navModel.setTitle(`${this.channel.name} | 频道 | TMS`);
 
                     this.listChatChannel(true);
                 } else {
