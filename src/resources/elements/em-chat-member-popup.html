@@ -1,15 +1,15 @@
 <template>
     <require from="./em-chat-member-popup.css"></require>
     <div ref="popup" class="ui flowing popup transition hidden tms-chat-member-popup">
-        <div class="ui cards" show.bind="show && (username == 'all')">
+        <div class="ui cards" show.bind="(username == 'all')">
             <div class="card">
                 <div class="content">
                     <div class="header" style="border-bottom: 1px lightgray solid;">
                         全部用户 (${members.length}人)
                     </div>
                     <div class="description" style="max-height: 200px; overflow-y: auto;">
-                        <div class="ui middle aligned divided list">
-                            <div class="item" style="padding-top: 5px!important; padding-bottom: 5px!important;">
+                        <div class="ui middle aligned divided list" style="padding-left: 0px;">
+                            <div class="item" style="padding-top: 5px!important; padding-bottom: 5px!important; padding-left: 0; padding-right: 0;">
                                 <div class="content">
                                     <div repeat.for="item of members" class="ui basic label mapping-user group-user" data-value="${item.username}" style="margin-top: 3px; margin-left: 0;" title="${item.username}">${item.name ? item.name : item.username}</div>
                                 </div>
@@ -19,7 +19,7 @@
                 </div>
             </div>
         </div>
-        <div class="ui cards" show.bind="show && (username != 'all')">
+        <div class="ui cards" show.bind="(username != 'all')">
             <div class="card">
                 <div class="content">
                     <div class="header">
