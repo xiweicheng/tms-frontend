@@ -204,6 +204,10 @@ export class CommonUtils {
         return users;
     }
 
+    getUser(username) {
+        return _.find(tmsUsers, { username: username });
+    }
+
     /**
      * 解析要发送邮件的用户们
      * @param  {[type]} plainText [description]

@@ -894,6 +894,7 @@ define('common/common-constant',[], function () {
         EVENT_SCROLLBAR_SCROLL_TO_BOTTOM: 'event_scrollbar_scroll_to_bottom',
         EVENT_CHAT_MSG_INSERT: 'event_chat_msg_insert',
         EVENT_CHAT_MSG_POPUP_SHOW: 'event_chat_msg_popup_show',
+        EVENT_CHAT_MEMBER_POPUP_SHOW: 'event_chat_member_popup_show',
         EVENT_CHAT_MSG_WIKI_DIR: 'event_chat_msg_wiki_dir',
         EVENT_CHAT_CONTENT_SCROLL_TO: 'event_chat_content_scroll_to',
         ACTION_TYPE_SEARCH: 'action_type_search',
@@ -3258,6 +3259,10 @@ define('common/common-utils',['exports', 'wurl', 'common/common-diff'], function
             return users;
         };
 
+        CommonUtils.prototype.getUser = function getUser(username) {
+            return _.find(tmsUsers, { username: username });
+        };
+
         CommonUtils.prototype.parseUsernames = function parseUsernames(plainText, members) {
             var users = this.parseUsers(plainText);
             var isExitsAll = _.some(users, { username: 'all' });
@@ -3586,7 +3591,7 @@ define('resources/index',['exports'], function (exports) {
     exports.configure = configure;
     function configure(aurelia) {
 
-        aurelia.globalResources(['resources/value-converters/vc-common', 'resources/binding-behaviors/bb-key', 'resources/attributes/attr-task', 'resources/attributes/attr-swipebox', 'resources/attributes/attr-pastable', 'resources/attributes/attr-autosize', 'resources/attributes/attr-dropzone', 'resources/attributes/attr-attr', 'resources/attributes/attr-c2c', 'resources/attributes/attr-dimmer', 'resources/attributes/attr-ui-dropdown', 'resources/attributes/attr-ui-tab', 'resources/attributes/attr-tablesort', 'resources/attributes/attr-textcomplete', 'resources/attributes/attr-scrollbar', 'resources/elements/em-modal', 'resources/elements/em-dropdown', 'resources/elements/em-confirm-modal', 'resources/elements/em-hotkeys-modal', 'resources/elements/em-chat-input', 'resources/elements/em-chat-top-menu', 'resources/elements/em-chat-sidebar-left', 'resources/elements/em-chat-content-item', 'resources/elements/em-chat-sidebar-right', 'resources/elements/em-chat-channel-create', 'resources/elements/em-chat-channel-join', 'resources/elements/em-chat-channel-edit', 'resources/elements/em-chat-channel-members-mgr', 'resources/elements/em-chat-channel-members-show', 'resources/elements/em-chat-msg-popup', 'resources/elements/em-user-avatar']);
+        aurelia.globalResources(['resources/value-converters/vc-common', 'resources/binding-behaviors/bb-key', 'resources/attributes/attr-task', 'resources/attributes/attr-swipebox', 'resources/attributes/attr-pastable', 'resources/attributes/attr-autosize', 'resources/attributes/attr-dropzone', 'resources/attributes/attr-attr', 'resources/attributes/attr-c2c', 'resources/attributes/attr-dimmer', 'resources/attributes/attr-ui-dropdown', 'resources/attributes/attr-ui-tab', 'resources/attributes/attr-tablesort', 'resources/attributes/attr-textcomplete', 'resources/attributes/attr-scrollbar', 'resources/elements/em-modal', 'resources/elements/em-dropdown', 'resources/elements/em-confirm-modal', 'resources/elements/em-hotkeys-modal', 'resources/elements/em-chat-input', 'resources/elements/em-chat-top-menu', 'resources/elements/em-chat-sidebar-left', 'resources/elements/em-chat-content-item', 'resources/elements/em-chat-sidebar-right', 'resources/elements/em-chat-channel-create', 'resources/elements/em-chat-channel-join', 'resources/elements/em-chat-channel-edit', 'resources/elements/em-chat-channel-members-mgr', 'resources/elements/em-chat-channel-members-show', 'resources/elements/em-chat-msg-popup', 'resources/elements/em-chat-member-popup', 'resources/elements/em-user-avatar']);
     }
 });
 define('test/test-lifecycle',['exports', 'aurelia-framework', 'aurelia-event-aggregator'], function (exports, _aureliaFramework, _aureliaEventAggregator) {
@@ -4005,6 +4010,81 @@ define('user/user-register',['exports'], function (exports) {
         };
 
         return ViewModel;
+    }();
+});
+define('resources/binding-behaviors/bb-key',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var keyCodes = {
+        'esc': 27,
+        'tab': 9,
+        'enter': 13,
+        'space': 32,
+        'up': 38,
+        'left': 37,
+        'right': 39,
+        'down': 40,
+        'backspace': 8,
+        'delete': 46
+    };
+
+    function keyHandler(event) {
+
+        if (event && event.ctrlKey == this.keyState.ctrl && event.altKey == this.keyState.alt && event.shiftKey == this.keyState.shift && event.keyCode == this.keyState.keyCode) {
+            this.originalMethod(event);
+        } else {}
+
+        return true;
+    }
+
+    var KeyBindingBehavior = exports.KeyBindingBehavior = function () {
+        function KeyBindingBehavior() {
+            _classCallCheck(this, KeyBindingBehavior);
+        }
+
+        KeyBindingBehavior.prototype.bind = function bind(binding, source) {
+            var key = arguments.length <= 2 || arguments[2] === undefined ? 13 : arguments[2];
+            var metaKeys = arguments[3];
+
+            var methodName = 'updateTarget';
+            if (binding.callSource) {
+                methodName = 'callSource';
+            } else if (binding.updateSource && binding.mode === bindingMode.twoWay) {
+                methodName = 'updateSource';
+            }
+
+            binding.originalMethod = binding[methodName];
+            binding.originalMethod.originalName = methodName;
+
+            binding[methodName] = keyHandler;
+            var keyCode = _.isInteger(key) ? key : key.length === 1 ? key.charCodeAt(0) : keyCodes[key];
+            if (_.isUndefined(keyCode)) {
+                console.warn('Unmapping keyCode for KeyBindingBehavior!');
+            }
+            binding.keyState = {
+                ctrl: _.includes(metaKeys, 'ctrl'),
+                alt: _.includes(metaKeys, 'alt'),
+                shift: _.includes(metaKeys, 'shift'),
+                keyCode: keyCode
+            };
+        };
+
+        KeyBindingBehavior.prototype.unbind = function unbind(binding, source) {
+            binding[binding.originalMethod.originalName] = binding.originalMethod;
+            binding.originalMethod = null;
+        };
+
+        return KeyBindingBehavior;
     }();
 });
 define('resources/attributes/attr-attr',['exports', 'aurelia-framework', 'aurelia-dependency-injection'], function (exports, _aureliaFramework, _aureliaDependencyInjection) {
@@ -4806,81 +4886,6 @@ define('resources/attributes/attr-ui-tab',['exports', 'aurelia-framework'], func
         return AttrUiTabCustomAttribute;
     }()) || _class) || _class);
 });
-define('resources/binding-behaviors/bb-key',['exports'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    var keyCodes = {
-        'esc': 27,
-        'tab': 9,
-        'enter': 13,
-        'space': 32,
-        'up': 38,
-        'left': 37,
-        'right': 39,
-        'down': 40,
-        'backspace': 8,
-        'delete': 46
-    };
-
-    function keyHandler(event) {
-
-        if (event && event.ctrlKey == this.keyState.ctrl && event.altKey == this.keyState.alt && event.shiftKey == this.keyState.shift && event.keyCode == this.keyState.keyCode) {
-            this.originalMethod(event);
-        } else {}
-
-        return true;
-    }
-
-    var KeyBindingBehavior = exports.KeyBindingBehavior = function () {
-        function KeyBindingBehavior() {
-            _classCallCheck(this, KeyBindingBehavior);
-        }
-
-        KeyBindingBehavior.prototype.bind = function bind(binding, source) {
-            var key = arguments.length <= 2 || arguments[2] === undefined ? 13 : arguments[2];
-            var metaKeys = arguments[3];
-
-            var methodName = 'updateTarget';
-            if (binding.callSource) {
-                methodName = 'callSource';
-            } else if (binding.updateSource && binding.mode === bindingMode.twoWay) {
-                methodName = 'updateSource';
-            }
-
-            binding.originalMethod = binding[methodName];
-            binding.originalMethod.originalName = methodName;
-
-            binding[methodName] = keyHandler;
-            var keyCode = _.isInteger(key) ? key : key.length === 1 ? key.charCodeAt(0) : keyCodes[key];
-            if (_.isUndefined(keyCode)) {
-                console.warn('Unmapping keyCode for KeyBindingBehavior!');
-            }
-            binding.keyState = {
-                ctrl: _.includes(metaKeys, 'ctrl'),
-                alt: _.includes(metaKeys, 'alt'),
-                shift: _.includes(metaKeys, 'shift'),
-                keyCode: keyCode
-            };
-        };
-
-        KeyBindingBehavior.prototype.unbind = function unbind(binding, source) {
-            binding[binding.originalMethod.originalName] = binding.originalMethod;
-            binding.originalMethod = null;
-        };
-
-        return KeyBindingBehavior;
-    }();
-});
 define('resources/elements/em-chat-channel-create',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
     'use strict';
 
@@ -5616,6 +5621,8 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
         };
 
         EmChatContentItem.prototype.attached = function attached() {
+            var _this2 = this;
+
             $('body').on('click', '.markdown-body .at-user', function (event) {
                 event.preventDefault();
                 ea.publish(nsCons.EVENT_CHAT_MSG_INSERT, {
@@ -5645,6 +5652,16 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
                 event.preventDefault();
                 ea.publish(nsCons.EVENT_CHAT_CONTENT_SCROLL_TO, { target: $('#' + $(event.currentTarget).attr('data-id')) });
             });
+
+            $('body').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].avatar:not(.pp-not),a[data-value].author:not(.pp-not)', function (event) {
+                event.preventDefault();
+                var $a = $(event.currentTarget);
+                ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {
+                    channel: _this2.channel,
+                    username: $a.attr('data-value'),
+                    target: event.currentTarget
+                });
+            });
         };
 
         EmChatContentItem.prototype.channelChanged = function channelChanged() {
@@ -5657,14 +5674,14 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
         };
 
         EmChatContentItem.prototype.deleteHandler = function deleteHandler(item) {
-            var _this2 = this;
+            var _this3 = this;
 
             this.emConfirmModal.show({
                 onapprove: function onapprove() {
 
                     var url = void 0;
 
-                    if (_this2.isAt) {
+                    if (_this3.isAt) {
                         url = '/admin/chat/direct/delete';
                     } else {
                         url = '/admin/chat/channel/delete';
@@ -5674,7 +5691,7 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
                         id: item.id
                     }, function (data, textStatus, xhr) {
                         if (data.success) {
-                            _this2.chats = _.reject(_this2.chats, {
+                            _this3.chats = _.reject(_this3.chats, {
                                 id: item.id
                             });
                             toastr.success('删除消息成功!');
@@ -5707,7 +5724,7 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
         };
 
         EmChatContentItem.prototype.editSave = function editSave(item, txtRef) {
-            var _this3 = this;
+            var _this4 = this;
 
             this.sending = true;
 
@@ -5749,7 +5766,7 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
                     toastr.error(data.data, '更新消息失败!');
                 }
             }).always(function () {
-                _this3.sending = false;
+                _this4.sending = false;
             });
         };
 
@@ -6243,6 +6260,76 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
         enumerable: true,
         initializer: null
     })), _class2)) || _class;
+});
+define('resources/elements/em-chat-member-popup',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmChatMemberPopup = undefined;
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _class;
+
+    var EmChatMemberPopup = exports.EmChatMemberPopup = (0, _aureliaFramework.containerless)(_class = function () {
+        function EmChatMemberPopup() {
+            var _this = this;
+
+            _classCallCheck(this, EmChatMemberPopup);
+
+            this.members = [];
+            this.member = {};
+            this.show = false;
+
+            this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, function (payload) {
+                _this.channel = payload.channel;
+                _this.username = payload.username;
+                _this.target = payload.target;
+
+
+                $(_this.target).popup({
+                    popup: _this.popup,
+                    hoverable: true,
+                    inline: false,
+                    silent: true,
+
+                    position: 'bottom left',
+                    maxSearchDepth: 50,
+                    delay: {
+                        show: 300,
+                        hide: 300
+                    },
+                    onVisible: function onVisible() {
+                        _.defer(function () {
+                            if (_this.username == 'all') {
+                                _this.members = _this.channel.members;
+                            } else {
+                                _this.member = utils.getUser(_this.username);
+                                var user = utils.getUser(_this.member.creator);
+                                _this.member.creatorName = user && !!user.name ? user.name : _this.member.creator;
+                            }
+                            _this.show = true;
+                        });
+                    },
+                    onHidden: function onHidden() {
+                        _this.show = false;
+                    }
+                }).popup('show');
+            });
+        }
+
+        EmChatMemberPopup.prototype.unbind = function unbind() {
+            this.subscribe.dispose();
+        };
+
+        return EmChatMemberPopup;
+    }()) || _class;
 });
 define('resources/elements/em-chat-msg-popup',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
     'use strict';
@@ -25616,7 +25703,7 @@ define('highlight/lib/languages/zephir',['require','exports','module'],function 
 });
 
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\r\n\t<require from=\"./app.css\"></require>\r\n\t<require from=\"./common.css\"></require>\r\n\t<require from=\"./override.css\"></require>\r\n\t<require from=\"common/common-scrollbar.css\"></require>\r\n\t<require from=\"nprogress/nprogress.css\"></require>\r\n\t<require from=\"toastr/build/toastr.css\"></require>\r\n    <require from=\"tms-semantic-ui/semantic.min.css\"></require>\r\n    <router-view></router-view>\r\n</template>\r\n"; });
-define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <require from=\"./md-github.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" channel.bind=\"channel\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div ref=\"scrollbarRef\" scrollbar>\r\n                    <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                        <div if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</div>\r\n                        <em-chat-content-item mark-id.bind=\"markId\" channel.bind=\"channel\" is-at.bind=\"isAt\" chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                        <div if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})</div>\r\n                    </div>\r\n                </div>\r\n                <em-chat-input channel.bind=\"channel\" is-at.bind=\"isAt\" chat-to.bind=\"chatTo\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right login-user.bind=\"loginUser\" channel.bind=\"channel\" login-user.bind=\"loginUser\" is-at.bind=\"isAt\"></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n    <em-chat-msg-popup></em-chat-msg-popup>\r\n</template>\r\n"; });
+define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <require from=\"./md-github.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" channel.bind=\"channel\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div ref=\"scrollbarRef\" scrollbar>\r\n                    <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                        <div if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</div>\r\n                        <em-chat-content-item mark-id.bind=\"markId\" channel.bind=\"channel\" is-at.bind=\"isAt\" chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                        <div if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})</div>\r\n                    </div>\r\n                </div>\r\n                <em-chat-input channel.bind=\"channel\" is-at.bind=\"isAt\" chat-to.bind=\"chatTo\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right login-user.bind=\"loginUser\" channel.bind=\"channel\" login-user.bind=\"loginUser\" is-at.bind=\"isAt\"></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n    <em-chat-msg-popup></em-chat-msg-popup>\r\n    <em-chat-member-popup></em-chat-member-popup>\r\n</template>\r\n"; });
 define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n"; });
 define('text!test/test-lifecycle.html', ['module'], function(module) { module.exports = "<template>\r\n    <!-- <require from=\"\"></require> -->\r\n    <div class=\"ui container\">\r\n        <h1 class=\"ui header\">Aurelia框架模块生命周期钩子函数调用顺序测试(看console输出)</h1>\r\n    </div>\r\n</template>\r\n"; });
 define('text!common.css', ['module'], function(module) { module.exports = "code.nx {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  white-space: nowrap;\n}\n"; });
@@ -25640,20 +25727,22 @@ define('text!resources/elements/em-chat-content-item.html', ['module'], function
 define('text!resources/elements/em-chat-channel-members-mgr.css', ['module'], function(module) { module.exports = ".tms-em-chat-channel-members-mgr .ui.dropdown > a.ui.label > input.owner + i.delete.icon {\n  display: none;\n}\n.tms-em-chat-channel-members-mgr .member-table {\n  max-height: 315px;\n  overflow-y: auto;\n}\n"; });
 define('text!resources/elements/em-chat-input.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-input.css\"></require>\r\n    <require from=\"./em-hotkeys-modal\"></require>\r\n    <div class=\"ui basic segment tms-msg-input tms-em-chat-input dropzone\">\r\n        <div ref=\"chatStatusBarRef\" class=\"tms-chat-status-bar dropzone-previews\"></div>\r\n        <div ref=\"inputRef\" class=\"ui left action fluid icon input dropzone\">\r\n            <div ref=\"chatBtnRef\" class=\"ui icon button\">\r\n                <i class=\"plus icon\"></i>\r\n            </div>\r\n            <div class=\"ui flowing popup bottom left transition hidden\">\r\n                <div class=\"ui middle aligned selection list\">\r\n                    <div ref=\"btnItemUploadRef\" class=\"item\">\r\n                        <i class=\"upload icon\"></i>\r\n                        <div class=\"content\">\r\n                            上传文件\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"textareaWrapper\">\r\n                <textarea ref=\"chatInputRef\" placeholder=\"/ 键提示,Ctrl+Enter发送,Esc清空\"></textarea>\r\n            </div>\r\n            <i click.delegate=\"sendChatMsgHandler()\" title=\"发送消息(Ctrl+Enter)\" class=\"send link icon\"></i>\r\n        </div>\r\n    </div>\r\n    <div ref=\"previewTemplateRef\" style=\"display: none;\">\r\n        <div class=\"dz-preview dz-file-preview\">\r\n            <div class=\"dz-details\">\r\n                <div class=\"dz-filename\"><span data-dz-name></span></div>\r\n                <div class=\"dz-size\" data-dz-size></div>\r\n                <img data-dz-thumbnail />\r\n            </div>\r\n            <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            <div class=\"dz-success-mark\"><span>✔</span></div>\r\n            <div class=\"dz-error-mark\"><span>✘</span></div>\r\n            <div class=\"dz-error-message\"><span data-dz-errormessage></span></div>\r\n        </div>\r\n    </div>\r\n    <em-hotkeys-modal em-hotkeys-modal.ref=\"emHotkeysModal\"></em-hotkeys-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-channel-members-show.css', ['module'], function(module) { module.exports = ".em-chat-channel-members-show {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
-define('text!resources/elements/em-chat-msg-popup.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"popup\" class=\"ui flowing popup transition hidden tms-chat-msg-popup\">\r\n        <div class=\"ui items\">\r\n            <div class=\"item\">\r\n                <div class=\"content\" style=\"width:300px; word-break: break-all;\">\r\n                    <a class=\"header pp-not\" href=\"javascript:void(0);\">消息#${chatMsg.id}</a>\r\n                    <div class=\"meta\" style=\"width:300px; word-break: break-all; font-size: 12px;\">\r\n                        <i class=\"wait icon\"></i>\r\n                        <span>\r\n                            ${chatMsg.creator ? (chatMsg.creator.name ? chatMsg.creator.name : chatMsg.creator.username) : ''}\r\n                        </span>\r\n                        <span>发表于</span>\r\n                        <span class=\"cinema timeago\" style=\"font-style: italic;\" title=\"${chatMsg.createDate | date}\">${chatMsg.createDate | timeago}</span>\r\n                    </div>\r\n                    <div class=\"ui divider\"></div>\r\n                    <div class=\"description markdown-body\" style=\"width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;\" innerhtml.bind=\"chatMsg.content | parseMd\"></div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-member-popup.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-chat-member-popup.css\"></require>\n    <div ref=\"popup\" class=\"ui flowing popup transition hidden tms-chat-member-popup\">\n        <div class=\"ui cards\" show.bind=\"show && (username == 'all')\">\n            <div class=\"card\">\n                <div class=\"content\">\n                    <div class=\"header\" style=\"border-bottom: 1px lightgray solid;\">\n                        全部用户 (${members.length}人)\n                    </div>\n                    <div class=\"description\" style=\"max-height: 200px; overflow-y: auto;\">\n                        <div class=\"ui middle aligned divided list\">\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\n                                <div class=\"content\">\n                                    <div repeat.for=\"item of members\" class=\"ui basic label mapping-user group-user\" data-value=\"${item.username}\" style=\"margin-top: 3px; margin-left: 0;\" title=\"${item.username}\">${item.name ? item.name : item.username}</div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <div class=\"ui cards\" show.bind=\"show && (username != 'all')\">\n            <div class=\"card\">\n                <div class=\"content\">\n                    <div class=\"header\">\n                        ${member.name ? member.name : member.username} <a style=\"float: right;\" href=\"#/chat/@${member.username}\">私聊</a>\n                    </div>\n                    <div class=\"ui divider\"></div>\n                    <div class=\"meta\">\n                        <i class=\"wait icon\"></i>\n                        <span class=\"mapping-user\">${member.creatorName}</span> 创建于 <span style=\"font-style: italic;\" class=\"timeago\" title=\"${member.createDate | date}\">${member.createDate | timeago}</span>\n                    </div>\n                    <div class=\"description\">\n                        <div class=\"ui middle aligned divided list\">\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\n                                <div class=\"content\">\n                                    <a class=\"header\" style=\"display: inline;\">姓名</a> ${member.name}\n                                </div>\n                            </div>\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\n                                <div class=\"content\">\n                                    <a class=\"header\" style=\"display: inline;\">邮箱</a> <a href=\"mailto:${member.mails}\">${member.mails}</a>\n                                </div>\n                            </div>\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\n                                <div class=\"content\">\n                                    <a class=\"header\" style=\"display: inline;\">状态</a> ${member.enabled ? '启用中' : '已禁用'}\n                                </div>\n                            </div>\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\n                                <div class=\"content\">\n                                    <a class=\"header\" style=\"display: inline;\">登录</a> 从IP ${member.loginRemoteAddress} (<span style=\"font-style: italic; color:gray;\" class=\"timeago\" title=\"${member.lastLoginDate | date}\">${member.lastLoginDate | timeago}</span>)\n                                </div>\n                            </div>\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\n                                <div class=\"content\">\n                                    <div repeat.for=\"item of member.joinChannels\" class=\"ui basic label user-channel\" data-value=\"${item.name}\" style=\"margin-top: 3px; margin-left: 0;\" title=\"${item.title}\">${item.name}</div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</template>\n"; });
 define('text!resources/elements/em-chat-content-item.css', ['module'], function(module) { module.exports = ".em-chat-content-item .textcomplete-container {\n  position: relative;\n}\n.em-chat-content-item .textcomplete-container .append-to {\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  width: 100%;\n}\n.ui.comments .em-chat-content-item.comment > .avatar ~ .content {\n  margin-left: 3em;\n}\n.ui.comments .em-chat-content-item.comment .actions > a {\n  margin-right: 5px;\n}\n.em-chat-content-item > .content > .markdown-body span.at-user {\n  cursor: pointer;\n}\n"; });
-define('text!resources/elements/em-chat-sidebar-left.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-sidebar-left.css\"></require>\r\n    <div class=\"ui left visible sidebar tms-left-sidebar\">\r\n        <div class=\"tms-header\">\r\n            <h1 class=\"ui header\"><a href=\"/admin/dynamic?scroll=1\">TMS沟通</a></h1>\r\n            <input value.bind=\"filter\" focusin.trigger=\"chatToUserFilerFocusinHanlder()\" keyup.trigger=\"chatToUserFilerKeyupHanlder($event)\" type=\"text\" placeholder=\"过滤沟通频道|用户\">\r\n            <i show.bind=\"filter\" title=\"清空过滤输入\" click.delegate=\"clearFilterHandler()\" class=\"close icon link\"></i>\r\n        </div>\r\n        <div class=\"tms-body\">\r\n            <div scrollbar=\"scrollbar-macosx\">\r\n                <div ref=\"channelsRef\" class=\"tms-channels\">\r\n                    <div class=\"title\">\r\n                        <h4 class=\"ui header\"><i class=\"users icon\"></i>频道</h4>\r\n                        <i ref=\"createChannelRef\" class=\"plus link circular icon\"></i>\r\n                    </div>\r\n                    <div class=\"ui middle aligned selection list\">\r\n                        <a repeat.for=\"item of channels\" title=\"${item.title}(${item.name})\" show.bind=\"!item.hidden\" href=\"#/chat/${item.name}\" class=\"item ${(!isAt && item.name == chatTo) ? 'active' : ''}\">\r\n                            <i class=\"hashtag icon\"></i>\r\n                            <div class=\"content\">\r\n                                <div style=\"color: black;\">${item.title}</div>\r\n                            </div>\r\n                            <div class=\"actions\">\r\n                                <div if.bind=\"item.owner.username == loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                    <i class=\"large ellipsis horizontal icon\"></i>\r\n                                    <div class=\"menu\">\r\n                                        <div class=\"item\" click.delegate=\"membersMgrHandler(item)\">成员管理</div>\r\n                                        <div class=\"item\" click.delegate=\"editHandler(item)\">编辑</div>\r\n                                        <div class=\"item\" click.delegate=\"delHandler(item)\">删除</div>\r\n                                    </div>\r\n                                </div>\r\n                                <div if.bind=\"item.owner.username != loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                    <i class=\"large ellipsis horizontal icon\"></i>\r\n                                    <div class=\"menu\">\r\n                                        <div class=\"item\" click.delegate=\"membersShowHandler(item)\">成员查看</div>\r\n                                        <div class=\"item\" click.delegate=\"leaveHandler(item)\">离开</div>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </a>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui divider\"></div>\r\n                <div class=\"tms-users\">\r\n                    <div class=\"title\">\r\n                        <h4 class=\"ui header\"><i class=\"user icon\"></i>用户</h4>\r\n                        <!-- <i class=\"plus link circular icon\"></i> -->\r\n                    </div>\r\n                    <div ref=\"userListRef\" class=\"ui middle aligned selection list\">\r\n                        <a repeat.for=\"item of users\" title=\"${item.username}\" show.bind=\"!item.hidden\" href=\"#/chat/@${item.username}\" class=\"item ${(isAt && item.username == chatTo) ? 'active' : ''}\" data-id=\"${item.username}\">\r\n                            <i style=\"font-weight: bold;\" class=\"at icon\"></i>\r\n                            <div class=\"content\">\r\n                                <div style=\"color: black;\">${item.name ? item.name : item.username}</div>\r\n                            </div>\r\n                        </a>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n    <em-chat-channel-create login-user.bind=\"loginUser\" trigger.bind=\"createChannelRef\"></em-chat-channel-create>\r\n    <em-chat-channel-edit channel.bind=\"selectedChannel\" em-chat-channel-edit.ref=\"channelEditMd\"></em-chat-channel-edit>\r\n    <em-chat-channel-members-mgr users.bind=\"users\" channel.bind=\"selectedChannel\" em-chat-channel-members-mgr.ref=\"channelMembersMgrMd\"></em-chat-channel-members-mgr>\r\n    <em-chat-channel-members-show channel.bind=\"selectedChannel\" em-chat-channel-members-show.ref=\"channelMembersShowMd\"></em-chat-channel-members-show>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-msg-popup.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"popup\" class=\"ui flowing popup transition hidden tms-chat-msg-popup\">\r\n        <div class=\"ui items\">\r\n            <div class=\"item\">\r\n                <div class=\"content\" style=\"width:300px; word-break: break-all;\">\r\n                    <a class=\"header pp-not\" href=\"javascript:void(0);\">消息#${chatMsg.id}</a>\r\n                    <div class=\"meta\" style=\"width:300px; word-break: break-all; font-size: 12px;\">\r\n                        <i class=\"wait icon\"></i>\r\n                        <span>\r\n                            ${chatMsg.creator ? (chatMsg.creator.name ? chatMsg.creator.name : chatMsg.creator.username) : ''}\r\n                        </span>\r\n                        <span>发表于</span>\r\n                        <span class=\"cinema timeago\" style=\"font-style: italic;\" title=\"${chatMsg.createDate | date}\">${chatMsg.createDate | timeago}</span>\r\n                    </div>\r\n                    <div class=\"ui divider\"></div>\r\n                    <div class=\"description markdown-body\" style=\"width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;\" innerhtml.bind=\"chatMsg.content | parseMd\"></div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-input.css', ['module'], function(module) { module.exports = ".tms-em-chat-input.ui.segment {\n  margin: 0;\n  position: fixed;\n  bottom: 0;\n  left: 220px;\n  right: 0;\n  background-color: white;\n  padding-bottom: 22px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-input.ui.segment {\n    left: 0;\n  }\n}\n.tms-em-chat-input.ui.segment .tms-chat-status-bar .dz-preview {\n  display: block!important;\n  width: auto!important;\n  background: #e0e1e2;\n  margin: 0;\n  padding: 7px;\n}\n.tms-em-chat-input.ui.segment .ui[class*=\"left action\"].input > textarea {\n  border-top-left-radius: 0!important;\n  border-bottom-left-radius: 0!important;\n  border-left-color: transparent!important;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper {\n  width: calc(100% - 35px);\n  border: 1px solid rgba(34, 36, 38, 0.15);\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror,\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  min-height: 0;\n  border: none;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  max-height: 300px;\n}\n.tms-em-chat-input.ui.segment .ui.input {\n  margin-right: 5px;\n}\n.tms-em-chat-input.ui.segment .ui.input i.send.icon {\n  z-index: 1;\n  /* background-color: #eeeeee; */\n  right: 7px!important;\n}\n.tms-em-chat-input.ui.segment .ui.input textarea {\n  resize: none;\n  width: 100%;\n  padding-right: 2.67142857em!important;\n  margin: 0;\n  max-width: 100%;\n  outline: 0;\n  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);\n  text-align: left;\n  display: block;\n  padding: .67861429em 1em;\n  background: #FFF;\n  border: none;\n  color: rgba(0, 0, 0, 0.87);\n  box-shadow: none;\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n.tms-em-chat-input .CodeMirror-lines {\n  margin-right: 30px;\n}\n@media only screen and (min-width: 768px) {\n  .tms-chat-direct .tms-content.tms-sidebar-show .tms-em-chat-input {\n    right: 392px;\n  }\n}\n.textcomplete-dropdown {\n  position: static!important;\n  border: 1px solid #ddd;\n  background-color: white;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  border-radius: 5px;\n}\n.textcomplete-dropdown li {\n  /* border-top: 1px solid #ddd; */\n  padding: 2px 5px;\n}\n.textcomplete-dropdown li:first-child {\n  border-top: none;\n  border-top-left-radius: 5px;\n  border-top-right-radius: 5px;\n}\n.textcomplete-dropdown li:last-child {\n  border-bottom-left-radius: 5px;\n  border-bottom-right-radius: 5px;\n}\n.textcomplete-dropdown li:hover,\n.textcomplete-dropdown .active {\n  background-color: #439fe0;\n}\n.textcomplete-dropdown a:hover {\n  cursor: pointer;\n}\n.textcomplete-dropdown li.textcomplete-item a {\n  color: black;\n}\n.textcomplete-dropdown li.textcomplete-item:hover a,\n.textcomplete-dropdown li.textcomplete-item.active a {\n  color: white;\n}\n"; });
+define('text!resources/elements/em-chat-sidebar-left.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-sidebar-left.css\"></require>\r\n    <div class=\"ui left visible sidebar tms-left-sidebar\">\r\n        <div class=\"tms-header\">\r\n            <h1 class=\"ui header\"><a href=\"/admin/dynamic?scroll=1\">TMS沟通</a></h1>\r\n            <input value.bind=\"filter\" focusin.trigger=\"chatToUserFilerFocusinHanlder()\" keyup.trigger=\"chatToUserFilerKeyupHanlder($event)\" type=\"text\" placeholder=\"过滤沟通频道|用户\">\r\n            <i show.bind=\"filter\" title=\"清空过滤输入\" click.delegate=\"clearFilterHandler()\" class=\"close icon link\"></i>\r\n        </div>\r\n        <div class=\"tms-body\">\r\n            <div scrollbar=\"scrollbar-macosx\">\r\n                <div ref=\"channelsRef\" class=\"tms-channels\">\r\n                    <div class=\"title\">\r\n                        <h4 class=\"ui header\"><i class=\"users icon\"></i>频道</h4>\r\n                        <i ref=\"createChannelRef\" class=\"plus link circular icon\"></i>\r\n                    </div>\r\n                    <div class=\"ui middle aligned selection list\">\r\n                        <a repeat.for=\"item of channels\" title=\"${item.title}(${item.name})\" show.bind=\"!item.hidden\" href=\"#/chat/${item.name}\" class=\"item ${(!isAt && item.name == chatTo) ? 'active' : ''}\">\r\n                            <i class=\"hashtag icon\"></i>\r\n                            <div class=\"content\">\r\n                                <div style=\"color: black;\">${item.title}</div>\r\n                            </div>\r\n                            <div class=\"actions\">\r\n                                <div if.bind=\"item.owner.username == loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                    <i class=\"large ellipsis horizontal icon\"></i>\r\n                                    <div class=\"menu\">\r\n                                        <div class=\"item\" click.delegate=\"membersMgrHandler(item)\">成员管理</div>\r\n                                        <div class=\"item\" click.delegate=\"editHandler(item)\">编辑</div>\r\n                                        <div class=\"item\" click.delegate=\"delHandler(item)\">删除</div>\r\n                                    </div>\r\n                                </div>\r\n                                <div if.bind=\"item.owner.username != loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                    <i class=\"large ellipsis horizontal icon\"></i>\r\n                                    <div class=\"menu\">\r\n                                        <div class=\"item\" click.delegate=\"membersShowHandler(item)\">成员查看</div>\r\n                                        <div class=\"item\" click.delegate=\"leaveHandler(item)\">离开</div>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </a>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui divider\"></div>\r\n                <div class=\"tms-users\">\r\n                    <div class=\"title\">\r\n                        <h4 class=\"ui header\"><i class=\"user icon\"></i>用户</h4>\r\n                        <!-- <i class=\"plus link circular icon\"></i> -->\r\n                    </div>\r\n                    <div ref=\"userListRef\" class=\"ui middle aligned selection list\">\r\n                        <a repeat.for=\"item of users\" title=\"${item.username}\" show.bind=\"!item.hidden\" href=\"#/chat/@${item.username}\" class=\"item ${(isAt && item.username == chatTo) ? 'active' : ''}\" data-id=\"${item.username}\">\r\n                            <i style=\"font-weight: bold;\" class=\"at icon\"></i>\r\n                            <div class=\"content\">\r\n                                <div style=\"color: black;\">${item.name ? item.name : item.username}</div>\r\n                            </div>\r\n                        </a>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n    <em-chat-channel-create login-user.bind=\"loginUser\" trigger.bind=\"createChannelRef\"></em-chat-channel-create>\r\n    <em-chat-channel-edit channel.bind=\"selectedChannel\" em-chat-channel-edit.ref=\"channelEditMd\"></em-chat-channel-edit>\r\n    <em-chat-channel-members-mgr users.bind=\"users\" channel.bind=\"selectedChannel\" em-chat-channel-members-mgr.ref=\"channelMembersMgrMd\"></em-chat-channel-members-mgr>\r\n    <em-chat-channel-members-show channel.bind=\"selectedChannel\" em-chat-channel-members-show.ref=\"channelMembersShowMd\"></em-chat-channel-members-show>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-member-popup.css', ['module'], function(module) { module.exports = ".tms-chat-member-popup .ui.cards {\n  margin-top: 0!important;\n}\n.tms-chat-member-popup .ui.cards .card {\n  margin-top: 0!important;\n}\n.tms-chat-member-popup .ui.cards .card .ui.list > .item {\n  border-radius: 0!important;\n}\n"; });
 define('text!resources/elements/em-chat-sidebar-right.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-chat-sidebar-right.css\"></require>\n    <div class=\"tms-right-sidebar emm-chat-sidebar-right\">\n        <div scrollbar=\"scrollbar-macosx\">\n            <div show.bind=\"forShow == 'chat-msg'\" class=\"panel-chat-msg\">\n                <div class=\"ui basic segment minimal selection list segment comments\">\n                    <h1 show.bind=\"!chats.length\" class=\"ui center aligned header\">无符合检索结果</h1>\n                    <div repeat.for=\"item of chats\" mouseleave.trigger=\"searchItemMouseleaveHandler(item)\" mouseenter.trigger=\"searchItemMouseenterHandler(item)\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\n                        <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\n                        <div class=\"content\">\n                            <a class=\"author\">${item.creator.name}</a>\n                            <div class=\"metadata\">\n                                <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\n                            </div>\n                            <div class=\"text markdown-body ${item.isOpen ? 'tms-open' : ''}\" innerhtml.bind=\"item.content | parseMd\"></div>\n                            <div class=\"actions\">\n                                <a if.bind=\"item.chatStow\" click.delegate=\"removeStowHandler(item)\" class=\"tms-remove\" title=\"移除收藏消息\" href=\"\">移除</a>\n                                <a if.bind=\"item.chatAt\" click.delegate=\"removeAtHandler(item)\" class=\"tms-read\" title=\"标记@消息已读\" href=\"\">知悉</a>\n                                <a click.delegate=\"gotoChatHandler(item)\" class=\"tms-goto\" href=\"\" title=\"定位到消息\">定位</a>\n                                <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\" title=\"复制消息内容到剪贴板\">复制</a>\n                                <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}\" title=\"复制消息链接到剪贴板\">分享</a>\n                            </div>\n                        </div>\n                        <div class=\"tms-btn-open-search-item\" click.delegate=\"openSearchItemHandler(item)\">\n                            <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\n                        </div>\n                    </div>\n                    <div if.bind=\"!last\" click.delegate=\"searchMoreHandler()\" class=\"ui basic button tms-search-more\"><i show.bind=\"searchMoreP && searchMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\n                </div>\n            </div>\n            <div ref=\"dirRef\" show.bind=\"forShow == 'wiki-dir'\" class=\"panel-wiki-dir\"></div>\n        </div>\n    </div>\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\n</template>\n"; });
 define('text!resources/elements/em-chat-sidebar-left.css', ['module'], function(module) { module.exports = ".tms-left-sidebar .tms-body {\n  position: absolute;\n  top: 98px;\n  width: 220px;\n  height: calc(100vh - 150px);\n  overflow: hidden;\n  padding-right: 2px;\n}\n.tms-left-sidebar .tms-body i.circular.icon {\n  box-shadow: 0 0 0 0.1em #4183c4 inset;\n}\n.tms-left-sidebar .tms-body .ui.selection.list {\n  margin-top: 10px;\n}\n.tms-left-sidebar .tms-body .title {\n  position: relative;\n  margin-left: 10px;\n}\n.tms-left-sidebar .tms-body .title .ui.header {\n  display: inline-block;\n  margin-top: 2px;\n  margin-bottom: 0;\n}\n.tms-left-sidebar .tms-body .title i.plus.icon {\n  position: absolute;\n  right: 10px;\n  font-size: 12px;\n  width: 12px!important;\n  height: 12px!important;\n}\n.tms-left-sidebar .tms-body .ui.list > .item {\n  padding-left: 16px;\n}\n.tms-left-sidebar .tms-body .ui.list > .item > .icon + .content {\n  padding: 0;\n}\n.tms-left-sidebar .tms-body .tms-channels .ui.list a.item {\n  position: relative;\n}\n.tms-left-sidebar .tms-body .tms-channels .ui.list a.item:hover .actions {\n  display: inline-block;\n}\n.tms-left-sidebar .tms-body .tms-channels .actions {\n  display: none;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n}\n.tms-left-sidebar .tms-body .scroll-element.scroll-y {\n  background-color: #4d394b;\n}\n.tms-left-sidebar.ui.left.sidebar {\n  background-color: #4d394b;\n  width: 220px;\n}\n.tms-left-sidebar.ui.left.sidebar * {\n  color: #4183c4!important;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header > input {\n  background-color: transparent;\n  border: 1px #676868 solid;\n  font-size: 12px;\n  padding: 4px;\n  width: 188px;\n  outline: none;\n  margin-top: 10px;\n  border-radius: 2px;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header {\n  height: 40px;\n  padding-left: 16px;\n  padding-right: 16px;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header h1.ui.header {\n  margin-top: 9px;\n  margin-bottom: 0;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header i.close.icon {\n  position: absolute;\n  right: 16px;\n  top: 57px;\n}\n"; });
 define('text!resources/elements/em-chat-top-menu.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-top-menu.css\"></require>\r\n    <div class=\"ui top fixed menu tms-em-chat-top-menu\">\r\n        <div ref=\"chatToDropdownRef\" class=\"ui dropdown link item ${isActiveSearch ? 'tms-hide' : ''} tms-chat-at\">\r\n            <span class=\"text\"></span>\r\n            <i class=\"dropdown icon\"></i>\r\n            <div class=\"menu\">\r\n                <div class=\"ui icon search input\">\r\n                    <i class=\"search icon\"></i>\r\n                    <input ref=\"filterChatToUser\" type=\"text\" placeholder=\"过滤沟通频道|用户\">\r\n                </div>\r\n                <div class=\"divider\"></div>\r\n                <div class=\"header\">\r\n                    <i class=\"filter icon\"></i> 切换沟通频道|用户(Ctrl+k)\r\n                </div>\r\n                <div class=\"scrolling menu\">\r\n                    <div class=\"header\">\r\n                        <i class=\"users icon\"></i> 频道 <i ref=\"createChannelRef\" class=\"circular icon link plus\"></i>\r\n                    </div>\r\n                    <a repeat.for=\"item of channels\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/${item.name}\" class=\"item\" title=\"${item.name}\" data-value=\"${item.name}\" data-id=\"${item.name}\">\r\n                        <i class=\"hashtag icon\"></i>${item.title}\r\n                    </a>\r\n                    <div class=\"header\">\r\n                        <i class=\"user icon\"></i> 用户\r\n                    </div>\r\n                    <a repeat.for=\"item of users\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/@${item.username}\" class=\"item\" title=\"${item.username}\" data-value=\"${item.username}\" data-id=\"@${item.username}\">\r\n                        <i style=\"font-weight: bold;\" class=\"at icon\"></i>${item.name}\r\n                    </a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"right menu\">\r\n            <div show.bind=\"!!dir\" class=\"item tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showWikiDirHandler()\" title=\"消息目录查看\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_DIR) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"unordered list icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showAtHandler()\" title=\"@消息查看\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_AT) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"at icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showStowHandler()\" title=\"收藏消息查看\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_STOW) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"empty star icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-item\">\r\n                <button click.delegate=\"sibebarRightHandler()\" title=\"右侧边栏(Ctrl+.)\" class=\"basic ${isRightSidebarShow ? 'active' : ''} ui icon button\">\r\n                    <i class=\"columns icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item\">\r\n                <div ref=\"searchRef\" class=\"ui search\">\r\n                    <div class=\"ui left icon input\">\r\n                        <input ref=\"searchInputRef\" keyup.trigger=\"searchKeyupHandler($event)\" blur.trigger=\"searchBlurHandler()\" focus.trigger=\"searchFocusHandler()\" class=\"prompt\" type=\"text\" placeholder=\"搜索...\">\r\n                        <i class=\"${(searchingP && searchingP.readyState != 4) ? 'spinner loading' : 'search'} icon\"></i>\r\n                        <i ref=\"searchRemoveRef\" click.delegate=\"clearSearchHandler()\" class=\"remove link icon\"></i>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div ui-dropdown class=\"ui top right dropdown item tms-login-user\">\r\n                <i class=\"circular user icon\"></i> ${loginUser.name}\r\n                <i class=\"dropdown icon\"></i>\r\n                <div class=\"menu\">\r\n                    <div class=\"header\">账户操作</div>\r\n                    <div class=\"divider\"></div>\r\n                    <a class=\"item\" click.delegate=\"logoutHandler()\">退出</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-chat-channel-create login-user.bind=\"loginUser\" trigger.bind=\"createChannelRef\"></em-chat-channel-create>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-top-menu.css', ['module'], function(module) { module.exports = ".tms-em-chat-top-menu.ui.top.menu {\n  padding-left: 220px;\n  height: 60px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .tms-chat-at.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .item.tms-item:before {\n  display: none;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item {\n  padding-left: 0;\n  padding-right: 5px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search input {\n  width: 100px;\n  transition: width 0.15s ease-out 0s;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search i.remove.icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu {\n    padding-left: 0;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .ui.basic.button {\n  box-shadow: none;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .text {\n    display: none;\n  }\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .dropdown.icon {\n    margin-left: 6px;\n    margin-right: 6px;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .header i.plus.icon {\n  position: absolute;\n  right: 5px;\n  top: 7px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item .icon {\n  margin-right: 4px!important;\n}\n"; });
+define('text!resources/elements/em-chat-sidebar-right.css', ['module'], function(module) { module.exports = ".emm-chat-sidebar-right .panel-wiki-dir {\n  height: 100%;\n  padding-left: 15px;\n  overflow-y: auto;\n}\n"; });
 define('text!resources/elements/em-confirm-modal.html', ['module'], function(module) { module.exports = "<template>\n    <div ref=\"md\" class=\"ui small modal nx-ui-confirm tms-md450\">\n        <div class=\"header\">\n            ${config.title}\n        </div>\n        <div class=\"content\">\n            <i if.bind=\"config.warning\" class=\"large yellow warning sign icon\" style=\"float: left;\"></i>\n            <i if.bind=\"!config.warning\" class=\"large blue info circle icon\" style=\"float: left;\"></i>\n            <p style=\"margin-left: 20px;\">\n                <span innerhtml.bind=\"config.content\"></span>\n            </p>\n        </div>\n        <div class=\"actions\">\n            <div class=\"ui cancel basic blue left floated button\">取消</div>\n            <div class=\"ui ok blue button\">确认</div>\n        </div>\n    </div>\n</template>\n"; });
-define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(module) { module.exports = ".tms-em-hotkeys-modal ul {\n  padding-left: 30px;\n}\n.tms-em-hotkeys-modal ul.no_bullets {\n  margin: 0 0 2rem;\n}\n.tms-em-hotkeys-modal ul.no_bullets li {\n  line-height: 2rem;\n  list-style-type: none;\n  padding: 0;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.tms-em-hotkeys-modal > .content {\n  background-color: rgba(11, 7, 11, 0.78) !important;\n}\n.tms-em-hotkeys-modal .keyboard i.icon {\n  margin-right: 0px!important;\n}\n.tms-em-hotkeys-modal .subtle_silver {\n  color: #9e9ea6!important;\n}\n.tms-em-hotkeys-modal .ui.grid .column {\n  padding: 0!important;\n}\n"; });
+define('text!resources/elements/em-chat-top-menu.css', ['module'], function(module) { module.exports = ".tms-em-chat-top-menu.ui.top.menu {\n  padding-left: 220px;\n  height: 60px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .tms-chat-at.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .item.tms-item:before {\n  display: none;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item {\n  padding-left: 0;\n  padding-right: 5px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search input {\n  width: 100px;\n  transition: width 0.15s ease-out 0s;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search i.remove.icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu {\n    padding-left: 0;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .ui.basic.button {\n  box-shadow: none;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .text {\n    display: none;\n  }\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .dropdown.icon {\n    margin-left: 6px;\n    margin-right: 6px;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .header i.plus.icon {\n  position: absolute;\n  right: 5px;\n  top: 7px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item .icon {\n  margin-right: 4px!important;\n}\n"; });
 define('text!resources/elements/em-dropdown.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"dropdown\" class=\"ui dropdown ${classes}\">\r\n        <input type=\"hidden\" name=\"${name}\">\r\n        <i class=\"dropdown icon\"></i>\r\n        <div class=\"default text\">${text}</div>\r\n        <div class=\"menu\">\r\n            <div repeat.for=\"item of menuItems\" task.bind=\"initDropdownHandler($last)\" class=\"item\" data-value=\"${item[valueProp]}\">${item[labelProp]}</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!resources/elements/em-user-avatar.css', ['module'], function(module) { module.exports = ".em-user-avatar.avatar.ui.mini.circular.image {\n  width: 35px;\n  height: 35px;\n  font-size: 35px;\n  background-color: rgba(150, 178, 183, 0.4);\n  text-align: center;\n  margin: 0;\n  padding-right: 0;\n}\n.em-user-avatar .text-char {\n  display: inline-block;\n  height: 35px;\n  line-height: 35px;\n  vertical-align: top;\n}\n"; });
+define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(module) { module.exports = ".tms-em-hotkeys-modal ul {\n  padding-left: 30px;\n}\n.tms-em-hotkeys-modal ul.no_bullets {\n  margin: 0 0 2rem;\n}\n.tms-em-hotkeys-modal ul.no_bullets li {\n  line-height: 2rem;\n  list-style-type: none;\n  padding: 0;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.tms-em-hotkeys-modal > .content {\n  background-color: rgba(11, 7, 11, 0.78) !important;\n}\n.tms-em-hotkeys-modal .keyboard i.icon {\n  margin-right: 0px!important;\n}\n.tms-em-hotkeys-modal .subtle_silver {\n  color: #9e9ea6!important;\n}\n.tms-em-hotkeys-modal .ui.grid .column {\n  padding: 0!important;\n}\n"; });
 define('text!resources/elements/em-hotkeys-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-hotkeys-modal.css\"></require>\r\n    <div ref=\"md\" class=\"ui basic modal tms-em-hotkeys-modal\">\r\n        <i class=\"close icon\"></i>\r\n        <!-- <div class=\"header\">\r\n            Archive Old Messages\r\n        </div> -->\r\n        <div class=\"content\">\r\n            <h1 class=\"ui center inverted aligned header\">键盘快捷键\r\n\t\t\t\t<span style=\"position: relative; top: -0.375rem; left: 1rem;\" aria-hidden=\"true\">\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Control\">Ctrl</span>\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Question mark\">/</span>\r\n\t\t\t\t</span>\r\n            </h1>\r\n            <div class=\"ui grid\">\r\n                <div class=\"three column row\">\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>上一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>下一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>第一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>最后一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>历史回退: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow left icon\" aria-label=\"Left arrow\"></i></span></li>\r\n                            <li>历史向前: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow right icon\" aria-label=\"Right arrow\"></i></span></li>\r\n                            <li>标记已读: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                            <li>全部标记已读: <span class=\"keyboard\">Shift</span><span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                            <li>快速切换: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">k</span></li>\r\n                            <li>Browse DMs: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">k</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>\r\n                                自动补全\r\n                                <ul>\r\n                                    <li>名称: <span class=\"subtle_silver\">[a-z]</span><span class=\"keyboard\">Tab</span> <span class=\"subtle_silver\">or</span> <span class=\"keyboard\">@</span><span class=\"keyboard\">Tab</span></li>\r\n                                    <li>频道: <span class=\"keyboard\" aria-label=\"Number symbol\">#</span><span class=\"keyboard\">Tab</span></li>\r\n                                    <li>表情: <span class=\"keyboard\" aria-label=\"Colon\">:</span><span class=\"keyboard\">Tab</span></li>\r\n                                </ul>\r\n                            </li>\r\n                            <li>换行: <span class=\"keyboard\">Shift</span><span class=\"keyboard\">Enter</span></li>\r\n                            <li>输入聚焦: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">i</span></li>\r\n                            <li>编辑: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">DblClick</span></li>\r\n                            <li>编辑上一条: <span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span> <span class=\"subtle_silver\">in input</span></li>\r\n                            <li>响应最后一条: <span class=\"keyboard\" aria-label=\"control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">\\</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>切换边栏: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">.</span></li>\r\n                            <ul>\r\n                                <li>团队: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">e</span></li>\r\n                                <li>标星: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">s</span></li>\r\n                            </ul>\r\n                            <li>粘贴代码片段: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Shift</span><span class=\"keyboard\">Enter</span></li>\r\n                            <li>上传文件: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">u</span></li>\r\n                            <li>关闭对话框: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                        </ul>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <!-- <div class=\"image\">\r\n                <i class=\"archive icon\"></i>\r\n            </div>\r\n            <div class=\"description\">\r\n                <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>\r\n            </div> -->\r\n        </div>\r\n        <!-- <div class=\"actions\">\r\n            <div class=\"two fluid ui inverted buttons\">\r\n                <div class=\"ui cancel red basic inverted button\">\r\n                    <i class=\"remove icon\"></i> No\r\n                </div>\r\n                <div class=\"ui ok green basic inverted button\">\r\n                    <i class=\"checkmark icon\"></i> Yes\r\n                </div>\r\n            </div>\r\n        </div> -->\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-user-avatar.css', ['module'], function(module) { module.exports = ".em-user-avatar.avatar.ui.mini.circular.image {\n  width: 35px;\n  height: 35px;\n  font-size: 35px;\n  background-color: rgba(150, 178, 183, 0.4);\n  text-align: center;\n  margin: 0;\n  padding-right: 0;\n}\n.em-user-avatar .text-char {\n  display: inline-block;\n  height: 35px;\n  line-height: 35px;\n  vertical-align: top;\n}\n"; });
 define('text!resources/elements/em-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"modal\" class=\"ui modal ${classes}\">\r\n        <!-- <i class=\"close icon\"></i> -->\r\n        <div class=\"header\">\r\n            <slot name=\"header\">modal header...</slot>\r\n        </div>\r\n        <div class=\"content\">\r\n            <div class=\"ui inverted dimmer\" style=\"background-color: rgba(255, 255, 255, 0.5) !important;\">\r\n                <div class=\"ui loader\"></div>\r\n            </div>\r\n            <slot name=\"content\">modal content...</slot>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <slot name=\"actions\">\r\n                <div style=\"margin-left: 3.5px;\" class=\"ui cancel basic blue left floated button\" textcontent.bind=\"cancelLabel\">取消</div>\r\n                <div show.bind=\"showConfirm\" class=\"ui ok blue button ${(loading || disabled) ? 'disabled' : ''}\" textcontent.bind=\"confirmLabel\">确认</div>\r\n            </slot>\r\n            <div style=\"clear: both;\"></div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-user-avatar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-user-avatar.css\"></require>\r\n    <a class=\"avatar ui mini circular image em-user-avatar\">\r\n        <span class=\"text-char\">${nameChar}</span>\r\n    </a>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-sidebar-right.css', ['module'], function(module) { module.exports = ".emm-chat-sidebar-right .panel-wiki-dir {\n  height: 100%;\n  padding-left: 15px;\n  overflow-y: auto;\n}\n"; });
 //# sourceMappingURL=app-bundle.js.map

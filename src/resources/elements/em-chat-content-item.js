@@ -62,6 +62,17 @@ export class EmChatContentItem {
             event.preventDefault();
             ea.publish(nsCons.EVENT_CHAT_CONTENT_SCROLL_TO, { target: $('#' + $(event.currentTarget).attr('data-id')) });
         });
+
+        // 用户信息popup
+        $('body').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].avatar:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+            event.preventDefault();
+            var $a = $(event.currentTarget);
+            ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {
+                channel: this.channel,
+                username: $a.attr('data-value'),
+                target: event.currentTarget
+            });
+        });
     }
 
     channelChanged() {

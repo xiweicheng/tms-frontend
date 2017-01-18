@@ -12124,6 +12124,162 @@ define('aurelia-dependency-injection',['exports', 'aurelia-metadata', 'aurelia-p
     };
   }
 });
+define('aurelia-event-aggregator',['exports', 'aurelia-logging'], function (exports, _aureliaLogging) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.EventAggregator = undefined;
+  exports.includeEventsIn = includeEventsIn;
+  exports.configure = configure;
+
+  var LogManager = _interopRequireWildcard(_aureliaLogging);
+
+  function _interopRequireWildcard(obj) {
+    if (obj && obj.__esModule) {
+      return obj;
+    } else {
+      var newObj = {};
+
+      if (obj != null) {
+        for (var key in obj) {
+          if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
+        }
+      }
+
+      newObj.default = obj;
+      return newObj;
+    }
+  }
+
+  
+
+  var logger = LogManager.getLogger('event-aggregator');
+
+  var Handler = function () {
+    function Handler(messageType, callback) {
+      
+
+      this.messageType = messageType;
+      this.callback = callback;
+    }
+
+    Handler.prototype.handle = function handle(message) {
+      if (message instanceof this.messageType) {
+        this.callback.call(null, message);
+      }
+    };
+
+    return Handler;
+  }();
+
+  var EventAggregator = exports.EventAggregator = function () {
+    function EventAggregator() {
+      
+
+      this.eventLookup = {};
+      this.messageHandlers = [];
+    }
+
+    EventAggregator.prototype.publish = function publish(event, data) {
+      var subscribers = void 0;
+      var i = void 0;
+
+      if (!event) {
+        throw new Error('Event was invalid.');
+      }
+
+      if (typeof event === 'string') {
+        subscribers = this.eventLookup[event];
+        if (subscribers) {
+          subscribers = subscribers.slice();
+          i = subscribers.length;
+
+          try {
+            while (i--) {
+              subscribers[i](data, event);
+            }
+          } catch (e) {
+            logger.error(e);
+          }
+        }
+      } else {
+        subscribers = this.messageHandlers.slice();
+        i = subscribers.length;
+
+        try {
+          while (i--) {
+            subscribers[i].handle(event);
+          }
+        } catch (e) {
+          logger.error(e);
+        }
+      }
+    };
+
+    EventAggregator.prototype.subscribe = function subscribe(event, callback) {
+      var handler = void 0;
+      var subscribers = void 0;
+
+      if (!event) {
+        throw new Error('Event channel/type was invalid.');
+      }
+
+      if (typeof event === 'string') {
+        handler = callback;
+        subscribers = this.eventLookup[event] || (this.eventLookup[event] = []);
+      } else {
+        handler = new Handler(event, callback);
+        subscribers = this.messageHandlers;
+      }
+
+      subscribers.push(handler);
+
+      return {
+        dispose: function dispose() {
+          var idx = subscribers.indexOf(handler);
+          if (idx !== -1) {
+            subscribers.splice(idx, 1);
+          }
+        }
+      };
+    };
+
+    EventAggregator.prototype.subscribeOnce = function subscribeOnce(event, callback) {
+      var sub = this.subscribe(event, function (a, b) {
+        sub.dispose();
+        return callback(a, b);
+      });
+
+      return sub;
+    };
+
+    return EventAggregator;
+  }();
+
+  function includeEventsIn(obj) {
+    var ea = new EventAggregator();
+
+    obj.subscribeOnce = function (event, callback) {
+      return ea.subscribeOnce(event, callback);
+    };
+
+    obj.subscribe = function (event, callback) {
+      return ea.subscribe(event, callback);
+    };
+
+    obj.publish = function (event, data) {
+      ea.publish(event, data);
+    };
+
+    return ea;
+  }
+
+  function configure(config) {
+    config.instance(EventAggregator, includeEventsIn(config.aurelia));
+  }
+});
 define('aurelia-framework',['exports', 'aurelia-dependency-injection', 'aurelia-binding', 'aurelia-metadata', 'aurelia-templating', 'aurelia-loader', 'aurelia-task-queue', 'aurelia-path', 'aurelia-pal', 'aurelia-logging'], function (exports, _aureliaDependencyInjection, _aureliaBinding, _aureliaMetadata, _aureliaTemplating, _aureliaLoader, _aureliaTaskQueue, _aureliaPath, _aureliaPal, _aureliaLogging) {
   'use strict';
 
@@ -12672,162 +12828,6 @@ define('aurelia-framework',['exports', 'aurelia-dependency-injection', 'aurelia-
 
   exports.FrameworkConfiguration = FrameworkConfiguration;
   var LogManager = exports.LogManager = TheLogManager;
-});
-define('aurelia-event-aggregator',['exports', 'aurelia-logging'], function (exports, _aureliaLogging) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.EventAggregator = undefined;
-  exports.includeEventsIn = includeEventsIn;
-  exports.configure = configure;
-
-  var LogManager = _interopRequireWildcard(_aureliaLogging);
-
-  function _interopRequireWildcard(obj) {
-    if (obj && obj.__esModule) {
-      return obj;
-    } else {
-      var newObj = {};
-
-      if (obj != null) {
-        for (var key in obj) {
-          if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
-        }
-      }
-
-      newObj.default = obj;
-      return newObj;
-    }
-  }
-
-  
-
-  var logger = LogManager.getLogger('event-aggregator');
-
-  var Handler = function () {
-    function Handler(messageType, callback) {
-      
-
-      this.messageType = messageType;
-      this.callback = callback;
-    }
-
-    Handler.prototype.handle = function handle(message) {
-      if (message instanceof this.messageType) {
-        this.callback.call(null, message);
-      }
-    };
-
-    return Handler;
-  }();
-
-  var EventAggregator = exports.EventAggregator = function () {
-    function EventAggregator() {
-      
-
-      this.eventLookup = {};
-      this.messageHandlers = [];
-    }
-
-    EventAggregator.prototype.publish = function publish(event, data) {
-      var subscribers = void 0;
-      var i = void 0;
-
-      if (!event) {
-        throw new Error('Event was invalid.');
-      }
-
-      if (typeof event === 'string') {
-        subscribers = this.eventLookup[event];
-        if (subscribers) {
-          subscribers = subscribers.slice();
-          i = subscribers.length;
-
-          try {
-            while (i--) {
-              subscribers[i](data, event);
-            }
-          } catch (e) {
-            logger.error(e);
-          }
-        }
-      } else {
-        subscribers = this.messageHandlers.slice();
-        i = subscribers.length;
-
-        try {
-          while (i--) {
-            subscribers[i].handle(event);
-          }
-        } catch (e) {
-          logger.error(e);
-        }
-      }
-    };
-
-    EventAggregator.prototype.subscribe = function subscribe(event, callback) {
-      var handler = void 0;
-      var subscribers = void 0;
-
-      if (!event) {
-        throw new Error('Event channel/type was invalid.');
-      }
-
-      if (typeof event === 'string') {
-        handler = callback;
-        subscribers = this.eventLookup[event] || (this.eventLookup[event] = []);
-      } else {
-        handler = new Handler(event, callback);
-        subscribers = this.messageHandlers;
-      }
-
-      subscribers.push(handler);
-
-      return {
-        dispose: function dispose() {
-          var idx = subscribers.indexOf(handler);
-          if (idx !== -1) {
-            subscribers.splice(idx, 1);
-          }
-        }
-      };
-    };
-
-    EventAggregator.prototype.subscribeOnce = function subscribeOnce(event, callback) {
-      var sub = this.subscribe(event, function (a, b) {
-        sub.dispose();
-        return callback(a, b);
-      });
-
-      return sub;
-    };
-
-    return EventAggregator;
-  }();
-
-  function includeEventsIn(obj) {
-    var ea = new EventAggregator();
-
-    obj.subscribeOnce = function (event, callback) {
-      return ea.subscribeOnce(event, callback);
-    };
-
-    obj.subscribe = function (event, callback) {
-      return ea.subscribe(event, callback);
-    };
-
-    obj.publish = function (event, data) {
-      ea.publish(event, data);
-    };
-
-    return ea;
-  }
-
-  function configure(config) {
-    config.instance(EventAggregator, includeEventsIn(config.aurelia));
-  }
 });
 define('aurelia-fetch-client',['exports'], function (exports) {
   'use strict';
@@ -13455,159 +13455,6 @@ define('aurelia-history-browser',['exports', 'aurelia-pal', 'aurelia-history'], 
     return protocol + '//' + hostname + (port ? ':' + port : '');
   }
 });
-define('aurelia-loader',['exports', 'aurelia-path', 'aurelia-metadata'], function (exports, _aureliaPath, _aureliaMetadata) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.Loader = exports.TemplateRegistryEntry = exports.TemplateDependency = undefined;
-
-  var _createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  
-
-  var TemplateDependency = exports.TemplateDependency = function TemplateDependency(src, name) {
-    
-
-    this.src = src;
-    this.name = name;
-  };
-
-  var TemplateRegistryEntry = exports.TemplateRegistryEntry = function () {
-    function TemplateRegistryEntry(address) {
-      
-
-      this.templateIsLoaded = false;
-      this.factoryIsReady = false;
-      this.resources = null;
-      this.dependencies = null;
-
-      this.address = address;
-      this.onReady = null;
-      this._template = null;
-      this._factory = null;
-    }
-
-    TemplateRegistryEntry.prototype.addDependency = function addDependency(src, name) {
-      var finalSrc = typeof src === 'string' ? (0, _aureliaPath.relativeToFile)(src, this.address) : _aureliaMetadata.Origin.get(src).moduleId;
-
-      this.dependencies.push(new TemplateDependency(finalSrc, name));
-    };
-
-    _createClass(TemplateRegistryEntry, [{
-      key: 'template',
-      get: function get() {
-        return this._template;
-      },
-      set: function set(value) {
-        var address = this.address;
-        var requires = void 0;
-        var current = void 0;
-        var src = void 0;
-        var dependencies = void 0;
-
-        this._template = value;
-        this.templateIsLoaded = true;
-
-        requires = value.content.querySelectorAll('require');
-        dependencies = this.dependencies = new Array(requires.length);
-
-        for (var i = 0, ii = requires.length; i < ii; ++i) {
-          current = requires[i];
-          src = current.getAttribute('from');
-
-          if (!src) {
-            throw new Error('<require> element in ' + address + ' has no "from" attribute.');
-          }
-
-          dependencies[i] = new TemplateDependency((0, _aureliaPath.relativeToFile)(src, address), current.getAttribute('as'));
-
-          if (current.parentNode) {
-            current.parentNode.removeChild(current);
-          }
-        }
-      }
-    }, {
-      key: 'factory',
-      get: function get() {
-        return this._factory;
-      },
-      set: function set(value) {
-        this._factory = value;
-        this.factoryIsReady = true;
-      }
-    }]);
-
-    return TemplateRegistryEntry;
-  }();
-
-  var Loader = exports.Loader = function () {
-    function Loader() {
-      
-
-      this.templateRegistry = {};
-    }
-
-    Loader.prototype.map = function map(id, source) {
-      throw new Error('Loaders must implement map(id, source).');
-    };
-
-    Loader.prototype.normalizeSync = function normalizeSync(moduleId, relativeTo) {
-      throw new Error('Loaders must implement normalizeSync(moduleId, relativeTo).');
-    };
-
-    Loader.prototype.normalize = function normalize(moduleId, relativeTo) {
-      throw new Error('Loaders must implement normalize(moduleId: string, relativeTo: string): Promise<string>.');
-    };
-
-    Loader.prototype.loadModule = function loadModule(id) {
-      throw new Error('Loaders must implement loadModule(id).');
-    };
-
-    Loader.prototype.loadAllModules = function loadAllModules(ids) {
-      throw new Error('Loader must implement loadAllModules(ids).');
-    };
-
-    Loader.prototype.loadTemplate = function loadTemplate(url) {
-      throw new Error('Loader must implement loadTemplate(url).');
-    };
-
-    Loader.prototype.loadText = function loadText(url) {
-      throw new Error('Loader must implement loadText(url).');
-    };
-
-    Loader.prototype.applyPluginToUrl = function applyPluginToUrl(url, pluginName) {
-      throw new Error('Loader must implement applyPluginToUrl(url, pluginName).');
-    };
-
-    Loader.prototype.addPlugin = function addPlugin(pluginName, implementation) {
-      throw new Error('Loader must implement addPlugin(pluginName, implementation).');
-    };
-
-    Loader.prototype.getOrCreateTemplateRegistryEntry = function getOrCreateTemplateRegistryEntry(address) {
-      return this.templateRegistry[address] || (this.templateRegistry[address] = new TemplateRegistryEntry(address));
-    };
-
-    return Loader;
-  }();
-});
 define('aurelia-loader-default',['exports', 'aurelia-loader', 'aurelia-pal', 'aurelia-metadata'], function (exports, _aureliaLoader, _aureliaPal, _aureliaMetadata) {
   'use strict';
 
@@ -13865,6 +13712,159 @@ define('aurelia-loader-default',['exports', 'aurelia-loader', 'aurelia-pal', 'au
       }));
     };
   }
+});
+define('aurelia-loader',['exports', 'aurelia-path', 'aurelia-metadata'], function (exports, _aureliaPath, _aureliaMetadata) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.Loader = exports.TemplateRegistryEntry = exports.TemplateDependency = undefined;
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  
+
+  var TemplateDependency = exports.TemplateDependency = function TemplateDependency(src, name) {
+    
+
+    this.src = src;
+    this.name = name;
+  };
+
+  var TemplateRegistryEntry = exports.TemplateRegistryEntry = function () {
+    function TemplateRegistryEntry(address) {
+      
+
+      this.templateIsLoaded = false;
+      this.factoryIsReady = false;
+      this.resources = null;
+      this.dependencies = null;
+
+      this.address = address;
+      this.onReady = null;
+      this._template = null;
+      this._factory = null;
+    }
+
+    TemplateRegistryEntry.prototype.addDependency = function addDependency(src, name) {
+      var finalSrc = typeof src === 'string' ? (0, _aureliaPath.relativeToFile)(src, this.address) : _aureliaMetadata.Origin.get(src).moduleId;
+
+      this.dependencies.push(new TemplateDependency(finalSrc, name));
+    };
+
+    _createClass(TemplateRegistryEntry, [{
+      key: 'template',
+      get: function get() {
+        return this._template;
+      },
+      set: function set(value) {
+        var address = this.address;
+        var requires = void 0;
+        var current = void 0;
+        var src = void 0;
+        var dependencies = void 0;
+
+        this._template = value;
+        this.templateIsLoaded = true;
+
+        requires = value.content.querySelectorAll('require');
+        dependencies = this.dependencies = new Array(requires.length);
+
+        for (var i = 0, ii = requires.length; i < ii; ++i) {
+          current = requires[i];
+          src = current.getAttribute('from');
+
+          if (!src) {
+            throw new Error('<require> element in ' + address + ' has no "from" attribute.');
+          }
+
+          dependencies[i] = new TemplateDependency((0, _aureliaPath.relativeToFile)(src, address), current.getAttribute('as'));
+
+          if (current.parentNode) {
+            current.parentNode.removeChild(current);
+          }
+        }
+      }
+    }, {
+      key: 'factory',
+      get: function get() {
+        return this._factory;
+      },
+      set: function set(value) {
+        this._factory = value;
+        this.factoryIsReady = true;
+      }
+    }]);
+
+    return TemplateRegistryEntry;
+  }();
+
+  var Loader = exports.Loader = function () {
+    function Loader() {
+      
+
+      this.templateRegistry = {};
+    }
+
+    Loader.prototype.map = function map(id, source) {
+      throw new Error('Loaders must implement map(id, source).');
+    };
+
+    Loader.prototype.normalizeSync = function normalizeSync(moduleId, relativeTo) {
+      throw new Error('Loaders must implement normalizeSync(moduleId, relativeTo).');
+    };
+
+    Loader.prototype.normalize = function normalize(moduleId, relativeTo) {
+      throw new Error('Loaders must implement normalize(moduleId: string, relativeTo: string): Promise<string>.');
+    };
+
+    Loader.prototype.loadModule = function loadModule(id) {
+      throw new Error('Loaders must implement loadModule(id).');
+    };
+
+    Loader.prototype.loadAllModules = function loadAllModules(ids) {
+      throw new Error('Loader must implement loadAllModules(ids).');
+    };
+
+    Loader.prototype.loadTemplate = function loadTemplate(url) {
+      throw new Error('Loader must implement loadTemplate(url).');
+    };
+
+    Loader.prototype.loadText = function loadText(url) {
+      throw new Error('Loader must implement loadText(url).');
+    };
+
+    Loader.prototype.applyPluginToUrl = function applyPluginToUrl(url, pluginName) {
+      throw new Error('Loader must implement applyPluginToUrl(url, pluginName).');
+    };
+
+    Loader.prototype.addPlugin = function addPlugin(pluginName, implementation) {
+      throw new Error('Loader must implement addPlugin(pluginName, implementation).');
+    };
+
+    Loader.prototype.getOrCreateTemplateRegistryEntry = function getOrCreateTemplateRegistryEntry(address) {
+      return this.templateRegistry[address] || (this.templateRegistry[address] = new TemplateRegistryEntry(address));
+    };
+
+    return Loader;
+  }();
 });
 define('aurelia-logging',['exports'], function (exports) {
   'use strict';
@@ -14323,87 +14323,6 @@ define('aurelia-metadata',['exports', 'aurelia-pal'], function (exports, _aureli
 
     return result;
   };
-});
-define('aurelia-pal',['exports'], function (exports) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.AggregateError = AggregateError;
-  exports.initializePAL = initializePAL;
-  function AggregateError(message, innerError, skipIfAlreadyAggregate) {
-    if (innerError) {
-      if (innerError.innerError && skipIfAlreadyAggregate) {
-        return innerError;
-      }
-
-      var separator = '\n------------------------------------------------\n';
-
-      message += separator + 'Inner Error:\n';
-
-      if (typeof innerError === 'string') {
-        message += 'Message: ' + innerError;
-      } else {
-        if (innerError.message) {
-          message += 'Message: ' + innerError.message;
-        } else {
-          message += 'Unknown Inner Error Type. Displaying Inner Error as JSON:\n ' + JSON.stringify(innerError, null, '  ');
-        }
-
-        if (innerError.stack) {
-          message += '\nInner Error Stack:\n' + innerError.stack;
-          message += '\nEnd Inner Error Stack';
-        }
-      }
-
-      message += separator;
-    }
-
-    var e = new Error(message);
-    if (innerError) {
-      e.innerError = innerError;
-    }
-
-    return e;
-  }
-
-  var FEATURE = exports.FEATURE = {};
-
-  var PLATFORM = exports.PLATFORM = {
-    noop: function noop() {},
-    eachModule: function eachModule() {}
-  };
-
-  PLATFORM.global = function () {
-    if (typeof self !== 'undefined') {
-      return self;
-    }
-
-    if (typeof global !== 'undefined') {
-      return global;
-    }
-
-    return new Function('return this')();
-  }();
-
-  var DOM = exports.DOM = {};
-
-  function initializePAL(callback) {
-    if (typeof Object.getPropertyDescriptor !== 'function') {
-      Object.getPropertyDescriptor = function (subject, name) {
-        var pd = Object.getOwnPropertyDescriptor(subject, name);
-        var proto = Object.getPrototypeOf(subject);
-        while (typeof pd === 'undefined' && proto !== null) {
-          pd = Object.getOwnPropertyDescriptor(proto, name);
-          proto = Object.getPrototypeOf(proto);
-        }
-        return pd;
-      };
-    }
-
-    callback(PLATFORM, FEATURE, DOM);
-  }
 });
 define('aurelia-pal-browser',['exports', 'aurelia-pal'], function (exports, _aureliaPal) {
   'use strict';
@@ -15132,6 +15051,87 @@ define('aurelia-path',['exports'], function (exports) {
       }
     }
     return queryParams;
+  }
+});
+define('aurelia-pal',['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.AggregateError = AggregateError;
+  exports.initializePAL = initializePAL;
+  function AggregateError(message, innerError, skipIfAlreadyAggregate) {
+    if (innerError) {
+      if (innerError.innerError && skipIfAlreadyAggregate) {
+        return innerError;
+      }
+
+      var separator = '\n------------------------------------------------\n';
+
+      message += separator + 'Inner Error:\n';
+
+      if (typeof innerError === 'string') {
+        message += 'Message: ' + innerError;
+      } else {
+        if (innerError.message) {
+          message += 'Message: ' + innerError.message;
+        } else {
+          message += 'Unknown Inner Error Type. Displaying Inner Error as JSON:\n ' + JSON.stringify(innerError, null, '  ');
+        }
+
+        if (innerError.stack) {
+          message += '\nInner Error Stack:\n' + innerError.stack;
+          message += '\nEnd Inner Error Stack';
+        }
+      }
+
+      message += separator;
+    }
+
+    var e = new Error(message);
+    if (innerError) {
+      e.innerError = innerError;
+    }
+
+    return e;
+  }
+
+  var FEATURE = exports.FEATURE = {};
+
+  var PLATFORM = exports.PLATFORM = {
+    noop: function noop() {},
+    eachModule: function eachModule() {}
+  };
+
+  PLATFORM.global = function () {
+    if (typeof self !== 'undefined') {
+      return self;
+    }
+
+    if (typeof global !== 'undefined') {
+      return global;
+    }
+
+    return new Function('return this')();
+  }();
+
+  var DOM = exports.DOM = {};
+
+  function initializePAL(callback) {
+    if (typeof Object.getPropertyDescriptor !== 'function') {
+      Object.getPropertyDescriptor = function (subject, name) {
+        var pd = Object.getOwnPropertyDescriptor(subject, name);
+        var proto = Object.getPrototypeOf(subject);
+        while (typeof pd === 'undefined' && proto !== null) {
+          pd = Object.getOwnPropertyDescriptor(proto, name);
+          proto = Object.getPrototypeOf(proto);
+        }
+        return pd;
+      };
+    }
+
+    callback(PLATFORM, FEATURE, DOM);
   }
 });
 define('aurelia-polyfills',['aurelia-pal'], function (_aureliaPal) {
@@ -56203,4 +56203,4 @@ define('aurelia-testing/component-tester',['exports', 'aurelia-templating', 'aur
     return ComponentTester;
   }();
 });
-function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"marked":"../node_modules\\marked\\lib\\marked","autosize":"../node_modules\\autosize\\dist\\autosize","aurelia-binding":"../node_modules\\aurelia-binding\\dist\\amd\\aurelia-binding","aurelia-bootstrapper":"../node_modules\\aurelia-bootstrapper\\dist\\amd\\aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules\\aurelia-dependency-injection\\dist\\amd\\aurelia-dependency-injection","aurelia-framework":"../node_modules\\aurelia-framework\\dist\\amd\\aurelia-framework","aurelia-event-aggregator":"../node_modules\\aurelia-event-aggregator\\dist\\amd\\aurelia-event-aggregator","aurelia-fetch-client":"../node_modules\\aurelia-fetch-client\\dist\\amd\\aurelia-fetch-client","aurelia-history":"../node_modules\\aurelia-history\\dist\\amd\\aurelia-history","aurelia-history-browser":"../node_modules\\aurelia-history-browser\\dist\\amd\\aurelia-history-browser","aurelia-loader":"../node_modules\\aurelia-loader\\dist\\amd\\aurelia-loader","aurelia-loader-default":"../node_modules\\aurelia-loader-default\\dist\\amd\\aurelia-loader-default","aurelia-logging":"../node_modules\\aurelia-logging\\dist\\amd\\aurelia-logging","aurelia-logging-console":"../node_modules\\aurelia-logging-console\\dist\\amd\\aurelia-logging-console","aurelia-metadata":"../node_modules\\aurelia-metadata\\dist\\amd\\aurelia-metadata","aurelia-pal":"../node_modules\\aurelia-pal\\dist\\amd\\aurelia-pal","aurelia-pal-browser":"../node_modules\\aurelia-pal-browser\\dist\\amd\\aurelia-pal-browser","aurelia-path":"../node_modules\\aurelia-path\\dist\\amd\\aurelia-path","aurelia-polyfills":"../node_modules\\aurelia-polyfills\\dist\\amd\\aurelia-polyfills","aurelia-route-recognizer":"../node_modules\\aurelia-route-recognizer\\dist\\amd\\aurelia-route-recognizer","aurelia-router":"../node_modules\\aurelia-router\\dist\\amd\\aurelia-router","aurelia-task-queue":"../node_modules\\aurelia-task-queue\\dist\\amd\\aurelia-task-queue","aurelia-templating":"../node_modules\\aurelia-templating\\dist\\amd\\aurelia-templating","aurelia-templating-binding":"../node_modules\\aurelia-templating-binding\\dist\\amd\\aurelia-templating-binding","wurl":"../node_modules\\wurl\\wurl","whatwg-fetch":"../node_modules\\whatwg-fetch\\fetch","lodash":"../node_modules\\lodash\\lodash","jquery":"../node_modules\\jquery\\dist\\jquery","jquery.scrollto":"../node_modules\\jquery.scrollto\\jquery.scrollTo","text":"../node_modules\\text\\text","app-bundle":"../scripts/app-bundle","deps-bundle":"../scripts/deps-bundle"},"packages":[{"name":"clipboard","location":"../node_modules/clipboard","main":"dist/clipboard.min"},{"name":"dropzone","location":"../node_modules/dropzone","main":"dist/dropzone"},{"name":"timeago","location":"../node_modules/timeago.js","main":"dist/timeago.min"},{"name":"swipebox","location":"../node_modules/swipebox","main":"src/js/jquery.swipebox.min"},{"name":"simplemde","location":"../node_modules/simplemde","main":"dist/simplemde.min"},{"name":"highlight","location":"../node_modules/highlight.js","main":"lib/index"},{"name":"hotkeys","location":"../node_modules/jquery.hotkeys","main":"jquery.hotkeys"},{"name":"tablesort","location":"../node_modules/jquery-tablesort","main":"jquery.tablesort"},{"name":"textcomplete","location":"../node_modules/jquery-textcomplete","main":"dist/jquery.textcomplete"},{"name":"isomorphic-fetch","location":"../node_modules/isomorphic-fetch","main":"fetch-npm-browserify"},{"name":"tms-semantic-ui","location":"../node_modules/tms-semantic-ui","main":"semantic.min"},{"name":"jquery-format","location":"../node_modules/jquery-format","main":"src/jquery.format"},{"name":"toastr","location":"../node_modules/toastr","main":"toastr"},{"name":"nprogress","location":"../node_modules/nprogress","main":"nprogress"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{"swipebox":{"deps":["jquery"]},"hotkeys":{"deps":["jquery"]},"tablesort":{"deps":["jquery"]},"textcomplete":{"deps":["jquery"]},"isomorphic-fetch":{"deps":["whatwg-fetch"]},"tms-semantic-ui":{"deps":["jquery"],"exports":"$"},"jquery-format":{"deps":["jquery"],"exports":"$"}},"bundles":{"app-bundle":["app","environment","main","chat/chat-direct","chat/chat-service","common/common-constant","common/common-ctx","common/common-diff","common/common-imgs-loaded","common/common-paste","common/common-plugin","common/common-poll","common/common-scrollbar","common/common-tips","common/common-utils","init/config","init/index","resources/index","test/test-lifecycle","user/user-login","user/user-pwd-reset","user/user-register","resources/attributes/attr-attr","resources/attributes/attr-autosize","resources/attributes/attr-c2c","resources/attributes/attr-dimmer","resources/attributes/attr-dropzone","resources/attributes/attr-pastable","resources/attributes/attr-scrollbar","resources/attributes/attr-swipebox","resources/attributes/attr-tablesort","resources/attributes/attr-task","resources/attributes/attr-textcomplete","resources/attributes/attr-ui-dropdown","resources/attributes/attr-ui-tab","resources/binding-behaviors/bb-key","resources/elements/em-chat-channel-create","resources/elements/em-chat-channel-edit","resources/elements/em-chat-channel-join","resources/elements/em-chat-channel-members-mgr","resources/elements/em-chat-channel-members-show","resources/elements/em-chat-content-item","resources/elements/em-chat-input","resources/elements/em-chat-msg-popup","resources/elements/em-chat-sidebar-left","resources/elements/em-chat-sidebar-right","resources/elements/em-chat-top-menu","resources/elements/em-confirm-modal","resources/elements/em-dropdown","resources/elements/em-hotkeys-modal","resources/elements/em-modal","resources/elements/em-user-avatar","resources/value-converters/vc-common","aurelia-templating-resources/compose","aurelia-templating-resources/if","aurelia-templating-resources/with","aurelia-templating-resources/repeat","aurelia-templating-resources/repeat-strategy-locator","aurelia-templating-resources/null-repeat-strategy","aurelia-templating-resources/array-repeat-strategy","aurelia-templating-resources/repeat-utilities","aurelia-templating-resources/map-repeat-strategy","aurelia-templating-resources/set-repeat-strategy","aurelia-templating-resources/number-repeat-strategy","aurelia-templating-resources/analyze-view-factory","aurelia-templating-resources/abstract-repeater","aurelia-templating-resources/show","aurelia-templating-resources/aurelia-hide-style","aurelia-templating-resources/hide","aurelia-templating-resources/sanitize-html","aurelia-templating-resources/html-sanitizer","aurelia-templating-resources/replaceable","aurelia-templating-resources/focus","aurelia-templating-resources/css-resource","aurelia-templating-resources/binding-mode-behaviors","aurelia-templating-resources/throttle-binding-behavior","aurelia-templating-resources/debounce-binding-behavior","aurelia-templating-resources/signal-binding-behavior","aurelia-templating-resources/binding-signaler","aurelia-templating-resources/update-trigger-binding-behavior","aurelia-templating-resources/html-resource-plugin","aurelia-templating-resources/dynamic-element","highlight/lib/highlight","highlight/lib/languages/1c","highlight/lib/languages/abnf","highlight/lib/languages/accesslog","highlight/lib/languages/actionscript","highlight/lib/languages/ada","highlight/lib/languages/apache","highlight/lib/languages/applescript","highlight/lib/languages/cpp","highlight/lib/languages/arduino","highlight/lib/languages/armasm","highlight/lib/languages/xml","highlight/lib/languages/asciidoc","highlight/lib/languages/aspectj","highlight/lib/languages/autohotkey","highlight/lib/languages/autoit","highlight/lib/languages/avrasm","highlight/lib/languages/awk","highlight/lib/languages/axapta","highlight/lib/languages/bash","highlight/lib/languages/basic","highlight/lib/languages/bnf","highlight/lib/languages/brainfuck","highlight/lib/languages/cal","highlight/lib/languages/capnproto","highlight/lib/languages/ceylon","highlight/lib/languages/clojure","highlight/lib/languages/clojure-repl","highlight/lib/languages/cmake","highlight/lib/languages/coffeescript","highlight/lib/languages/coq","highlight/lib/languages/cos","highlight/lib/languages/crmsh","highlight/lib/languages/crystal","highlight/lib/languages/cs","highlight/lib/languages/csp","highlight/lib/languages/css","highlight/lib/languages/d","highlight/lib/languages/markdown","highlight/lib/languages/dart","highlight/lib/languages/delphi","highlight/lib/languages/diff","highlight/lib/languages/django","highlight/lib/languages/dns","highlight/lib/languages/dockerfile","highlight/lib/languages/dos","highlight/lib/languages/dsconfig","highlight/lib/languages/dts","highlight/lib/languages/dust","highlight/lib/languages/ebnf","highlight/lib/languages/elixir","highlight/lib/languages/elm","highlight/lib/languages/ruby","highlight/lib/languages/erb","highlight/lib/languages/erlang-repl","highlight/lib/languages/erlang","highlight/lib/languages/excel","highlight/lib/languages/fix","highlight/lib/languages/fortran","highlight/lib/languages/fsharp","highlight/lib/languages/gams","highlight/lib/languages/gauss","highlight/lib/languages/gcode","highlight/lib/languages/gherkin","highlight/lib/languages/glsl","highlight/lib/languages/go","highlight/lib/languages/golo","highlight/lib/languages/gradle","highlight/lib/languages/groovy","highlight/lib/languages/haml","highlight/lib/languages/handlebars","highlight/lib/languages/haskell","highlight/lib/languages/haxe","highlight/lib/languages/hsp","highlight/lib/languages/htmlbars","highlight/lib/languages/http","highlight/lib/languages/inform7","highlight/lib/languages/ini","highlight/lib/languages/irpf90","highlight/lib/languages/java","highlight/lib/languages/javascript","highlight/lib/languages/json","highlight/lib/languages/julia","highlight/lib/languages/kotlin","highlight/lib/languages/lasso","highlight/lib/languages/ldif","highlight/lib/languages/less","highlight/lib/languages/lisp","highlight/lib/languages/livecodeserver","highlight/lib/languages/livescript","highlight/lib/languages/lsl","highlight/lib/languages/lua","highlight/lib/languages/makefile","highlight/lib/languages/mathematica","highlight/lib/languages/matlab","highlight/lib/languages/maxima","highlight/lib/languages/mel","highlight/lib/languages/mercury","highlight/lib/languages/mipsasm","highlight/lib/languages/mizar","highlight/lib/languages/perl","highlight/lib/languages/mojolicious","highlight/lib/languages/monkey","highlight/lib/languages/moonscript","highlight/lib/languages/nginx","highlight/lib/languages/nimrod","highlight/lib/languages/nix","highlight/lib/languages/nsis","highlight/lib/languages/objectivec","highlight/lib/languages/ocaml","highlight/lib/languages/openscad","highlight/lib/languages/oxygene","highlight/lib/languages/parser3","highlight/lib/languages/pf","highlight/lib/languages/php","highlight/lib/languages/pony","highlight/lib/languages/powershell","highlight/lib/languages/processing","highlight/lib/languages/profile","highlight/lib/languages/prolog","highlight/lib/languages/protobuf","highlight/lib/languages/puppet","highlight/lib/languages/purebasic","highlight/lib/languages/python","highlight/lib/languages/q","highlight/lib/languages/qml","highlight/lib/languages/r","highlight/lib/languages/rib","highlight/lib/languages/roboconf","highlight/lib/languages/rsl","highlight/lib/languages/ruleslanguage","highlight/lib/languages/rust","highlight/lib/languages/scala","highlight/lib/languages/scheme","highlight/lib/languages/scilab","highlight/lib/languages/scss","highlight/lib/languages/smali","highlight/lib/languages/smalltalk","highlight/lib/languages/sml","highlight/lib/languages/sqf","highlight/lib/languages/sql","highlight/lib/languages/stan","highlight/lib/languages/stata","highlight/lib/languages/step21","highlight/lib/languages/stylus","highlight/lib/languages/subunit","highlight/lib/languages/swift","highlight/lib/languages/taggerscript","highlight/lib/languages/yaml","highlight/lib/languages/tap","highlight/lib/languages/tcl","highlight/lib/languages/tex","highlight/lib/languages/thrift","highlight/lib/languages/tp","highlight/lib/languages/twig","highlight/lib/languages/typescript","highlight/lib/languages/vala","highlight/lib/languages/vbnet","highlight/lib/languages/vbscript","highlight/lib/languages/vbscript-html","highlight/lib/languages/verilog","highlight/lib/languages/vhdl","highlight/lib/languages/vim","highlight/lib/languages/x86asm","highlight/lib/languages/xl","highlight/lib/languages/xquery","highlight/lib/languages/zephir","common","override","chat/md-github"],"deps-bundle":["marked","autosize","clipboard/dist/clipboard.min","dropzone/dist/dropzone","dropzone/dist/basic","timeago/dist/timeago.min","swipebox/src/js/jquery.swipebox.min","swipebox/src/css/swipebox.min","simplemde/dist/simplemde.min","highlight/lib/index","highlight/styles/github","hotkeys/jquery.hotkeys","tablesort"]}})}
+function _aureliaConfigureModuleLoader(){requirejs.config({"baseUrl":"src/","paths":{"marked":"../node_modules\\marked\\lib\\marked","autosize":"../node_modules\\autosize\\dist\\autosize","aurelia-binding":"../node_modules\\aurelia-binding\\dist\\amd\\aurelia-binding","aurelia-bootstrapper":"../node_modules\\aurelia-bootstrapper\\dist\\amd\\aurelia-bootstrapper","aurelia-dependency-injection":"../node_modules\\aurelia-dependency-injection\\dist\\amd\\aurelia-dependency-injection","aurelia-event-aggregator":"../node_modules\\aurelia-event-aggregator\\dist\\amd\\aurelia-event-aggregator","aurelia-framework":"../node_modules\\aurelia-framework\\dist\\amd\\aurelia-framework","aurelia-fetch-client":"../node_modules\\aurelia-fetch-client\\dist\\amd\\aurelia-fetch-client","aurelia-history":"../node_modules\\aurelia-history\\dist\\amd\\aurelia-history","aurelia-history-browser":"../node_modules\\aurelia-history-browser\\dist\\amd\\aurelia-history-browser","aurelia-loader-default":"../node_modules\\aurelia-loader-default\\dist\\amd\\aurelia-loader-default","aurelia-loader":"../node_modules\\aurelia-loader\\dist\\amd\\aurelia-loader","aurelia-logging":"../node_modules\\aurelia-logging\\dist\\amd\\aurelia-logging","aurelia-logging-console":"../node_modules\\aurelia-logging-console\\dist\\amd\\aurelia-logging-console","aurelia-metadata":"../node_modules\\aurelia-metadata\\dist\\amd\\aurelia-metadata","aurelia-pal-browser":"../node_modules\\aurelia-pal-browser\\dist\\amd\\aurelia-pal-browser","aurelia-path":"../node_modules\\aurelia-path\\dist\\amd\\aurelia-path","aurelia-pal":"../node_modules\\aurelia-pal\\dist\\amd\\aurelia-pal","aurelia-polyfills":"../node_modules\\aurelia-polyfills\\dist\\amd\\aurelia-polyfills","aurelia-route-recognizer":"../node_modules\\aurelia-route-recognizer\\dist\\amd\\aurelia-route-recognizer","aurelia-router":"../node_modules\\aurelia-router\\dist\\amd\\aurelia-router","aurelia-task-queue":"../node_modules\\aurelia-task-queue\\dist\\amd\\aurelia-task-queue","aurelia-templating":"../node_modules\\aurelia-templating\\dist\\amd\\aurelia-templating","aurelia-templating-binding":"../node_modules\\aurelia-templating-binding\\dist\\amd\\aurelia-templating-binding","wurl":"../node_modules\\wurl\\wurl","whatwg-fetch":"../node_modules\\whatwg-fetch\\fetch","lodash":"../node_modules\\lodash\\lodash","jquery":"../node_modules\\jquery\\dist\\jquery","jquery.scrollto":"../node_modules\\jquery.scrollto\\jquery.scrollTo","text":"../node_modules\\text\\text","app-bundle":"../scripts/app-bundle","deps-bundle":"../scripts/deps-bundle"},"packages":[{"name":"clipboard","location":"../node_modules/clipboard","main":"dist/clipboard.min"},{"name":"timeago","location":"../node_modules/timeago.js","main":"dist/timeago.min"},{"name":"dropzone","location":"../node_modules/dropzone","main":"dist/dropzone"},{"name":"swipebox","location":"../node_modules/swipebox","main":"src/js/jquery.swipebox.min"},{"name":"simplemde","location":"../node_modules/simplemde","main":"dist/simplemde.min"},{"name":"highlight","location":"../node_modules/highlight.js","main":"lib/index"},{"name":"hotkeys","location":"../node_modules/jquery.hotkeys","main":"jquery.hotkeys"},{"name":"tablesort","location":"../node_modules/jquery-tablesort","main":"jquery.tablesort"},{"name":"textcomplete","location":"../node_modules/jquery-textcomplete","main":"dist/jquery.textcomplete"},{"name":"isomorphic-fetch","location":"../node_modules/isomorphic-fetch","main":"fetch-npm-browserify"},{"name":"tms-semantic-ui","location":"../node_modules/tms-semantic-ui","main":"semantic.min"},{"name":"jquery-format","location":"../node_modules/jquery-format","main":"src/jquery.format"},{"name":"toastr","location":"../node_modules/toastr","main":"toastr"},{"name":"nprogress","location":"../node_modules/nprogress","main":"nprogress"},{"name":"aurelia-templating-resources","location":"../node_modules/aurelia-templating-resources/dist/amd","main":"aurelia-templating-resources"},{"name":"aurelia-templating-router","location":"../node_modules/aurelia-templating-router/dist/amd","main":"aurelia-templating-router"},{"name":"aurelia-testing","location":"../node_modules/aurelia-testing/dist/amd","main":"aurelia-testing"}],"stubModules":["text"],"shim":{"swipebox":{"deps":["jquery"]},"hotkeys":{"deps":["jquery"]},"tablesort":{"deps":["jquery"]},"textcomplete":{"deps":["jquery"]},"isomorphic-fetch":{"deps":["whatwg-fetch"]},"tms-semantic-ui":{"deps":["jquery"],"exports":"$"},"jquery-format":{"deps":["jquery"],"exports":"$"}},"bundles":{"app-bundle":["app","environment","main","chat/chat-direct","chat/chat-service","common/common-constant","common/common-ctx","common/common-diff","common/common-imgs-loaded","common/common-paste","common/common-plugin","common/common-poll","common/common-scrollbar","common/common-tips","common/common-utils","init/config","init/index","resources/index","test/test-lifecycle","user/user-login","user/user-pwd-reset","user/user-register","resources/binding-behaviors/bb-key","resources/attributes/attr-attr","resources/attributes/attr-autosize","resources/attributes/attr-c2c","resources/attributes/attr-dimmer","resources/attributes/attr-dropzone","resources/attributes/attr-pastable","resources/attributes/attr-scrollbar","resources/attributes/attr-swipebox","resources/attributes/attr-tablesort","resources/attributes/attr-task","resources/attributes/attr-textcomplete","resources/attributes/attr-ui-dropdown","resources/attributes/attr-ui-tab","resources/elements/em-chat-channel-create","resources/elements/em-chat-channel-edit","resources/elements/em-chat-channel-join","resources/elements/em-chat-channel-members-mgr","resources/elements/em-chat-channel-members-show","resources/elements/em-chat-content-item","resources/elements/em-chat-input","resources/elements/em-chat-member-popup","resources/elements/em-chat-msg-popup","resources/elements/em-chat-sidebar-left","resources/elements/em-chat-sidebar-right","resources/elements/em-chat-top-menu","resources/elements/em-confirm-modal","resources/elements/em-dropdown","resources/elements/em-hotkeys-modal","resources/elements/em-modal","resources/elements/em-user-avatar","resources/value-converters/vc-common","aurelia-templating-resources/compose","aurelia-templating-resources/if","aurelia-templating-resources/with","aurelia-templating-resources/repeat","aurelia-templating-resources/repeat-strategy-locator","aurelia-templating-resources/null-repeat-strategy","aurelia-templating-resources/array-repeat-strategy","aurelia-templating-resources/repeat-utilities","aurelia-templating-resources/map-repeat-strategy","aurelia-templating-resources/set-repeat-strategy","aurelia-templating-resources/number-repeat-strategy","aurelia-templating-resources/analyze-view-factory","aurelia-templating-resources/abstract-repeater","aurelia-templating-resources/show","aurelia-templating-resources/aurelia-hide-style","aurelia-templating-resources/hide","aurelia-templating-resources/sanitize-html","aurelia-templating-resources/html-sanitizer","aurelia-templating-resources/replaceable","aurelia-templating-resources/focus","aurelia-templating-resources/css-resource","aurelia-templating-resources/binding-mode-behaviors","aurelia-templating-resources/throttle-binding-behavior","aurelia-templating-resources/debounce-binding-behavior","aurelia-templating-resources/signal-binding-behavior","aurelia-templating-resources/binding-signaler","aurelia-templating-resources/update-trigger-binding-behavior","aurelia-templating-resources/html-resource-plugin","aurelia-templating-resources/dynamic-element","highlight/lib/highlight","highlight/lib/languages/1c","highlight/lib/languages/abnf","highlight/lib/languages/accesslog","highlight/lib/languages/actionscript","highlight/lib/languages/ada","highlight/lib/languages/apache","highlight/lib/languages/applescript","highlight/lib/languages/cpp","highlight/lib/languages/arduino","highlight/lib/languages/armasm","highlight/lib/languages/xml","highlight/lib/languages/asciidoc","highlight/lib/languages/aspectj","highlight/lib/languages/autohotkey","highlight/lib/languages/autoit","highlight/lib/languages/avrasm","highlight/lib/languages/awk","highlight/lib/languages/axapta","highlight/lib/languages/bash","highlight/lib/languages/basic","highlight/lib/languages/bnf","highlight/lib/languages/brainfuck","highlight/lib/languages/cal","highlight/lib/languages/capnproto","highlight/lib/languages/ceylon","highlight/lib/languages/clojure","highlight/lib/languages/clojure-repl","highlight/lib/languages/cmake","highlight/lib/languages/coffeescript","highlight/lib/languages/coq","highlight/lib/languages/cos","highlight/lib/languages/crmsh","highlight/lib/languages/crystal","highlight/lib/languages/cs","highlight/lib/languages/csp","highlight/lib/languages/css","highlight/lib/languages/d","highlight/lib/languages/markdown","highlight/lib/languages/dart","highlight/lib/languages/delphi","highlight/lib/languages/diff","highlight/lib/languages/django","highlight/lib/languages/dns","highlight/lib/languages/dockerfile","highlight/lib/languages/dos","highlight/lib/languages/dsconfig","highlight/lib/languages/dts","highlight/lib/languages/dust","highlight/lib/languages/ebnf","highlight/lib/languages/elixir","highlight/lib/languages/elm","highlight/lib/languages/ruby","highlight/lib/languages/erb","highlight/lib/languages/erlang-repl","highlight/lib/languages/erlang","highlight/lib/languages/excel","highlight/lib/languages/fix","highlight/lib/languages/fortran","highlight/lib/languages/fsharp","highlight/lib/languages/gams","highlight/lib/languages/gauss","highlight/lib/languages/gcode","highlight/lib/languages/gherkin","highlight/lib/languages/glsl","highlight/lib/languages/go","highlight/lib/languages/golo","highlight/lib/languages/gradle","highlight/lib/languages/groovy","highlight/lib/languages/haml","highlight/lib/languages/handlebars","highlight/lib/languages/haskell","highlight/lib/languages/haxe","highlight/lib/languages/hsp","highlight/lib/languages/htmlbars","highlight/lib/languages/http","highlight/lib/languages/inform7","highlight/lib/languages/ini","highlight/lib/languages/irpf90","highlight/lib/languages/java","highlight/lib/languages/javascript","highlight/lib/languages/json","highlight/lib/languages/julia","highlight/lib/languages/kotlin","highlight/lib/languages/lasso","highlight/lib/languages/ldif","highlight/lib/languages/less","highlight/lib/languages/lisp","highlight/lib/languages/livecodeserver","highlight/lib/languages/livescript","highlight/lib/languages/lsl","highlight/lib/languages/lua","highlight/lib/languages/makefile","highlight/lib/languages/mathematica","highlight/lib/languages/matlab","highlight/lib/languages/maxima","highlight/lib/languages/mel","highlight/lib/languages/mercury","highlight/lib/languages/mipsasm","highlight/lib/languages/mizar","highlight/lib/languages/perl","highlight/lib/languages/mojolicious","highlight/lib/languages/monkey","highlight/lib/languages/moonscript","highlight/lib/languages/nginx","highlight/lib/languages/nimrod","highlight/lib/languages/nix","highlight/lib/languages/nsis","highlight/lib/languages/objectivec","highlight/lib/languages/ocaml","highlight/lib/languages/openscad","highlight/lib/languages/oxygene","highlight/lib/languages/parser3","highlight/lib/languages/pf","highlight/lib/languages/php","highlight/lib/languages/pony","highlight/lib/languages/powershell","highlight/lib/languages/processing","highlight/lib/languages/profile","highlight/lib/languages/prolog","highlight/lib/languages/protobuf","highlight/lib/languages/puppet","highlight/lib/languages/purebasic","highlight/lib/languages/python","highlight/lib/languages/q","highlight/lib/languages/qml","highlight/lib/languages/r","highlight/lib/languages/rib","highlight/lib/languages/roboconf","highlight/lib/languages/rsl","highlight/lib/languages/ruleslanguage","highlight/lib/languages/rust","highlight/lib/languages/scala","highlight/lib/languages/scheme","highlight/lib/languages/scilab","highlight/lib/languages/scss","highlight/lib/languages/smali","highlight/lib/languages/smalltalk","highlight/lib/languages/sml","highlight/lib/languages/sqf","highlight/lib/languages/sql","highlight/lib/languages/stan","highlight/lib/languages/stata","highlight/lib/languages/step21","highlight/lib/languages/stylus","highlight/lib/languages/subunit","highlight/lib/languages/swift","highlight/lib/languages/taggerscript","highlight/lib/languages/yaml","highlight/lib/languages/tap","highlight/lib/languages/tcl","highlight/lib/languages/tex","highlight/lib/languages/thrift","highlight/lib/languages/tp","highlight/lib/languages/twig","highlight/lib/languages/typescript","highlight/lib/languages/vala","highlight/lib/languages/vbnet","highlight/lib/languages/vbscript","highlight/lib/languages/vbscript-html","highlight/lib/languages/verilog","highlight/lib/languages/vhdl","highlight/lib/languages/vim","highlight/lib/languages/x86asm","highlight/lib/languages/xl","highlight/lib/languages/xquery","highlight/lib/languages/zephir","common","override","chat/md-github"],"deps-bundle":["marked","clipboard/dist/clipboard.min","autosize","timeago/dist/timeago.min","dropzone/dist/dropzone","dropzone/dist/basic","swipebox/src/js/jquery.swipebox.min","swipebox/src/css/swipebox.min","simplemde/dist/simplemde.min","highlight/lib/index","highlight/styles/github","hotkeys/jquery.hotkeys","tablesort"]}})}
