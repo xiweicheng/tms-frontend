@@ -26,11 +26,6 @@
         }
         .textareaWrapper {
             width: calc(~"100% - 35px");
-            /* max-width: 100%;
-            -webkit-box-flex: 1;
-            -webkit-flex: 1 0 auto;
-            -ms-flex: 1 0 auto;
-            flex: 1 0 auto; */
             border: 1px solid rgba(34, 36, 38, .15);
             border-top-right-radius: .28571429rem;
             border-bottom-right-radius: .28571429rem;
@@ -44,8 +39,11 @@
             }
         }
         .ui.input {
+            margin-right: 5px;
             i.send.icon {
                 z-index: 1;
+                /* background-color: #eeeeee; */
+                right: 7px!important;
             }
             textarea {
                 resize: none;
@@ -66,6 +64,9 @@
                 border-bottom-right-radius: .28571429rem;
             }
         }
+    }
+    .CodeMirror-lines {
+        margin-right: 30px;
     }
 }
 
