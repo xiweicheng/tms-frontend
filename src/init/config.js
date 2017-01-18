@@ -26,6 +26,9 @@ import {
     default as NProgress
 }
 from 'nprogress';
+import {
+    default as push
+} from 'push';
 
 export class Config {
 
@@ -162,6 +165,7 @@ export class Config {
         window.utils = utils;
         window.marked = marked;
         window.autosize = autosize;
+        window.push = push;
         window.bs = this.aurelia.container.root.get(BindingSignaler);
         window.ea = this.aurelia.container.root.get(EventAggregator);
         return this;

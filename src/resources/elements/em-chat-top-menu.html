@@ -38,6 +38,7 @@
             <div class="item tms-item ${isActiveSearch ? 'tms-hide' : ''}">
                 <button click.delegate="showAtHandler()" title="@消息查看" class="basic ${isRightSidebarShow && (activeType == ACTION_TYPE_AT) ? 'active' : ''} ui icon button">
                     <i class="at icon"></i>
+                    <div show.bind="!!newAtCnt" class="floating ui red empty circular label"></div>
                 </button>
             </div>
             <div class="item tms-item ${isActiveSearch ? 'tms-hide' : ''}">

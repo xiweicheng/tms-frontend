@@ -19,6 +19,8 @@ export class EmChatTopMenu {
     ACTION_TYPE_AT = nsCons.ACTION_TYPE_AT;
     ACTION_TYPE_DIR = nsCons.ACTION_TYPE_DIR;
 
+    newAtCnt = 0;
+
     chatToChanged() {
         $(this.chatToDropdownRef).dropdown('set selected', this.chatTo);
     }
@@ -37,6 +39,10 @@ export class EmChatTopMenu {
                 });
             }
         });
+
+        this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_AT_NEW_CNT_UPDATE, (payload) => {
+            this.newAtCnt = payload.newAtCnt;
+        });
     }
 
     /**
@@ -44,6 +50,7 @@ export class EmChatTopMenu {
      */
     unbind() {
         this.subscribe.dispose();
+        this.subscribe1.dispose();
     }
 
     /**
@@ -227,6 +234,7 @@ export class EmChatTopMenu {
 
     showAtHandler() {
         this.activeType = nsCons.ACTION_TYPE_AT;
+        this.newAtCnt = 0;
         $.get('/admin/chat/channel/getAts', {
             page: 0,
             size: 20

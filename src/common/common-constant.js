@@ -20,6 +20,7 @@ window.nsCons = {
     EVENT_CHAT_MEMBER_POPUP_SHOW: 'event_chat_member_popup_show',
     EVENT_CHAT_MSG_WIKI_DIR: 'event_chat_msg_wiki_dir',
     EVENT_CHAT_CONTENT_SCROLL_TO: 'event_chat_content_scroll_to',
+    EVENT_CHAT_AT_NEW_CNT_UPDATE: 'event_chat_at_new_cnt_update',
     ACTION_TYPE_SEARCH: 'action_type_search',
     ACTION_TYPE_STOW: 'action_type_stow',
     ACTION_TYPE_AT: 'action_type_at',

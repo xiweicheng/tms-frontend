@@ -361,52 +361,116 @@ export class ChatDirect {
         });
     }
 
-    // 消息轮询处理
-    pollChats() {
-
+    doPoll() {
         poll.start((resetCb, stopCb) => {
+            this._pollChats(resetCb, stopCb);
+            this._poll(resetCb, stopCb);
+        });
+    }
 
-            if (!this.chats || !this.first) {
-                return;
-            }
+    _poll(resetCb, stopCb) {
 
-            let lastChat = _.last(this.chats);
+        let lastChat = _.last(this.chats);
 
-            let url;
-            let data;
+        if (this.isAt || !this.channel || !lastChat) {
+            return;
+        }
 
-            if (this.isAt) {
-                url = `/admin/chat/direct/latest`;
-                data = {
-                    id: lastChat ? lastChat.id : 0,
-                    chatTo: this.chatTo
-                };
-            } else {
-                url = `/admin/chat/channel/latest`;
-                data = {
-                    id: lastChat ? lastChat.id : 0,
-                    channelId: this.channel.id
-                };
-            }
+        $.get('/admin/chat/channel/poll', {
+            channelId: this.channel.id,
+            lastChatChannelId: lastChat.id,
+            isAt: true
+        }, (data) => {
+            if (data.success) {
 
-            $.get(url, data, (data) => {
-                if (data.success) {
+                if (this.countAt && data.data.countAt > this.countAt) {
+                    let cnt = data.data.countAt - this.countAt;
+                    push.create('TMS沟通@消息通知', {
+                        body: `你有${cnt}条新的@消息!`,
+                        icon: {
+                            x16: 'img/tms-x16.ico',
+                            x32: 'img/tms-x32.png'
+                        },
+                        timeout: 5000
+                    });
 
-                    if (!this._checkPollResultOk(data)) {
-                        return;
-                    }
-                    this.chats = _.unionBy(this.chats, data.data, 'id');
-                    this.scrollToAfterImgLoaded('b');
-                } else {
-                    toastr.error(data.data, '轮询获取消息失败!');
+                    ea.publish(nsCons.EVENT_CHAT_AT_NEW_CNT_UPDATE, {
+                        newAtCnt: cnt
+                    });
                 }
-            }).fail((xhr, sts) => {
-                stopCb();
-                utils.errorAutoTry(() => {
-                    resetCb();
-                });
+                this.countAt = data.data.countAt;
+            }
+        });
+    }
+
+    // 消息轮询处理
+    _pollChats(resetCb, stopCb) {
+
+        if (!this.chats || !this.first) {
+            return;
+        }
+
+        let lastChat = _.last(this.chats);
+
+        let url;
+        let data;
+
+        if (this.isAt) {
+            url = `/admin/chat/direct/latest`;
+            data = {
+                id: lastChat ? lastChat.id : 0,
+                chatTo: this.chatTo
+            };
+        } else {
+            url = `/admin/chat/channel/latest`;
+            data = {
+                id: lastChat ? lastChat.id : 0,
+                channelId: this.channel.id
+            };
+        }
+
+        $.get(url, data, (data) => {
+            if (data.success) {
+
+                if (!this._checkPollResultOk(data)) {
+                    return;
+                }
+
+                this._checkNeedNotify(data);
+
+                this.chats = _.unionBy(this.chats, data.data, 'id');
+                this.scrollToAfterImgLoaded('b');
+            } else {
+                toastr.error(data.data, '轮询获取消息失败!');
+            }
+        }).fail((xhr, sts) => {
+            stopCb();
+            utils.errorAutoTry(() => {
+                resetCb();
             });
         });
+    }
+
+    _checkNeedNotify(data) {
+
+        if (data.data.length == 0) {
+            return false;
+        }
+
+        let hasOwn = _.some(data.data, (item) => {
+            return item.creator.username == this.loginUser.username;
+        });
+
+        if (!hasOwn) {
+            push.create('TMS沟通频道消息通知', {
+                body: `频道[${this.channel.title}]有新消息了!`,
+                icon: {
+                    x16: 'img/tms-x16.ico',
+                    x32: 'img/tms-x32.png'
+                },
+                timeout: 5000
+            });
+        }
     }
 
     _checkPollResultOk(data) {
@@ -425,7 +489,7 @@ export class ChatDirect {
      */
     bind(ctx) {
 
-        this.pollChats();
+        this.doPoll();
     }
 
     /**
