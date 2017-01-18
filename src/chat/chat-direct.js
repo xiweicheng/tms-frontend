@@ -120,6 +120,12 @@ export class ChatDirect {
             }
 
         });
+
+        this.subscribe10 = ea.subscribe(nsCons.EVENT_CHAT_CONTENT_SCROLL_TO, (payload) => {
+
+            this.scrollTo(payload.target);
+
+        });
     }
 
     /**
@@ -136,6 +142,7 @@ export class ChatDirect {
         this.subscribe7.dispose();
         this.subscribe8.dispose();
         this.subscribe9.dispose();
+        this.subscribe10.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();

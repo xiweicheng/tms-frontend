@@ -8,6 +8,7 @@ export class EmChatSidebarRight {
     @bindable isAt;
     @bindable channel;
     forAction = ''; // search | stow | at
+    forShow = '';
 
     basePath = utils.getBasePath();
 
@@ -17,7 +18,7 @@ export class EmChatSidebarRight {
     constructor() {
 
         this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_RESULT, (payload) => {
-            this.forAction = payload.action;
+            this._mappingActionShow(payload.action);
             let result = payload.result;
             this.search = payload.search;
             this.page = result;
@@ -27,7 +28,7 @@ export class EmChatSidebarRight {
         });
 
         this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_SHOW_AT, (payload) => {
-            this.forAction = payload.action;
+            this._mappingActionShow(payload.action);
             let result = payload.result;
             this.page = result;
             this.chats = _.map(result.content, (item) => {
@@ -40,9 +41,14 @@ export class EmChatSidebarRight {
         });
 
         this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_SHOW_STOW, (payload) => {
-            this.forAction = payload.action;
+            this._mappingActionShow(payload.action);
             this.chats = payload.result;
             this.last = true;
+        });
+
+        this.subscribe3 = ea.subscribe(nsCons.EVENT_CHAT_SHOW_DIR, (payload) => {
+            this._mappingActionShow(payload.action);
+            $(this.dirRef).empty().append(payload.result)
         });
     }
 
@@ -54,6 +60,16 @@ export class EmChatSidebarRight {
         this.subscribe.dispose();
         this.subscribe1.dispose();
         this.subscribe2.dispose();
+        this.subscribe3.dispose();
+    }
+
+    _mappingActionShow(forAction) {
+        this.forAction = forAction;
+        if (_.includes([nsCons.ACTION_TYPE_SEARCH, nsCons.ACTION_TYPE_STOW, nsCons.ACTION_TYPE_AT], this.forAction)) {
+            this.forShow = 'chat-msg';
+        } else if (_.includes([nsCons.ACTION_TYPE_DIR], this.forAction)) {
+            this.forShow = 'wiki-dir';
+        }
     }
 
     /**

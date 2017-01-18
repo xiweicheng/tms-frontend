@@ -17,9 +17,33 @@ export class EmChatTopMenu {
     ACTION_TYPE_SEARCH = nsCons.ACTION_TYPE_SEARCH;
     ACTION_TYPE_STOW = nsCons.ACTION_TYPE_STOW;
     ACTION_TYPE_AT = nsCons.ACTION_TYPE_AT;
+    ACTION_TYPE_DIR = nsCons.ACTION_TYPE_DIR;
 
     chatToChanged() {
         $(this.chatToDropdownRef).dropdown('set selected', this.chatTo);
+    }
+
+    /**
+     * 构造函数
+     */
+    constructor() {
+        this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_MSG_WIKI_DIR, (payload) => {
+            this.dir = payload.dir;
+
+            if ((this.activeType == this.ACTION_TYPE_DIR) && this.isRightSidebarShow) {
+                ea.publish(nsCons.EVENT_CHAT_SHOW_DIR, {
+                    action: this.activeType,
+                    result: this.dir
+                });
+            }
+        });
+    }
+
+    /**
+     * 当数据绑定引擎从视图解除绑定时被调用
+     */
+    unbind() {
+        this.subscribe.dispose();
     }
 
     /**
@@ -223,5 +247,14 @@ export class EmChatTopMenu {
         $.post('/admin/logout').always(() => {
             utils.redirect2Login();
         });
+    }
+
+    showWikiDirHandler() {
+        this.activeType = nsCons.ACTION_TYPE_DIR;
+        ea.publish(nsCons.EVENT_CHAT_SHOW_DIR, {
+            action: this.activeType,
+            result: this.dir
+        });
+        this.toggleRightSidebar(true);
     }
 }

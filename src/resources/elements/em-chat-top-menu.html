@@ -30,6 +30,11 @@
             </div>
         </div>
         <div class="right menu">
+            <div show.bind="!!dir" class="item tms-item ${isActiveSearch ? 'tms-hide' : ''}">
+                <button click.delegate="showWikiDirHandler()" title="消息目录查看" class="basic ${isRightSidebarShow && (activeType == ACTION_TYPE_DIR) ? 'active' : ''} ui icon button">
+                    <i class="unordered list icon"></i>
+                </button>
+            </div>
             <div class="item tms-item ${isActiveSearch ? 'tms-hide' : ''}">
                 <button click.delegate="showAtHandler()" title="@消息查看" class="basic ${isRightSidebarShow && (activeType == ACTION_TYPE_AT) ? 'active' : ''} ui icon button">
                     <i class="at icon"></i>

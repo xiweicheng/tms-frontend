@@ -47,6 +47,21 @@ export class EmChatContentItem {
                 target: event.currentTarget
             });
         });
+
+        // wiki dir
+        $('body').on('mouseenter', '.tms-content-body .em-chat-content-item', (event) => {
+            event.preventDefault();
+            var $c = $(event.currentTarget);
+
+            ea.publish(nsCons.EVENT_CHAT_MSG_WIKI_DIR, {
+                dir: utils.dir($c.find('> .content > .markdown-body'))
+            });
+        });
+
+        $('body').on('click', '.panel-wiki-dir .wiki-dir-item', (event) => {
+            event.preventDefault();
+            ea.publish(nsCons.EVENT_CHAT_CONTENT_SCROLL_TO, { target: $('#' + $(event.currentTarget).attr('data-id')) });
+        });
     }
 
     channelChanged() {

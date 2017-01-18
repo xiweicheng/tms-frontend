@@ -263,6 +263,77 @@ export class CommonUtils {
 
         return `<pre>${nodeArr.join('')}</pre>`;
     }
+
+    /**
+     * 解析wiki目录
+     * @param  {[type]} $e [description]
+     * @return {[type]}    [description]
+     */
+    catalog($e) {
+        var $headers = $(":header", $e);
+
+        if ($headers && $headers.size() == 0) {
+            return false;
+        }
+
+        var pre = null;
+
+        var link = {
+            pre: null,
+            arr: []
+        };
+        var current = link;
+        $headers.each(function(index, h) {
+            var name = h.nodeName;
+            if (!pre) {
+                current.arr.push(h);
+                pre = name;
+            } else {
+                if (pre < name) {
+                    var last = current;
+                    current = {
+                        pre: last,
+                        arr: [h]
+                    };
+                    last.arr.push(current);
+                    pre = name;
+                } else if (pre == name) {
+                    current.arr.push(h);
+                } else {
+                    current = current.pre ? current.pre : current;
+                    current.arr.push(h);
+                    pre = name;
+                }
+            }
+        });
+
+        return link;
+    }
+
+    generateDir(link) {
+        var $list = $('<div class="ui bulleted list"></div>');
+        this.prodDir($list, link);
+        return $list;
+    }
+
+    dir($e) {
+        let cl = this.catalog($e);
+        return cl ? this.generateDir(cl) : '';
+    }
+
+    prodDir($list, link) {
+        $.each(link.arr, (index, item) => {
+            if (item.hasOwnProperty('arr')) {
+                var $l = $('<div class="list"></div>');
+                $list.append($l)
+                this.prodDir($l, item);
+            } else {
+                var id = _.uniqueId('tms-wiki-dir-item-');
+                var $item = $('<a class="item wiki-dir-item" style="word-break: keep-all; white-space: nowrap;"></a>').text($(item).attr('id', id).text()).attr('data-id', id);
+                $list.append($item);
+            }
+        });
+    }
 }
 
 export default new CommonUtils();
