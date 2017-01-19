@@ -32,6 +32,11 @@
                 <a class="tms-copy tms-clipboard" data-clipboard-text="${item.content}" title="复制消息内容">复制</a>
                 <a class="tms-share tms-clipboard" data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}" title="复制消息链接">分享</a>
             </div>
+            <div class="tools">
+                <button show.bind="!isAt" click.delegate="refreshHandler(item)" title="刷新同步" class="mini circular ui icon button">
+                    <i class="refresh icon"></i>
+                </button>
+            </div>
         </div>
     </div>
     <em-confirm-modal em-confirm-modal.ref="emConfirmModal"></em-confirm-modal>

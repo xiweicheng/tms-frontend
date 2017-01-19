@@ -252,4 +252,17 @@ export class EmChatContentItem {
             content: `{~${item.creator.username}} `
         });
     }
+
+    refreshHandler(item) {
+        $.get('/admin/chat/channel/get', {
+            id: item.id
+        }, (data) => {
+            if (item.version != data.data.version) {
+                _.extend(item, data.data);
+                toastr.success('刷新同步成功!');
+            } else {
+                toastr.error('消息内容暂无变更!');
+            }
+        });
+    }
 }
