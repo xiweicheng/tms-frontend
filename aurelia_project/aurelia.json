@@ -58,6 +58,9 @@
       "type": "require",
       "configTarget": "vendor-bundle.js",
       "includeBundleMetadataInConfig": "auto",
+      "config": {
+          "waitSeconds": 60
+      },
       "plugins": [
         {
           "name": "text",
