@@ -535,8 +535,11 @@ export class ChatDirect {
     getScrollTargetComment(isPrev) {
         if (isPrev) {
             if (this.focusedComment && this.focusedComment.size() === 1) {
-                let prev = this.focusedComment.prev('.comment.item');
-                (prev.size() === 1) && (this.focusedComment = prev);
+                let $avatar = this.focusedComment.find('> a.em-user-avatar');
+                if (utils.isElementInViewport($avatar)) {
+                    let prev = this.focusedComment.prev('.comment.item');
+                    (prev.size() === 1) && (this.focusedComment = prev);
+                }
             } else {
                 this.focusedComment = $(this.commentsRef).children('.comment.item:first');
             }
