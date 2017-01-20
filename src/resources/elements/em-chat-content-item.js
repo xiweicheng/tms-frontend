@@ -115,11 +115,24 @@ export class EmChatContentItem {
     }
 
     editHandler(item, editTxtRef) {
-        item.isEditing = true;
-        item.contentOld = item.content;
-        _.defer(() => {
-            $(editTxtRef).focus().select();
-            autosize.update(editTxtRef);
+
+        $.get(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/get`, {
+            id: item.id
+        }, (data) => {
+            if (data.success) {
+                if (item.version != data.data.version) {
+                    _.extend(item, data.data);
+                }
+                item.isEditing = true;
+                item.contentOld = item.content;
+                _.defer(() => {
+                    $(editTxtRef).focus().select();
+                    autosize.update(editTxtRef);
+                });
+            } else {
+                toastr.error(data.data);
+            }
+
         });
     }
 

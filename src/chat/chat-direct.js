@@ -522,11 +522,23 @@ export class ChatDirect {
                     return;
                 }
 
-                item.isEditing = true;
-                item.contentOld = item.content;
-                _.defer(() => {
-                    $t.focus().select();
-                    autosize.update($t.get(0));
+                $.get(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/get`, {
+                    id: item.id
+                }, (data) => {
+                    if (data.success) {
+                        if (item.version != data.data.version) {
+                            _.extend(item, data.data);
+                        }
+                        item.isEditing = true;
+                        item.contentOld = item.content;
+                        _.defer(() => {
+                            $t.focus().select();
+                            autosize.update($t.get(0));
+                        });
+                    } else {
+                        toastr.error(data.data);
+                    }
+
                 });
             }
         });
