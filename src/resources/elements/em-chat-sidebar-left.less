@@ -34,6 +34,9 @@
                 > .icon+.content {
                     padding: 0;
                 }
+                > i.icon:first-child {
+                    /* font-size: 12px!important; */
+                }
             }
         }
         .tms-users {}
@@ -65,23 +68,48 @@
         * {
             color: #4183c4!important;
         }
-        .tms-header > input {
-            background-color: transparent;
-            border: 1px #676868 solid;
-            font-size: 12px;
-            padding: 4px;
-            width: 188px;
-            outline: none;
-            margin-top: 10px;
-            border-radius: 2px;
-        }
         .tms-header {
+            > input {
+                background-color: transparent;
+                border: 1px #676868 solid;
+                font-size: 12px;
+                padding: 4px;
+                width: 188px;
+                outline: none;
+                margin-top: 10px;
+                border-radius: 2px;
+                &::-webkit-input-placeholder {
+                    color: rgba(103, 104, 104, 0.5)!important;
+                }
+                &::-moz-placeholder {
+                    color: rgba(103, 104, 104, 0.5)!important;
+                }
+                &:-ms-input-placeholder {
+                    color: rgba(103, 104, 104, 0.5)!important;
+                }
+                &:focus {
+                    &::-webkit-input-placeholder {
+                        color: rgb(103, 104, 104)!important;
+                    }
+                    &::-moz-placeholder {
+                        color: rgb(103, 104, 104)!important;
+                    }
+                    &:-ms-input-placeholder {
+                        color: rgb(103, 104, 104)!important;
+                    }
+                }
+            }
             height: 40px;
             padding-left: 16px;
             padding-right: 16px;
             h1.ui.header {
                 margin-top: 9px;
                 margin-bottom: 0;
+                img {
+                    width: 30px;
+                    height: 30px;
+                    margin: 0;
+                }
             }
             i.close.icon {
                 position: absolute;

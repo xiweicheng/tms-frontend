@@ -9,14 +9,13 @@ export class EmChatSidebarLeft {
     @bindable chatTo;
     @bindable isAt;
 
-    chatToChanged() {
-        // _.delay(() => {
-        //     $(this.channelsRef).parent('.scroll-content').scrollTo(`a.item[data-id="${this.chatTo}"]`);
-        // }, 1000);
-    }
-
-    chatToUserFilerFocusinHanlder() {
-        // $(this.channelsRef).parent('.scroll-content').scrollTo(`a.item[data-id="${this.chatTo}"]`);
+    /**
+     * 当视图被附加到DOM中时被调用
+     */
+    attached() {
+        $(this.logoRef).on('mouseenter', (event) => {
+            $(this.logoRef).animateCss('flip');
+        });
     }
 
     chatToUserFilerKeyupHanlder(evt) {
