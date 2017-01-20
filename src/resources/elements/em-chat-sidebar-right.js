@@ -80,7 +80,7 @@ export class EmChatSidebarRight {
     }
 
     initHotkeys() {
-        $(document).bind('keydown', 'o', () => {
+        $(document).bind('keydown', 'o', (event) => {
             event.preventDefault();
             let item = _.find(this.chats, { isHover: true });
             item && (item.isOpen = !item.isOpen);

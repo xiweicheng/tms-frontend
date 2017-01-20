@@ -144,15 +144,15 @@ export class EmChatTopMenu {
     }
 
     initHotkeys() {
-        $(document).bind('keydown', 'ctrl+.', () => {
+        $(document).bind('keydown', 'ctrl+.', (event) => {
             event.preventDefault();
             this.toggleRightSidebar();
-        }).bind('keydown', 'ctrl+k', () => {
+        }).bind('keydown', 'ctrl+k', (event) => {
             event.preventDefault();
             $(this.chatToDropdownRef).dropdown('toggle');
         });
 
-        $(this.filterChatToUser).bind('keydown', 'ctrl+k', () => {
+        $(this.filterChatToUser).bind('keydown', 'ctrl+k', (event) => {
             event.preventDefault();
             $(this.chatToDropdownRef).dropdown('toggle');
         });

@@ -585,17 +585,12 @@ export class ChatDirect {
         }).bind('keydown', 'alt+down', (evt) => {
             evt.preventDefault();
             this.scrollTo(this.getScrollTargetComment());
-        }).bind('keydown', 'alt+ctrl+up', () => {
+        }).bind('keydown', 'alt+ctrl+up', (event) => {
             event.preventDefault();
             this.scrollTo($(this.commentsRef).children('.comment.item:first'));
-        }).bind('keydown', 'alt+ctrl+down', () => {
+        }).bind('keydown', 'alt+ctrl+down', (event) => {
             event.preventDefault();
             this.scrollTo($(this.commentsRef).children('.comment.item:last'));
-        }).bind('keydown', 'ctrl+i', () => {
-            event.preventDefault();
-            ea.publish(nsCons.HOTKEY, {
-                key: 'ctrl+i'
-            });
         });
 
     }
