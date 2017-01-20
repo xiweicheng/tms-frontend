@@ -346,7 +346,8 @@ export class ChatDirect {
 
     scrollToAfterImgLoaded(to) {
         _.defer(() => {
-            $('.comment img', this.commentsRef).imagesLoaded(() => {
+
+            new ImagesLoaded(this.commentsRef).always(() => {
                 if (to == 'b') {
                     $(this.commentsRef).parent('.scroll-content').scrollTo('max');
                 } else if (to == 't') {
@@ -356,7 +357,6 @@ export class ChatDirect {
                         offset: this.offset
                     });
                 }
-
             });
         });
     }

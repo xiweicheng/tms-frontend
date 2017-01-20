@@ -193,7 +193,7 @@ export class CommonUtils {
         var atR = /\{~([^\}]*)\}/g;
         var rs = atR.exec(plainText);
         while (rs) {
-            let user = _.find([nsCtx.memberAll, ...tmsUsers], { username: rs[1] });
+            let user = _.find([nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])], { username: rs[1] });
             let isNotExists = !_.some(users, { username: rs[1] });
             if (user && isNotExists) {
                 users.push(user);
