@@ -265,4 +265,8 @@ export class EmChatTopMenu {
         });
         this.toggleRightSidebar(true);
     }
+
+    userEditHandler() {
+        this.userEditMd.show();
+    }
 }

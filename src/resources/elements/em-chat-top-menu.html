@@ -66,10 +66,12 @@
                 <div class="menu">
                     <div class="header">账户操作</div>
                     <div class="divider"></div>
-                    <a class="item" click.delegate="logoutHandler()">退出</a>
+                    <a class="item" click.delegate="userEditHandler()"><i class="edit icon"></i>修改</a>
+                    <a class="item" click.delegate="logoutHandler()"><i class="sign out icon"></i>退出</a>
                 </div>
             </div>
         </div>
     </div>
+    <em-user-edit user.bind="loginUser" view-model.ref="userEditMd"></em-user-edit>
     <em-chat-channel-create login-user.bind="loginUser" trigger.bind="createChannelRef"></em-chat-channel-create>
 </template>
