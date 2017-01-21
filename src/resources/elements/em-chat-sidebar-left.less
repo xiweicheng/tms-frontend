@@ -9,9 +9,6 @@
         i.circular.icon {
             box-shadow: 0 0 0 .1em rgb(65, 131, 196) inset;
         }
-        .ui.selection.list {
-            margin-top: 10px;
-        }
         .title {
             position: relative;
             margin-left: 10px;
@@ -29,13 +26,13 @@
             }
         }
         .ui.list {
+            margin-top: 10px;
+            padding-top: 5px;
+            box-shadow: 0px -1px 1px -1px rgba(65, 131, 196, 0.5);
             > .item {
                 padding-left: 16px;
                 > .icon+.content {
                     padding: 0;
-                }
-                > i.icon:first-child {
-                    /* font-size: 12px!important; */
                 }
             }
         }
@@ -71,7 +68,7 @@
         .tms-header {
             > input {
                 background-color: transparent;
-                border: 1px #676868 solid;
+                border: 1px rgba(103, 104, 104, 0.5) solid;
                 font-size: 12px;
                 padding: 4px;
                 width: 188px;
@@ -99,12 +96,10 @@
                     }
                 }
             }
-            height: 40px;
-            padding-left: 16px;
-            padding-right: 16px;
+            padding: 9px 16px;
+            box-shadow: 0 1px 1px -1px rgb(65, 131, 196);
             h1.ui.header {
-                margin-top: 9px;
-                margin-bottom: 0;
+                margin: 0;
                 img {
                     width: 30px;
                     height: 30px;

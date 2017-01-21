@@ -1,7 +1,7 @@
 <template>
     <require from="./em-chat-channel-create.css"></require>
     <em-modal classes="small" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)" show-confirm.bind="activeTab == 'channel-create'" confirm-label="创建">
-        <div slot="header">创建加入频道</div>
+        <div slot="header">频道管理</div>
         <div slot="content" class="tms-em-chat-channel-create">
             <div ref="tabRef" class="ui pointing secondary menu">
                 <a class="active item" data-tab="channel-create">创建频道</a>
