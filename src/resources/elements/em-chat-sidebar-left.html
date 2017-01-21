@@ -14,7 +14,7 @@
                         <i ref="createChannelRef" class="plus link circular icon"></i>
                     </div>
                     <div class="ui middle aligned selection list">
-                        <a repeat.for="item of channels" title="${item.title}(${item.name})" show.bind="!item.hidden" href="#/chat/${item.name}" class="item ${(!isAt && item.name == chatTo) ? 'active' : ''}">
+                        <a repeat.for="item of channels | sort:'title'" title="${item.title}(${item.name})" show.bind="!item.hidden" href="#/chat/${item.name}" class="item ${(!isAt && item.name == chatTo) ? 'active' : ''}">
                             <i class="hashtag icon"></i>
                             <div class="content">
                                 <div style="color: black;">${item.title}</div>

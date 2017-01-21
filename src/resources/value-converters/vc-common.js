@@ -68,3 +68,9 @@ export class ParseMdValueConverter {
         return value ? marked(utils.preParse(value)) : '';
     }
 }
+
+export class SortValueConverter {
+    toView(value, prop) {
+        return _.isArray(value) ? _.sortBy(value, prop) : value;
+    }
+}
