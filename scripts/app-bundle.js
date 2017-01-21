@@ -6213,7 +6213,7 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
                     _.extend(item, data.data);
                     toastr.success('刷新同步成功!');
                 } else {
-                    toastr.error('消息内容暂无变更!');
+                    toastr.info('消息内容暂无变更!');
                 }
             });
         };
