@@ -28,10 +28,13 @@ export class EmChatMemberPopup {
                     hoverable: true,
                     inline: false,
                     silent: true,
-                    // movePopup: false,
-                    // position: 'top left',
+                    movePopup: false,
                     position: 'bottom left',
-                    maxSearchDepth: 50,
+                    jitter: 300,
+                    prefer: 'opposite',
+                    // boundary: '.tms-content',
+                    // context: '.tms-content',
+                    // maxSearchDepth: 50,
                     delay: {
                         show: 300,
                         hide: 300

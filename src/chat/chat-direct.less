@@ -17,11 +17,15 @@
         border-radius: .28571429rem;
     }
     .tms-content {
-        position: absolute;
+        /* position: absolute;
         top: 60px;
         left: 220px;
         bottom: 0;
-        right: 0;
+        right: 0; */
+        position: relative;
+        margin-left: 220px;
+        top: 60px;
+        height: e("calc(100vh - 60px)");
         display: flex;
         align-items: stretch;
         &.tms-sidebar-show {

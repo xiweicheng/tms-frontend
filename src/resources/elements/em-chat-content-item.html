@@ -3,7 +3,7 @@
     <div repeat.for="item of chats" swipebox class="em-chat-content-item comment item ${item.id == markId ? 'active' : ''}" data-id="${item.id}" task.bind="notifyRendered($last, item)">
         <em-user-avatar user.bind="item.creator"></em-user-avatar>
         <div class="content">
-            <a class="author" click.delegate="creatorNameHandler(item)">${item.creator.name}</a>
+            <a class="author" data-value="${item.creator.username}" click.delegate="creatorNameHandler(item)">${item.creator.name}</a>
             <div class="metadata">
                 <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
             </div>
