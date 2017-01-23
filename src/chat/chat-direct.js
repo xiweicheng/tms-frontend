@@ -567,6 +567,7 @@ export class ChatDirect {
     }
 
     scrollTo(target) {
+        this.focusedComment = target;
         $(this.commentsRef).parent('.scroll-content').scrollTo(target, {
             offset: this.offset
         });
