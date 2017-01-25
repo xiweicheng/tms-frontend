@@ -507,6 +507,31 @@ export class ChatDirect {
         this.initHotkeys();
         this.initFocusedComment();
 
+        $(this.scrollbarRef).on('mouseenter', '.em-chat-content-item', (event) => {
+            event.preventDefault();
+            let $item = $(event.currentTarget);
+            this.$hoveredItem = $item;
+            this.isShowHead = !utils.isElementInViewport($item.children('.em-user-avatar'));
+            let $next = $item.next('.em-chat-content-item');
+            if ($next.size() === 1) {
+                this.isShowFoot = !utils.isElementInViewport($next.children('.em-user-avatar'));
+            } else {
+                this.isShowFoot = false;
+            }
+        }).on('mouseleave', (event) => {
+            event.preventDefault();
+            this.isShowHead = false;
+            this.isShowFoot = false;
+        });;
+
+    }
+
+    goHeadHandler() {
+        this.scrollTo(this.$hoveredItem, 500, () => { this.isShowHead = false; });
+    }
+
+    goFootHandler() {
+        this.scrollTo(this.$hoveredItem.next(), 500, () => { this.isShowFoot = false; });
     }
 
     initFocusedComment() {
@@ -566,10 +591,11 @@ export class ChatDirect {
         return this.focusedComment;
     }
 
-    scrollTo(target) {
+    scrollTo(target, duration = 0, onAfter) {
         this.focusedComment = target;
-        $(this.commentsRef).parent('.scroll-content').scrollTo(target, {
-            offset: this.offset
+        $(this.commentsRef).parent('.scroll-content').scrollTo(target, duration, {
+            offset: this.offset,
+            onAfter: onAfter
         });
     }
 

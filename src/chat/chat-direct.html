@@ -16,6 +16,8 @@
                         <em-chat-content-item mark-id.bind="markId" channel.bind="channel" is-at.bind="isAt" chats.bind="chats" login-user.bind="loginUser"></em-chat-content-item>
                         <div if.bind="!first" click.delegate="firstMoreHandler()" class="basic ui button tms-next-more"><i show.bind="nextMoreP && nextMoreP.readyState != 4" class="spinner loading icon"></i> 加载更多(${firstCnt})</div>
                     </div>
+                    <div show.bind="isShowHead" title="滚至头部" class="tms-go tms-go-head"><div click.delegate="goHeadHandler()" class="circular ui icon button"><i class="chevron up icon"></i></div></div>
+                    <div show.bind="isShowFoot" title="滚至尾部" class="tms-go tms-go-foot"><div click.delegate="goFootHandler()" class="circular ui icon button"><i class="chevron down icon"></i></div></div>
                 </div>
                 <em-chat-input channel.bind="channel" is-at.bind="isAt" chat-to.bind="chatTo" em-chat-input.ref="emChatInputRef"></em-chat-input>
             </div>
