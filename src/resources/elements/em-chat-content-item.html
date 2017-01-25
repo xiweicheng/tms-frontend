@@ -6,6 +6,12 @@
             <a class="author" data-value="${item.creator.username}" click.delegate="creatorNameHandler(item)">${item.creator.name}</a>
             <div class="metadata">
                 <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
+                <div show.bind="!isAt" class="rating">
+                    <i click.delegate="likeHandler(item, true)" style="cursor: pointer;" title="赞一下" class="cbutton cbutton--effect-novak thumbs ${item.isZanVoted ? '' : 'outline'} up icon"></i> <span title="${item.voteZan}">${item.voteZanCnt} 赞</span>
+                </div>
+                <div show.bind="!isAt" class="rating">
+                    <i click.delegate="likeHandler(item, false)" style="cursor: pointer;" title="踩一下" class="cbutton cbutton--effect-novak thumbs ${item.isCaiVoted ? '' : 'outline'} down icon"></i> <span title="${item.voteCai}">${item.voteCaiCnt} 踩</span>
+                </div>
             </div>
             <div show.bind="!item.isEditing" class="text markdown-body" innerhtml.bind="item.content | parseMd"></div>
             <div class="textcomplete-container" show.bind="item.isEditing">

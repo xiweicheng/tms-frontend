@@ -522,7 +522,16 @@ export class ChatDirect {
             event.preventDefault();
             this.isShowHead = false;
             this.isShowFoot = false;
-        });;
+        });
+
+        $('body').on('click', '.cbutton', function(event) {
+            event.preventDefault();
+            let $btn = $(this);
+            $btn.addClass('cbutton--click');
+            setTimeout(function() {
+                $btn.removeClass('cbutton--click');
+            }, 500);
+        });
 
     }
 
