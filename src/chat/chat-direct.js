@@ -627,4 +627,13 @@ export class ChatDirect {
 
     }
 
+    refreshLatestHandler(event) {
+        event.stopImmediatePropagation();
+        if (this.isAt) {
+            this.listChatDirect(false);
+        } else {
+            this.listChatChannel(false);
+        }
+    }
+
 }
