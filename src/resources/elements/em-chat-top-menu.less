@@ -11,25 +11,33 @@
             display: none;
         }
         .right.menu {
-            .item.tms-item {
-                padding-left: 0;
-                padding-right: 5px;
-                @media only screen and (max-width: 767px) {
-                    &.tms-hide {
-                        display: none;
+            .item {
+                &.tms-item {
+                    padding-left: 0;
+                    padding-right: 5px;
+                    @media only screen and (max-width: 767px) {
+                        &.tms-hide {
+                            display: none;
+                        }
+                    }
+                    button {
+                        .ui.floating.label {
+                            top: 0;
+                            right: 0;
+                            left: auto;
+                        }
                     }
                 }
-                button {
-                    .ui.floating.label {
-                        top: 0;
-                        right: 0;
-                        left: auto;
+                &.tms-search {
+                    @media only screen and (max-width: 767px) {
+                        padding-left: 10px;
+                        padding-right: 10px;
                     }
                 }
             }
             .ui.search {
                 input {
-                    width: 100px;
+                    width: 95px;
                     transition: width .15s ease-out 0s;
                 }
                 i.remove.icon {

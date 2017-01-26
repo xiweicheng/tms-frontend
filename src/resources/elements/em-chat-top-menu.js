@@ -178,7 +178,7 @@ export class EmChatTopMenu {
 
     searchBlurHandler() {
         if (!$(this.searchInputRef).val()) {
-            $(this.searchInputRef).css('width', '100px');
+            $(this.searchInputRef).css('width', '95px');
             $(this.searchRemoveRef).hide();
             this.isActiveSearch = false;
         }
