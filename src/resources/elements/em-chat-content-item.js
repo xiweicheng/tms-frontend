@@ -278,4 +278,29 @@ export class EmChatContentItem {
             }
         });
     }
+
+    likeHandler(item, isLike) {
+
+        if ((isLike && item.isZanVoted) || (!isLike && item.isCaiVoted)) {
+            return;
+        }
+
+        $.post('/admin/chat/channel/vote', {
+            id: item.id,
+            url: utils.getUrl(),
+            contentHtml: utils.md2html(item.content),
+            type: isLike ? 'Zan' : 'Cai'
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                _.extend(item, data.data);
+                if (isLike) {
+                    item.isZanVoted = true;
+                } else {
+                    item.isCaiVoted = true;
+                }
+            } else {
+                toastr.error(data.data);
+            }
+        });
+    }
 }

@@ -24,6 +24,11 @@
         }
     }
     > .content {
+        > .metadata > .rating {
+            @media only screen and (max-width: 767px) {
+                display: none!important;
+            }
+        }
         > .markdown-body {
             span.at-user {
                 cursor: pointer;
