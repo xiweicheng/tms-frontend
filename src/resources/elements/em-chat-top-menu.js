@@ -43,6 +43,10 @@ export class EmChatTopMenu {
         this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_AT_NEW_CNT_UPDATE, (payload) => {
             this.newAtCnt = payload.newAtCnt;
         });
+
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_SWITCH_CHAT_TO, (payload) => {
+            $(this.chatToDropdownRef).dropdown('toggle');
+        });
     }
 
     /**
@@ -51,6 +55,7 @@ export class EmChatTopMenu {
     unbind() {
         this.subscribe.dispose();
         this.subscribe1.dispose();
+        this.subscribe2.dispose();
     }
 
     /**

@@ -9,6 +9,12 @@ export class EmChatSidebarLeft {
     @bindable chatTo;
     @bindable isAt;
 
+    bind(bindingCtx, overrideCtx) {
+        $.get('/admin/json/sys-links.json', (data) => {
+            this.sysLinks = data.links;
+        });
+    }
+
     /**
      * 当视图被附加到DOM中时被调用
      */
@@ -107,6 +113,10 @@ export class EmChatSidebarLeft {
                 });
             }
         });
+    }
+
+    switchHandler() {
+        ea.publish(nsCons.EVENT_SWITCH_CHAT_TO, {});
     }
 
 }

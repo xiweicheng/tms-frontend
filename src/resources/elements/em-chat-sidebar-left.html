@@ -56,6 +56,32 @@
                 </div>
             </div>
         </div>
+        <div class="tms-footer">
+            <div class="ui inverted icon menu">
+                <div click.delegate="switchHandler()" class="ui animated fade button item" tabindex="0">
+                    <div class="visible content">
+                        <i class="large icons">
+                            <i class="align justify icon"></i>
+                            <i class="corner search icon"></i>
+                        </i>
+                    </div>
+                    <div class="hidden content">
+                        CTRL+K 切换
+                    </div>
+                </div>
+                <div class="right menu">
+                    <div class="ui dropdown icon item" ui-dropdown>
+                        <i class="content icon"></i>
+                        <div class="menu">
+                            <div class="header">
+                                系统外链
+                            </div>
+                            <a repeat.for="item of sysLinks" show.bind="!item.disabled" target="_blank" href="${item.href}" class="item">${item.title}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <em-confirm-modal em-confirm-modal.ref="confirmMd"></em-confirm-modal>
     <em-chat-channel-create login-user.bind="loginUser" trigger.bind="createChannelRef"></em-chat-channel-create>
