@@ -57,6 +57,11 @@
     }
     > .tms-chat-at {
         &.ui.dropdown {
+            > .text {
+                > .actions {
+                    display: none;
+                }
+            }
             @media only screen and (max-width: 767px) {
                 > .text {
                     display: none;
@@ -74,8 +79,24 @@
                         top: 7px;
                     }
                 }
-                >.item .icon {
-                    margin-right: 4px!important;
+                > .item {
+                    &:hover {
+                        .actions {
+                            display: inline-block;
+                        }
+                    }
+                    .icon {
+                        margin-right: 4px!important;
+                    }
+                    > .actions {
+                        display: none;
+                        position: absolute;
+                        right: 5px;
+                        top: 10px;
+                        .large.ellipsis.horizontal.icon {
+                            font-size: 1.3em!important;
+                        }
+                    }
                 }
             }
         }

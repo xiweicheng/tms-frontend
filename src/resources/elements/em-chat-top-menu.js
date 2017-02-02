@@ -274,4 +274,44 @@ export class EmChatTopMenu {
     userEditHandler() {
         this.userEditMd.show();
     }
+
+    membersShowHandler(item, event) {
+        event.stopImmediatePropagation();
+        ea.publish(nsCons.EVENT_CHANNEL_ACTIONS, {
+            action: 'membersShowHandler',
+            item: item
+        });
+    }
+
+    leaveHandler(item, event) {
+        event.stopImmediatePropagation();
+        ea.publish(nsCons.EVENT_CHANNEL_ACTIONS, {
+            action: 'leaveHandler',
+            item: item
+        });
+    }
+
+    membersMgrHandler(item, event) {
+        event.stopImmediatePropagation();
+        ea.publish(nsCons.EVENT_CHANNEL_ACTIONS, {
+            action: 'membersMgrHandler',
+            item: item
+        });
+    }
+
+    editHandler(item, event) {
+        event.stopImmediatePropagation();
+        ea.publish(nsCons.EVENT_CHANNEL_ACTIONS, {
+            action: 'editHandler',
+            item: item
+        });
+    }
+
+    delHandler(item, event) {
+        event.stopImmediatePropagation();
+        ea.publish(nsCons.EVENT_CHANNEL_ACTIONS, {
+            action: 'delHandler',
+            item: item
+        });
+    }
 }
