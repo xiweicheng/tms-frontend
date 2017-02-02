@@ -22,7 +22,7 @@ export class EmChatTopMenu {
     newAtCnt = 0;
 
     chatToChanged() {
-        $(this.chatToDropdownRef).dropdown('set selected', this.chatTo);
+        $(this.chatToDropdownRef).dropdown('set selected', this.chatTo).dropdown('hide');
     }
 
     /**
