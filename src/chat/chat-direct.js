@@ -665,6 +665,7 @@ export class ChatDirect {
 
     refreshLatestHandler(event) {
         event.stopImmediatePropagation();
+        this.markId = null;
         if (this.isAt) {
             this.listChatDirect(false);
         } else {
