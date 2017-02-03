@@ -1,3 +1,22 @@
+## TMS前端工程
+使用框架aurelia: http://aurelia.io  
+项目基于aurelia-cli: http://aurelia.io/hub.html#/doc/article/aurelia/framework/latest/the-aurelia-cli/1
+
+## step by step
+全局安装aurelia-cli: `npm install aurelia-cli -g`
+
+项目根目录下执行:
+```
+# 安装nodejs工程依赖
+npm install
+# 开发模式
+au run --watch
+# 生产构建 
+au run build --env prod
+```
+
+生产构建后将整个工程目录下内容(排除node_modules目录)复制到 [tms工程](https://github.com/xiweicheng/tms) 的 `tms\src\main\resources\static\page` 目录下 
+
 ## 使用插件doc
 https://github.com/flesler/jquery.scrollTo  
 https://github.com/chjj/marked  
