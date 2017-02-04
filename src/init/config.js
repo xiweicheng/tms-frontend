@@ -29,6 +29,9 @@ from 'nprogress';
 import {
     default as push
 } from 'push';
+import {
+    default as ColorHash
+} from 'color-hash';
 
 export class Config {
 
@@ -169,6 +172,7 @@ export class Config {
         window.push = push;
         window.bs = this.aurelia.container.root.get(BindingSignaler);
         window.ea = this.aurelia.container.root.get(EventAggregator);
+        window.colorHash = new ColorHash();
         return this;
     }
 

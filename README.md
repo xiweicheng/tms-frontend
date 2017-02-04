@@ -35,3 +35,5 @@ https://www.npmjs.com/package/aurelia-textcomplete
 https://github.com/NextStepWebs/simplemde-markdown-editor/  
 http://gromo.github.io/jquery.scrollbar/demo/basic.html  
 https://github.com/gromo/jquery.scrollbar  
+https://github.com/zenozeng/color-hash  
+https://github.com/Nickersoft/push.js  

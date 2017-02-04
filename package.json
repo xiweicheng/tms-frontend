@@ -14,6 +14,7 @@
     "autosize": "^3.0.17",
     "bluebird": "^3.4.1",
     "clipboard": "^1.5.12",
+    "color-hash": "^1.0.3",
     "dropzone": "^4.3.0",
     "highlight.js": "^9.7.0",
     "isomorphic-fetch": "^2.2.1",

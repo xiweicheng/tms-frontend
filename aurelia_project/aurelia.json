@@ -91,6 +91,11 @@
           "marked",
           "autosize",
           {
+            "name": "color-hash",
+            "path": "../node_modules/color-hash",
+            "main": "dist/color-hash"
+          },
+          {
             "name": "push",
             "path": "../node_modules/push.js",
             "main": "push.min"
