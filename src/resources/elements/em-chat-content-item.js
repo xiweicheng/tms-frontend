@@ -258,6 +258,11 @@ export class EmChatContentItem {
         ea.publish(nsCons.EVENT_CHAT_MSG_INSERT, {
             content: `[[回复#${item.id}](${utils.getUrl()}?id=${item.id}){~${item.creator.username}}]\n\n`
         });
+
+        // 标记@自己的该消息为已读
+        $.post('/admin/chat/channel/markAsReadedByChat', {
+            chatId: item.id
+        });
     }
 
     creatorNameHandler(item) {

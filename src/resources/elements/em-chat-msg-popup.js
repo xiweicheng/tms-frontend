@@ -18,8 +18,12 @@ export class EmChatMsgPopup {
                 hoverable: true,
                 inline: false,
                 movePopup: false,
-                position: 'top left',
-                maxSearchDepth: 50,
+                // position: 'top left',
+                // maxSearchDepth: 50,
+                silent: true,
+                position: 'bottom left',
+                jitter: 300,
+                prefer: 'opposite',
                 delay: {
                     show: 300,
                     hide: 300
