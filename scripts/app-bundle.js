@@ -5146,7 +5146,7 @@ define('resources/attributes/attr-textcomplete',['exports', 'aurelia-framework',
                     },
                     replace: function replace(value) {
                         if (_this.tipsActionHandler(value)) {
-                            _.delay(function () {
+                            _.defer(function () {
                                 autosize.update(_this.element);
                             });
                             _this.setCaretPosition(_commonTips2.default[value].ch2 ? _commonTips2.default[value].ch2 : _commonTips2.default[value].ch);
@@ -5197,6 +5197,9 @@ define('resources/attributes/attr-textcomplete',['exports', 'aurelia-framework',
                     var cr = utils.getCursortPosition(_this3.element);
                     var ch = value.ch2 ? value.ch2 : value.ch;
                     ch && utils.setCaretPosition(_this3.element, cr - ch);
+                    _.defer(function () {
+                        autosize.update(_this3.element);
+                    });
                 });
             });
         };

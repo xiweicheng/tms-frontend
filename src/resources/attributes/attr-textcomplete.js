@@ -38,7 +38,7 @@ export class AttrTextcompleteCustomAttribute {
                 },
                 replace: (value) => {
                     if (this.tipsActionHandler(value)) {
-                        _.delay(() => {
+                        _.defer(() => {
                             autosize.update(this.element);
                         });
                         this.setCaretPosition(tips[value].ch2 ? tips[value].ch2 : tips[value].ch);
@@ -86,6 +86,9 @@ export class AttrTextcompleteCustomAttribute {
                 let cr = utils.getCursortPosition(this.element);
                 let ch = value.ch2 ? value.ch2 : value.ch;
                 ch && (utils.setCaretPosition(this.element, cr - ch));
+                _.defer(() => {
+                    autosize.update(this.element);
+                });
             });
         });
 
