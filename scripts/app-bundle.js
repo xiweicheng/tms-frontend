@@ -3401,6 +3401,7 @@ define('common/common-tips',['exports'], function (exports) {
     exports.default = {
 
         '/h1': {
+            key: 'ctrl+h',
             label: '/h1 [标题1] (ctrl+h)',
             value: '# '
         },
@@ -3421,15 +3422,18 @@ define('common/common-tips',['exports'], function (exports) {
             value: '##### '
         },
         '/h6': {
+            key: 'ctrl+shift+h',
             label: '/h6 [标题6] (ctrl+shift+h)',
             value: '###### '
         },
         '/b': {
+            key: 'ctrl+b',
             label: '/b [粗体] (ctrl+b)',
             value: '****',
             ch: 2
         },
         '/i': {
+            key: 'ctrl+i',
             label: '/i [斜体] (ctrl+i)',
             value: '**',
             ch: 1
@@ -3440,25 +3444,30 @@ define('common/common-tips',['exports'], function (exports) {
             ch: 2
         },
         '/code': {
-            label: '/code [代码] (ctrl+alt+c)',
+            key: 'alt+ctrl+c',
+            label: '/code [代码] (alt+ctrl+c)',
             value: '```\n\n```\n',
             line: 2,
             ch2: 5
         },
         '/quote': {
+            key: 'ctrl+\'',
             label: '/quote [引用] (ctrl+\')',
             value: '> '
         },
         '/list': {
+            key: 'ctrl+l',
             label: '/list [列表] (ctrl+l)',
             value: '* '
         },
         '/href': {
+            key: 'ctrl+k',
             label: '/href [链接] (ctrl+k)',
             value: '[](http://)',
             ch: 1
         },
         '/img': {
+            key: 'alt+ctrl+i',
             label: '/img [图片] (ctrl+alt+i)',
             value: '![](http://)',
             ch: 1
@@ -5105,6 +5114,7 @@ define('resources/attributes/attr-textcomplete',['exports', 'aurelia-framework',
             _classCallCheck(this, AttrTextcompleteCustomAttribute);
 
             this.element = element;
+            this.initHotkeys();
         }
 
         AttrTextcompleteCustomAttribute.prototype.tipsActionHandler = function tipsActionHandler(value) {
@@ -5160,7 +5170,8 @@ define('resources/attributes/attr-textcomplete',['exports', 'aurelia-framework',
                         return '$1{~' + value + '}';
                     }
                 }], {
-                    appendTo: $(this.element).prev('.textcomplete-container').find('.append-to')
+                    appendTo: $(this.element).prev('.textcomplete-container').find('.append-to'),
+                    maxCount: 25
                 });
             } else {
                 this.unbind();
@@ -5174,6 +5185,20 @@ define('resources/attributes/attr-textcomplete',['exports', 'aurelia-framework',
                 var cr = utils.getCursortPosition(_this2.element);
                 utils.setCaretPosition(_this2.element, cr - ch);
             }, 100);
+        };
+
+        AttrTextcompleteCustomAttribute.prototype.initHotkeys = function initHotkeys() {
+            var _this3 = this;
+
+            _.each(_.filter(_.values(_commonTips2.default), 'key'), function (value) {
+                $(_this3.element).bind('keydown', value.key, function (evt) {
+                    evt.preventDefault();
+                    $(_this3.element).insertAtCaret(value.value);
+                    var cr = utils.getCursortPosition(_this3.element);
+                    var ch = value.ch2 ? value.ch2 : value.ch;
+                    ch && utils.setCaretPosition(_this3.element, cr - ch);
+                });
+            });
         };
 
         AttrTextcompleteCustomAttribute.prototype.unbind = function unbind() {

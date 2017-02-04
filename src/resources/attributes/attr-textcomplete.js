@@ -8,6 +8,7 @@ export class AttrTextcompleteCustomAttribute {
 
     constructor(element) {
         this.element = element;
+        this.initHotkeys();
     }
 
     tipsActionHandler(value) {
@@ -62,6 +63,7 @@ export class AttrTextcompleteCustomAttribute {
                 }
             }], {
                 appendTo: $(this.element).prev('.textcomplete-container').find('.append-to'),
+                maxCount: 25
             });
         } else {
             this.unbind();
@@ -73,6 +75,20 @@ export class AttrTextcompleteCustomAttribute {
             let cr = utils.getCursortPosition(this.element);
             utils.setCaretPosition(this.element, cr - ch);
         }, 100));
+    }
+
+    initHotkeys() {
+
+        _.each(_.filter(_.values(tips), 'key'), (value) => {
+            $(this.element).bind('keydown', value.key, (evt) => {
+                evt.preventDefault();
+                $(this.element).insertAtCaret(value.value);
+                let cr = utils.getCursortPosition(this.element);
+                let ch = value.ch2 ? value.ch2 : value.ch;
+                ch && (utils.setCaretPosition(this.element, cr - ch));
+            });
+        });
+
     }
 
     unbind() {

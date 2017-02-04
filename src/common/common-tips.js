@@ -1,6 +1,7 @@
 export default {
 
     '/h1': {
+        key: 'ctrl+h',
         label: '/h1 [标题1] (ctrl+h)',
         value: '# ',
     },
@@ -21,15 +22,18 @@ export default {
         value: '##### ',
     },
     '/h6': {
+        key: 'ctrl+shift+h',
         label: '/h6 [标题6] (ctrl+shift+h)',
         value: '###### ',
     },
     '/b': {
+        key: 'ctrl+b',
         label: '/b [粗体] (ctrl+b)',
         value: '****',
         ch: 2,
     },
     '/i': {
+        key: 'ctrl+i',
         label: '/i [斜体] (ctrl+i)',
         value: '**',
         ch: 1,
@@ -40,25 +44,30 @@ export default {
         ch: 2,
     },
     '/code': {
-        label: '/code [代码] (ctrl+alt+c)',
+        key: 'alt+ctrl+c',
+        label: '/code [代码] (alt+ctrl+c)',
         value: '```\n\n```\n',
         line: 2,
         ch2: 5
     },
     '/quote': {
+        key: 'ctrl+\'',
         label: '/quote [引用] (ctrl+\')',
         value: '> ',
     },
     '/list': {
+        key: 'ctrl+l',
         label: '/list [列表] (ctrl+l)',
         value: '* ',
     },
     '/href': {
+        key: 'ctrl+k',
         label: '/href [链接] (ctrl+k)',
         value: '[](http://)',
         ch: 1,
     },
     '/img': {
+        key: 'alt+ctrl+i',
         label: '/img [图片] (ctrl+alt+i)',
         value: '![](http://)',
         ch: 1,
