@@ -42,7 +42,8 @@ export default {
     '/code': {
         label: '/code [代码] (ctrl+alt+c)',
         value: '```\n\n```\n',
-        line: 1
+        line: 2,
+        ch2: 5
     },
     '/quote': {
         label: '/quote [引用] (ctrl+\')',
@@ -60,7 +61,7 @@ export default {
     '/img': {
         label: '/img [图片] (ctrl+alt+i)',
         value: '![](http://)',
-        ch: 2,
+        ch: 1,
     },
     '/table': {
         label: '/table [表格]',
@@ -73,10 +74,16 @@ export default {
     '/task': {
         label: '/task [任务列表]',
         value: '- [ ] 未完成任务\n- [x] 已完成任务',
+        line: 1,
+        ch: 11,
+        ch2: 12
     },
     '/details': {
         label: '/details [折叠详情]',
         value: '<details>\n<summary>标题</summary>详情内容\n</details>',
+        line: 1,
+        ch: 11,
+        ch2: 25
     },
     '/upload': {
         label: '/upload [上传文件] (ctrl+u)',

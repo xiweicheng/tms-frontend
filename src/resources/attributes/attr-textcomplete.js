@@ -40,6 +40,7 @@ export class AttrTextcompleteCustomAttribute {
                         _.delay(() => {
                             autosize.update(this.element);
                         });
+                        this.setCaretPosition(tips[value].ch2 ? tips[value].ch2 : tips[value].ch);
                         return `$1${tips[value].value}`;
                     } else {
                         return '';
@@ -65,6 +66,13 @@ export class AttrTextcompleteCustomAttribute {
         } else {
             this.unbind();
         }
+    }
+
+    setCaretPosition(ch) {
+        (ch) && (_.delay(() => {
+            let cr = utils.getCursortPosition(this.element);
+            utils.setCaretPosition(this.element, cr - ch);
+        }, 100));
     }
 
     unbind() {

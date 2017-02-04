@@ -196,6 +196,7 @@ export class EmChatInput {
             },
             replace: (value) => {
                 if (this.tipsActionHandler(value)) {
+                    this.setCaretPosition(tips[value].line, tips[value].ch);
                     return `$1${tips[value].value}`;
                 } else {
                     return '';
@@ -233,6 +234,16 @@ export class EmChatInput {
                 this.emHotkeysModal.show();
             }
         });
+    }
+
+    setCaretPosition(line, ch) {
+        (line || ch) && (_.delay(() => {
+            let cr = this.simplemde.codemirror.getCursor();
+            this.simplemde.codemirror.setCursor({
+                line: cr.line - (line ? line : 0),
+                ch: cr.line ? (ch ? ch : 0) : (cr.ch - (ch ? ch : 0))
+            });
+        }, 100));
     }
 
     sendChatMsg() {
@@ -298,35 +309,6 @@ export class EmChatInput {
     /**
      * 编辑器插入自定义沟通内容
      * @param  {[type]} cm      [description]
-     * @param  {[type]} tip [description]
-     * @return {[type]}         [description]
-     */
-    insertTipContent(tip, mde) {
-        let cm = mde ? mde.codemirror : this.simplemde.codemirror;
-        var cursor = cm.getCursor();
-        var line = cm.getLine(cursor.line);
-        var indexSlash = _.lastIndexOf(line, '/', cursor.ch);
-        if (cursor) {
-            cm.replaceRange(tip.value, {
-                ch: indexSlash,
-                line: cursor.line
-            }, cursor);
-            cm.focus();
-
-            // TODO bug:奇怪被填充前面的字符
-            if (tip.ch || tip.line) {
-                cm.setCursor({
-                    line: tip.line ? (cursor.line + tip.line) : cm.getCursor().line,
-                    ch: tip.ch ? (indexSlash + tip.ch) : 0
-                });
-            }
-
-        }
-    }
-
-    /**
-     * 编辑器插入自定义沟通内容
-     * @param  {[type]} cm      [description]
      * @param  {[type]} comment [description]
      * @return {[type]}         [description]
      */
@@ -345,7 +327,6 @@ export class EmChatInput {
         } else if (value == '/shortcuts') {
             this.emHotkeysModal.show();
         } else {
-            // this.insertTipContent(tips[value]);
             return true;
         }
 
