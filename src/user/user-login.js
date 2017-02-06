@@ -11,7 +11,7 @@ export class UserLogin {
     }
 
     kdHandler(evt) {
-        if(evt.keyCode === 13) {
+        if (evt.keyCode === 13) {
             this.loginHandler();
         }
 
@@ -36,6 +36,12 @@ export class UserLogin {
                     window.location = wurl('path');
                 }
 
+            }).fail((xhr, sts, err) => {
+                if (xhr.status == 401) {
+                    toastr.error('用户名密码不正确!');
+                } else if(xhr.status != 0) {
+                    toastr.error('网络连接错误!');
+                }
             });
         });
 

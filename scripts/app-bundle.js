@@ -4217,6 +4217,12 @@ define('user/user-login',['exports'], function (exports) {
                     } else {
                         window.location = wurl('path');
                     }
+                }).fail(function (xhr, sts, err) {
+                    if (xhr.status == 401) {
+                        toastr.error('用户名密码不正确!');
+                    } else if (xhr.status != 0) {
+                        toastr.error('网络连接错误!');
+                    }
                 });
             });
 
