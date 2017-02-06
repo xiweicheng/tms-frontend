@@ -46,10 +46,10 @@
                         <!-- <i class="plus link circular icon"></i> -->
                     </div>
                     <div ref="userListRef" class="ui middle aligned selection list">
-                        <a repeat.for="item of users" title="${item.username}" show.bind="!item.hidden" href="#/chat/@${item.username}" class="item ${(isAt && item.username == chatTo) ? 'active' : ''}" data-id="${item.username}">
+                        <a repeat.for="item of users | sortUsers:loginUser.username" title="${item.username}" show.bind="!item.hidden" href="#/chat/@${item.username}" class="item ${(isAt && item.username == chatTo) ? 'active' : ''}" data-id="${item.username}">
                             <i style="font-weight: bold;" class="at icon"></i>
                             <div class="content">
-                                <div style="color: black;">${item.name ? item.name : item.username}</div>
+                                <div style="color: black;">${item.name ? item.name : item.username} ${item.username == loginUser.username ? '(自己)' : ''}</div>
                             </div>
                         </a>
                     </div>

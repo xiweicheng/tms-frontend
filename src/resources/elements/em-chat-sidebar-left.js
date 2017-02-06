@@ -8,6 +8,15 @@ export class EmChatSidebarLeft {
     @bindable channels;
     @bindable chatTo;
     @bindable isAt;
+    filter = '';
+
+    usersChanged() {
+        this._filter();
+    }
+
+    channelsChanged() {
+        this._filter();
+    }
 
     /**
      * 构造函数
@@ -40,7 +49,8 @@ export class EmChatSidebarLeft {
         });
     }
 
-    chatToUserFilerKeyupHanlder(evt) {
+    _filter() {
+
         _.each(this.users, (item) => {
             item.hidden = item.username.indexOf(this.filter) == -1;
         });
@@ -48,6 +58,10 @@ export class EmChatSidebarLeft {
         _.each(this.channels, (item) => {
             item.hidden = item.name.indexOf(this.filter) == -1;
         });
+    }
+
+    chatToUserFilerKeyupHanlder(evt) {
+        this._filter();
 
         if (evt.keyCode === 13) {
             let user = _.find(this.users, {

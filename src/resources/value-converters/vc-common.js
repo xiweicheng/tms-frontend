@@ -74,3 +74,16 @@ export class SortValueConverter {
         return _.isArray(value) ? _.sortBy(value, prop) : value;
     }
 }
+
+
+export class SortUsersValueConverter {
+    toView(value, username) {
+        if (_.isArray(value) && username) {
+            let user = _.find(value, { username: username });
+            if (user) {
+                return [user, ..._.reject(value, { username: username })]
+            }
+        }
+        return value;
+    }
+}
