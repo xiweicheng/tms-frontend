@@ -17,7 +17,7 @@
                         <a repeat.for="item of channels | sort:'title'" title="${item.title}(${item.name})" show.bind="!item.hidden" href="#/chat/${item.name}" class="item ${(!isAt && item.name == chatTo) ? 'active' : ''}">
                             <i class="hashtag icon"></i>
                             <div class="content">
-                                <div style="color: black;">${item.title}</div>
+                                <div class="tms-name">${item.title}</div>
                             </div>
                             <div class="actions">
                                 <div if.bind="item.owner.username == loginUser.username" ui-dropdown class="ui right pointing dropdown">
@@ -49,7 +49,7 @@
                         <a repeat.for="item of users | sortUsers:loginUser.username" title="${item.username}" show.bind="!item.hidden" href="#/chat/@${item.username}" class="item ${(isAt && item.username == chatTo) ? 'active' : ''}" data-id="${item.username}">
                             <i style="font-weight: bold;" class="at icon"></i>
                             <div class="content">
-                                <div style="color: black;">${item.name ? item.name : item.username} ${item.username == loginUser.username ? '(自己)' : ''}</div>
+                                <div class="tms-name">${item.name ? item.name : item.username} ${item.username == loginUser.username ? '(自己)' : ''}</div>
                             </div>
                         </a>
                     </div>
