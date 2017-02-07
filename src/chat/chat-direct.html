@@ -20,8 +20,8 @@
                             </div>
                         </div>
                     </div>
-                    <div show.bind="isShowHead" title="滚至头部" class="tms-go tms-go-head"><div click.delegate="goHeadHandler()" class="circular ui icon button"><i class="chevron up icon"></i></div></div>
-                    <div show.bind="isShowFoot" title="滚至尾部" class="tms-go tms-go-foot"><div click.delegate="goFootHandler()" class="circular ui icon button"><i class="chevron down icon"></i></div></div>
+                    <div show.bind="isShowHead" title="滚至头部(alt+↑)" class="tms-go tms-go-head"><div click.delegate="goHeadHandler()" class="circular ui icon button"><i class="chevron up icon"></i></div></div>
+                    <div show.bind="isShowFoot" title="滚至尾部(alt+↓)" class="tms-go tms-go-foot"><div click.delegate="goFootHandler()" class="circular ui icon button"><i class="chevron down icon"></i></div></div>
                 </div>
                 <em-chat-input channel.bind="channel" is-at.bind="isAt" chat-to.bind="chatTo" em-chat-input.ref="emChatInputRef"></em-chat-input>
             </div>
