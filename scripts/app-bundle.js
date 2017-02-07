@@ -8386,17 +8386,33 @@ define('resources/elements/em-user-avatar',['exports', 'aurelia-framework', 'col
 
         EmUserAvatar.prototype.userChanged = function userChanged() {
             if (this.user) {
-                if (this.user.name) {
-                    this.nameChar = _.last(this.user.name);
-                } else {
-                    this.nameChar = _.last(this.user.username);
-                }
+                this._calcNameChar();
 
                 var cs = colorHash.rgb(this.user.username);
                 this.bgColor = 'rgba(' + cs[0] + ', ' + cs[1] + ', ' + cs[2] + ', 0.6)';
 
                 this.color = 'rgba(' + (255 - cs[0]) + ', ' + (255 - cs[1]) + ', ' + (255 - cs[2]) + ', 1)';
             }
+        };
+
+        EmUserAvatar.prototype._calcNameChar = function _calcNameChar() {
+            var lastChar = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+            if (this.user.name) {
+                this.nameChar = lastChar ? _.last(this.user.name) : _.first(this.user.name);
+            } else {
+                this.nameChar = lastChar ? _.last(this.user.username) : _.first(this.user.username);
+            }
+        };
+
+        EmUserAvatar.prototype.attached = function attached() {
+            var _this = this;
+
+            $(this.avatarRef).hover(function () {
+                _this._calcNameChar(false);
+            }, function () {
+                _this._calcNameChar();
+            });
         };
 
         return EmUserAvatar;
@@ -26607,6 +26623,6 @@ define('text!resources/elements/em-hotkeys-modal.html', ['module'], function(mod
 define('text!resources/elements/em-user-avatar.css', ['module'], function(module) { module.exports = ".em-user-avatar.avatar.ui.mini.circular.image {\n  width: 35px;\n  height: 35px;\n  font-size: 35px;\n  background-color: rgba(150, 178, 183, 0.4);\n  text-align: center;\n  margin: 0;\n  padding-right: 0;\n}\n.em-user-avatar .text-char {\n  display: inline-block;\n  height: 35px;\n  line-height: 35px;\n  vertical-align: top;\n}\n"; });
 define('text!resources/elements/em-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"modal\" class=\"ui modal ${classes}\">\r\n        <!-- <i class=\"close icon\"></i> -->\r\n        <div class=\"header\">\r\n            <slot name=\"header\">modal header...</slot>\r\n        </div>\r\n        <div class=\"content\">\r\n            <div class=\"ui inverted dimmer\" style=\"background-color: rgba(255, 255, 255, 0.5) !important;\">\r\n                <div class=\"ui loader\"></div>\r\n            </div>\r\n            <slot name=\"content\">modal content...</slot>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <slot name=\"actions\">\r\n                <div style=\"margin-left: 3.5px;\" class=\"ui cancel basic blue left floated button\" textcontent.bind=\"cancelLabel\">取消</div>\r\n                <div show.bind=\"showConfirm\" class=\"ui ok blue button ${(loading || disabled) ? 'disabled' : ''}\" textcontent.bind=\"confirmLabel\">确认</div>\r\n            </slot>\r\n            <div style=\"clear: both;\"></div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-user-edit.css', ['module'], function(module) { module.exports = ".tms-em-user-edit .ui.form .field > label {\n  width: 45px!important;\n}\n.tms-em-user-edit .ui.form .field .user-username {\n  margin-left: 0;\n}\n.em-user-edit-modal {\n  /* Tablet & PC */\n}\n@media only screen and (min-width: 768px) {\n  .em-user-edit-modal {\n    width: 500px!important;\n    margin-left: -250px !important;\n  }\n}\n"; });
-define('text!resources/elements/em-user-avatar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-user-avatar.css\"></require>\r\n    <a css=\"background-color: ${bgColor};\" data-value=\"${user.username}\" class=\"avatar ui mini circular image em-user-avatar\">\r\n        <span css=\"color: ${color}\" class=\"text-char\">${nameChar}</span>\r\n    </a>\r\n</template>\r\n"; });
+define('text!resources/elements/em-user-avatar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-user-avatar.css\"></require>\r\n    <a ref=\"avatarRef\" css=\"background-color: ${bgColor};\" data-value=\"${user.username}\" class=\"avatar ui mini circular image em-user-avatar\">\r\n        <span css=\"color: ${color}\" class=\"text-char\">${nameChar}</span>\r\n    </a>\r\n</template>\r\n"; });
 define('text!resources/elements/em-user-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-user-edit.css\"></require>\r\n    <em-modal classes=\"small em-user-edit-modal\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\r\n        <div slot=\"header\">个人信息编辑</div>\r\n        <div slot=\"content\" class=\"tms-em-user-edit\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"ui form\" with.bind=\"user\">\r\n                    <div class=\"inline field\">\r\n                        <label>用户名:</label>\r\n                        <div class=\"ui basic label user-username\">${username}</div>\r\n                    </div>\r\n                    <div class=\"inline field\">\r\n                        <label>密码:</label>\r\n                        <input name=\"password\" value.bind=\"password\" placeholder=\"密码\" type=\"text\">\r\n                    </div>\r\n                    <div class=\"required inline field\">\r\n                        <label>姓名:</label>\r\n                        <input name=\"name\" value.bind=\"name\" placeholder=\"姓名\" type=\"text\">\r\n                    </div>\r\n                    <div class=\"required inline field\">\r\n                        <label>邮箱:</label>\r\n                        <input name=\"mail\" value.bind=\"mails\" placeholder=\"邮箱\" type=\"text\">\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 //# sourceMappingURL=app-bundle.js.map
