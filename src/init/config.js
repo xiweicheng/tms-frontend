@@ -109,6 +109,44 @@ export class Config {
                 return '<li>' + text + '</li>';
             }
         };
+        renderer.link = function(href, title, text) {
+            if (this.options.sanitize) {
+                try {
+                    var prot = decodeURIComponent(unescape(href))
+                        .replace(/[^\w:]/g, '')
+                        .toLowerCase();
+                } catch (e) {
+                    return '';
+                }
+                if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
+                    return '';
+                }
+            }
+            var out = '<a target="_blank" href="' + href + '"';
+            if (title) {
+                out += ' title="' + title + '"';
+            }
+            out += '>' + text + '</a>';
+            return out;
+        };
+
+        renderer.code = function(code, lang, escaped) {
+            let codeBk = code;
+            if (this.options.highlight) {
+                var out = this.options.highlight(code, lang);
+                if (out != null && out !== code) {
+                    escaped = true;
+                    code = out;
+                }
+            }
+
+            if (!lang) {
+                return '<pre><code data-code="' + codeBk + '">' + (escaped ? code : escape(code, true)) + '\n</code></pre>';
+            }
+
+            return '<pre><code data-code="' + codeBk + '" class="' + this.options.langPrefix + escape(lang, true) + '">' + (escaped ? code : escape(code, true)) + '\n</code></pre>\n';
+        };
+
         // https://github.com/chjj/marked
         marked.setOptions({
             renderer: renderer,
