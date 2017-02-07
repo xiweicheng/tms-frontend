@@ -38,6 +38,16 @@ export class ChatDirect {
                 toastr.error('复制到剪贴板失败!');
             });
 
+        // new Clipboard('code[data-code]', {
+        //     text: function(trigger) {
+        //         return $(trigger).attr('data-code');
+        //     }
+        // }).on('success', function(e) {
+        //     toastr.success('复制到剪贴板成功!');
+        // }).on('error', function(e) {
+        //     toastr.error('复制到剪贴板失败!');
+        // });
+
         this.initSubscribeEvent();
     }
 

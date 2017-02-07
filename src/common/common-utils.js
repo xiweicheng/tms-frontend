@@ -393,6 +393,23 @@ export class CommonUtils {
             range.select();
         }
     }
+
+    /**
+     * 是否为绝对url
+     * @param  {[type]}  url [description]
+     * @return {Boolean}     [description]
+     */
+    isAbsUrl(url) {
+        if (_.startsWith(url, 'http://')) {
+            return true;
+        } else if (_.startsWith(url, 'https://')) {
+            return true;
+        } else if (_.startsWith(url, '//')) {
+            return true;
+        }
+
+        return false;
+    }
 }
 
 export default new CommonUtils();

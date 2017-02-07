@@ -7,6 +7,24 @@ code.nx {
     white-space: nowrap;
 }
 
+.markdown-body {
+    .pre-code-wrapper {
+        position: relative;
+        > i.copy.icon {
+            display: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+            cursor: pointer;
+        }
+        &:hover {
+            > i.copy.icon {
+                display: block;
+            }
+        }
+    }
+}
+
 .animated {
     -webkit-animation-duration: 1s;
     animation-duration: 1s;

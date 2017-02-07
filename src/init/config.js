@@ -123,7 +123,7 @@ export class Config {
                 }
             }
             let out;
-            if (wurl('hostname', href) != wurl('hostname')) {
+            if (utils.isAbsUrl(href) && (wurl('hostname', href) != wurl('hostname'))) {
                 out = '<a target="_blank" href="' + href + '"';
             } else {
                 out = '<a href="' + href + '"';
@@ -133,6 +133,10 @@ export class Config {
             }
             out += '>' + text + '</a>';
             return out;
+        };
+
+        renderer.codespan = function(text) {
+            return '<code data-code="' + text + '">' + text + '</code>';
         };
 
         renderer.code = function(code, lang, escaped) {
@@ -146,10 +150,10 @@ export class Config {
             }
 
             if (!lang) {
-                return '<pre><code data-code="' + codeBk + '">' + (escaped ? code : escape(code, true)) + '\n</code></pre>';
+                return `<div class="pre-code-wrapper"><i data-clipboard-text="${codeBk}" title="复制到剪贴板" class="tms-clipboard copy icon"></i><pre><code>${escaped ? code : escape(code, true)}\n</code></pre></div>`;
             }
 
-            return '<pre><code data-code="' + codeBk + '" class="' + this.options.langPrefix + escape(lang, true) + '">' + (escaped ? code : escape(code, true)) + '\n</code></pre>\n';
+            return `<div class="pre-code-wrapper"><i data-clipboard-text="${codeBk}" title="复制到剪贴板" class="tms-clipboard copy icon"></i><pre><code class="${this.options.langPrefix + escape(lang, true)}">${escaped ? code : escape(code, true)}\n</code></pre><div>\n`;
         };
 
         // https://github.com/chjj/marked
