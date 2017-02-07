@@ -198,7 +198,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             new _clipboard2.default('.tms-chat-direct .tms-clipboard').on('success', function (e) {
                 toastr.success('复制到剪贴板成功!');
             }).on('error', function (e) {
-                toastr.error('复制到剪贴板成功!');
+                toastr.error('复制到剪贴板失败!');
             });
 
             this.initSubscribeEvent();

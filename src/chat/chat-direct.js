@@ -35,7 +35,7 @@ export class ChatDirect {
             .on('success', function(e) {
                 toastr.success('复制到剪贴板成功!');
             }).on('error', function(e) {
-                toastr.error('复制到剪贴板成功!');
+                toastr.error('复制到剪贴板失败!');
             });
 
         this.initSubscribeEvent();
