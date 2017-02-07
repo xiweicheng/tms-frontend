@@ -218,6 +218,12 @@ export class EmChatTopMenu {
     }
 
     showStowHandler() {
+
+        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_STOW)) {
+            this.toggleRightSidebar();
+            return;
+        }
+
         this.activeType = nsCons.ACTION_TYPE_STOW;
         $.get('/admin/chat/channel/getStows', (data) => {
             if (data.success) {
@@ -238,6 +244,12 @@ export class EmChatTopMenu {
     }
 
     showAtHandler() {
+
+        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_AT)) {
+            this.toggleRightSidebar();
+            return;
+        }
+
         this.activeType = nsCons.ACTION_TYPE_AT;
         this.newAtCnt = 0;
         $.get('/admin/chat/channel/getAts', {
@@ -263,6 +275,12 @@ export class EmChatTopMenu {
     }
 
     showWikiDirHandler() {
+
+        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_DIR)) {
+            this.toggleRightSidebar();
+            return;
+        }
+
         this.activeType = nsCons.ACTION_TYPE_DIR;
         ea.publish(nsCons.EVENT_CHAT_SHOW_DIR, {
             action: this.activeType,

@@ -501,9 +501,14 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                     } else if (to == 't') {
                         $(_this7.commentsRef).parent('.scroll-content').scrollTo(0);
                     } else {
-                        $(_this7.commentsRef).parent('.scroll-content').scrollTo('.comment[data-id="' + to + '"]', {
-                            offset: _this7.offset
-                        });
+                        if (_.some(_this7.chats, { id: +to })) {
+                            $(_this7.commentsRef).parent('.scroll-content').scrollTo('.comment[data-id="' + to + '"]', {
+                                offset: _this7.offset
+                            });
+                        } else {
+                            $(_this7.commentsRef).parent('.scroll-content').scrollTo('max');
+                            toastr.warning('\u6D88\u606F[' + to + ']\u4E0D\u5B58\u5728,\u53EF\u80FD\u5DF2\u7ECF\u88AB\u5220\u9664!');
+                        }
                     }
                 });
             });
@@ -7808,6 +7813,11 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
         EmChatTopMenu.prototype.showStowHandler = function showStowHandler() {
             var _this6 = this;
 
+            if (this.isRightSidebarShow && this.activeType == nsCons.ACTION_TYPE_STOW) {
+                this.toggleRightSidebar();
+                return;
+            }
+
             this.activeType = nsCons.ACTION_TYPE_STOW;
             $.get('/admin/chat/channel/getStows', function (data) {
                 if (data.success) {
@@ -7829,6 +7839,11 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
 
         EmChatTopMenu.prototype.showAtHandler = function showAtHandler() {
             var _this7 = this;
+
+            if (this.isRightSidebarShow && this.activeType == nsCons.ACTION_TYPE_AT) {
+                this.toggleRightSidebar();
+                return;
+            }
 
             this.activeType = nsCons.ACTION_TYPE_AT;
             this.newAtCnt = 0;
@@ -7855,6 +7870,12 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
         };
 
         EmChatTopMenu.prototype.showWikiDirHandler = function showWikiDirHandler() {
+
+            if (this.isRightSidebarShow && this.activeType == nsCons.ACTION_TYPE_DIR) {
+                this.toggleRightSidebar();
+                return;
+            }
+
             this.activeType = nsCons.ACTION_TYPE_DIR;
             ea.publish(nsCons.EVENT_CHAT_SHOW_DIR, {
                 action: this.activeType,

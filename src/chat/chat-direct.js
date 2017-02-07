@@ -38,16 +38,6 @@ export class ChatDirect {
                 toastr.error('复制到剪贴板失败!');
             });
 
-        // new Clipboard('code[data-code]', {
-        //     text: function(trigger) {
-        //         return $(trigger).attr('data-code');
-        //     }
-        // }).on('success', function(e) {
-        //     toastr.success('复制到剪贴板成功!');
-        // }).on('error', function(e) {
-        //     toastr.error('复制到剪贴板失败!');
-        // });
-
         this.initSubscribeEvent();
     }
 
@@ -363,9 +353,14 @@ export class ChatDirect {
                 } else if (to == 't') {
                     $(this.commentsRef).parent('.scroll-content').scrollTo(0);
                 } else {
-                    $(this.commentsRef).parent('.scroll-content').scrollTo(`.comment[data-id="${to}"]`, {
-                        offset: this.offset
-                    });
+                    if (_.some(this.chats, { id: +to })) {
+                        $(this.commentsRef).parent('.scroll-content').scrollTo(`.comment[data-id="${to}"]`, {
+                            offset: this.offset
+                        });
+                    } else {
+                        $(this.commentsRef).parent('.scroll-content').scrollTo('max');
+                        toastr.warning(`消息[${to}]不存在,可能已经被删除!`);
+                    }
                 }
             });
         });
