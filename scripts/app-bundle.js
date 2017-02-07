@@ -3960,7 +3960,12 @@ define('init/config',['exports', 'aurelia-templating-resources', 'aurelia-event-
                         return '';
                     }
                 }
-                var out = '<a target="_blank" href="' + href + '"';
+                var out = void 0;
+                if ((0, _wurl2.default)('hostname', href) != (0, _wurl2.default)('hostname')) {
+                    out = '<a target="_blank" href="' + href + '"';
+                } else {
+                    out = '<a href="' + href + '"';
+                }
                 if (title) {
                     out += ' title="' + title + '"';
                 }

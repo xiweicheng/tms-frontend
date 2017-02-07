@@ -122,7 +122,12 @@ export class Config {
                     return '';
                 }
             }
-            var out = '<a target="_blank" href="' + href + '"';
+            let out;
+            if (wurl('hostname', href) != wurl('hostname')) {
+                out = '<a target="_blank" href="' + href + '"';
+            } else {
+                out = '<a href="' + href + '"';
+            }
             if (title) {
                 out += ' title="' + title + '"';
             }
