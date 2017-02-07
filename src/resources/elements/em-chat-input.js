@@ -65,7 +65,15 @@ export class EmChatInput {
     }
 
     initPaste() {
-        $(this.$chatMsgInputRef).pastableTextarea().on('pasteImage', (ev, data) => {
+
+        let $paste;
+        if (this.$chatMsgInputRef.is('textarea')) {
+            $paste = $(this.$chatMsgInputRef).pastableTextarea();
+        } else {
+            $paste = $(this.$chatMsgInputRef).pastableContenteditable();
+        }
+
+        $paste && ($paste.on('pasteImage', (ev, data) => {
 
             $.post('/admin/file/base64', {
                 dataURL: data.dataURL,
@@ -81,7 +89,7 @@ export class EmChatInput {
             });
         }).on('pasteImageError', (ev, data) => {
             toastr.error(data.message, '剪贴板粘贴图片错误!');
-        });
+        }));
     }
 
     initDropzone() {
@@ -178,6 +186,10 @@ export class EmChatInput {
         });
 
         this.$chatMsgInputRef = $(this.inputRef).find('.textareaWrapper .CodeMirror textarea');
+        if (this.$chatMsgInputRef.size() === 0) {
+            this.$chatMsgInputRef = $(this.inputRef).find('.textareaWrapper .CodeMirror [contenteditable="true"]');
+        }
+
         this.initTextcomplete();
     }
 

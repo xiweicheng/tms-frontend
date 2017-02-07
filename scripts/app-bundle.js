@@ -6532,7 +6532,14 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
         EmChatInput.prototype.initPaste = function initPaste() {
             var _this4 = this;
 
-            $(this.$chatMsgInputRef).pastableTextarea().on('pasteImage', function (ev, data) {
+            var $paste = void 0;
+            if (this.$chatMsgInputRef.is('textarea')) {
+                $paste = $(this.$chatMsgInputRef).pastableTextarea();
+            } else {
+                $paste = $(this.$chatMsgInputRef).pastableContenteditable();
+            }
+
+            $paste && $paste.on('pasteImage', function (ev, data) {
 
                 $.post('/admin/file/base64', {
                     dataURL: data.dataURL,
@@ -6635,6 +6642,10 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
             });
 
             this.$chatMsgInputRef = $(this.inputRef).find('.textareaWrapper .CodeMirror textarea');
+            if (this.$chatMsgInputRef.size() === 0) {
+                this.$chatMsgInputRef = $(this.inputRef).find('.textareaWrapper .CodeMirror [contenteditable="true"]');
+            }
+
             this.initTextcomplete();
         };
 
