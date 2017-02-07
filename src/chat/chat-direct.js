@@ -372,9 +372,11 @@ export class ChatDirect {
 
         let lastChat = _.last(this.chats);
 
-        if (this.isAt || !this.channel || !lastChat) {
+        if (this.pollOnGoing || this.isAt || !this.channel || !lastChat) {
             return;
         }
+
+        this.pollOnGoing = true;
 
         $.get('/admin/chat/channel/poll', {
             channelId: this.channel.id,
@@ -400,13 +402,15 @@ export class ChatDirect {
                 }
                 this.countAt = data.data.countAt;
             }
+        }).always(() => {
+            this.pollOnGoing = false;
         });
     }
 
     // 消息轮询处理
     _pollChats(resetCb, stopCb) {
 
-        if (!this.chats || !this.first) {
+        if (this.pollChatsOngoing || !this.chats || !this.first) {
             return;
         }
 
@@ -429,6 +433,8 @@ export class ChatDirect {
             };
         }
 
+        this.pollChatsOngoing = true;
+
         $.get(url, data, (data) => {
             if (data.success) {
 
@@ -448,6 +454,8 @@ export class ChatDirect {
             utils.errorAutoTry(() => {
                 resetCb();
             });
+        }).always(() => {
+            this.pollChatsOngoing = false;
         });
     }
 
