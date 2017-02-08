@@ -150,10 +150,10 @@ export class Config {
             }
 
             if (!lang) {
-                return `<div class="pre-code-wrapper"><i data-clipboard-text="${codeBk}" title="复制到剪贴板" class="tms-clipboard copy icon"></i><pre><code>${escaped ? code : escape(code, true)}\n</code></pre></div>`;
+                return `<div class="pre-code-wrapper"><i data-clipboard-text="${codeBk}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre><code>${escaped ? code : escape(code, true)}\n</code></pre></div>`;
             }
 
-            return `<div class="pre-code-wrapper"><i data-clipboard-text="${codeBk}" title="复制到剪贴板" class="tms-clipboard copy icon"></i><pre><code class="${this.options.langPrefix + escape(lang, true)}">${escaped ? code : escape(code, true)}\n</code></pre><div>\n`;
+            return `<div class="pre-code-wrapper"><i data-clipboard-text="${codeBk}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre><code class="${this.options.langPrefix + escape(lang, true)}">${escaped ? code : escape(code, true)}\n</code></pre><div>\n`;
         };
 
         // https://github.com/chjj/marked

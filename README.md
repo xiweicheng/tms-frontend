@@ -22,6 +22,7 @@ https://github.com/flesler/jquery.scrollTo
 https://github.com/chjj/marked  
 https://www.npmjs.com/package/highlight.js  
 https://github.com/zenorocha/clipboard.js  
+https://github.com/lgarron/clipboard.js  
 https://www.npmjs.com/package/dropzone https://github.com/enyo/dropzone  
 https://github.com/layerssss/paste.js  
 https://github.com/hustcc/timeago.js  

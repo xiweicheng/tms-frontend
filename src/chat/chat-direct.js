@@ -4,6 +4,9 @@ import {
     default as Clipboard
 } from 'clipboard';
 import {
+    default as clipboard
+} from 'clipboard-js';
+import {
     default as Dropzone
 } from 'dropzone';
 
@@ -544,6 +547,28 @@ export class ChatDirect {
             setTimeout(function() {
                 $btn.removeClass('cbutton--click');
             }, 500);
+        });
+
+        $(this.chatContainerRef).on('click', 'code[data-code]', function(event) {
+            if (event.ctrlKey) {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+                clipboard.copy($(event.currentTarget).attr('data-code')).then(
+                    () => { toastr.success('复制到剪贴板成功!'); },
+                    (err) => { toastr.error('复制到剪贴板失败!'); }
+                );
+            }
+        });
+
+        $(this.chatContainerRef).on('click', '.pre-code-wrapper', function(event) {
+            if (event.ctrlKey) {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+                clipboard.copy($(event.currentTarget).find('i[data-clipboard-text]').attr('data-clipboard-text')).then(
+                    () => { toastr.success('复制到剪贴板成功!'); },
+                    (err) => { toastr.error('复制到剪贴板失败!'); }
+                );
+            }
         });
 
     }

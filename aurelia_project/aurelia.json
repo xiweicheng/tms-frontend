@@ -90,6 +90,7 @@
         "dependencies": [
           "marked",
           "autosize",
+          "clipboard-js",
           {
             "name": "color-hash",
             "path": "../node_modules/color-hash",
