@@ -9,6 +9,7 @@
                         <th>用户名</th>
                         <th>姓名</th>
                         <th>邮箱</th>
+                        <th>登录</th>
                         <th>状态</th>
                     </tr>
                 </thead>
@@ -17,6 +18,7 @@
                         <td>${item.username}</td>
                         <td>${item.name}</td>
                         <td>${item.mails}</td>
+                        <td title="${item.lastLoginDate | date}">${item.lastLoginDate | timeago}</td>
                         <td if.bind="item.enabled">
                             <div class="ui green tag label">启用中</div>
                         </td>
