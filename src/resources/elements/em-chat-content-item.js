@@ -31,7 +31,7 @@ export class EmChatContentItem {
      * 当视图被附加到DOM中时被调用
      */
     attached() {
-        $('body').on('click', '.markdown-body .at-user', (event) => {
+        $('.tms-chat-direct').on('click', '.markdown-body .at-user', (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_CHAT_MSG_INSERT, {
                 content: `{~${$(event.currentTarget).attr('data-value')}} `
@@ -39,7 +39,7 @@ export class EmChatContentItem {
         });
 
         // 消息popup
-        $('body').on('mouseenter', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', (event) => {
+        $('.tms-chat-direct').on('mouseenter', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', (event) => {
             event.preventDefault();
             var $a = $(event.currentTarget);
             ea.publish(nsCons.EVENT_CHAT_MSG_POPUP_SHOW, {
@@ -49,7 +49,7 @@ export class EmChatContentItem {
         });
 
         // wiki dir
-        $('body').on('mouseenter', '.tms-content-body .em-chat-content-item', (event) => {
+        $('.tms-chat-direct').on('mouseenter', '.tms-content-body .em-chat-content-item', (event) => {
             event.preventDefault();
             var $c = $(event.currentTarget);
 
@@ -58,13 +58,13 @@ export class EmChatContentItem {
             });
         });
 
-        $('body').on('click', '.panel-wiki-dir .wiki-dir-item', (event) => {
+        $('.tms-chat-direct').on('click', '.panel-wiki-dir .wiki-dir-item', (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_CHAT_CONTENT_SCROLL_TO, { target: $('#' + $(event.currentTarget).attr('data-id')) });
         });
 
         // 用户信息popup
-        $('body').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].avatar:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+        $('.tms-chat-direct').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].avatar:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
             event.preventDefault();
             var $a = $(event.currentTarget);
             ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {

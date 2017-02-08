@@ -537,7 +537,7 @@ export class ChatDirect {
             this.isShowFoot = false;
         });
 
-        $('body').on('click', '.cbutton', function(event) {
+        $(this.commentsRef).on('click', '.cbutton', function(event) {
             event.preventDefault();
             let $btn = $(this);
             $btn.addClass('cbutton--click');
