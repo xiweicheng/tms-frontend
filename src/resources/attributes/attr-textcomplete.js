@@ -63,7 +63,7 @@ export class AttrTextcompleteCustomAttribute {
                 }
             }], {
                 appendTo: $(this.element).prev('.textcomplete-container').find('.append-to'),
-                maxCount: 25
+                maxCount: 20
             });
         } else {
             this.unbind();

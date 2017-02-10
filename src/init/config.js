@@ -136,7 +136,7 @@ export class Config {
         };
 
         renderer.codespan = function(text) {
-            return '<code data-code="' + text + '">' + text + '</code>';
+            return `<code data-code="${text}">${text}</code>`;
         };
 
         renderer.code = function(code, lang, escaped) {
@@ -150,10 +150,10 @@ export class Config {
             }
 
             if (!lang) {
-                return `<div class="pre-code-wrapper"><i data-clipboard-text="${codeBk}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre><code>${escaped ? code : escape(code, true)}\n</code></pre></div>`;
+                return `<div class="pre-code-wrapper"><i data-clipboard-text="${utils.escape(codeBk, true)}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre><code>${escaped ? code : utils.escape(code, true)}\n</code></pre></div>`;
             }
 
-            return `<div class="pre-code-wrapper"><i data-clipboard-text="${codeBk}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre><code class="${this.options.langPrefix + escape(lang, true)}">${escaped ? code : escape(code, true)}\n</code></pre><div>\n`;
+            return `<div class="pre-code-wrapper"><i data-clipboard-text="${utils.escape(codeBk, true)}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre><code class="${this.options.langPrefix + utils.escape(lang, true)}">${escaped ? code : utils.escape(code, true)}\n</code></pre><div>\n`;
         };
 
         // https://github.com/chjj/marked

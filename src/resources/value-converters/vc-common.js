@@ -75,13 +75,24 @@ export class SortValueConverter {
     }
 }
 
-
 export class SortUsersValueConverter {
     toView(value, username) {
         if (_.isArray(value) && username) {
             let user = _.find(value, { username: username });
             if (user) {
                 return [user, ..._.reject(value, { username: username })]
+            }
+        }
+        return value;
+    }
+}
+
+export class SortChannelsValueConverter {
+    toView(value) {
+        if (_.isArray(value)) {
+            let channelAll = _.find(value, { name: 'all' });
+            if (channelAll) {
+                return [channelAll, ..._.reject(value, { name: 'all' })]
             }
         }
         return value;

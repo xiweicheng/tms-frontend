@@ -20,30 +20,30 @@ export class UserLogin {
 
     loginHandler() {
 
-        $.get('/admin/login', (data) => {
+        // $.get('/admin/login', (data) => {
 
-            let rm = $(this.rememberMeRef).checkbox('is checked') ? 'on' : '';
+        let rm = $(this.rememberMeRef).checkbox('is checked') ? 'on' : '';
 
-            $.post('/admin/signin', {
-                username: this.username,
-                password: this.password,
-                "remember-me": rm
-            }).always(() => {
-                let redirect = utils.urlQuery('redirect');
-                if (redirect) {
-                    window.location = decodeURIComponent(redirect);
-                } else {
-                    window.location = wurl('path');
-                }
+        $.post('/admin/signin', {
+            username: this.username,
+            password: this.password,
+            "remember-me": rm
+        }).done(() => {
+            let redirect = utils.urlQuery('redirect');
+            if (redirect) {
+                window.location = decodeURIComponent(redirect);
+            } else {
+                window.location = wurl('path');
+            }
 
-            }).fail((xhr, sts, err) => {
-                if (xhr.status == 401) {
-                    toastr.error('用户名密码不正确!');
-                } else if(xhr.status != 0) {
-                    toastr.error('网络连接错误!');
-                }
-            });
+        }).fail((xhr, sts, err) => {
+            if (xhr.status == 401) {
+                toastr.error('用户名密码不正确!');
+            } else if (xhr.status != 0) {
+                toastr.error('网络连接错误!');
+            }
         });
+        // });
 
         return true;
 

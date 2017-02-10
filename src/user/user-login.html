@@ -5,7 +5,7 @@
             <h2 class="ui center aligned icon header">
             <i class="circular users icon"></i> 用户登录
             </h2>
-            <form class="ui form segment">
+            <div class="ui form segment">
                 <div class="field">
                     <div class="ui left icon input">
                         <i class="user icon"></i>
@@ -25,13 +25,13 @@
                     </div>
                 </div>
                 <div class="ui center aligned header">
-                    <button type="submit" click.delegate="loginHandler()" class="ui submit fluid button ${isReq ? 'disabled' : ''}">登录</button>
+                    <button click.delegate="loginHandler()" class="ui submit fluid button ${isReq ? 'disabled' : ''}">登录</button>
                 </div>
                 <div style="text-align: center; font-size:12px;">
                     <a href="#/pwd-reset">忘记密码</a> &nbsp;&nbsp;
                     <a href="#/register">注册用户</a>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </template>
