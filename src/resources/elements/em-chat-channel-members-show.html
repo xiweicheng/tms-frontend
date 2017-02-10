@@ -1,7 +1,7 @@
 <template>
     <require from="./em-chat-channel-members-show.css"></require>
     <em-modal classes="small" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)" confirm-label="确定">
-        <div slot="header">频道成员查看</div>
+        <div slot="header">频道成员(${channel.members.length})</div>
         <div slot="content" class="em-chat-channel-members-show">
             <table class="ui very basic striped compact table">
                 <thead>

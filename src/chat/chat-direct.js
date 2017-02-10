@@ -160,6 +160,8 @@ export class ChatDirect {
      */
     activate(params, routeConfig, navigationInstruction) {
 
+        this._reset();
+
         this.markId = params.id;
         this.routeConfig = routeConfig;
 
@@ -228,6 +230,12 @@ export class ChatDirect {
             history.replaceState(null, '', utils.removeUrlQuery('id'));
         }
 
+    }
+
+    _reset() {
+        this.chats = null;
+        this.first = true; // 第一页
+        this.last = true; // 最后一页
     }
 
     lastMoreHandler() { // 上面的老消息
