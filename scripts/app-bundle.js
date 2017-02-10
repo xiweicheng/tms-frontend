@@ -5295,7 +5295,7 @@ define('resources/attributes/attr-textcomplete',['exports', 'aurelia-framework',
                     }
                 }], {
                     appendTo: $(this.element).prev('.textcomplete-container').find('.append-to'),
-                    maxCount: 25
+                    maxCount: 20
                 });
             } else {
                 this.unbind();
@@ -6845,7 +6845,7 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
                 }
             }], {
                 appendTo: '.tms-chat-status-bar',
-                maxCount: 25
+                maxCount: 20
             });
 
             this.simplemde.codemirror.on('keydown', function (cm, e) {

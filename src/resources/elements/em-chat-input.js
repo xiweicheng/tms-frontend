@@ -230,7 +230,7 @@ export class EmChatInput {
             }
         }], {
             appendTo: '.tms-chat-status-bar',
-            maxCount: 25
+            maxCount: 20
         });
 
         this.simplemde.codemirror.on('keydown', (cm, e) => {
