@@ -89,6 +89,7 @@ export class EmChatChannelMembersMgr {
     }
 
     showHandler() {
+        $(this.membersRef).dropdown().dropdown('clear');
         this.channelChanged();
     }
 
