@@ -32,8 +32,15 @@
             box-shadow: 0px -1px 1px -1px rgba(65, 131, 196, 0.5);
             > .item {
                 padding-left: 16px;
+                border-radius: 0;
                 > .icon+.content {
                     padding: 0;
+                }
+                &.active {
+                    background: rgba(0, 0, 0, 0.2);
+                }
+                &:hover {
+                    background: rgba(0, 0, 0, 0.1)!important;
                 }
             }
         }
