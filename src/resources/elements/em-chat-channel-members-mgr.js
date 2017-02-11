@@ -66,7 +66,7 @@ export class EmChatChannelMembersMgr {
         if (this.channel) {
             let usernames = _.map(this.channel.members, 'username');
             _.defer(() => {
-                $(this.membersRef).dropdown().dropdown('clear').dropdown('set selected', usernames).dropdown(this.membersOpts);
+                $(this.membersRef).dropdown().dropdown('clear').dropdown('set selected', _.sortBy(usernames)).dropdown(this.membersOpts);
             });
 
         }
