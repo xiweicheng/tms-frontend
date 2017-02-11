@@ -23,7 +23,7 @@
                 <table class="ui very basic striped compact table">
                     <thead>
                         <tr>
-                            <th>用户名</th>
+                            <th><i class="at icon" style="margin-right: 0;"></i>用户名</th>
                             <th>姓名</th>
                             <th>邮箱</th>
                             <th>登录</th>
@@ -32,7 +32,7 @@
                     </thead>
                     <tbody>
                         <tr repeat.for="item of channel.members | sort:'username'">
-                            <td>${item.username}</td>
+                            <td><i class="at icon" style="margin-right: 0;"></i>${item.username}</td>
                             <td>${item.name}</td>
                             <td>${item.mails}</td>
                             <td title="${item.lastLoginDate | date}">${item.lastLoginDate | timeago}</td>
