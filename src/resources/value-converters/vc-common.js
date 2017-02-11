@@ -80,7 +80,18 @@ export class SortUsersValueConverter {
         if (_.isArray(value) && username) {
             let user = _.find(value, { username: username });
             if (user) {
-                return [user, ..._.reject(value, { username: username })]
+                return [user, ..._.reject(value, { username: username })];
+            }
+        }
+        return value;
+    }
+}
+
+export class SortUsernamesValueConverter {
+    toView(value, username) {
+        if (_.isArray(value) && username) {
+            if (_.includes(value, username)) {
+                return [username, ..._.without(value, username)];
             }
         }
         return value;
