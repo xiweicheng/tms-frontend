@@ -12,7 +12,8 @@
                 <a if.bind="isAt && chatUser.enabled" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="启用中"><i class="heart icon"></i></a>
                 <a if.bind="isAt && !chatUser.enabled" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="禁用中"><i class="empty heart icon"></i></a>
                 <a if.bind="isAt" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="${chatUser.mails}"><i class="mail icon"></i></a>
-                <a if.bind="isAt" class="item tms-user-info" click.trigger="userInfoHandler($event)" title="从IP[${chatUser.loginRemoteAddress}]登录(${chatUser.lastLoginDate | timeago})"><i class="info circle icon"></i></a>
+                <a if.bind="isAt && chatUser.lastLoginDate" class="item tms-user-info" click.trigger="userInfoHandler($event)" title="从IP[${chatUser.loginRemoteAddress}]登录(${chatUser.lastLoginDate | timeago})"><i class="info circle icon"></i></a>
+                <a if.bind="isAt && !chatUser.lastLoginDate" class="item tms-user-info" click.trigger="userInfoHandler($event)" title="该用户可能比较懒,暂无登录记录!"><i class="info circle icon"></i></a>
             </div>
             <div class="menu">
                 <div class="ui icon search input">
