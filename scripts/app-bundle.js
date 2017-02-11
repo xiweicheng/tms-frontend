@@ -499,27 +499,32 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             }
         };
 
+        ChatDirect.prototype._scrollTo = function _scrollTo(to) {
+            if (to == 'b') {
+                $(this.commentsRef).parent('.scroll-content').scrollTo('max');
+            } else if (to == 't') {
+                $(this.commentsRef).parent('.scroll-content').scrollTo(0);
+            } else {
+                if (_.some(this.chats, { id: +to })) {
+                    $(this.commentsRef).parent('.scroll-content').scrollTo('.comment[data-id="' + to + '"]', {
+                        offset: this.offset
+                    });
+                } else {
+                    $(this.commentsRef).parent('.scroll-content').scrollTo('max');
+                    toastr.warning('\u6D88\u606F[' + to + ']\u4E0D\u5B58\u5728,\u53EF\u80FD\u5DF2\u7ECF\u88AB\u5220\u9664!');
+                }
+            }
+        };
+
         ChatDirect.prototype.scrollToAfterImgLoaded = function scrollToAfterImgLoaded(to) {
             var _this7 = this;
 
             _.defer(function () {
-
                 new ImagesLoaded(_this7.commentsRef).always(function () {
-                    if (to == 'b') {
-                        $(_this7.commentsRef).parent('.scroll-content').scrollTo('max');
-                    } else if (to == 't') {
-                        $(_this7.commentsRef).parent('.scroll-content').scrollTo(0);
-                    } else {
-                        if (_.some(_this7.chats, { id: +to })) {
-                            $(_this7.commentsRef).parent('.scroll-content').scrollTo('.comment[data-id="' + to + '"]', {
-                                offset: _this7.offset
-                            });
-                        } else {
-                            $(_this7.commentsRef).parent('.scroll-content').scrollTo('max');
-                            toastr.warning('\u6D88\u606F[' + to + ']\u4E0D\u5B58\u5728,\u53EF\u80FD\u5DF2\u7ECF\u88AB\u5220\u9664!');
-                        }
-                    }
+                    _this7._scrollTo(to);
                 });
+
+                _this7._scrollTo(to);
             });
         };
 

@@ -354,26 +354,32 @@ export class ChatDirect {
         }
     }
 
+    _scrollTo(to) {
+        if (to == 'b') {
+            $(this.commentsRef).parent('.scroll-content').scrollTo('max');
+        } else if (to == 't') {
+            $(this.commentsRef).parent('.scroll-content').scrollTo(0);
+        } else {
+            if (_.some(this.chats, { id: +to })) {
+                $(this.commentsRef).parent('.scroll-content').scrollTo(`.comment[data-id="${to}"]`, {
+                    offset: this.offset
+                });
+            } else {
+                $(this.commentsRef).parent('.scroll-content').scrollTo('max');
+                toastr.warning(`消息[${to}]不存在,可能已经被删除!`);
+            }
+        }
+    }
+
     scrollToAfterImgLoaded(to) {
         _.defer(() => {
-
             new ImagesLoaded(this.commentsRef).always(() => {
-                if (to == 'b') {
-                    $(this.commentsRef).parent('.scroll-content').scrollTo('max');
-                } else if (to == 't') {
-                    $(this.commentsRef).parent('.scroll-content').scrollTo(0);
-                } else {
-                    if (_.some(this.chats, { id: +to })) {
-                        $(this.commentsRef).parent('.scroll-content').scrollTo(`.comment[data-id="${to}"]`, {
-                            offset: this.offset
-                        });
-                    } else {
-                        $(this.commentsRef).parent('.scroll-content').scrollTo('max');
-                        toastr.warning(`消息[${to}]不存在,可能已经被删除!`);
-                    }
-                }
+                this._scrollTo(to);
             });
+
+            this._scrollTo(to);
         });
+
     }
 
     doPoll() {
