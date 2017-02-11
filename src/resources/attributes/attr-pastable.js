@@ -17,7 +17,9 @@ export class AttrPastable {
 
             $.post('/admin/file/base64', {
                 dataURL: data.dataURL,
-                type: data.blob.type
+                type: data.blob.type,
+                toType: nsCtx.isAt ? 'User' : 'Channel',
+                toId: nsCtx.chatTo
             }, (data, textStatus, xhr) => {
                 if (data.success) {
                     $(this.element).insertAtCaret('![{name}]({baseURL}{path}{uuidName})'

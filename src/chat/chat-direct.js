@@ -168,10 +168,9 @@ export class ChatDirect {
         if (this.chatId) {
             this.preChatId = this.chatId; // 记录切换前的沟通对象
         }
-        this.chatId = params.username;
-        this.isAt = _.startsWith(params.username, '@');
-
-        this.chatTo = utils.getChatName(params.username);
+        this.chatId = nsCtx.chatId = params.username;
+        this.isAt = nsCtx.isAt = _.startsWith(params.username, '@');
+        this.chatTo = nsCtx.chatTo = utils.getChatName(params.username);
 
         chatService.loginUser(false).then((user) => {
             this.loginUser = user;

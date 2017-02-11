@@ -77,7 +77,9 @@ export class EmChatInput {
 
             $.post('/admin/file/base64', {
                 dataURL: data.dataURL,
-                type: data.blob.type
+                type: data.blob.type,
+                toType: nsCtx.isAt ? 'User' : 'Channel',
+                toId: nsCtx.chatTo
             }, (data, textStatus, xhr) => {
                 if (data.success) {
                     this.insertContent('![{name}]({baseURL}{path}{uuidName})'
@@ -132,6 +134,9 @@ export class EmChatInput {
                 this.on("sending", function(file, xhr, formData) {
                     if (!getInputTargetCb()) {
                         this.removeAllFiles(true);
+                    } else {
+                        formData.append('toType', nsCtx.isAt ? 'User' : 'Channel');
+                        formData.append('toId', nsCtx.chatTo);
                     }
                 });
                 this.on("success", function(file, data) {

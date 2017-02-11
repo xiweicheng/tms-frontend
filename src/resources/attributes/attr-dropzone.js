@@ -17,7 +17,7 @@ export class AttrDropzone {
         this.eventAggregator = eventAggregator;
 
         this.subscribe = this.eventAggregator.subscribe(nsCons.EVENT_CHAT_MSG_EDIT_UPLOAD, (payload) => {
-            if(payload.target === this.target) {
+            if (payload.target === this.target) {
                 $(this.element).click();
             }
         });
@@ -40,7 +40,10 @@ export class AttrDropzone {
             dictCancelUploadConfirmation: '确定要取消上传吗?',
             dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
             init: function() {
-                this.on("sending", function(file, xhr, formData) {});
+                this.on("sending", function(file, xhr, formData) {
+                    formData.append('toType', nsCtx.isAt ? 'User' : 'Channel');
+                    formData.append('toId', nsCtx.chatTo);
+                });
                 this.on("success", function(file, data) {
                     if (data.success) {
 

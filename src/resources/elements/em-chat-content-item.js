@@ -8,6 +8,7 @@ export class EmChatContentItem {
     @bindable isAt;
     @bindable channel;
     @bindable markId;
+    @bindable chatTo;
     members = [];
     basePath = utils.getBasePath();
 
