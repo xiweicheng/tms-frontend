@@ -57,8 +57,40 @@
     }
     > .tms-chat-at {
         &.ui.dropdown {
+            @media only screen and (min-width: 768px) {
+                min-width: 138px;
+                padding-top: 0;
+                padding-left: 13px;
+                padding-bottom: 20px;
+                &.item:before {
+                    width: 0;
+                }
+            }
             > .text {
                 > .actions {
+                    display: none;
+                }
+            }
+            > .tms-metadata {
+                position: absolute;
+                display: flex;
+                top: 35px;
+                font-size: 12px;
+                left: 0;
+                height: 15px;
+                .item {
+                    &:before {
+                        top: 5px;
+                        height: 50%;
+                    }
+                    &.tms-channel-info:before {
+                        width: 0;
+                    }
+                    &.tms-user-info:before {
+                        width: 0;
+                    }
+                }
+                @media only screen and (max-width: 767px) {
                     display: none;
                 }
             }

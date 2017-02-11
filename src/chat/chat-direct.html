@@ -6,7 +6,7 @@
     <require from="simplemde/dist/simplemde.min.css"></require>
     <require from="highlight/styles/github.css"></require>
     <div ref="chatContainerRef" class="tms-chat-direct">
-        <em-chat-top-menu users.bind="users" login-user.bind="loginUser" channels.bind="channels" channel.bind="channel" login-user.bind="loginUser" chat-id.bind="chatId" chat-to.bind="chatTo" is-at.bind="isAt"></em-chat-top-menu>
+        <em-chat-top-menu users.bind="users" chat-user.bind="user" login-user.bind="loginUser" channels.bind="channels" channel.bind="channel" login-user.bind="loginUser" chat-id.bind="chatId" chat-to.bind="chatTo" is-at.bind="isAt"></em-chat-top-menu>
         <em-chat-sidebar-left users.bind="users" login-user.bind="loginUser" channels.bind="channels" chat-to.bind="chatTo" is-at.bind="isAt"></em-chat-sidebar-left>
         <div ref="contentRef" class="tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}">
             <div ref="contentBodyRef" class="tms-content-body">

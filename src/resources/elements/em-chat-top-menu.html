@@ -4,6 +4,16 @@
         <div ref="chatToDropdownRef" class="ui dropdown link item ${isActiveSearch ? 'tms-hide' : ''} tms-chat-at">
             <span class="text"></span>
             <i class="dropdown icon"></i>
+            <div class="tms-metadata">
+                <a if.bind="!isAt" class="item" click.trigger="viewOrMgrUsersHandler($event)" title="频道用户(${channel.members.length})"><i class="users icon"></i></a>
+                <a if.bind="!isAt && channel.privated" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="私有频道"><i class="lock icon"></i></a>
+                <a if.bind="!isAt && !channel.privated" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="公开频道"><i class="unlock icon"></i></a>
+                <a if.bind="!isAt" class="item tms-channel-info" click.trigger="channelInfoHandler($event)" title="${channel.description}"><i class="info circle icon"></i></a>
+                <a if.bind="isAt && chatUser.enabled" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="启用中"><i class="heart icon"></i></a>
+                <a if.bind="isAt && !chatUser.enabled" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="禁用中"><i class="empty heart icon"></i></a>
+                <a if.bind="isAt" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="${chatUser.mails}"><i class="mail icon"></i></a>
+                <a if.bind="isAt" class="item tms-user-info" click.trigger="userInfoHandler($event)" title="从IP[${chatUser.loginRemoteAddress}]登录(${chatUser.lastLoginDate | timeago})"><i class="info circle icon"></i></a>
+            </div>
             <div class="menu">
                 <div class="ui icon search input">
                     <i class="search icon"></i>
@@ -41,7 +51,7 @@
                         <i class="user icon"></i> 用户 (${users.length})
                     </div>
                     <a repeat.for="item of users | sortUsers:loginUser.username" task.bind="initChatToDropdownHandler($last)" href="#/chat/@${item.username}" class="item" title="${item.username}" data-value="${item.username}" data-id="@${item.username}">
-                        <i style="font-weight: bold;" class="at icon"></i>${item.name}  ${item.username == loginUser.username ? '(自己)' : ''}
+                        <i style="font-weight: bold;" class="at icon"></i>${item.name} ${item.username == loginUser.username ? '(自己)' : ''}
                     </a>
                 </div>
             </div>

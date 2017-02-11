@@ -4,6 +4,7 @@ import { bindable, containerless } from 'aurelia-framework';
 export class EmChatTopMenu {
 
     @bindable loginUser;
+    @bindable chatUser;
     @bindable users;
     @bindable channels;
     @bindable channel;
@@ -331,5 +332,31 @@ export class EmChatTopMenu {
             action: 'delHandler',
             item: item
         });
+    }
+
+    viewOrMgrUsersHandler(event) {
+
+        if (this.channel.owner.username == this.loginUser.username) {
+            this.membersMgrHandler(this.channel, event);
+        } else {
+            this.membersShowHandler(this.channel, event);
+        }
+    }
+
+    channelInfoHandler(event) {
+
+        if (this.channel.owner.username == this.loginUser.username) {
+            this.editHandler(this.channel, event);
+        } else {
+            event.stopImmediatePropagation();
+        }
+    }
+
+    userInfoHandler(event) {
+        event.stopImmediatePropagation();
+    }
+
+    stopImmediatePropagationHandler(event) {
+        event.stopImmediatePropagation();
     }
 }
