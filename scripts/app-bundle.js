@@ -375,20 +375,6 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
             if (this.markId) {
                 history.replaceState(null, '', utils.removeUrlQuery('id'));
             }
-
-            if (!this.isAt) {
-                $.get('/admin/file/listByChannel', {
-                    name: this.chatTo,
-                    type: 'Image',
-                    search: '18'
-                }, function (data) {});
-            } else {
-                $.get('/admin/file/listByUser', {
-                    name: this.chatTo,
-                    type: 'Image',
-                    search: ''
-                }, function (data) {});
-            }
         };
 
         ChatDirect.prototype._reset = function _reset() {
@@ -27042,13 +27028,8 @@ define('resources/elements/em-chat-attach',['exports', 'aurelia-framework'], fun
         }
 
         EmChatAttach.prototype.attached = function attached() {
-            var _this = this;
-
             $(this.tabRef).find('.item').tab({
-                onVisible: function onVisible(tabPath) {
-                    _this.type = tabPath;
-                    _this.fetch();
-                }
+                onVisible: function onVisible(tabPath) {}
             });
         };
 
@@ -27057,7 +27038,7 @@ define('resources/elements/em-chat-attach',['exports', 'aurelia-framework'], fun
         };
 
         EmChatAttach.prototype._listByPage = function _listByPage() {
-            var _this2 = this;
+            var _this = this;
 
             var nextPage = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
@@ -27069,12 +27050,12 @@ define('resources/elements/em-chat-attach',['exports', 'aurelia-framework'], fun
                 size: 10,
                 search: ''
             }, function (data) {
-                _this2.page = data.data;
-                _this2.moreCnt = _this2.page.last ? 0 : _this2.page.totalElements - (_this2.page.number + 1) * _this2.page.size;
+                _this.page = data.data;
+                _this.moreCnt = _this.page.last ? 0 : _this.page.totalElements - (_this.page.number + 1) * _this.page.size;
                 if (!nextPage) {
-                    _this2.attachs = data.data.content;
+                    _this.attachs = data.data.content;
                 } else {
-                    _this2.attachs = _.concat(_this2.attachs, data.data.content);
+                    _this.attachs = _.concat(_this.attachs, data.data.content);
                 }
             });
         };
@@ -27084,6 +27065,11 @@ define('resources/elements/em-chat-attach',['exports', 'aurelia-framework'], fun
             this.moreCnt = 0;
             this.attachs = null;
             this._listByPage();
+        };
+
+        EmChatAttach.prototype.tabClickHandler = function tabClickHandler(tabPath) {
+            this.type = tabPath;
+            this.fetch();
         };
 
         return EmChatAttach;
@@ -27134,6 +27120,6 @@ define('text!resources/elements/em-modal.html', ['module'], function(module) { m
 define('text!resources/elements/em-user-edit.css', ['module'], function(module) { module.exports = ".tms-em-user-edit .ui.form .field > label {\n  width: 45px!important;\n}\n.tms-em-user-edit .ui.form .field .user-username {\n  margin-left: 0;\n}\n.em-user-edit-modal {\n  /* Tablet & PC */\n}\n@media only screen and (min-width: 768px) {\n  .em-user-edit-modal {\n    width: 500px!important;\n    margin-left: -250px !important;\n  }\n}\n"; });
 define('text!resources/elements/em-user-avatar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-user-avatar.css\"></require>\r\n    <a ref=\"avatarRef\" css=\"background-color: ${bgColor};\" data-value=\"${user.username}\" class=\"avatar ui mini circular image em-user-avatar\">\r\n        <span css=\"color: ${color}\" class=\"text-char\">${nameChar}</span>\r\n    </a>\r\n</template>\r\n"; });
 define('text!resources/elements/em-user-edit.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-user-edit.css\"></require>\n    <em-modal classes=\"small em-user-edit-modal\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\n        <div slot=\"header\">个人信息编辑</div>\n        <div slot=\"content\" class=\"tms-em-user-edit\">\n            <div ref=\"frm\" class=\"ui form\">\n                <div class=\"ui form\" with.bind=\"user\">\n                    <div class=\"inline field\">\n                        <label>用户名:</label>\n                        <div class=\"ui basic label user-username\">${username}</div>\n                    </div>\n                    <div class=\"inline field\">\n                        <label>密码:</label>\n                        <input name=\"password\" value.bind=\"password\" placeholder=\"密码\" type=\"text\">\n                    </div>\n                    <div class=\"required inline field\">\n                        <label>姓名:</label>\n                        <input name=\"name\" value.bind=\"name\" placeholder=\"姓名\" type=\"text\">\n                    </div>\n                    <div class=\"required inline field\">\n                        <label>邮箱:</label>\n                        <input name=\"mail\" value.bind=\"mails\" placeholder=\"邮箱\" type=\"text\">\n                    </div>\n                </div>\n            </div>\n        </div>\n    </em-modal>\n</template>\n"; });
-define('text!resources/elements/em-chat-attach.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-chat-attach.css\"></require>\n    <div ref=\"tabRef\" class=\"ui pointing secondary menu em-chat-attach\">\n        <a class=\"active item\" data-tab=\"Image\">图片</a>\n        <a class=\"item\" data-tab=\"Attachment\">文件</a>\n    </div>\n    <div swipebox class=\"ui active tab basic segment em-chat-attach\" data-tab=\"Image\">\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无图片</h1>\n        <div if.bind=\"type == 'Image'\" class=\"ui small bordered images\">\n            <img repeat.for=\"item of attachs\" if.bind=\"item.type == 'Image'\" src=\"/${item.path + item.uuidName}\">\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\n        </div>\n    </div>\n    <div class=\"ui tab basic segment em-chat-attach\" data-tab=\"Attachment\">\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无文件</h1>\n        <div if.bind=\"type == 'Attachment'\" class=\"divided list selection ui\">\n            <div repeat.for=\"item of attachs\" if.bind=\"item.type == 'Attachment'\" class=\"item\">\n                <i class=\"file outline icon\"></i>\n                <div class=\"content\">\n                    <div class=\"header\"><a href=\"/admin/file/download/${item.id}\">${item.name}</a></div>\n                    <div class=\"description\"><i class=\"wait icon\"></i><b>${item.username | userName}</b>上传于<span title=\"${item.createDate | date}\">${item.createDate | timeago}</span></div>\n                </div>\n            </div>\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\n        </div>\n    </div>\n</template>\n"; });
-define('text!resources/elements/em-chat-attach.css', ['module'], function(module) { module.exports = ".em-chat-attach.ui.basic.segment {\n  margin-bottom: 0;\n  padding-top: 0;\n}\n.em-chat-attach .ui.basic.button {\n  display: block;\n  margin-right: 0;\n}\n.em-chat-attach .ui.list .description {\n  font-size: 12px;\n  margin-top: 3px;\n}\n"; });
+define('text!resources/elements/em-chat-attach.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-chat-attach.css\"></require>\n    <div ref=\"tabRef\" class=\"ui pointing secondary menu em-chat-attach\">\n        <a click.delegate=\"tabClickHandler('Image')\" class=\"active item\" data-tab=\"Image\">图片</a>\n        <a click.delegate=\"tabClickHandler('Attachment')\" class=\"item\" data-tab=\"Attachment\">文件</a>\n    </div>\n    <div swipebox class=\"ui active tab basic segment em-chat-attach\" data-tab=\"Image\">\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无图片</h1>\n        <div if.bind=\"type == 'Image'\" class=\"ui small bordered images\">\n            <img repeat.for=\"item of attachs\" if.bind=\"item.type == 'Image'\" src=\"/${item.path + item.uuidName}\" alt=\"${item.name}\" title=\"${item.username | userName}上传于${item.createDate | timeago}\">\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\n        </div>\n    </div>\n    <div class=\"ui tab basic segment em-chat-attach\" data-tab=\"Attachment\">\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无文件</h1>\n        <div if.bind=\"type == 'Attachment'\" class=\"divided list selection ui\">\n            <div repeat.for=\"item of attachs\" if.bind=\"item.type == 'Attachment'\" class=\"item\">\n                <i class=\"file outline icon\"></i>\n                <div class=\"content\">\n                    <div class=\"header\"><a href=\"/admin/file/download/${item.id}\">${item.name}</a></div>\n                    <div class=\"description\"><i class=\"wait icon\"></i><b>${item.username | userName}</b>上传于<span title=\"${item.createDate | date}\">${item.createDate | timeago}</span></div>\n                </div>\n            </div>\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\n        </div>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-chat-attach.css', ['module'], function(module) { module.exports = ".em-chat-attach.ui.basic.segment {\n  margin-bottom: 0;\n  padding-top: 0;\n}\n.em-chat-attach .ui.basic.button {\n  display: block;\n  margin-right: 0;\n}\n.em-chat-attach .ui.list .description {\n  font-size: 12px;\n  margin-top: 3px;\n}\n.em-chat-attach.ui.menu {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.em-chat-attach.ui.menu > .item {\n  -webkit-box-flex: 1;\n  -ms-flex: 1;\n  flex: 1;\n  display: block!important;\n  text-align: center;\n}\n"; });
 //# sourceMappingURL=app-bundle.js.map

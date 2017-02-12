@@ -1,13 +1,13 @@
 <template>
     <require from="./em-chat-attach.css"></require>
     <div ref="tabRef" class="ui pointing secondary menu em-chat-attach">
-        <a class="active item" data-tab="Image">图片</a>
-        <a class="item" data-tab="Attachment">文件</a>
+        <a click.delegate="tabClickHandler('Image')" class="active item" data-tab="Image">图片</a>
+        <a click.delegate="tabClickHandler('Attachment')" class="item" data-tab="Attachment">文件</a>
     </div>
     <div swipebox class="ui active tab basic segment em-chat-attach" data-tab="Image">
         <h1 if.bind="!attachs || attachs.length == 0" class="centered ui header">暂无图片</h1>
         <div if.bind="type == 'Image'" class="ui small bordered images">
-            <img repeat.for="item of attachs" if.bind="item.type == 'Image'" src="/${item.path + item.uuidName}">
+            <img repeat.for="item of attachs" if.bind="item.type == 'Image'" src="/${item.path + item.uuidName}" alt="${item.name}" title="${item.username | userName}上传于${item.createDate | timeago}">
             <div if.bind="page && !page.last" click.delegate="moreHandler()" class="basic ui button"><i show.bind="ajax && ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
         </div>
     </div>

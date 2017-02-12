@@ -11,8 +11,8 @@ export class EmChatAttach {
     attached() {
         $(this.tabRef).find('.item').tab({
             onVisible: (tabPath) => {
-                this.type = tabPath;
-                this.fetch();
+                // this.type = tabPath;
+                // this.fetch();
             }
         });
     }
@@ -42,9 +42,15 @@ export class EmChatAttach {
     }
 
     fetch() {
-    	this.page = null;
-    	this.moreCnt = 0;
-    	this.attachs = null;
+        this.page = null;
+        this.moreCnt = 0;
+        this.attachs = null;
         this._listByPage();
     }
+
+    tabClickHandler(tabPath) {
+        this.type = tabPath;
+        this.fetch();
+    }
+
 }
