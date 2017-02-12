@@ -29,6 +29,9 @@
                 </div>
             </div>
             <div ref="dirRef" show.bind="forShow == 'wiki-dir'" class="panel-wiki-dir"></div>
+            <div ref="attachRef" show.bind="forShow == 'chat-attach'" class="panel-chat-attach">
+                <em-chat-attach view-model.ref="chatAttachVm"></em-chat-attach>
+            </div>
         </div>
     </div>
     <em-confirm-modal em-confirm-modal.ref="emConfirmModal"></em-confirm-modal>

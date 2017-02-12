@@ -109,3 +109,13 @@ export class SortChannelsValueConverter {
         return value;
     }
 }
+
+export class UserNameValueConverter {
+    toView(value) {
+        let user = _.find(window.tmsUsers, { username: value });
+        if (user) {
+            return user.name;
+        }
+        return value;
+    }
+}

@@ -1,0 +1,25 @@
+<template>
+    <require from="./em-chat-attach.css"></require>
+    <div ref="tabRef" class="ui pointing secondary menu em-chat-attach">
+        <a class="active item" data-tab="Image">图片</a>
+        <a class="item" data-tab="Attachment">文件</a>
+    </div>
+    <div class="ui active tab basic segment em-chat-attach" data-tab="Image">
+        <div if.bind="type == 'Image'" swipebox class="ui small bordered images">
+            <img repeat.for="item of attachs" if.bind="item.type == 'Image'" src="/${item.path + item.uuidName}">
+            <div if.bind="!page.last" click.delegate="moreHandler()" class="basic ui button"><i show.bind="ajax && ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
+        </div>
+    </div>
+    <div class="ui tab basic segment em-chat-attach" data-tab="Attachment">
+        <div if.bind="type == 'Attachment'" class="divided list selection ui">
+            <div repeat.for="item of attachs" if.bind="item.type == 'Attachment'" class="item">
+                <i class="file outline icon"></i>
+                <div class="content">
+                    <div class="header"><a href="/admin/file/download/${item.id}">${item.name}</a></div>
+                    <div class="description"><i class="wait icon"></i><b>${item.username | userName}</b>上传于<span title="${item.createDate | date}">${item.createDate | timeago}</span></div>
+                </div>
+            </div>
+            <div if.bind="!page.last" click.delegate="moreHandler()" class="basic ui button"><i show.bind="ajax && ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
+        </div>
+    </div>
+</template>

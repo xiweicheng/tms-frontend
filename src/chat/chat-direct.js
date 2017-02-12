@@ -229,6 +229,24 @@ export class ChatDirect {
             history.replaceState(null, '', utils.removeUrlQuery('id'));
         }
 
+        if(!this.isAt) {
+            $.get('/admin/file/listByChannel', {
+                name: this.chatTo,
+                type: 'Image',
+                search: '18'
+            }, function(data) {
+                /*optional stuff to do after success */
+            });
+        } else {
+            $.get('/admin/file/listByUser', {
+                name: this.chatTo,
+                type: 'Image',
+                search: ''
+            }, function(data) {
+                /*optional stuff to do after success */
+            });
+        }
+
     }
 
     _reset() {

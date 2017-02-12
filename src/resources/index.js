@@ -43,6 +43,7 @@ export function configure(aurelia) {
         'resources/elements/em-chat-channel-members-show',
         'resources/elements/em-chat-msg-popup',
         'resources/elements/em-chat-member-popup',
+        'resources/elements/em-chat-attach',
         'resources/elements/em-user-avatar',
         'resources/elements/em-user-edit',
     ]);

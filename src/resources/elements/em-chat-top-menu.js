@@ -13,12 +13,13 @@ export class EmChatTopMenu {
     @bindable chatTo;
     @bindable isAt;
     isRightSidebarShow = false;
-    activeType = ''; // 触发激活的操作类型: search | stow | at
+    activeType = ''; // 触发激活的操作类型: search | stow | at | attach
 
     ACTION_TYPE_SEARCH = nsCons.ACTION_TYPE_SEARCH;
     ACTION_TYPE_STOW = nsCons.ACTION_TYPE_STOW;
     ACTION_TYPE_AT = nsCons.ACTION_TYPE_AT;
     ACTION_TYPE_DIR = nsCons.ACTION_TYPE_DIR;
+    ACTION_TYPE_ATTACH = nsCons.ACTION_TYPE_ATTACH;
 
     newAtCnt = 0;
 
@@ -286,6 +287,21 @@ export class EmChatTopMenu {
         ea.publish(nsCons.EVENT_CHAT_SHOW_DIR, {
             action: this.activeType,
             result: this.dir
+        });
+        this.toggleRightSidebar(true);
+    }
+
+    showAttachHandler() {
+
+        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_ATTACH)) {
+            this.toggleRightSidebar();
+            return;
+        }
+
+        this.activeType = nsCons.ACTION_TYPE_ATTACH;
+        ea.publish(nsCons.EVENT_CHAT_SHOW_ATTACH, {
+            action: this.activeType,
+            // result: this.dir
         });
         this.toggleRightSidebar(true);
     }

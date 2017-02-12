@@ -48,7 +48,11 @@ export class EmChatSidebarRight {
 
         this.subscribe3 = ea.subscribe(nsCons.EVENT_CHAT_SHOW_DIR, (payload) => {
             this._mappingActionShow(payload.action);
-            $(this.dirRef).empty().append(payload.result)
+            $(this.dirRef).empty().append(payload.result);
+        });
+
+        this.subscribe4 = ea.subscribe(nsCons.EVENT_CHAT_SHOW_ATTACH, (payload) => {
+            this._mappingActionShow(payload.action);
         });
     }
 
@@ -61,6 +65,7 @@ export class EmChatSidebarRight {
         this.subscribe1.dispose();
         this.subscribe2.dispose();
         this.subscribe3.dispose();
+        this.subscribe4.dispose();
     }
 
     _mappingActionShow(forAction) {
@@ -69,6 +74,9 @@ export class EmChatSidebarRight {
             this.forShow = 'chat-msg';
         } else if (_.includes([nsCons.ACTION_TYPE_DIR], this.forAction)) {
             this.forShow = 'wiki-dir';
+        } else if (_.includes([nsCons.ACTION_TYPE_ATTACH], this.forAction)) {
+            this.forShow = 'chat-attach';
+            this.chatAttachVm.fetch();
         }
     }
 

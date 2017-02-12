@@ -14,6 +14,7 @@ window.nsCons = {
     EVENT_CHAT_SHOW_STOW: 'event_chat_show_stow',
     EVENT_CHAT_SHOW_AT: 'event_chat_show_at',
     EVENT_CHAT_SHOW_DIR: 'event_chat_show_dir',
+    EVENT_CHAT_SHOW_ATTACH: 'event_chat_show_attach',
     EVENT_SCROLLBAR_SCROLL_TO_BOTTOM: 'event_scrollbar_scroll_to_bottom',
     EVENT_CHAT_MSG_INSERT: 'event_chat_msg_insert',
     EVENT_CHAT_MSG_POPUP_SHOW: 'event_chat_msg_popup_show',
@@ -27,4 +28,5 @@ window.nsCons = {
     ACTION_TYPE_STOW: 'action_type_stow',
     ACTION_TYPE_AT: 'action_type_at',
     ACTION_TYPE_DIR: 'action_type_dir',
+    ACTION_TYPE_ATTACH: 'action_type_attach',
 }

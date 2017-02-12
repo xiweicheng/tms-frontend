@@ -74,6 +74,11 @@
                     <i class="empty star icon"></i>
                 </button>
             </div>
+            <div class="item tms-item ${isActiveSearch ? 'tms-hide' : ''}">
+                <button click.delegate="showAttachHandler()" title="附件查看" class="basic ${isRightSidebarShow && (activeType == ACTION_TYPE_ATTACH) ? 'active' : ''} ui icon button">
+                    <i class="attach icon"></i>
+                </button>
+            </div>
             <div class="item tms-item">
                 <button click.delegate="sibebarRightHandler()" title="右侧边栏(Ctrl+.)" class="basic ${isRightSidebarShow ? 'active' : ''} ui icon button">
                     <i class="columns icon"></i>
