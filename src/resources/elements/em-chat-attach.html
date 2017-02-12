@@ -5,12 +5,14 @@
         <a class="item" data-tab="Attachment">文件</a>
     </div>
     <div class="ui active tab basic segment em-chat-attach" data-tab="Image">
+        <h1 if.bind="!attachs || attachs.length == 0" class="centered ui header">暂无图片</h1>
         <div if.bind="type == 'Image'" swipebox class="ui small bordered images">
             <img repeat.for="item of attachs" if.bind="item.type == 'Image'" src="/${item.path + item.uuidName}">
-            <div if.bind="!page.last" click.delegate="moreHandler()" class="basic ui button"><i show.bind="ajax && ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
+            <div if.bind="page && !page.last" click.delegate="moreHandler()" class="basic ui button"><i show.bind="ajax && ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
         </div>
     </div>
     <div class="ui tab basic segment em-chat-attach" data-tab="Attachment">
+        <h1 if.bind="!attachs || attachs.length == 0" class="centered ui header">暂无文件</h1>
         <div if.bind="type == 'Attachment'" class="divided list selection ui">
             <div repeat.for="item of attachs" if.bind="item.type == 'Attachment'" class="item">
                 <i class="file outline icon"></i>
@@ -19,7 +21,7 @@
                     <div class="description"><i class="wait icon"></i><b>${item.username | userName}</b>上传于<span title="${item.createDate | date}">${item.createDate | timeago}</span></div>
                 </div>
             </div>
-            <div if.bind="!page.last" click.delegate="moreHandler()" class="basic ui button"><i show.bind="ajax && ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
+            <div if.bind="page && !page.last" click.delegate="moreHandler()" class="basic ui button"><i show.bind="ajax && ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
         </div>
     </div>
 </template>
