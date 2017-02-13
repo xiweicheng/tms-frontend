@@ -211,6 +211,8 @@ export class EmChatTopMenu {
         if (evt.keyCode === 13) {
             this.activeType = nsCons.ACTION_TYPE_SEARCH;
             this.searchHandler();
+        } else if (evt.keyCode === 27) {
+            this.clearSearchHandler();
         }
         return true;
     }

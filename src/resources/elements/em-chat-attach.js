@@ -4,6 +4,7 @@ import { bindable, containerless } from 'aurelia-framework';
 export class EmChatAttach {
 
     type = 'Image'; //Image | Attachment
+    search = '';
 
     /**
      * 当视图被附加到DOM中时被调用
@@ -28,7 +29,7 @@ export class EmChatAttach {
             type: this.type,
             page: this.page ? (nextPage ? this.page.number + 1 : this.page.number) : 0,
             size: 10,
-            search: ''
+            search: this.search
         }, (data) => {
             this.page = data.data;
             this.moreCnt = this.page.last ? 0 : this.page.totalElements - (this.page.number + 1) * this.page.size;
@@ -45,12 +46,27 @@ export class EmChatAttach {
         this.page = null;
         this.moreCnt = 0;
         this.attachs = null;
+        $(this.searchRef).focus();
         this._listByPage();
     }
 
     tabClickHandler(tabPath) {
         this.type = tabPath;
         this.fetch();
+    }
+
+    searchHandler() {
+        this.fetch();
+    }
+
+    keyupHandler(event) {
+        if (event.keyCode == 13) {
+            this.fetch();
+        } else if (event.keyCode == 27) {
+            this.search = '';
+            this.fetch();
+        }
+        return true;
     }
 
 }
