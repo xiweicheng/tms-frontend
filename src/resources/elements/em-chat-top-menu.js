@@ -191,7 +191,7 @@ export class EmChatTopMenu {
         }
     }
 
-    sibebarRightHandler() {
+    sibebarRightHandler(event) {
         this.toggleRightSidebar();
     }
 
@@ -221,9 +221,9 @@ export class EmChatTopMenu {
         $(this.searchInputRef).val('').focus();
     }
 
-    showStowHandler() {
+    showStowHandler(event) {
 
-        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_STOW)) {
+        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_STOW) && !event.ctrlKey) {
             this.toggleRightSidebar();
             return;
         }
@@ -247,9 +247,9 @@ export class EmChatTopMenu {
         });
     }
 
-    showAtHandler() {
+    showAtHandler(event) {
 
-        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_AT)) {
+        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_AT) && (this.newAtCnt == 0) && !event.ctrlKey) {
             this.toggleRightSidebar();
             return;
         }
@@ -278,9 +278,9 @@ export class EmChatTopMenu {
         });
     }
 
-    showWikiDirHandler() {
+    showWikiDirHandler(event) {
 
-        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_DIR)) {
+        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_DIR) && !event.ctrlKey) {
             this.toggleRightSidebar();
             return;
         }
@@ -293,17 +293,16 @@ export class EmChatTopMenu {
         this.toggleRightSidebar(true);
     }
 
-    showAttachHandler() {
+    showAttachHandler(event) {
 
-        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_ATTACH)) {
+        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_ATTACH) && !event.ctrlKey) {
             this.toggleRightSidebar();
             return;
         }
 
         this.activeType = nsCons.ACTION_TYPE_ATTACH;
         ea.publish(nsCons.EVENT_CHAT_SHOW_ATTACH, {
-            action: this.activeType,
-            // result: this.dir
+            action: this.activeType
         });
         this.toggleRightSidebar(true);
     }
