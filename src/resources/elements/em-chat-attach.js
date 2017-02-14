@@ -46,7 +46,9 @@ export class EmChatAttach {
         this.page = null;
         this.moreCnt = 0;
         this.attachs = null;
-        $(this.searchRef).focus();
+        if ($(window).width() > 991) {
+            $(this.searchRef).focus();
+        }
         this._listByPage();
     }
 

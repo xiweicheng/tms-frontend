@@ -95,6 +95,11 @@ export class CommonUtils {
         return s;
     }
 
+    isLoginPage() {
+        let hash = wurl('hash');
+        return _.startsWith(hash, '/login');
+    }
+
     /**
      * 网络连接错误后自动重试
      * @param  {Function} callback 重试回调
@@ -102,7 +107,7 @@ export class CommonUtils {
      */
     errorAutoTry(callback, time) {
 
-        if (this.isRunning) {
+        if (this.isRunning || this.isLoginPage()) {
             return;
         }
 

@@ -377,4 +377,9 @@ export class EmChatTopMenu {
     stopImmediatePropagationHandler(event) {
         event.stopImmediatePropagation();
     }
+
+    mailToHandler(event) {
+        event.stopImmediatePropagation();
+        window.location = `mailto:${this.chatUser.mails}`;
+    }
 }
