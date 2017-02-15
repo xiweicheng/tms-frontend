@@ -270,7 +270,7 @@ export class CommonUtils {
             nodeArr.push(node);
         }
 
-        return `<pre>${nodeArr.join('')}</pre>`;
+        return `<pre style="word-break: break-all; word-wrap: break-word;">${nodeArr.join('')}</pre>`;
     }
 
     /**
