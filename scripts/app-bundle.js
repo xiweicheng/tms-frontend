@@ -3780,7 +3780,7 @@ define('common/common-utils',['exports', 'wurl', 'common/common-diff'], function
                 nodeArr.push(node);
             }
 
-            return '<pre style="word-break: break-all; word-wrap: break-word;">' + nodeArr.join('') + '</pre>';
+            return '<pre>' + nodeArr.join('') + '</pre>';
         };
 
         CommonUtils.prototype.catalog = function catalog($e) {
