@@ -4040,7 +4040,8 @@ define('init/config',['exports', 'aurelia-templating-resources', 'aurelia-event-
                     }
                 }
                 var out = void 0;
-                if (_commonUtils2.default.isAbsUrl(href) && (0, _wurl2.default)('hostname', href) != (0, _wurl2.default)('hostname')) {
+                var isChatLink = /\/chat\/.+\?id=.+/g.test((0, _wurl2.default)('hash', href));
+                if (isChatLink || _commonUtils2.default.isAbsUrl(href) && (0, _wurl2.default)('hostname', href) != (0, _wurl2.default)('hostname')) {
                     out = '<a target="_blank" href="' + href + '"';
                 } else {
                     out = '<a href="' + href + '"';

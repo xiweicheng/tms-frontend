@@ -123,7 +123,8 @@ export class Config {
                 }
             }
             let out;
-            if (utils.isAbsUrl(href) && (wurl('hostname', href) != wurl('hostname'))) {
+            let isChatLink = /\/chat\/.+\?id=.+/g.test(wurl('hash', href));
+            if (isChatLink || (utils.isAbsUrl(href) && (wurl('hostname', href) != wurl('hostname')))) {
                 out = '<a target="_blank" href="' + href + '"';
             } else {
                 out = '<a href="' + href + '"';
