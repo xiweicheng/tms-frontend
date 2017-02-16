@@ -22,9 +22,32 @@ export class EmChatTopMenu {
     ACTION_TYPE_ATTACH = nsCons.ACTION_TYPE_ATTACH;
 
     newAtCnt = 0;
+    channelLinks = [];
+
+    loginUserChanged() {
+        this.isSuper = utils.isSuperUser(this.loginUser);
+    }
 
     chatToChanged() {
         $(this.chatToDropdownRef).dropdown('set selected', this.chatTo).dropdown('hide');
+    }
+
+    channelChanged() {
+        this._refreshChannelLinks();
+    }
+
+    _refreshChannelLinks() {
+        if (this.channel) {
+            $.get('/admin/link/listBy', {
+                channelId: this.channel.id
+            }, (data) => {
+                if (data.success) {
+                    this.channelLinks = data.data;
+                } else {
+                    this.channelLinks = [];
+                }
+            });
+        }
     }
 
     /**
@@ -49,6 +72,10 @@ export class EmChatTopMenu {
         this.subscribe2 = ea.subscribe(nsCons.EVENT_SWITCH_CHAT_TO, (payload) => {
             $(this.chatToDropdownRef).dropdown('toggle');
         });
+
+        this.subscribe3 = ea.subscribe(nsCons.EVENT_CHANNEL_LINKS_REFRESH, (payload) => {
+            this._refreshChannelLinks();
+        });
     }
 
     /**
@@ -58,6 +85,7 @@ export class EmChatTopMenu {
         this.subscribe.dispose();
         this.subscribe1.dispose();
         this.subscribe2.dispose();
+        this.subscribe3.dispose();
     }
 
     /**
@@ -380,5 +408,19 @@ export class EmChatTopMenu {
     mailToHandler(event) {
         event.stopImmediatePropagation();
         window.location = `mailto:${this.chatUser.mails}`;
+    }
+
+    channelLinksHandler(event) {
+        event.stopImmediatePropagation();
+        $(this.channelLinksDdRef).dropdown('toggle');
+    }
+
+    addChannelLinkHandler(event) {
+        this.channelLinkMgrVm.show();
+    }
+
+    openChannelLinkHandler(event, item) {
+        event.stopImmediatePropagation();
+        utils.openNewWin(item.href);
     }
 }

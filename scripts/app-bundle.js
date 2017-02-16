@@ -1087,6 +1087,7 @@ define('common/common-constant',[], function () {
         EVENT_CHAT_AT_NEW_CNT_UPDATE: 'event_chat_at_new_cnt_update',
         EVENT_SWITCH_CHAT_TO: 'event_switch_chat_to',
         EVENT_CHANNEL_ACTIONS: 'event_channel_actions',
+        EVENT_CHANNEL_LINKS_REFRESH: 'event_channel_links_refresh',
         ACTION_TYPE_SEARCH: 'action_type_search',
         ACTION_TYPE_STOW: 'action_type_stow',
         ACTION_TYPE_AT: 'action_type_at',
@@ -3914,6 +3915,38 @@ define('common/common-utils',['exports', 'wurl', 'common/common-diff'], function
             });
         };
 
+        CommonUtils.prototype.openNewWin = function openNewWin(url) {
+
+            if (url) {
+                (function () {
+                    var $a = $('<a href="' + url + '" target="_blank" style="display:none;"></a>').appendTo('body').end();
+                    $('<input type="button">').appendTo($a).end().click();
+
+                    _.delay(function () {
+                        $a.remove();
+                    }, 200);
+                })();
+            }
+        };
+
+        CommonUtils.prototype.isAdminUser = function isAdminUser(user) {
+            if (user && user.authorities) {
+                return _.some(user.authorities, function (item) {
+                    return item.id.authority === 'ROLE_ADMIN';
+                });
+            }
+            return false;
+        };
+
+        CommonUtils.prototype.isSuperUser = function isSuperUser(user) {
+            if (user && user.authorities) {
+                return _.some(user.authorities, function (item) {
+                    return item.id.authority === 'ROLE_SUPER';
+                });
+            }
+            return false;
+        };
+
         return CommonUtils;
     }();
 
@@ -4181,7 +4214,7 @@ define('resources/index',['exports'], function (exports) {
     exports.configure = configure;
     function configure(aurelia) {
 
-        aurelia.globalResources(['resources/value-converters/vc-common', 'resources/binding-behaviors/bb-key', 'resources/attributes/attr-task', 'resources/attributes/attr-swipebox', 'resources/attributes/attr-pastable', 'resources/attributes/attr-autosize', 'resources/attributes/attr-dropzone', 'resources/attributes/attr-attr', 'resources/attributes/attr-c2c', 'resources/attributes/attr-dimmer', 'resources/attributes/attr-ui-dropdown', 'resources/attributes/attr-ui-dropdown-action', 'resources/attributes/attr-ui-tab', 'resources/attributes/attr-tablesort', 'resources/attributes/attr-textcomplete', 'resources/attributes/attr-scrollbar', 'resources/elements/em-modal', 'resources/elements/em-dropdown', 'resources/elements/em-confirm-modal', 'resources/elements/em-hotkeys-modal', 'resources/elements/em-chat-input', 'resources/elements/em-chat-top-menu', 'resources/elements/em-chat-sidebar-left', 'resources/elements/em-chat-content-item', 'resources/elements/em-chat-sidebar-right', 'resources/elements/em-chat-channel-create', 'resources/elements/em-chat-channel-join', 'resources/elements/em-chat-channel-edit', 'resources/elements/em-chat-channel-members-mgr', 'resources/elements/em-chat-channel-members-show', 'resources/elements/em-chat-msg-popup', 'resources/elements/em-chat-member-popup', 'resources/elements/em-chat-attach', 'resources/elements/em-user-avatar', 'resources/elements/em-user-edit']);
+        aurelia.globalResources(['resources/value-converters/vc-common', 'resources/binding-behaviors/bb-key', 'resources/attributes/attr-task', 'resources/attributes/attr-swipebox', 'resources/attributes/attr-pastable', 'resources/attributes/attr-autosize', 'resources/attributes/attr-dropzone', 'resources/attributes/attr-attr', 'resources/attributes/attr-c2c', 'resources/attributes/attr-dimmer', 'resources/attributes/attr-ui-dropdown', 'resources/attributes/attr-ui-dropdown-action', 'resources/attributes/attr-ui-tab', 'resources/attributes/attr-tablesort', 'resources/attributes/attr-textcomplete', 'resources/attributes/attr-scrollbar', 'resources/elements/em-modal', 'resources/elements/em-dropdown', 'resources/elements/em-confirm-modal', 'resources/elements/em-hotkeys-modal', 'resources/elements/em-chat-input', 'resources/elements/em-chat-top-menu', 'resources/elements/em-chat-sidebar-left', 'resources/elements/em-chat-content-item', 'resources/elements/em-chat-sidebar-right', 'resources/elements/em-chat-channel-create', 'resources/elements/em-chat-channel-join', 'resources/elements/em-chat-channel-edit', 'resources/elements/em-chat-channel-members-mgr', 'resources/elements/em-chat-channel-members-show', 'resources/elements/em-chat-channel-link-mgr', 'resources/elements/em-chat-msg-popup', 'resources/elements/em-chat-member-popup', 'resources/elements/em-chat-attach', 'resources/elements/em-user-avatar', 'resources/elements/em-user-edit']);
     }
 });
 define('test/test-lifecycle',['exports', 'aurelia-framework', 'aurelia-event-aggregator'], function (exports, _aureliaFramework, _aureliaEventAggregator) {
@@ -7764,12 +7797,36 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
     var _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9;
 
     var EmChatTopMenu = exports.EmChatTopMenu = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
+        EmChatTopMenu.prototype.loginUserChanged = function loginUserChanged() {
+            this.isSuper = utils.isSuperUser(this.loginUser);
+        };
+
         EmChatTopMenu.prototype.chatToChanged = function chatToChanged() {
             $(this.chatToDropdownRef).dropdown('set selected', this.chatTo).dropdown('hide');
         };
 
-        function EmChatTopMenu() {
+        EmChatTopMenu.prototype.channelChanged = function channelChanged() {
+            this._refreshChannelLinks();
+        };
+
+        EmChatTopMenu.prototype._refreshChannelLinks = function _refreshChannelLinks() {
             var _this = this;
+
+            if (this.channel) {
+                $.get('/admin/link/listBy', {
+                    channelId: this.channel.id
+                }, function (data) {
+                    if (data.success) {
+                        _this.channelLinks = data.data;
+                    } else {
+                        _this.channelLinks = [];
+                    }
+                });
+            }
+        };
+
+        function EmChatTopMenu() {
+            var _this2 = this;
 
             _classCallCheck(this, EmChatTopMenu);
 
@@ -7799,24 +7856,29 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
             this.ACTION_TYPE_DIR = nsCons.ACTION_TYPE_DIR;
             this.ACTION_TYPE_ATTACH = nsCons.ACTION_TYPE_ATTACH;
             this.newAtCnt = 0;
+            this.channelLinks = [];
 
             this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_MSG_WIKI_DIR, function (payload) {
-                _this.dir = payload.dir;
+                _this2.dir = payload.dir;
 
-                if (_this.activeType == _this.ACTION_TYPE_DIR && _this.isRightSidebarShow) {
+                if (_this2.activeType == _this2.ACTION_TYPE_DIR && _this2.isRightSidebarShow) {
                     ea.publish(nsCons.EVENT_CHAT_SHOW_DIR, {
-                        action: _this.activeType,
-                        result: _this.dir
+                        action: _this2.activeType,
+                        result: _this2.dir
                     });
                 }
             });
 
             this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_AT_NEW_CNT_UPDATE, function (payload) {
-                _this.newAtCnt = payload.newAtCnt;
+                _this2.newAtCnt = payload.newAtCnt;
             });
 
             this.subscribe2 = ea.subscribe(nsCons.EVENT_SWITCH_CHAT_TO, function (payload) {
-                $(_this.chatToDropdownRef).dropdown('toggle');
+                $(_this2.chatToDropdownRef).dropdown('toggle');
+            });
+
+            this.subscribe3 = ea.subscribe(nsCons.EVENT_CHANNEL_LINKS_REFRESH, function (payload) {
+                _this2._refreshChannelLinks();
             });
         }
 
@@ -7824,6 +7886,7 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
             this.subscribe.dispose();
             this.subscribe1.dispose();
             this.subscribe2.dispose();
+            this.subscribe3.dispose();
         };
 
         EmChatTopMenu.prototype.attached = function attached() {
@@ -7832,7 +7895,7 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
         };
 
         EmChatTopMenu.prototype.initSearch = function initSearch() {
-            var _this2 = this;
+            var _this3 = this;
 
             var source = [];
             if (localStorage) {
@@ -7843,16 +7906,16 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
             $(this.searchRef).search({
                 source: source,
                 onSelect: function onSelect(result, response) {
-                    _this2.searchHandler();
+                    _this3.searchHandler();
                 },
                 onResults: function onResults() {
-                    $(_this2.searchRef).search('hide results');
+                    $(_this3.searchRef).search('hide results');
                 }
             });
         };
 
         EmChatTopMenu.prototype.searchHandler = function searchHandler() {
-            var _this3 = this;
+            var _this4 = this;
 
             $(this.searchRef).search('hide results');
 
@@ -7903,40 +7966,40 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
 
             this.searchingP = $.get(url, data, function (data) {
                 if (data.success) {
-                    _this3.toggleRightSidebar(true);
+                    _this4.toggleRightSidebar(true);
 
                     ea.publish(nsCons.EVENT_CHAT_SEARCH_RESULT, {
-                        action: _this3.activeType,
+                        action: _this4.activeType,
                         result: data.data,
-                        search: _this3.search
+                        search: _this4.search
                     });
                 }
             });
         };
 
         EmChatTopMenu.prototype.initHotkeys = function initHotkeys() {
-            var _this4 = this;
+            var _this5 = this;
 
             $(document).bind('keydown', 'ctrl+.', function (event) {
                 event.preventDefault();
-                _this4.toggleRightSidebar();
+                _this5.toggleRightSidebar();
             }).bind('keydown', 'ctrl+k', function (event) {
                 event.preventDefault();
-                $(_this4.chatToDropdownRef).dropdown('toggle');
+                $(_this5.chatToDropdownRef).dropdown('toggle');
             });
 
             $(this.filterChatToUser).bind('keydown', 'ctrl+k', function (event) {
                 event.preventDefault();
-                $(_this4.chatToDropdownRef).dropdown('toggle');
+                $(_this5.chatToDropdownRef).dropdown('toggle');
             });
         };
 
         EmChatTopMenu.prototype.initChatToDropdownHandler = function initChatToDropdownHandler(last) {
-            var _this5 = this;
+            var _this6 = this;
 
             if (last) {
                 _.defer(function () {
-                    $(_this5.chatToDropdownRef).dropdown().dropdown('set selected', _this5.chatTo).dropdown({
+                    $(_this6.chatToDropdownRef).dropdown().dropdown('set selected', _this6.chatTo).dropdown({
                         onChange: function onChange(value, text, $choice) {
                             window.location = wurl('path') + ('#/chat/' + $choice.attr('data-id'));
                         }
@@ -7990,7 +8053,7 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
         };
 
         EmChatTopMenu.prototype.showStowHandler = function showStowHandler(event) {
-            var _this6 = this;
+            var _this7 = this;
 
             if (this.isRightSidebarShow && this.activeType == nsCons.ACTION_TYPE_STOW && !event.ctrlKey) {
                 this.toggleRightSidebar();
@@ -8006,10 +8069,10 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
                         return chatChannel;
                     });
                     ea.publish(nsCons.EVENT_CHAT_SHOW_STOW, {
-                        action: _this6.activeType,
+                        action: _this7.activeType,
                         result: _.reverse(stowChats)
                     });
-                    _this6.toggleRightSidebar(true);
+                    _this7.toggleRightSidebar(true);
                 } else {
                     toastr.error(data.data, '获取收藏消息失败!');
                 }
@@ -8017,7 +8080,7 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
         };
 
         EmChatTopMenu.prototype.showAtHandler = function showAtHandler(event) {
-            var _this7 = this;
+            var _this8 = this;
 
             if (this.isRightSidebarShow && this.activeType == nsCons.ACTION_TYPE_AT && this.newAtCnt == 0 && !event.ctrlKey) {
                 this.toggleRightSidebar();
@@ -8032,10 +8095,10 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
             }, function (data) {
                 if (data.success) {
                     ea.publish(nsCons.EVENT_CHAT_SHOW_AT, {
-                        action: _this7.activeType,
+                        action: _this8.activeType,
                         result: data.data
                     });
-                    _this7.toggleRightSidebar(true);
+                    _this8.toggleRightSidebar(true);
                 } else {
                     toastr.error(data.data, '获取@消息失败!');
                 }
@@ -8150,6 +8213,20 @@ define('resources/elements/em-chat-top-menu',['exports', 'aurelia-framework'], f
         EmChatTopMenu.prototype.mailToHandler = function mailToHandler(event) {
             event.stopImmediatePropagation();
             window.location = 'mailto:' + this.chatUser.mails;
+        };
+
+        EmChatTopMenu.prototype.channelLinksHandler = function channelLinksHandler(event) {
+            event.stopImmediatePropagation();
+            $(this.channelLinksDdRef).dropdown('toggle');
+        };
+
+        EmChatTopMenu.prototype.addChannelLinkHandler = function addChannelLinkHandler(event) {
+            this.channelLinkMgrVm.show();
+        };
+
+        EmChatTopMenu.prototype.openChannelLinkHandler = function openChannelLinkHandler(event, item) {
+            event.stopImmediatePropagation();
+            utils.openNewWin(item.href);
         };
 
         return EmChatTopMenu;
@@ -26935,6 +27012,251 @@ define('highlight/lib/languages/zephir',['require','exports','module'],function 
 };
 });
 
+define('resources/elements/em-channel-link-mgr',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmChannelLinkMgr = undefined;
+
+    function _initDefineProp(target, property, descriptor, context) {
+        if (!descriptor) return;
+        Object.defineProperty(target, property, {
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+            writable: descriptor.writable,
+            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+        });
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+        var desc = {};
+        Object['ke' + 'ys'](descriptor).forEach(function (key) {
+            desc[key] = descriptor[key];
+        });
+        desc.enumerable = !!desc.enumerable;
+        desc.configurable = !!desc.configurable;
+
+        if ('value' in desc || desc.initializer) {
+            desc.writable = true;
+        }
+
+        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+            return decorator(target, property, desc) || desc;
+        }, desc);
+
+        if (context && desc.initializer !== void 0) {
+            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+            desc.initializer = undefined;
+        }
+
+        if (desc.initializer === void 0) {
+            Object['define' + 'Property'](target, property, desc);
+            desc = null;
+        }
+
+        return desc;
+    }
+
+    function _initializerWarningHelper(descriptor, context) {
+        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+    }
+
+    var _class, _desc, _value, _class2, _descriptor;
+
+    var EmChannelLinkMgr = exports.EmChannelLinkMgr = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
+        function EmChannelLinkMgr() {
+            _classCallCheck(this, EmChannelLinkMgr);
+
+            _initDefineProp(this, 'channel', _descriptor, this);
+        }
+
+        EmChannelLinkMgr.prototype.channelChanged = function channelChanged(news, old) {};
+
+        EmChannelLinkMgr.prototype.showHandler = function showHandler() {
+            this._reset();
+        };
+
+        EmChannelLinkMgr.prototype._reset = function _reset() {};
+
+        EmChannelLinkMgr.prototype.attached = function attached() {};
+
+        EmChannelLinkMgr.prototype.approveHandler = function approveHandler(modal) {};
+
+        return EmChannelLinkMgr;
+    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'channel', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    })), _class2)) || _class;
+});
+define('resources/elements/em-chat-channel-link-mgr',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmChatChannelLinkMgr = undefined;
+
+    function _initDefineProp(target, property, descriptor, context) {
+        if (!descriptor) return;
+        Object.defineProperty(target, property, {
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+            writable: descriptor.writable,
+            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+        });
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+        var desc = {};
+        Object['ke' + 'ys'](descriptor).forEach(function (key) {
+            desc[key] = descriptor[key];
+        });
+        desc.enumerable = !!desc.enumerable;
+        desc.configurable = !!desc.configurable;
+
+        if ('value' in desc || desc.initializer) {
+            desc.writable = true;
+        }
+
+        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+            return decorator(target, property, desc) || desc;
+        }, desc);
+
+        if (context && desc.initializer !== void 0) {
+            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+            desc.initializer = undefined;
+        }
+
+        if (desc.initializer === void 0) {
+            Object['define' + 'Property'](target, property, desc);
+            desc = null;
+        }
+
+        return desc;
+    }
+
+    function _initializerWarningHelper(descriptor, context) {
+        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+    }
+
+    var _class, _desc, _value, _class2, _descriptor;
+
+    var EmChatChannelLinkMgr = exports.EmChatChannelLinkMgr = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
+        function EmChatChannelLinkMgr() {
+            _classCallCheck(this, EmChatChannelLinkMgr);
+
+            _initDefineProp(this, 'channel', _descriptor, this);
+
+            this.links = [];
+        }
+
+        EmChatChannelLinkMgr.prototype.channelChanged = function channelChanged(news, old) {
+            var _this = this;
+
+            if (this.channel) {
+                $.get('/admin/link/listBy', {
+                    channelId: this.channel.id
+                }, function (data) {
+                    if (data.success) {
+                        _this.links = data.data;
+                    } else {
+                        _this.links = [];
+                    }
+                });
+            }
+        };
+
+        EmChatChannelLinkMgr.prototype.addHandler = function addHandler() {
+            var _this2 = this;
+
+            $.post('/admin/link/create', {
+                title: this.title,
+                href: this.href,
+                channelId: this.channel.id
+            }, function (data, textStatus, xhr) {
+                if (data.success) {
+                    _this2.title = '';
+                    _this2.href = '';
+                    _this2.links.push(data.data);
+                    ea.publish(nsCons.EVENT_CHANNEL_LINKS_REFRESH, {});
+                } else {
+                    toastr.error(data.data);
+                }
+            });
+        };
+
+        EmChatChannelLinkMgr.prototype.delHandler = function delHandler(item) {
+            var _this3 = this;
+
+            $.post('/admin/link/delete', {
+                id: item.id
+            }, function (data, textStatus, xhr) {
+                if (data.success) {
+                    _this3.links = _.reject(_this3.links, { id: item.id });
+                    ea.publish(nsCons.EVENT_CHANNEL_LINKS_REFRESH, {});
+                    toastr.success('删除成功!');
+                } else {
+                    toastr.error(data.data);
+                }
+            });
+        };
+
+        EmChatChannelLinkMgr.prototype.editHandler = function editHandler(item) {
+            item.oldTitle = item.title;
+            item.oldHref = item.href;
+            item.isEditing = true;
+        };
+
+        EmChatChannelLinkMgr.prototype.updateHandler = function updateHandler(item) {
+            $.post('/admin/link/update', {
+                id: item.id,
+                title: item.title,
+                href: item.href
+            }, function (data, textStatus, xhr) {
+                if (data.success) {
+                    item.isEditing = false;
+                    ea.publish(nsCons.EVENT_CHANNEL_LINKS_REFRESH, {});
+                    toastr.success('更新成功!');
+                } else {
+                    toastr.error(data.data);
+                }
+            });
+        };
+
+        EmChatChannelLinkMgr.prototype.showHandler = function showHandler() {
+            this._reset();
+        };
+
+        EmChatChannelLinkMgr.prototype._reset = function _reset() {};
+
+        EmChatChannelLinkMgr.prototype.attached = function attached() {};
+
+        EmChatChannelLinkMgr.prototype.show = function show() {
+            this.emModal.show({ autoDimmer: false });
+        };
+
+        EmChatChannelLinkMgr.prototype.approveHandler = function approveHandler(modal) {};
+
+        return EmChatChannelLinkMgr;
+    }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'channel', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: null
+    })), _class2)) || _class;
+});
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\r\n\t<require from=\"./app.css\"></require>\r\n\t<require from=\"./common.css\"></require>\r\n\t<require from=\"./override.css\"></require>\r\n\t<require from=\"common/common-scrollbar.css\"></require>\r\n\t<require from=\"nprogress/nprogress.css\"></require>\r\n\t<require from=\"toastr/build/toastr.css\"></require>\r\n    <require from=\"tms-semantic-ui/semantic.min.css\"></require>\r\n    <router-view></router-view>\r\n</template>\r\n"; });
 define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <require from=\"./md-github.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" chat-user.bind=\"user\" login-user.bind=\"loginUser\" channels.bind=\"channels\" channel.bind=\"channel\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div class=\"tms-comments-container\" ref=\"scrollbarRef\" scrollbar>\r\n                    <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                        <div if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</div>\r\n                        <em-chat-content-item chat-to.bind=\"chatTo\" mark-id.bind=\"markId\" channel.bind=\"channel\" is-at.bind=\"isAt\" chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                        <div if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})\r\n                            <div click.trigger=\"refreshLatestHandler($event)\" title=\"刷新最新消息\" class=\"ui basic circular mini icon button\">\r\n                                <i class=\"refresh icon\"></i>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <div show.bind=\"isShowHead\" title=\"滚至头部(alt+↑)\" class=\"tms-go tms-go-head\"><div click.delegate=\"goHeadHandler()\" class=\"circular ui icon button\"><i class=\"chevron up icon\"></i></div></div>\r\n                    <div show.bind=\"isShowFoot\" title=\"滚至尾部(alt+↓)\" class=\"tms-go tms-go-foot\"><div click.delegate=\"goFootHandler()\" class=\"circular ui icon button\"><i class=\"chevron down icon\"></i></div></div>\r\n                </div>\r\n                <em-chat-input channel.bind=\"channel\" is-at.bind=\"isAt\" chat-to.bind=\"chatTo\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right login-user.bind=\"loginUser\" channel.bind=\"channel\" login-user.bind=\"loginUser\" is-at.bind=\"isAt\"></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n    <em-chat-msg-popup></em-chat-msg-popup>\r\n    <em-chat-member-popup></em-chat-member-popup>\r\n</template>\r\n"; });
 define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n  overflow: hidden;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n"; });
@@ -26971,8 +27293,8 @@ define('text!resources/elements/em-chat-sidebar-left.css', ['module'], function(
 define('text!resources/elements/em-chat-sidebar-left.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-sidebar-left.css\"></require>\r\n    <div class=\"ui left visible sidebar tms-left-sidebar\">\r\n        <div class=\"tms-header\">\r\n            <h1 class=\"ui header\"><img ref=\"logoRef\" src=\"img/tms-x32.png\" alt=\"\"><a href=\"/admin/dynamic?scroll=1\">TMS沟通</a></h1>\r\n            <input value.bind=\"filter\" keyup.trigger=\"chatToUserFilerKeyupHanlder($event)\" type=\"text\" placeholder=\"过滤沟通频道|用户\">\r\n            <i show.bind=\"filter\" title=\"清空过滤输入\" click.delegate=\"clearFilterHandler()\" class=\"close icon link\"></i>\r\n        </div>\r\n        <div class=\"tms-body\">\r\n            <div scrollbar=\"scrollbar-macosx\">\r\n                <div ref=\"channelsRef\" class=\"tms-channels\">\r\n                    <div class=\"title\">\r\n                        <h4 class=\"ui header\"><i class=\"users icon\"></i>频道 (${channels.length})</h4>\r\n                        <i ref=\"createChannelRef\" class=\"plus link circular icon\"></i>\r\n                    </div>\r\n                    <div class=\"ui middle aligned selection list\">\r\n                        <a repeat.for=\"item of channels | sort:'title' | sortChannels\" title=\"${item.title}(${item.name})\" show.bind=\"!item.hidden\" href=\"#/chat/${item.name}\" class=\"item ${(!isAt && item.name == chatTo) ? 'active' : ''}\">\r\n                            <i class=\"hashtag icon\"></i>\r\n                            <div class=\"content\">\r\n                                <div class=\"tms-name\">${item.title}</div>\r\n                            </div>\r\n                            <div class=\"actions\">\r\n                                <div if.bind=\"item.owner.username == loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                    <i class=\"large ellipsis horizontal icon\"></i>\r\n                                    <div class=\"menu\">\r\n                                        <div class=\"item\" click.delegate=\"membersMgrHandler(item)\">成员管理</div>\r\n                                        <div class=\"item\" click.delegate=\"editHandler(item)\">编辑</div>\r\n                                        <div class=\"item\" click.delegate=\"delHandler(item)\">删除</div>\r\n                                    </div>\r\n                                </div>\r\n                                <div if.bind=\"item.owner.username != loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                    <i class=\"large ellipsis horizontal icon\"></i>\r\n                                    <div class=\"menu\">\r\n                                        <div class=\"item\" click.delegate=\"membersShowHandler(item)\">成员查看</div>\r\n                                        <div class=\"item\" click.delegate=\"leaveHandler(item)\">离开</div>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </a>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui divider\"></div>\r\n                <div class=\"tms-users\">\r\n                    <div class=\"title\">\r\n                        <h4 class=\"ui header\"><i class=\"user icon\"></i>用户 (${users.length})</h4>\r\n                        <!-- <i class=\"plus link circular icon\"></i> -->\r\n                    </div>\r\n                    <div ref=\"userListRef\" class=\"ui middle aligned selection list\">\r\n                        <a repeat.for=\"item of users | sortUsers:loginUser.username\" title=\"${item.name}(@${item.username})\" show.bind=\"!item.hidden\" href=\"#/chat/@${item.username}\" class=\"item ${(isAt && item.username == chatTo) ? 'active' : ''}\" data-id=\"${item.username}\">\r\n                            <i style=\"font-weight: bold;\" class=\"at icon\"></i>\r\n                            <div class=\"content\">\r\n                                <div class=\"tms-name\">${item.name ? item.name : item.username} ${item.username == loginUser.username ? '(自己)' : ''}</div>\r\n                            </div>\r\n                        </a>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"tms-footer\">\r\n            <div class=\"ui inverted icon menu\">\r\n                <div click.delegate=\"switchHandler()\" class=\"ui animated fade button item\" tabindex=\"0\">\r\n                    <div class=\"visible content\">\r\n                        <i class=\"large icons\">\r\n                            <i class=\"align justify icon\"></i>\r\n                            <i class=\"corner search icon\"></i>\r\n                        </i>\r\n                    </div>\r\n                    <div class=\"hidden content\">\r\n                        CTRL+K 切换\r\n                    </div>\r\n                </div>\r\n                <div class=\"right menu\">\r\n                    <div class=\"ui dropdown icon item\" ui-dropdown>\r\n                        <i class=\"content icon\"></i>\r\n                        <div class=\"menu\">\r\n                            <div class=\"header\">\r\n                                系统外链\r\n                            </div>\r\n                            <a repeat.for=\"item of sysLinks\" show.bind=\"!item.disabled\" target=\"_blank\" href=\"${item.href}\" class=\"item\">${item.title}</a>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n    <em-chat-channel-create login-user.bind=\"loginUser\" trigger.bind=\"createChannelRef\"></em-chat-channel-create>\r\n    <em-chat-channel-edit channel.bind=\"selectedChannel\" em-chat-channel-edit.ref=\"channelEditMd\"></em-chat-channel-edit>\r\n    <em-chat-channel-members-mgr users.bind=\"users\" channel.bind=\"selectedChannel\" em-chat-channel-members-mgr.ref=\"channelMembersMgrMd\"></em-chat-channel-members-mgr>\r\n    <em-chat-channel-members-show channel.bind=\"selectedChannel\" em-chat-channel-members-show.ref=\"channelMembersShowMd\"></em-chat-channel-members-show>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-sidebar-right.css', ['module'], function(module) { module.exports = ".emm-chat-sidebar-right .panel-wiki-dir {\n  height: 100%;\n  padding-left: 15px;\n  overflow-y: auto;\n}\n"; });
 define('text!resources/elements/em-chat-sidebar-right.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-sidebar-right.css\"></require>\r\n    <div class=\"tms-right-sidebar emm-chat-sidebar-right\">\r\n        <div scrollbar=\"scrollbar-macosx\">\r\n            <div show.bind=\"forShow == 'chat-msg'\" class=\"panel-chat-msg\">\r\n                <div class=\"ui basic segment minimal selection list segment comments\">\r\n                    <h1 show.bind=\"!chats.length\" class=\"ui center aligned header\">无符合检索结果</h1>\r\n                    <div repeat.for=\"item of chats\" mouseleave.trigger=\"searchItemMouseleaveHandler(item)\" mouseenter.trigger=\"searchItemMouseenterHandler(item)\" swipebox class=\"comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\">\r\n                        <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\r\n                        <div class=\"content\">\r\n                            <a class=\"author\" data-value=\"${item.creator.username}\">${item.creator.name}</a>\r\n                            <div class=\"metadata\">\r\n                                <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\r\n                            </div>\r\n                            <div class=\"text markdown-body ${item.isOpen ? 'tms-open' : ''}\" innerhtml.bind=\"item.content | parseMd\"></div>\r\n                            <div class=\"actions\">\r\n                                <a if.bind=\"item.chatStow\" click.delegate=\"removeStowHandler(item)\" class=\"tms-remove\" title=\"移除收藏消息\" href=\"\">移除</a>\r\n                                <a if.bind=\"item.chatAt\" click.delegate=\"removeAtHandler(item)\" class=\"tms-read\" title=\"标记@消息已读\" href=\"\">知悉</a>\r\n                                <a click.delegate=\"gotoChatHandler(item)\" class=\"tms-goto\" href=\"\" title=\"定位到消息\">定位</a>\r\n                                <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\" title=\"复制消息内容到剪贴板\">复制</a>\r\n                                <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}\" title=\"复制消息链接到剪贴板\">分享</a>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"tms-btn-open-search-item\" click.delegate=\"openSearchItemHandler(item)\">\r\n                            <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                        </div>\r\n                    </div>\r\n                    <div if.bind=\"!last\" click.delegate=\"searchMoreHandler()\" class=\"ui basic button tms-search-more\"><i show.bind=\"searchMoreP && searchMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\r\n                </div>\r\n            </div>\r\n            <div ref=\"dirRef\" show.bind=\"forShow == 'wiki-dir'\" class=\"panel-wiki-dir\"></div>\r\n            <div ref=\"attachRef\" show.bind=\"forShow == 'chat-attach'\" class=\"panel-chat-attach\">\r\n                <em-chat-attach view-model.ref=\"chatAttachVm\"></em-chat-attach>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-top-menu.css', ['module'], function(module) { module.exports = ".tms-em-chat-top-menu.ui.top.menu {\n  padding-left: 220px;\n  height: 60px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .tms-chat-at.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .item.tms-item:before {\n  display: none;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item {\n  padding-left: 0;\n  padding-right: 5px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item button .ui.floating.label {\n  top: 0;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-search {\n    padding-left: 10px;\n    padding-right: 10px;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search input {\n  width: 95px;\n  transition: width 0.15s ease-out 0s;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search i.remove.icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu {\n    padding-left: 0;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .ui.basic.button {\n  box-shadow: none;\n}\n@media only screen and (min-width: 768px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown {\n    min-width: 138px;\n    padding-top: 0;\n    padding-left: 13px;\n    padding-bottom: 20px;\n  }\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown.item:before {\n    width: 0;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .text > .actions {\n  display: none;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata {\n  position: absolute;\n  display: flex;\n  top: 35px;\n  font-size: 12px;\n  left: 0;\n  height: 15px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item:before {\n  top: 5px;\n  height: 50%;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item.tms-channel-info:before {\n  width: 0;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item.tms-user-info:before {\n  width: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata {\n    display: none;\n  }\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .text {\n    display: none;\n  }\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .dropdown.icon {\n    margin-left: 6px;\n    margin-right: 6px;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .header i.plus.icon {\n  position: absolute;\n  right: 5px;\n  top: 7px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item:hover .actions {\n  display: inline-block;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item .icon {\n  margin-right: 4px!important;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item > .actions {\n  display: none;\n  position: absolute;\n  right: 5px;\n  top: 10px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item > .actions .large.ellipsis.horizontal.icon {\n  font-size: 1.3em!important;\n}\n"; });
-define('text!resources/elements/em-chat-top-menu.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-top-menu.css\"></require>\r\n    <div class=\"ui top fixed menu tms-em-chat-top-menu\">\r\n        <div ref=\"chatToDropdownRef\" class=\"ui dropdown link item ${isActiveSearch ? 'tms-hide' : ''} tms-chat-at\">\r\n            <span class=\"text\"></span>\r\n            <i class=\"dropdown icon\"></i>\r\n            <div class=\"tms-metadata\">\r\n                <a if.bind=\"!isAt\" class=\"item\" click.trigger=\"viewOrMgrUsersHandler($event)\" title=\"频道用户(${channel.members.length})\"><i class=\"users icon\"></i></a>\r\n                <a if.bind=\"!isAt && channel.privated\" class=\"item\" click.trigger=\"stopImmediatePropagationHandler($event)\" title=\"私有频道\"><i class=\"lock icon\"></i></a>\r\n                <a if.bind=\"!isAt && !channel.privated\" class=\"item\" click.trigger=\"stopImmediatePropagationHandler($event)\" title=\"公开频道\"><i class=\"unlock icon\"></i></a>\r\n                <a if.bind=\"!isAt\" class=\"item tms-channel-info\" click.trigger=\"channelInfoHandler($event)\" title=\"${channel.description}\"><i class=\"info circle icon\"></i></a>\r\n                <a if.bind=\"isAt && chatUser.enabled\" class=\"item\" click.trigger=\"stopImmediatePropagationHandler($event)\" title=\"启用中\"><i class=\"heart icon\"></i></a>\r\n                <a if.bind=\"isAt && !chatUser.enabled\" class=\"item\" click.trigger=\"stopImmediatePropagationHandler($event)\" title=\"禁用中\"><i class=\"empty heart icon\"></i></a>\r\n                <a if.bind=\"isAt\" class=\"item\" click.trigger=\"mailToHandler($event)\" title=\"${chatUser.mails}\"><i class=\"mail icon\"></i></a>\r\n                <a if.bind=\"isAt && chatUser.lastLoginDate\" class=\"item tms-user-info\" click.trigger=\"userInfoHandler($event)\" title=\"从IP[${chatUser.loginRemoteAddress}]登录(${chatUser.lastLoginDate | timeago})\"><i class=\"info circle icon\"></i></a>\r\n                <a if.bind=\"isAt && !chatUser.lastLoginDate\" class=\"item tms-user-info\" click.trigger=\"userInfoHandler($event)\" title=\"该用户可能比较懒,暂无登录记录!\"><i class=\"info circle icon\"></i></a>\r\n            </div>\r\n            <div class=\"menu\">\r\n                <div class=\"ui icon search input\">\r\n                    <i class=\"search icon\"></i>\r\n                    <input ref=\"filterChatToUser\" type=\"text\" placeholder=\"过滤沟通频道|用户\">\r\n                </div>\r\n                <div class=\"divider\"></div>\r\n                <div class=\"header\">\r\n                    <i class=\"filter icon\"></i> 切换沟通频道|用户(Ctrl+k)\r\n                </div>\r\n                <div class=\"scrolling menu\">\r\n                    <div class=\"header\">\r\n                        <i class=\"users icon\"></i> 频道 (${channels.length}) <i ref=\"createChannelRef\" class=\"circular icon link plus\"></i>\r\n                    </div>\r\n                    <a repeat.for=\"item of channels | sort:'title' | sortChannels\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/${item.name}\" class=\"item\" title=\"${item.title}(${item.name})\" data-value=\"${item.name}\" data-id=\"${item.name}\">\r\n                        <i class=\"hashtag icon\"></i>${item.title}\r\n                        <div class=\"actions\">\r\n                            <div if.bind=\"item.owner.username == loginUser.username\" ui-dropdown class=\"ui dropdown\">\r\n                                <i class=\"large ellipsis horizontal icon\"></i>\r\n                                <div class=\"left menu transition hidden\">\r\n                                    <div class=\"item\" click.trigger=\"membersMgrHandler(item, $event)\">成员管理</div>\r\n                                    <div class=\"item\" click.trigger=\"editHandler(item, $event)\">编辑</div>\r\n                                    <div class=\"item\" click.trigger=\"delHandler(item, $event)\">删除</div>\r\n                                </div>\r\n                            </div>\r\n                            <div if.bind=\"item.owner.username != loginUser.username\" ui-dropdown class=\"ui dropdown\">\r\n                                <i class=\"large ellipsis horizontal icon\"></i>\r\n                                <div class=\"left menu transition hidden\">\r\n                                    <div class=\"item\" click.trigger=\"membersShowHandler(item, $event)\">成员查看</div>\r\n                                    <div class=\"item\" click.trigger=\"leaveHandler(item, $event)\">离开</div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                    <div class=\"header\">\r\n                        <i class=\"user icon\"></i> 用户 (${users.length})\r\n                    </div>\r\n                    <a repeat.for=\"item of users | sortUsers:loginUser.username\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/@${item.username}\" class=\"item\" title=\"${item.name}(@${item.username})\" data-value=\"${item.username}\" data-id=\"@${item.username}\">\r\n                        <i style=\"font-weight: bold;\" class=\"at icon\"></i>${item.name} ${item.username == loginUser.username ? '(自己)' : ''}\r\n                    </a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"right menu\">\r\n            <div show.bind=\"!!dir\" class=\"item tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showWikiDirHandler($event)\" title=\"消息目录查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_DIR) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"unordered list icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showAtHandler($event)\" title=\"@消息查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_AT) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"at icon\"></i>\r\n                    <div show.bind=\"!!newAtCnt\" class=\"floating ui red empty circular label\"></div>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showStowHandler($event)\" title=\"收藏消息查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_STOW) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"empty star icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showAttachHandler($event)\" title=\"附件查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_ATTACH) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"attach icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-item\">\r\n                <button click.delegate=\"sibebarRightHandler($event)\" title=\"右侧边栏(Ctrl+.)\" class=\"basic ${isRightSidebarShow ? 'active' : ''} ui icon button\">\r\n                    <i class=\"columns icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-search\">\r\n                <div ref=\"searchRef\" class=\"ui search\">\r\n                    <div class=\"ui left icon input\">\r\n                        <input ref=\"searchInputRef\" keyup.trigger=\"searchKeyupHandler($event)\" blur.trigger=\"searchBlurHandler()\" focus.trigger=\"searchFocusHandler()\" class=\"prompt\" type=\"text\" placeholder=\"搜索...\">\r\n                        <i class=\"${(searchingP && searchingP.readyState != 4) ? 'spinner loading' : 'search'} icon\"></i>\r\n                        <i ref=\"searchRemoveRef\" click.delegate=\"clearSearchHandler()\" class=\"remove link icon\"></i>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div ui-dropdown class=\"ui top right dropdown item tms-login-user\">\r\n                <i class=\"circular user icon\"></i> ${loginUser.name}\r\n                <i class=\"dropdown icon\"></i>\r\n                <div class=\"menu\">\r\n                    <div class=\"header\">账户操作</div>\r\n                    <div class=\"divider\"></div>\r\n                    <a class=\"item\" click.delegate=\"userEditHandler()\"><i class=\"edit icon\"></i>修改</a>\r\n                    <a class=\"item\" click.delegate=\"logoutHandler()\"><i class=\"sign out icon\"></i>退出</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-user-edit user.bind=\"loginUser\" view-model.ref=\"userEditMd\"></em-user-edit>\r\n    <em-chat-channel-create login-user.bind=\"loginUser\" trigger.bind=\"createChannelRef\"></em-chat-channel-create>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-top-menu.css', ['module'], function(module) { module.exports = ".tms-em-chat-top-menu.ui.top.menu {\n  padding-left: 220px;\n  height: 60px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .tms-chat-at.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .item.tms-item:before {\n  display: none;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item {\n  padding-left: 0;\n  padding-right: 5px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item button .ui.floating.label {\n  top: 0;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-search {\n    padding-left: 10px;\n    padding-right: 10px;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search input {\n  width: 95px;\n  transition: width 0.15s ease-out 0s;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search i.remove.icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu {\n    padding-left: 0;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .ui.basic.button {\n  box-shadow: none;\n}\n@media only screen and (min-width: 768px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown {\n    min-width: 175px;\n    padding-top: 0;\n    padding-left: 13px;\n    padding-bottom: 20px;\n  }\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown.item:before {\n    width: 0;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .text > .actions {\n  display: none;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata {\n  position: absolute;\n  display: flex;\n  top: 35px;\n  font-size: 12px;\n  left: 0;\n  height: 15px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item:before {\n  top: 5px;\n  height: 50%;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item.tms-channel-info:before {\n  width: 0;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item.tms-user-info:before {\n  width: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .tms-channel-links .menu .header {\n  min-width: 200px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .text {\n    display: none;\n  }\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .dropdown.icon {\n    margin-left: 6px;\n    margin-right: 6px;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .header i.plus.icon {\n  position: absolute;\n  right: 5px;\n  top: 7px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item:hover .actions {\n  display: inline-block;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item .icon {\n  margin-right: 4px!important;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item > .actions {\n  display: none;\n  position: absolute;\n  right: 5px;\n  top: 10px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item > .actions .large.ellipsis.horizontal.icon {\n  font-size: 1.3em!important;\n}\n"; });
+define('text!resources/elements/em-chat-top-menu.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-top-menu.css\"></require>\r\n    <div class=\"ui top fixed menu tms-em-chat-top-menu\">\r\n        <div ref=\"chatToDropdownRef\" class=\"ui dropdown link item ${isActiveSearch ? 'tms-hide' : ''} tms-chat-at\">\r\n            <span class=\"text\"></span>\r\n            <i class=\"dropdown icon\"></i>\r\n            <div class=\"tms-metadata\">\r\n                <div if.bind=\"!isAt\" click.trigger=\"channelLinksHandler($event)\" ref=\"channelLinksDdRef\" class=\"ui dropdown icon item tms-channel-links\" ui-dropdown>\r\n                    <i class=\"content icon\"></i>\r\n                    <div class=\"menu\">\r\n                        <div class=\"header\">\r\n                            <i class=\"linkify icon\"></i> 当前频道外链 <i if.bind=\"(isSuper || (channel.owner.username == loginUser.username))\" click.trigger=\"addChannelLinkHandler($event)\" title=\"添加频道外链\" class=\"circular icon link plus\"></i>\r\n                        </div>\r\n                        <div if.bind=\"!channelLinks || channelLinks.length == 0\" click.trigger=\"stopImmediatePropagationHandler($event)\" class=\"item\">暂无频道外链</div>\r\n                        <a repeat.for=\"item of channelLinks | sort:'title'\" click.trigger=\"openChannelLinkHandler($event, item)\" target=\"_blank\" href=\"${item.href}\" class=\"item\">${item.title}</a>\r\n                    </div>\r\n                </div>\r\n                <a if.bind=\"!isAt\" class=\"item\" click.trigger=\"viewOrMgrUsersHandler($event)\" title=\"频道用户(${channel.members.length})\"><i class=\"users icon\"></i></a>\r\n                <a if.bind=\"!isAt && channel.privated\" class=\"item\" click.trigger=\"stopImmediatePropagationHandler($event)\" title=\"私有频道\"><i class=\"lock icon\"></i></a>\r\n                <a if.bind=\"!isAt && !channel.privated\" class=\"item\" click.trigger=\"stopImmediatePropagationHandler($event)\" title=\"公开频道\"><i class=\"unlock icon\"></i></a>\r\n                <a if.bind=\"!isAt\" class=\"item tms-channel-info\" click.trigger=\"channelInfoHandler($event)\" title=\"${channel.description}\"><i class=\"info circle icon\"></i></a>\r\n                <a if.bind=\"isAt && chatUser.enabled\" class=\"item\" click.trigger=\"stopImmediatePropagationHandler($event)\" title=\"启用中\"><i class=\"heart icon\"></i></a>\r\n                <a if.bind=\"isAt && !chatUser.enabled\" class=\"item\" click.trigger=\"stopImmediatePropagationHandler($event)\" title=\"禁用中\"><i class=\"empty heart icon\"></i></a>\r\n                <a if.bind=\"isAt\" class=\"item\" click.trigger=\"mailToHandler($event)\" title=\"${chatUser.mails}\"><i class=\"mail icon\"></i></a>\r\n                <a if.bind=\"isAt && chatUser.lastLoginDate\" class=\"item tms-user-info\" click.trigger=\"userInfoHandler($event)\" title=\"从IP[${chatUser.loginRemoteAddress}]登录(${chatUser.lastLoginDate | timeago})\"><i class=\"info circle icon\"></i></a>\r\n                <a if.bind=\"isAt && !chatUser.lastLoginDate\" class=\"item tms-user-info\" click.trigger=\"userInfoHandler($event)\" title=\"该用户可能比较懒,暂无登录记录!\"><i class=\"info circle icon\"></i></a>\r\n            </div>\r\n            <div class=\"menu\">\r\n                <div class=\"ui icon search input\">\r\n                    <i class=\"search icon\"></i>\r\n                    <input ref=\"filterChatToUser\" type=\"text\" placeholder=\"过滤沟通频道|用户\">\r\n                </div>\r\n                <div class=\"divider\"></div>\r\n                <div class=\"header\">\r\n                    <i class=\"filter icon\"></i> 切换沟通频道|用户(Ctrl+k)\r\n                </div>\r\n                <div class=\"scrolling menu\">\r\n                    <div class=\"header\">\r\n                        <i class=\"users icon\"></i> 频道 (${channels.length}) <i ref=\"createChannelRef\" class=\"circular icon link plus\"></i>\r\n                    </div>\r\n                    <a repeat.for=\"item of channels | sort:'title' | sortChannels\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/${item.name}\" class=\"item\" title=\"${item.title}(${item.name})\" data-value=\"${item.name}\" data-id=\"${item.name}\">\r\n                        <i class=\"hashtag icon\"></i>${item.title}\r\n                        <div class=\"actions\">\r\n                            <div if.bind=\"item.owner.username == loginUser.username\" ui-dropdown class=\"ui dropdown\">\r\n                                <i class=\"large ellipsis horizontal icon\"></i>\r\n                                <div class=\"left menu transition hidden\">\r\n                                    <div class=\"item\" click.trigger=\"membersMgrHandler(item, $event)\">成员管理</div>\r\n                                    <div class=\"item\" click.trigger=\"editHandler(item, $event)\">编辑</div>\r\n                                    <div class=\"item\" click.trigger=\"delHandler(item, $event)\">删除</div>\r\n                                </div>\r\n                            </div>\r\n                            <div if.bind=\"item.owner.username != loginUser.username\" ui-dropdown class=\"ui dropdown\">\r\n                                <i class=\"large ellipsis horizontal icon\"></i>\r\n                                <div class=\"left menu transition hidden\">\r\n                                    <div class=\"item\" click.trigger=\"membersShowHandler(item, $event)\">成员查看</div>\r\n                                    <div class=\"item\" click.trigger=\"leaveHandler(item, $event)\">离开</div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                    <div class=\"header\">\r\n                        <i class=\"user icon\"></i> 用户 (${users.length})\r\n                    </div>\r\n                    <a repeat.for=\"item of users | sortUsers:loginUser.username\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/@${item.username}\" class=\"item\" title=\"${item.name}(@${item.username})\" data-value=\"${item.username}\" data-id=\"@${item.username}\">\r\n                        <i style=\"font-weight: bold;\" class=\"at icon\"></i>${item.name} ${item.username == loginUser.username ? '(自己)' : ''}\r\n                    </a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"right menu\">\r\n            <div show.bind=\"!!dir\" class=\"item tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showWikiDirHandler($event)\" title=\"消息目录查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_DIR) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"unordered list icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showAtHandler($event)\" title=\"@消息查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_AT) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"at icon\"></i>\r\n                    <div show.bind=\"!!newAtCnt\" class=\"floating ui red empty circular label\"></div>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showStowHandler($event)\" title=\"收藏消息查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_STOW) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"empty star icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showAttachHandler($event)\" title=\"附件查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_ATTACH) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"attach icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-item\">\r\n                <button click.delegate=\"sibebarRightHandler($event)\" title=\"右侧边栏(Ctrl+.)\" class=\"basic ${isRightSidebarShow ? 'active' : ''} ui icon button\">\r\n                    <i class=\"columns icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-search\">\r\n                <div ref=\"searchRef\" class=\"ui search\">\r\n                    <div class=\"ui left icon input\">\r\n                        <input ref=\"searchInputRef\" keyup.trigger=\"searchKeyupHandler($event)\" blur.trigger=\"searchBlurHandler()\" focus.trigger=\"searchFocusHandler()\" class=\"prompt\" type=\"text\" placeholder=\"搜索...\">\r\n                        <i class=\"${(searchingP && searchingP.readyState != 4) ? 'spinner loading' : 'search'} icon\"></i>\r\n                        <i ref=\"searchRemoveRef\" click.delegate=\"clearSearchHandler()\" class=\"remove link icon\"></i>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div ui-dropdown class=\"ui top right dropdown item tms-login-user\">\r\n                <i class=\"circular user icon\"></i> ${loginUser.name}\r\n                <i class=\"dropdown icon\"></i>\r\n                <div class=\"menu\">\r\n                    <div class=\"header\">账户操作</div>\r\n                    <div class=\"divider\"></div>\r\n                    <a class=\"item\" click.delegate=\"userEditHandler()\"><i class=\"edit icon\"></i>修改</a>\r\n                    <a class=\"item\" click.delegate=\"logoutHandler()\"><i class=\"sign out icon\"></i>退出</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-user-edit user.bind=\"loginUser\" view-model.ref=\"userEditMd\"></em-user-edit>\r\n    <em-chat-channel-create login-user.bind=\"loginUser\" trigger.bind=\"createChannelRef\"></em-chat-channel-create>\r\n    <em-chat-channel-link-mgr view-model.ref=\"channelLinkMgrVm\" channel.bind=\"channel\"></em-chat-channel-link-mgr>\r\n</template>\r\n"; });
 define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(module) { module.exports = ".tms-em-hotkeys-modal ul {\n  padding-left: 30px;\n}\n.tms-em-hotkeys-modal ul.no_bullets {\n  margin: 0 0 2rem;\n}\n.tms-em-hotkeys-modal ul.no_bullets li {\n  line-height: 2rem;\n  list-style-type: none;\n  padding: 0;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.tms-em-hotkeys-modal > .content {\n  background-color: rgba(11, 7, 11, 0.78) !important;\n}\n.tms-em-hotkeys-modal .keyboard i.icon {\n  margin-right: 0px!important;\n}\n.tms-em-hotkeys-modal .subtle_silver {\n  color: #9e9ea6!important;\n}\n.tms-em-hotkeys-modal .ui.grid .column {\n  padding: 0!important;\n}\n"; });
 define('text!resources/elements/em-user-avatar.css', ['module'], function(module) { module.exports = ".em-user-avatar.avatar.ui.mini.circular.image {\n  width: 35px;\n  height: 35px;\n  font-size: 35px;\n  background-color: rgba(150, 178, 183, 0.4);\n  text-align: center;\n  margin: 0;\n  padding-right: 0;\n}\n.em-user-avatar .text-char {\n  display: inline-block;\n  height: 35px;\n  line-height: 35px;\n  vertical-align: top;\n}\n"; });
 define('text!resources/elements/em-user-edit.css', ['module'], function(module) { module.exports = ".tms-em-user-edit .ui.form .field > label {\n  width: 45px!important;\n}\n.tms-em-user-edit .ui.form .field .user-username {\n  margin-left: 0;\n}\n.em-user-edit-modal {\n  /* Tablet & PC */\n}\n@media only screen and (min-width: 768px) {\n  .em-user-edit-modal {\n    width: 500px!important;\n    margin-left: -250px !important;\n  }\n}\n"; });
@@ -26982,4 +27304,8 @@ define('text!resources/elements/em-hotkeys-modal.html', ['module'], function(mod
 define('text!resources/elements/em-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"modal\" class=\"ui modal ${classes}\">\r\n        <i class=\"close icon\" style=\"top: 0; right: 0; color: #214262;\"></i>\r\n        <div class=\"header\">\r\n            <slot name=\"header\">modal header...</slot>\r\n        </div>\r\n        <div class=\"content\">\r\n            <div class=\"ui inverted dimmer\" style=\"background-color: rgba(255, 255, 255, 0.5) !important;\">\r\n                <div class=\"ui loader\"></div>\r\n            </div>\r\n            <slot name=\"content\">modal content...</slot>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <slot name=\"actions\">\r\n                <div style=\"margin-left: 3.5px;\" class=\"ui cancel basic blue left floated button\" textcontent.bind=\"cancelLabel\">取消</div>\r\n                <div show.bind=\"showConfirm\" class=\"ui ok blue button ${(loading || disabled) ? 'disabled' : ''}\" textcontent.bind=\"confirmLabel\">确认</div>\r\n            </slot>\r\n            <div style=\"clear: both;\"></div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-user-avatar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-user-avatar.css\"></require>\r\n    <a ref=\"avatarRef\" css=\"background-color: ${bgColor};\" data-value=\"${user.username}\" class=\"avatar ui mini circular image em-user-avatar\">\r\n        <span css=\"color: ${color}\" class=\"text-char\">${nameChar}</span>\r\n    </a>\r\n</template>\r\n"; });
 define('text!resources/elements/em-user-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-user-edit.css\"></require>\r\n    <em-modal classes=\"small em-user-edit-modal\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\r\n        <div slot=\"header\">个人信息编辑</div>\r\n        <div slot=\"content\" class=\"tms-em-user-edit\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"ui form\" with.bind=\"user\">\r\n                    <div class=\"inline field\">\r\n                        <label>用户名:</label>\r\n                        <div class=\"ui basic label user-username\">${username}</div>\r\n                    </div>\r\n                    <div class=\"inline field\">\r\n                        <label>密码:</label>\r\n                        <input name=\"password\" value.bind=\"password\" placeholder=\"密码\" type=\"text\">\r\n                    </div>\r\n                    <div class=\"required inline field\">\r\n                        <label>姓名:</label>\r\n                        <input name=\"name\" value.bind=\"name\" placeholder=\"姓名\" type=\"text\">\r\n                    </div>\r\n                    <div class=\"required inline field\">\r\n                        <label>邮箱:</label>\r\n                        <input name=\"mail\" value.bind=\"mails\" placeholder=\"邮箱\" type=\"text\">\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
+define('text!resources/elements/em-channel-link-mgr.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-channel-link-mgr.css\"></require>\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" show-confirm.bind=\"activeTab == 'channel-create'\" confirm-label=\"创建\">\n        <div slot=\"header\">频道外链管理</div>\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\n            <div class=\"ui segment\"></div>\n            <table class=\"ui very basic striped compact table\">\n                <thead>\n                    <tr>\n                        <th>标题</th>\n                        <th>链接</th>\n                        <th>操作</th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr repeat.for=\"item of links | sort:'title'\">\n                        <td>${item.title}</td>\n                        <td>${item.href}</td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n    </em-modal>\n</template>\n"; });
+define('text!resources/elements/em-channel-link-mgr.css', ['module'], function(module) { module.exports = ""; });
+define('text!resources/elements/em-chat-channel-link-mgr.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-chat-channel-link-mgr.css\"></require>\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\n        <div slot=\"header\">频道外链管理</div>\n        <div slot=\"content\" class=\"tms-em-chat-channel-link-mgr\">\n            <div class=\"ui segment\">\n                <div class=\"ui form\">\n                    <div class=\"field required\">\n                        <label>添加频道外链</label>\n                        <div class=\"fields\">\n                            <div class=\"five wide field\">\n                                <input type=\"text\" value.bind=\"title\" name=\"title\" placeholder=\"链接标题\">\n                            </div>\n                            <div class=\"nine wide field\">\n                                <input type=\"text\" value.bind=\"href\" name=\"href\" placeholder=\"链接地址\">\n                            </div>\n                            <div class=\"two wide field\">\n                                <button click.delegate=\"addHandler()\" class=\"circular ui icon button\" type=\"button\"><i class=\"plus icon\"></i></button>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <div style=\"max-height: 275px; overflow: auto;\">\n                <table class=\"ui very basic striped compact table\">\n                    <thead>\n                        <tr>\n                            <th class=\"five wide\">标题</th>\n                            <th class=\"seven wide\">链接</th>\n                            <th>操作</th>\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr repeat.for=\"item of links | sort:'title'\">\n                            <td if.bind=\"!item.isEditing\">${item.title}</td>\n                            <td if.bind=\"item.isEditing\">\n                                <div class=\"ui fluid input\">\n                                    <input type=\"text\" value.bind=\"item.title\" placeholder=\"链接标题\">\n                                </div>\n                            </td>\n                            <td if.bind=\"!item.isEditing\"><a target=\"_blank\" href=\"${item.href}\">${item.href}</a></td>\n                            <td if.bind=\"item.isEditing\">\n                                <div class=\"ui fluid input\">\n                                    <input type=\"text\" value.bind=\"item.href\" placeholder=\"链接地址\">\n                                </div>\n                            </td>\n                            <td>\n                                <button show.bind=\"!item.isEditing\" click.delegate=\"editHandler(item)\" class=\"mini ui button\">\n                                    编辑\n                                </button>\n                                <button click.delegate=\"updateHandler(item)\" show.bind=\"item.isEditing\" class=\"mini green ui button\">\n                                    更新\n                                </button>\n                                <button click.delegate=\"delHandler(item)\" class=\"mini ui red button\">\n                                    删除\n                                </button>\n                            </td>\n                        </tr>\n                    </tbody>\n                </table>\n            </div>\n        </div>\n    </em-modal>\n</template>\n"; });
+define('text!resources/elements/em-chat-channel-link-mgr.css', ['module'], function(module) { module.exports = ""; });
 //# sourceMappingURL=app-bundle.js.map

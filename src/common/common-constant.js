@@ -24,6 +24,7 @@ window.nsCons = {
     EVENT_CHAT_AT_NEW_CNT_UPDATE: 'event_chat_at_new_cnt_update',
     EVENT_SWITCH_CHAT_TO: 'event_switch_chat_to',
     EVENT_CHANNEL_ACTIONS: 'event_channel_actions',
+    EVENT_CHANNEL_LINKS_REFRESH: 'event_channel_links_refresh',
     ACTION_TYPE_SEARCH: 'action_type_search',
     ACTION_TYPE_STOW: 'action_type_stow',
     ACTION_TYPE_AT: 'action_type_at',

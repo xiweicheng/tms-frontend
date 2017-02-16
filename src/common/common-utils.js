@@ -436,6 +436,41 @@ export class CommonUtils {
             return '';
         });
     }
+
+    /**
+     * 打开新的浏览器窗口，并跳转到指定页面
+     * url:需要跳转的地址
+     */
+    openNewWin(url) {
+
+        if (url) {
+            let $a = $(`<a href="${url}" target="_blank" style="display:none;"></a>`).appendTo('body').end();
+            $(`<input type="button">`).appendTo($a).end().click();
+
+            _.delay(() => {
+                $a.remove();
+            }, 200);
+        }
+
+    }
+
+    isAdminUser(user) {
+        if (user && user.authorities) {
+            return _.some(user.authorities, (item) => {
+                return item.id.authority === 'ROLE_ADMIN';
+            });
+        }
+        return false;
+    }
+
+    isSuperUser(user) {
+        if (user && user.authorities) {
+            return _.some(user.authorities, (item) => {
+                return item.id.authority === 'ROLE_SUPER';
+            });
+        }
+        return false;
+    }
 }
 
 export default new CommonUtils();
