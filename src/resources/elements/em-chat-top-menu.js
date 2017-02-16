@@ -25,7 +25,9 @@ export class EmChatTopMenu {
     channelLinks = [];
 
     loginUserChanged() {
-        this.isSuper = utils.isSuperUser(this.loginUser);
+        if (this.loginUser) {
+            this.isSuper = utils.isSuperUser(this.loginUser);
+        }
     }
 
     chatToChanged() {

@@ -1,12 +1,12 @@
 <template>
-    <require from="./em-chat-channel-link-mgr.css"></require>
+    <require from="./em-chat-system-link-mgr.css"></require>
     <em-modal classes="small" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
-        <div slot="header">频道外链管理</div>
-        <div slot="content" class="tms-em-chat-channel-link-mgr">
+        <div slot="header">系统外链管理</div>
+        <div slot="content" class="tms-em-chat-system-link-mgr">
             <div class="ui segment">
                 <div class="ui form">
                     <div class="field required">
-                        <label>添加频道外链</label>
+                        <label>添加系统外链</label>
                         <div class="fields">
                             <div class="five wide field">
                                 <input type="text" value.bind="title" name="title" placeholder="链接标题">

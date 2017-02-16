@@ -9,6 +9,7 @@ export class EmChatSidebarLeft {
     @bindable chatTo;
     @bindable isAt;
     filter = '';
+    isSuper = nsCtx.isSuper;
 
     usersChanged() {
         this._filter();
@@ -18,12 +19,31 @@ export class EmChatSidebarLeft {
         this._filter();
     }
 
+    loginUserChanged() {
+        if (this.loginUser) {
+            this.isSuper = utils.isSuperUser(this.loginUser);
+        }
+    }
+
     /**
      * 构造函数
      */
     constructor() {
         this.subscribe = ea.subscribe(nsCons.EVENT_CHANNEL_ACTIONS, (payload) => {
             this[payload.action](payload.item);
+        });
+        this.subscribe1 = ea.subscribe(nsCons.EVENT_SYSTEM_LINKS_REFRESH, (payload) => {
+            this._refreshSysLinks();
+        });
+    }
+
+    _refreshSysLinks() {
+        $.get('/admin/link/listByApp', (data) => {
+            if (data.success) {
+                this.sysLinks = data.data;
+            } else {
+                this.sysLinks = [];
+            }
         });
     }
 
@@ -32,12 +52,11 @@ export class EmChatSidebarLeft {
      */
     unbind() {
         this.subscribe.dispose();
+        this.subscribe1.dispose();
     }
 
     bind(bindingCtx, overrideCtx) {
-        $.get('/admin/json/sys-links.json', (data) => {
-            this.sysLinks = data.links;
-        });
+        this._refreshSysLinks();
     }
 
     /**
@@ -147,6 +166,10 @@ export class EmChatSidebarLeft {
 
     switchHandler() {
         ea.publish(nsCons.EVENT_SWITCH_CHAT_TO, {});
+    }
+
+    addChannelLinkHandler(event) {
+        this.sysLinkMgrVm.show();
     }
 
 }

@@ -7,4 +7,6 @@ window.nsCtx = {
     isAt: true, // is channel or user chat
     chatTo: null, // chat to channel name or username
     chatId: null, // chat to channel name or @username 
+    isSuper: false,
+    isAdmin: false,
 }

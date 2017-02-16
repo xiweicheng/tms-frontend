@@ -42,6 +42,7 @@ export function configure(aurelia) {
         'resources/elements/em-chat-channel-members-mgr',
         'resources/elements/em-chat-channel-members-show',
         'resources/elements/em-chat-channel-link-mgr',
+        'resources/elements/em-chat-system-link-mgr',
         'resources/elements/em-chat-msg-popup',
         'resources/elements/em-chat-member-popup',
         'resources/elements/em-chat-attach',

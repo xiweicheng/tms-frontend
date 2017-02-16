@@ -174,6 +174,8 @@ export class ChatDirect {
 
         chatService.loginUser(false).then((user) => {
             this.loginUser = user;
+            nsCtx.isSuper = utils.isSuperUser(this.loginUser);
+            nsCtx.isAdmin = utils.isAdminUser(this.loginUser);
         });
 
         chatService.listUsers(false).then((users) => {

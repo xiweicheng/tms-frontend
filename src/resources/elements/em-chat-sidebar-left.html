@@ -74,9 +74,10 @@
                         <i class="content icon"></i>
                         <div class="menu">
                             <div class="header">
-                                系统外链
+                                <i class="linkify icon"></i> 系统外链 <i if.bind="isSuper" click.trigger="addChannelLinkHandler($event)" title="添加系统外链" class="circular icon link plus"></i>
                             </div>
-                            <a repeat.for="item of sysLinks" show.bind="!item.disabled" target="_blank" href="${item.href}" class="item">${item.title}</a>
+                            <div if.bind="!sysLinks || sysLinks.length == 0" class="item">暂无系统外链</div>
+                            <a repeat.for="item of sysLinks | sort:'title'" target="_blank" href="${item.href}" class="item">${item.title}</a>
                         </div>
                     </div>
                 </div>
@@ -88,4 +89,5 @@
     <em-chat-channel-edit channel.bind="selectedChannel" em-chat-channel-edit.ref="channelEditMd"></em-chat-channel-edit>
     <em-chat-channel-members-mgr users.bind="users" channel.bind="selectedChannel" em-chat-channel-members-mgr.ref="channelMembersMgrMd"></em-chat-channel-members-mgr>
     <em-chat-channel-members-show channel.bind="selectedChannel" em-chat-channel-members-show.ref="channelMembersShowMd"></em-chat-channel-members-show>
+    <em-chat-system-link-mgr view-model.ref="sysLinkMgrVm"></em-chat-system-link-mgr>
 </template>
