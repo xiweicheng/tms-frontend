@@ -65,7 +65,7 @@ export class EmChatContentItem {
         });
 
         // 用户信息popup
-        $('.tms-chat-direct').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].avatar:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+        $('.tms-chat-direct').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
             event.preventDefault();
             var $a = $(event.currentTarget);
             ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {
