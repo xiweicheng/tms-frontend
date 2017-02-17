@@ -1,6 +1,7 @@
 import { bindable, containerless, inject } from 'aurelia-framework';
 import 'textcomplete';
 import tips from 'common/common-tips';
+import emojis from 'common/common-emoji';
 import {
     default as SimpleMDE
 } from 'simplemde';
@@ -232,6 +233,22 @@ export class EmChatInput {
             },
             replace: (value) => {
                 return `$1{~${value}}`;
+            }
+        }, { // emoji
+            match: /(^|\s):(\w*)$/,
+            search: function(term, callback) {
+                callback($.map(emojis, (emoji) => {
+                    return _.some(emoji.split('_'), (item) => {
+                        return item.indexOf(term) === 0;
+                    }) ? emoji : null;
+                }));
+            },
+            template: (value, term) => {
+                let emojiKey = `:${value}:`;
+                return `${emojify.replace(emojiKey)} - ${emojiKey}`;
+            },
+            replace: function(value) {
+                return '$1:' + value + ': ';
             }
         }], {
             appendTo: '.tms-chat-status-bar',

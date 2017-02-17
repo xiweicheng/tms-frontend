@@ -119,3 +119,14 @@ export class UserNameValueConverter {
         return value;
     }
 }
+
+export class EmojiValueConverter {
+    toView(value, mkbodyDom) {
+        if (emojify) {
+            _.defer(() => {
+                emojify.run(mkbodyDom);
+            });
+        }
+        return value;
+    }
+}

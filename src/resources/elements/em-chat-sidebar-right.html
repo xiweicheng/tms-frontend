@@ -12,7 +12,7 @@
                             <div class="metadata">
                                 <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
                             </div>
-                            <div class="text markdown-body ${item.isOpen ? 'tms-open' : ''}" innerhtml.bind="item.content | parseMd"></div>
+                            <div ref="mkbodyRef" class="text markdown-body ${item.isOpen ? 'tms-open' : ''}" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
                             <div class="actions">
                                 <a if.bind="item.chatStow" click.delegate="removeStowHandler(item)" class="tms-remove" title="移除收藏消息" href="">移除</a>
                                 <a if.bind="item.chatAt" click.delegate="removeAtHandler(item)" class="tms-read" title="标记@消息已读" href="">知悉</a>

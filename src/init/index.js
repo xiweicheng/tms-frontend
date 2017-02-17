@@ -16,5 +16,6 @@ export function configure(aurelia, params) {
         .initAjax()
         .initToastr()
         .initMarked()
-        .initAnimateCss();
+        .initAnimateCss()
+        .initEmoji();
 }

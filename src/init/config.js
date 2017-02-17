@@ -236,6 +236,13 @@ export class Config {
         return this;
     }
 
+    initEmoji() {
+        emojify && emojify.setConfig({
+            img_dir: 'img/emoji'
+        });
+        return this;
+    }
+
     context(aurelia) {
         this.aurelia = aurelia;
         return this;

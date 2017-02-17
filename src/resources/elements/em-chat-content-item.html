@@ -13,7 +13,7 @@
                     <i click.delegate="likeHandler(item, false)" style="cursor: pointer;" title="踩一下" class="cbutton cbutton--effect-novak thumbs ${item.isCaiVoted ? '' : 'outline'} down icon"></i> <span title="${item.voteCai}">${item.voteCaiCnt} 踩</span>
                 </div>
             </div>
-            <div show.bind="!item.isEditing" class="text markdown-body" innerhtml.bind="item.content | parseMd"></div>
+            <div ref="mkbodyRef" show.bind="!item.isEditing" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
             <div class="textcomplete-container" show.bind="item.isEditing">
                 <div class="append-to"></div>
             </div>
