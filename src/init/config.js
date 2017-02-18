@@ -238,7 +238,7 @@ export class Config {
 
     initEmoji() {
         emojify && emojify.setConfig({
-            img_dir: 'img/emoji'
+            img_dir: utils.getResourceBase() + '/img/emoji'
         });
         return this;
     }
