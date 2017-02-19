@@ -17,6 +17,8 @@ export class AttrTextcompleteCustomAttribute {
             $(this.element).next('.tms-edit-actions').find('button > .upload.icon').click();
         } else if (value == '/shortcuts') {
             ea.publish(nsCons.EVENT_SHOW_HOTKEYS_MODAL, {});
+        } else if (value == '/emoji') {
+            _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
         } else {
             return true;
         }
@@ -63,7 +65,7 @@ export class AttrTextcompleteCustomAttribute {
                     return `$1{~${value}}`;
                 }
             }, { // emoji
-            match: /(^|\s):(\w*)$/,
+            match: /(^|\s):([\+\-\w]*)$/,
             search: function(term, callback) {
                 callback($.map(emojis, (emoji) => {
                     return _.some(emoji.split('_'), (item) => {
@@ -80,7 +82,7 @@ export class AttrTextcompleteCustomAttribute {
             }
         }], {
                 appendTo: $(this.element).prev('.textcomplete-container').find('.append-to'),
-                maxCount: 20
+                maxCount: nsCons.NUM_TEXT_COMPLETE_MAX_COUNT
             });
         } else {
             this.unbind();

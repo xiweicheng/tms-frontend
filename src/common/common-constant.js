@@ -31,4 +31,6 @@ window.nsCons = {
     ACTION_TYPE_AT: 'action_type_at',
     ACTION_TYPE_DIR: 'action_type_dir',
     ACTION_TYPE_ATTACH: 'action_type_attach',
+    NUM_TEXT_COMPLETE_MAX_COUNT: 21,
+    STR_EMOJI_SEARCH_URL: 'http://emoji.muan.co/',
 }

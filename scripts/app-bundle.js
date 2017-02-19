@@ -1095,7 +1095,9 @@ define('common/common-constant',[], function () {
         ACTION_TYPE_STOW: 'action_type_stow',
         ACTION_TYPE_AT: 'action_type_at',
         ACTION_TYPE_DIR: 'action_type_dir',
-        ACTION_TYPE_ATTACH: 'action_type_attach'
+        ACTION_TYPE_ATTACH: 'action_type_attach',
+        NUM_TEXT_COMPLETE_MAX_COUNT: 21,
+        STR_EMOJI_SEARCH_URL: 'http://emoji.muan.co/'
     };
 });
 define('common/common-ctx',[], function () {
@@ -3560,6 +3562,10 @@ define('common/common-tips',['exports'], function (exports) {
             label: '/upload [上传文件] (ctrl+u)',
             value: ''
         },
+        '/emoji': {
+            label: '/emoji [表情查找]',
+            value: ''
+        },
         '/shortcuts': {
             label: '/shortcuts [热键] (ctrl+/)',
             value: ''
@@ -5324,6 +5330,10 @@ define('resources/attributes/attr-textcomplete',['exports', 'aurelia-framework',
                 $(this.element).next('.tms-edit-actions').find('button > .upload.icon').click();
             } else if (value == '/shortcuts') {
                 ea.publish(nsCons.EVENT_SHOW_HOTKEYS_MODAL, {});
+            } else if (value == '/emoji') {
+                _.delay(function () {
+                    utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL);
+                }, 200);
             } else {
                 return true;
             }
@@ -5372,7 +5382,7 @@ define('resources/attributes/attr-textcomplete',['exports', 'aurelia-framework',
                         return '$1{~' + value + '}';
                     }
                 }, {
-                    match: /(^|\s):(\w*)$/,
+                    match: /(^|\s):([\+\-\w]*)$/,
                     search: function search(term, callback) {
                         callback($.map(_commonEmoji2.default, function (emoji) {
                             return _.some(emoji.split('_'), function (item) {
@@ -5389,7 +5399,7 @@ define('resources/attributes/attr-textcomplete',['exports', 'aurelia-framework',
                     }
                 }], {
                     appendTo: $(this.element).prev('.textcomplete-container').find('.append-to'),
-                    maxCount: 20
+                    maxCount: nsCons.NUM_TEXT_COMPLETE_MAX_COUNT
                 });
             } else {
                 this.unbind();
@@ -7202,7 +7212,7 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
                     return '$1{~' + value + '}';
                 }
             }, {
-                match: /(^|\s):(\w*)$/,
+                match: /(^|\s):([\+\-\w]*)$/,
                 search: function search(term, callback) {
                     callback($.map(_commonEmoji2.default, function (emoji) {
                         return _.some(emoji.split('_'), function (item) {
@@ -7219,7 +7229,7 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
                 }
             }], {
                 appendTo: '.tms-chat-status-bar',
-                maxCount: 20
+                maxCount: nsCons.NUM_TEXT_COMPLETE_MAX_COUNT
             });
 
             this.simplemde.codemirror.on('keydown', function (cm, e) {
@@ -7324,6 +7334,10 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
                 $(this.btnItemUploadRef).find('.content').click();
             } else if (value == '/shortcuts') {
                 this.emHotkeysModal.show();
+            } else if (value == '/emoji') {
+                _.delay(function () {
+                    utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL);
+                }, 200);
             } else {
                 return true;
             }

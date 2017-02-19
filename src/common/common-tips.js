@@ -98,6 +98,10 @@ export default {
         label: '/upload [上传文件] (ctrl+u)',
         value: '',
     },
+    '/emoji': {
+        label: '/emoji [表情查找]',
+        value: '',
+    },
     '/shortcuts': {
         label: '/shortcuts [热键] (ctrl+/)',
         value: '',

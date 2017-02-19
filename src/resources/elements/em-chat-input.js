@@ -235,7 +235,7 @@ export class EmChatInput {
                 return `$1{~${value}}`;
             }
         }, { // emoji
-            match: /(^|\s):(\w*)$/,
+            match: /(^|\s):([\+\-\w]*)$/,
             search: function(term, callback) {
                 callback($.map(emojis, (emoji) => {
                     return _.some(emoji.split('_'), (item) => {
@@ -252,7 +252,7 @@ export class EmChatInput {
             }
         }], {
             appendTo: '.tms-chat-status-bar',
-            maxCount: 20
+            maxCount: nsCons.NUM_TEXT_COMPLETE_MAX_COUNT
         });
 
         this.simplemde.codemirror.on('keydown', (cm, e) => {
@@ -360,6 +360,8 @@ export class EmChatInput {
             $(this.btnItemUploadRef).find('.content').click();
         } else if (value == '/shortcuts') {
             this.emHotkeysModal.show();
+        } else if (value == '/emoji') {
+            _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
         } else {
             return true;
         }
