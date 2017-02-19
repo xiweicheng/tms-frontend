@@ -19,6 +19,8 @@ export class AttrTextcompleteCustomAttribute {
             ea.publish(nsCons.EVENT_SHOW_HOTKEYS_MODAL, {});
         } else if (value == '/emoji') {
             _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
+        } else if (value == 'search') {
+            _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
         } else {
             return true;
         }
@@ -65,22 +67,29 @@ export class AttrTextcompleteCustomAttribute {
                     return `$1{~${value}}`;
                 }
             }, { // emoji
-            match: /(^|\s):([\+\-\w]*)$/,
-            search: function(term, callback) {
-                callback($.map(emojis, (emoji) => {
-                    return _.some(emoji.split('_'), (item) => {
-                        return item.indexOf(term) === 0;
-                    }) ? emoji : null;
-                }));
-            },
-            template: (value, term) => {
-                let emojiKey = `:${value}:`;
-                return `${emojify.replace(emojiKey)} - ${emojiKey}`;
-            },
-            replace: function(value) {
-                return '$1:' + value + ': ';
-            }
-        }], {
+                match: /(^|\s):([\+\-\w]*)$/,
+                search: function(term, callback) {
+                    callback($.map(emojis, (emoji) => {
+                        return _.some(emoji.split('_'), (item) => {
+                            return item.indexOf(term) === 0;
+                        }) ? emoji : null;
+                    }));
+                },
+                template: (value, term) => {
+                    if (value == 'search') {
+                        return `表情查找 - :search`;
+                    }
+                    let emojiKey = `:${value}:`;
+                    return `${emojify.replace(emojiKey)} - ${emojiKey}`;
+                },
+                replace: (value) => {
+                    if (this.tipsActionHandler(value)) {
+                        return '$1:' + value + ': ';
+                    } else {
+                        return '';
+                    }
+                }
+            }], {
                 appendTo: $(this.element).prev('.textcomplete-container').find('.append-to'),
                 maxCount: nsCons.NUM_TEXT_COMPLETE_MAX_COUNT
             });

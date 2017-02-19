@@ -244,11 +244,18 @@ export class EmChatInput {
                 }));
             },
             template: (value, term) => {
+                if (value == 'search') {
+                    return `表情查找 - :search`;
+                }
                 let emojiKey = `:${value}:`;
                 return `${emojify.replace(emojiKey)} - ${emojiKey}`;
             },
-            replace: function(value) {
-                return '$1:' + value + ': ';
+            replace: (value) => {
+                if (this.tipsActionHandler(value)) {
+                    return '$1:' + value + ': ';
+                } else {
+                    return '';
+                }
             }
         }], {
             appendTo: '.tms-chat-status-bar',
@@ -361,6 +368,8 @@ export class EmChatInput {
         } else if (value == '/shortcuts') {
             this.emHotkeysModal.show();
         } else if (value == '/emoji') {
+            _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
+        } else if (value == 'search') {
             _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
         } else {
             return true;
