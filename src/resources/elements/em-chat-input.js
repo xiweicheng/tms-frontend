@@ -367,8 +367,6 @@ export class EmChatInput {
             $(this.btnItemUploadRef).find('.content').click();
         } else if (value == '/shortcuts') {
             this.emHotkeysModal.show();
-        } else if (value == '/emoji') {
-            _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
         } else if (value == 'search') {
             _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
         } else {

@@ -17,8 +17,6 @@ export class AttrTextcompleteCustomAttribute {
             $(this.element).next('.tms-edit-actions').find('button > .upload.icon').click();
         } else if (value == '/shortcuts') {
             ea.publish(nsCons.EVENT_SHOW_HOTKEYS_MODAL, {});
-        } else if (value == '/emoji') {
-            _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
         } else if (value == 'search') {
             _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
         } else {
