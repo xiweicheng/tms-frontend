@@ -20,6 +20,7 @@ export class EmChatTopMenu {
     ACTION_TYPE_AT = nsCons.ACTION_TYPE_AT;
     ACTION_TYPE_DIR = nsCons.ACTION_TYPE_DIR;
     ACTION_TYPE_ATTACH = nsCons.ACTION_TYPE_ATTACH;
+    ACTION_TYPE_SCHEDULE = nsCons.ACTION_TYPE_SCHEDULE;
 
     newAtCnt = 0;
     channelLinks = [];
@@ -332,6 +333,20 @@ export class EmChatTopMenu {
 
         this.activeType = nsCons.ACTION_TYPE_ATTACH;
         ea.publish(nsCons.EVENT_CHAT_SHOW_ATTACH, {
+            action: this.activeType
+        });
+        this.toggleRightSidebar(true);
+    }
+
+    showScheduleHandler(event) {
+
+        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_SCHEDULE) && !event.ctrlKey) {
+            this.toggleRightSidebar();
+            return;
+        }
+
+        this.activeType = nsCons.ACTION_TYPE_SCHEDULE;
+        ea.publish(nsCons.EVENT_CHAT_SHOW_SCHEDULE, {
             action: this.activeType
         });
         this.toggleRightSidebar(true);

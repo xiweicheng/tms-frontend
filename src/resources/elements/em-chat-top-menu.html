@@ -89,6 +89,11 @@
                     <i class="attach icon"></i>
                 </button>
             </div>
+            <div class="item tms-item ${isActiveSearch ? 'tms-hide' : ''}">
+                <button click.delegate="showScheduleHandler($event)" title="日程查看(ctrl+click刷新)" class="basic ${isRightSidebarShow && (activeType == ACTION_TYPE_SCHEDULE) ? 'active' : ''} ui icon button">
+                    <i class="calendar icon"></i>
+                </button>
+            </div>
             <div class="item tms-item">
                 <button click.delegate="sibebarRightHandler($event)" title="右侧边栏(Ctrl+.)" class="basic ${isRightSidebarShow ? 'active' : ''} ui icon button">
                     <i class="columns icon"></i>

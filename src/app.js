@@ -1,9 +1,12 @@
 import 'tms-semantic-ui';
+import 'semantic-ui-calendar';
+import 'jquery-format';
 
 export class App {
 
     constructor() {
         this.init();
+        this.initCalendar();
     }
 
     init() {
@@ -39,6 +42,29 @@ export class App {
             exactCount: '{name}必须准确包含{ruleValue}个选择项',
             maxCount: '{name} 必须有{ruleValue}或者更少个选择项'
         });
+    }
+
+    initCalendar() {
+        $.fn.calendar.settings.text = {
+            days: ['日', '一', '二', '三', '四', '五', '六'],
+            months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+            monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+            today: '今天',
+            now: '现在',
+            am: '上午',
+            pm: '下午'
+        };
+
+        $.fn.calendar.settings.formatter.date = function(date, settings) {
+            if (!date) return '';
+            var day = date.getDate();
+            var month = date.getMonth() + 1;
+            var year = date.getFullYear();
+            // return year + '/' + month + '/' + day;
+            return $.format.date(date, 'yyyy-MM-dd');
+        };
+
+        return this;
     }
 
     /**
