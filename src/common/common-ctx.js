@@ -1,6 +1,7 @@
 window.nsCtx = {
     memberAll: {
         username: 'all',
+        enabled: true,
         mails: '',
         name: '全员'
     },
