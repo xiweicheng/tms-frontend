@@ -39,55 +39,9 @@ export class EmChatSchedule {
         // var YESTERDAY = todayDate.clone().subtract(1, 'day').format('YYYY-MM-DD');
         // var TODAY = todayDate.format('YYYY-MM-DD');
         // var TOMORROW = todayDate.clone().add(1, 'day').format('YYYY-MM-DD');
-
-        // this.events = [{
-        //     title: 'All Day Event',
-        //     start: YM + '-01'
-        // }, {
-        //     title: 'Long Event',
-        //     start: YM + '-07',
-        //     end: YM + '-10'
-        // }, {
-        //     id: 999,
-        //     title: 'Repeating Event',
-        //     start: YM + '-09T16:00:00'
-        // }, {
-        //     id: 999,
-        //     title: 'Repeating Event',
-        //     start: YM + '-16T16:00:00'
-        // }, {
-        //     title: 'Conference',
-        //     start: YESTERDAY,
-        //     end: TOMORROW
-        // }, {
-        //     title: 'Meeting',
-        //     start: TODAY + 'T10:30:00',
-        //     end: TODAY + 'T12:30:00'
-        // }, {
-        //     title: 'Lunch',
-        //     start: TODAY + 'T12:00:00'
-        // }, {
-        //     title: 'Meeting',
-        //     start: TODAY + 'T14:30:00'
-        // }, {
-        //     title: 'Happy Hour',
-        //     start: TODAY + 'T17:30:00'
-        // }, {
-        //     title: 'Dinner',
-        //     start: TODAY + 'T20:00:00'
-        // }, {
-        //     title: 'Birthday Party',
-        //     start: TOMORROW + 'T07:00:00'
-        // }, {
-        //     title: 'Click for Google',
-        //     url: 'http://google.com/',
-        //     start: YM + '-28'
-        // }];
     }
 
     attached() {
-
-        // this._fetchEvents();
 
         $(this.scheduleRef).fullCalendar({
             header: {
@@ -116,15 +70,8 @@ export class EmChatSchedule {
                 // $(this).css('background-color', 'red');
 
             },
-            eventClick: function(calEvent, jsEvent, view) {
-
-                // alert('Event: ' + calEvent.title);
-                // alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
-                // alert('View: ' + view.name);
-
-                // // change the border color just for fun
-                // $(this).css('border-color', 'red');
-
+            eventClick: (calEvent, jsEvent, view) => {
+                this.scheduleEditVm.show(calEvent);
             },
             eventMouseover: function(event, jsEvent, view) {},
             eventMouseout: function(event, jsEvent, view) {},
@@ -163,8 +110,9 @@ export class EmChatSchedule {
         $(this.addRef)
             .popup({
                 on: 'click',
+                closable: false,
                 inline: true,
-                hoverable: true,
+                // hoverable: true,
                 silent: true,
                 // movePopup: false,
                 jitter: 300,
@@ -228,13 +176,14 @@ export class EmChatSchedule {
             data.endDate = end;
         }
 
-        console.log(data);
+        // console.log(data);
 
         $.post('/admin/schedule/create', data, (data, textStatus, xhr) => {
             if (data.success) {
                 $(this.scheduleRef).fullCalendar('refetchEvents');
                 toastr.success('添加日程成功!');
                 this._reset();
+                $(this.addRef).popup('hide');
             } else {
                 toastr.error(data.data);
             }
@@ -243,9 +192,11 @@ export class EmChatSchedule {
 
     _reset() {
         this.title = '';
-        // $(this.startRef).calendar('clear');
         $(this.startRef).calendar('set date', new Date());
         $(this.endRef).calendar('clear');
-        $(this.actorsRef).dropdown('clear').dropdown('set selected', [this.loginUser.username]);
+        $(this.actorsRef).dropdown('clear');
+        if (this.loginUser && this.loginUser.username) {
+            $(this.actorsRef).dropdown('set selected', [this.loginUser.username]);
+        }
     }
 }

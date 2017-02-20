@@ -1,11 +1,12 @@
 <template>
     <require from="./em-chat-schedule.css"></require>
+    <div class="tms-schedule-edit-target"></div>
     <div class="em-chat-schedule">
         <div ref="scheduleRef"></div>
         <div ref="addRef" class="button blue circular icon mini tms-add ui">
             <i class="plus icon"></i>
         </div>
-        <div class="ui popup bottom center transition hidden">
+        <div class="ui popup bottom center transition hidden tms-schedule-add">
             <div class="ui form">
                 <div class="field">
                     <!-- <label>内容</label> -->
@@ -48,4 +49,5 @@
             </div>
         </div>
     </div>
+    <em-chat-schedule-edit login-user.bind="loginUser" view-model.ref="scheduleEditVm"></em-chat-schedule-edit>
 </template>
