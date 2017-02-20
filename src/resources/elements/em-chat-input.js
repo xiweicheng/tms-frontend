@@ -224,7 +224,7 @@ export class EmChatInput {
             match: /(^|\s)@(\w*)$/,
             search: (term, callback) => {
                 callback($.map(this.members, (member) => {
-                    return member.username.indexOf(term) === 0 ? member.username : null;
+                    return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
                 }));
             },
             template: (value, term) => {
