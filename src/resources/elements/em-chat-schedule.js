@@ -70,7 +70,7 @@ export class EmChatSchedule {
             // timezone: 'Asia/Shanghai',
             // timezone: 'UTC',
             timezone: 'local',
-            dayClick: function(date, jsEvent, view) {
+            dayClick: (date, jsEvent, view) => {
 
                 // alert('Clicked on: ' + date.format());
 
@@ -85,8 +85,8 @@ export class EmChatSchedule {
             eventClick: (calEvent, jsEvent, view) => {
                 this.scheduleEditVm.show(calEvent);
             },
-            eventMouseover: function(event, jsEvent, view) {},
-            eventMouseout: function(event, jsEvent, view) {},
+            eventMouseover: (event, jsEvent, view) => {},
+            eventMouseout: (event, jsEvent, view) => {},
             events: (start, end, timezone, callback) => {
 
                 $.get('/admin/schedule/listMy', {
@@ -118,6 +118,26 @@ export class EmChatSchedule {
                         callback(this.events);
                     }
                 })
+            },
+            eventDrop: (event, delta, revertFunc) => {
+
+                if (event.creator.username != this.loginUser.username) {
+                    toastr.error('您没有权限修改!');
+                    ea.publish(nsCons.EVENT_SCHEDULE_REFRESH, {});
+                    return;
+                }
+
+                this._updateDate(event.id, event.start, event.end);
+            },
+            eventResize: (event, delta, revertFunc) => {
+
+                if (event.creator.username != this.loginUser.username) {
+                    toastr.error('您没有权限修改!');
+                    ea.publish(nsCons.EVENT_SCHEDULE_REFRESH, {});
+                    return;
+                }
+
+                this._updateDate(event.id, event.start, event.end);
             }
         });
 
@@ -147,6 +167,31 @@ export class EmChatSchedule {
         });
 
         this._reset();
+    }
+
+    _updateDate(id, start, end) {
+        let data = {
+            id: id
+        };
+
+        if (start) {
+            data.startDate = start.toDate();
+        } else {
+            data.startDate = new Date();
+        }
+
+        if (end) {
+            data.endDate = end.toDate();
+        }
+
+        $.post('/admin/schedule/updateStartEndDate', data, (data, textStatus, xhr) => {
+            if (data.success) {
+                toastr.success('更新日程成功!');
+                ea.publish(nsCons.EVENT_SCHEDULE_REFRESH, {});
+            } else {
+                toastr.error(data.data);
+            }
+        });
     }
 
     initMembersUI(last) {

@@ -116,6 +116,8 @@ export class EmChatScheduleEdit {
             let actors = _.map(this.event.actors, 'username');
 
             $(this.actorsRef).dropdown('set selected', actors).dropdown(this.actorsOpts);
+
+            autosize.update(this.titleRef);
         });
 
     }
