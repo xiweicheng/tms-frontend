@@ -61,7 +61,7 @@ export class EmChatSchedule {
                 // center: 'title',
                 right: 'month,agendaWeek,agendaDay,listWeek'
             },
-            height: $(window).height() - 80,
+            height: $(window).height() - 100,
             defaultDate: new Date(),
             defaultView: 'listWeek',
             editable: true,
