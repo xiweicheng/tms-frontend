@@ -98,7 +98,8 @@ export class EmChatSchedule {
                             let event = {
                                 id: item.id,
                                 title: item.title,
-                                actors: item.actors
+                                actors: item.actors,
+                                creator: item.creator
                             };
 
                             if (item.startDate) {
