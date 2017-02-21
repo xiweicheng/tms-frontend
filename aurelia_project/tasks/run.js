@@ -34,9 +34,9 @@ let serve = gulp.series(
                     },
                     proxyMiddleware(['/free', '/admin', '/upload', '/lib'], {
                         // target: 'http://localhost',
-                        // target: 'http://translation.sh1.newtouch.com',
+                        target: 'http://translation.sh1.newtouch.com',
                         target: 'http://xiweicheng.com',
-                        // target: 'http://localhost',
+                        target: 'http://localhost',
                         changeOrigin: true
                     }),
                 ]
