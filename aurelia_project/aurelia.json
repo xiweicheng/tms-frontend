@@ -91,6 +91,7 @@
           "marked",
           "autosize",
           "clipboard-js",
+          "moment",
           {
             "name": "color-hash",
             "path": "../node_modules/color-hash",
@@ -155,6 +156,16 @@
             "path": "../node_modules/jquery-tablesort",
             "main": "jquery.tablesort",
             "deps": ["jquery"]
+          },
+          {
+            "name": "fullcalendar",
+            "path": "../node_modules/fullcalendar",
+            "main": "dist/fullcalendar.min",
+            "deps": ["jquery", "moment"],
+            "resources": [
+              "dist/fullcalendar.min.css",
+              "dist/locale/zh-cn.js"
+            ]
           }
         ]
       },
@@ -213,6 +224,15 @@
             "exports": "$",
             "resources": [
               "semantic.min.css"
+            ]
+          },
+          {
+            "name": "semantic-ui-calendar",
+            "path": "../node_modules/semantic-ui-calendar",
+            "main": "dist/calendar.min",
+            "deps": ["jquery"],
+            "resources": [
+              "dist/calendar.min.css"
             ]
           },
           {

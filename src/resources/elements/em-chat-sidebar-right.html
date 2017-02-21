@@ -32,6 +32,9 @@
             <div ref="attachRef" show.bind="forShow == 'chat-attach'" class="panel-chat-attach">
                 <em-chat-attach view-model.ref="chatAttachVm"></em-chat-attach>
             </div>
+            <div ref="scheduleRef" show.bind="forShow == 'chat-schedule'" class="panel-chat-schedule">
+                <em-chat-schedule login-user.bind="loginUser" view-model.ref="chatScheduleVm"></em-chat-schedule>
+            </div>
         </div>
     </div>
     <em-confirm-modal em-confirm-modal.ref="emConfirmModal"></em-confirm-modal>

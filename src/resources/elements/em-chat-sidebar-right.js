@@ -54,6 +54,10 @@ export class EmChatSidebarRight {
         this.subscribe4 = ea.subscribe(nsCons.EVENT_CHAT_SHOW_ATTACH, (payload) => {
             this._mappingActionShow(payload.action);
         });
+
+        this.subscribe5 = ea.subscribe(nsCons.EVENT_CHAT_SHOW_SCHEDULE, (payload) => {
+            this._mappingActionShow(payload.action);
+        });
     }
 
     /**
@@ -66,6 +70,7 @@ export class EmChatSidebarRight {
         this.subscribe2.dispose();
         this.subscribe3.dispose();
         this.subscribe4.dispose();
+        this.subscribe5.dispose();
     }
 
     _mappingActionShow(forAction) {
@@ -77,6 +82,9 @@ export class EmChatSidebarRight {
         } else if (_.includes([nsCons.ACTION_TYPE_ATTACH], this.forAction)) {
             this.forShow = 'chat-attach';
             this.chatAttachVm.fetch();
+        } else if (_.includes([nsCons.ACTION_TYPE_SCHEDULE], this.forAction)) {
+            this.forShow = 'chat-schedule';
+            this.chatScheduleVm.show();
         }
     }
 
