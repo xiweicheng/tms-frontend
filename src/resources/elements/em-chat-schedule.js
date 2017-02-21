@@ -171,7 +171,8 @@ export class EmChatSchedule {
 
     _updateDate(id, start, end) {
         let data = {
-            id: id
+            id: id,
+            basePath: utils.getBasePath()
         };
 
         if (start) {
@@ -219,6 +220,7 @@ export class EmChatSchedule {
 
         let data = {
             title: this.title,
+            basePath: utils.getBasePath(),
             actors: $(this.actorsRef).dropdown('get value')
         };
 
@@ -234,8 +236,6 @@ export class EmChatSchedule {
         if (end) {
             data.endDate = end;
         }
-
-        // console.log(data);
 
         $.post('/admin/schedule/create', data, (data, textStatus, xhr) => {
             if (data.success) {

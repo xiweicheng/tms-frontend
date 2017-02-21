@@ -13,6 +13,7 @@ export class EmChatScheduleEdit {
             onAdd: (addedValue, addedText, $addedChoice) => {
                 $.post('/admin/schedule/addActors', {
                     id: this.event.id,
+                    basePath: utils.getBasePath(),
                     actors: addedValue
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
@@ -29,6 +30,7 @@ export class EmChatScheduleEdit {
                 }
                 $.post('/admin/schedule/removeActors', {
                     id: this.event.id,
+                    basePath: utils.getBasePath(),
                     actors: removedValue
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
@@ -137,6 +139,7 @@ export class EmChatScheduleEdit {
 
         let p1 = $.post('/admin/schedule/update', {
             id: this.event.id,
+            basePath: utils.getBasePath(),
             title: this.event.title
         }, (data, textStatus, xhr) => {
             if (data.success) {} else {
@@ -145,7 +148,8 @@ export class EmChatScheduleEdit {
         });
 
         let data = {
-            id: this.event.id
+            id: this.event.id,
+            basePath: utils.getBasePath()
         };
         let start = $(this.startRef).calendar('get date');
         let end = $(this.endRef).calendar('get date');
@@ -179,7 +183,8 @@ export class EmChatScheduleEdit {
             onapprove: () => {
 
                 $.post('/admin/schedule/delete', {
-                    id: this.event.id
+                    id: this.event.id,
+                    basePath: utils.getBasePath()
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
                         toastr.success('日程删除成功!');

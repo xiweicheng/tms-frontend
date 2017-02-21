@@ -7602,6 +7602,7 @@ define('resources/elements/em-chat-schedule-edit',['exports', 'aurelia-framework
                 onAdd: function onAdd(addedValue, addedText, $addedChoice) {
                     $.post('/admin/schedule/addActors', {
                         id: _this.event.id,
+                        basePath: utils.getBasePath(),
                         actors: addedValue
                     }, function (data, textStatus, xhr) {
                         if (data.success) {
@@ -7618,6 +7619,7 @@ define('resources/elements/em-chat-schedule-edit',['exports', 'aurelia-framework
                     }
                     $.post('/admin/schedule/removeActors', {
                         id: _this.event.id,
+                        basePath: utils.getBasePath(),
                         actors: removedValue
                     }, function (data, textStatus, xhr) {
                         if (data.success) {
@@ -7729,6 +7731,7 @@ define('resources/elements/em-chat-schedule-edit',['exports', 'aurelia-framework
 
             var p1 = $.post('/admin/schedule/update', {
                 id: this.event.id,
+                basePath: utils.getBasePath(),
                 title: this.event.title
             }, function (data, textStatus, xhr) {
                 if (data.success) {} else {
@@ -7737,7 +7740,8 @@ define('resources/elements/em-chat-schedule-edit',['exports', 'aurelia-framework
             });
 
             var data = {
-                id: this.event.id
+                id: this.event.id,
+                basePath: utils.getBasePath()
             };
             var start = $(this.startRef).calendar('get date');
             var end = $(this.endRef).calendar('get date');
@@ -7772,7 +7776,8 @@ define('resources/elements/em-chat-schedule-edit',['exports', 'aurelia-framework
                 onapprove: function onapprove() {
 
                     $.post('/admin/schedule/delete', {
-                        id: _this5.event.id
+                        id: _this5.event.id,
+                        basePath: utils.getBasePath()
                     }, function (data, textStatus, xhr) {
                         if (data.success) {
                             toastr.success('日程删除成功!');
@@ -8009,7 +8014,8 @@ define('resources/elements/em-chat-schedule',['exports', 'aurelia-framework', 'm
 
         EmChatSchedule.prototype._updateDate = function _updateDate(id, start, end) {
             var data = {
-                id: id
+                id: id,
+                basePath: utils.getBasePath()
             };
 
             if (start) {
@@ -8060,6 +8066,7 @@ define('resources/elements/em-chat-schedule',['exports', 'aurelia-framework', 'm
 
             var data = {
                 title: this.title,
+                basePath: utils.getBasePath(),
                 actors: $(this.actorsRef).dropdown('get value')
             };
 
