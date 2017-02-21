@@ -1,5 +1,6 @@
 <template>
     <require from="./em-chat-schedule-edit.css"></require>
+    <div ref="scheduleEditRef" class="tms-schedule-edit-target"></div>
     <div ref="popopRef" class="ui popup bottom center transition hidden em-chat-schedule-edit">
         <div class="ui form">
             <div class="field">
@@ -36,6 +37,9 @@
                     </div>
                 </div>
             </div>
+            <button click.delegate="updateHandler()" class="ui blue button" type="button" style="width: 260px;">更新</button>
+            <button click.delegate="delHandler()" class="ui red button" type="button" style="width: 260px; margin-top: 10px;">删除</button>
         </div>
     </div>
+    <em-confirm-modal em-confirm-modal.ref="emConfirmModal"></em-confirm-modal>
 </template>

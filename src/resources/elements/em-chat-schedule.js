@@ -30,6 +30,17 @@ export class EmChatSchedule {
                 }
             }
         };
+
+        this.subscribe = ea.subscribe(nsCons.EVENT_SCHEDULE_REFRESH, (payload) => {
+            $(this.scheduleRef).fullCalendar('refetchEvents');
+        });
+    }
+
+    /**
+     * 当数据绑定引擎从视图解除绑定时被调用
+     */
+    unbind() {
+        this.subscribe.dispose();
     }
 
     _fetchEvents() {
@@ -86,7 +97,8 @@ export class EmChatSchedule {
                         this.events = _.map(data.data, (item) => {
                             let event = {
                                 id: item.id,
-                                title: item.title
+                                title: item.title,
+                                actors: item.actors
                             };
 
                             if (item.startDate) {
@@ -110,7 +122,7 @@ export class EmChatSchedule {
         $(this.addRef)
             .popup({
                 on: 'click',
-                closable: false,
+                // closable: false,
                 inline: true,
                 // hoverable: true,
                 silent: true,

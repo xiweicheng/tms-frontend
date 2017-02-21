@@ -10,11 +10,34 @@ export class EmChatScheduleEdit {
      */
     constructor() {
         this.actorsOpts = {
-            onAdd: (addedValue, addedText, $addedChoice) => {},
+            onAdd: (addedValue, addedText, $addedChoice) => {
+                $.post('/admin/schedule/addActors', {
+                    id: this.event.id,
+                    actors: addedValue
+                }, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        toastr.success('添加参与者成功!');
+                        ea.publish(nsCons.EVENT_SCHEDULE_REFRESH, {});
+                    } else {
+                        toastr.error(data.data);
+                    }
+                });
+            },
             onLabelRemove: (removedValue) => {
                 if (this.loginUser.username == removedValue) {
                     return false;
                 }
+                $.post('/admin/schedule/removeActors', {
+                    id: this.event.id,
+                    actors: removedValue
+                }, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        toastr.success('移除参与者成功!');
+                        ea.publish(nsCons.EVENT_SCHEDULE_REFRESH, {});
+                    } else {
+                        toastr.error(data.data);
+                    }
+                });
             }
         };
     }
@@ -34,7 +57,12 @@ export class EmChatScheduleEdit {
     initMembersUI(last) {
         if (last) {
             _.defer(() => {
-                $(this.actorsRef).dropdown().dropdown('clear').dropdown('set selected', [this.loginUser.username]).dropdown(this.actorsOpts);
+                let actors = [this.loginUser.username];
+                if (this.event) {
+                    actors = _.map(this.event.actors, 'username');
+                }
+
+                $(this.actorsRef).dropdown().dropdown('clear').dropdown('set selected', actors).dropdown(this.actorsOpts);
             });
         }
     }
@@ -49,16 +77,29 @@ export class EmChatScheduleEdit {
 
     show(calEvent) {
         this.event = _.clone(calEvent);
-        $(this.popopRef).popup({
-        	jitter: 200,
+
+        this.showHandler();
+
+        $(this.scheduleEditRef).popup({
+            on: 'click',
+            // closable: true,
+            inline: true,
+            silent: true,
+            // movePopup: false,
             position: 'bottom center',
-            target: '.tms-schedule-edit-target',
+            jitter: 300,
+            prefer: 'opposite',
+            delay: {
+                show: 300,
+                hide: 300
+            }
         }).popup('show');
     }
 
     showHandler() {
 
         this.users = window.tmsUsers;
+        $(this.actorsRef).dropdown().dropdown('clear');
         _.defer(() => {
             if (this.event.start) {
                 $(this.startRef).calendar('set date', this.event.start.toDate());
@@ -71,12 +112,75 @@ export class EmChatScheduleEdit {
             } else {
                 $(this.endRef).calendar('clear');
             }
-        });
 
+            let actors = _.map(this.event.actors, 'username');
+
+            $(this.actorsRef).dropdown('set selected', actors).dropdown(this.actorsOpts);
+        });
 
     }
 
-    approveHandler() {
+    updateHandler() {
+        if (!this.event.title) {
+            toastr.error('日程内容不能为空!');
+            return;
+        }
 
+        let p1 = $.post('/admin/schedule/update', {
+            id: this.event.id,
+            title: this.event.title
+        }, (data, textStatus, xhr) => {
+            if (data.success) {} else {
+                toastr.error(data.data);
+            }
+        });
+
+        let data = {
+            id: this.event.id
+        };
+        let start = $(this.startRef).calendar('get date');
+        let end = $(this.endRef).calendar('get date');
+
+        if (start) {
+            data.startDate = start;
+        } else {
+            data.startDate = new Date();
+        }
+
+        if (end) {
+            data.endDate = end;
+        }
+
+        let p2 = $.post('/admin/schedule/updateStartEndDate', data, (data, textStatus, xhr) => {
+            if (data.success) {} else {
+                toastr.error(data.data);
+            }
+        });
+
+        $.when(p1, p2).done(() => {
+            toastr.success('更新日程成功!');
+            $(this.scheduleEditRef).popup('hide');
+            ea.publish(nsCons.EVENT_SCHEDULE_REFRESH, {});
+        });
+
+    }
+
+    delHandler() {
+        this.emConfirmModal.show({
+            onapprove: () => {
+
+                $.post('/admin/schedule/delete', {
+                    id: this.event.id
+                }, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        toastr.success('日程删除成功!');
+                        ea.publish(nsCons.EVENT_SCHEDULE_REFRESH, {});
+                    } else {
+                        toastr.error(data.data);
+                    }
+                });
+
+            }
+        });
     }
 }

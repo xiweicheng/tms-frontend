@@ -1,6 +1,6 @@
 .em-chat-schedule-edit {
-	width: 320px!important;
-	margin-left: -160px!important;
+    // width: 320px!important;
+    // margin-left: -160px!important;
     .ui.form {
         width: 300px;
         .ui.calendar {
@@ -16,6 +16,7 @@
         }
         .ui.dropdown {
             width: 265px!important;
+            min-height: 30px;
             > a.ui.label {
                 > input.owner + i.delete.icon {
                     display: none;
@@ -23,4 +24,13 @@
             }
         }
     }
+}
+
+.tms-schedule-edit-target {
+    display: inline-block;
+    width: 1px;
+    height: 1px;
+    position: absolute;
+    right: 188px;
+    top: 30px;
 }
