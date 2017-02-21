@@ -57,7 +57,8 @@ export class EmChatSchedule {
         $(this.scheduleRef).fullCalendar({
             header: {
                 left: 'prev,next today',
-                center: 'title',
+                center: '',
+                // center: 'title',
                 right: 'month,agendaWeek,agendaDay,listWeek'
             },
             height: $(window).height() - 60,
