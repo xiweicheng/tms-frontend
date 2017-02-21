@@ -151,7 +151,7 @@ export class EmChatSchedule {
     initMembersUI(last) {
         if (last) {
             _.defer(() => {
-                $(this.actorsRef).dropdown().dropdown('clear').dropdown('set selected', [this.loginUser.username]).dropdown(this.actorsOpts);
+                $(this.actorsRef).dropdown().dropdown('clear').dropdown(this.actorsOpts).dropdown('set selected', [this.loginUser.username]);
             });
         }
     }

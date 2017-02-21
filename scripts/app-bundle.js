@@ -7974,7 +7974,7 @@ define('resources/elements/em-chat-schedule',['exports', 'aurelia-framework', 'm
 
             if (last) {
                 _.defer(function () {
-                    $(_this4.actorsRef).dropdown().dropdown('clear').dropdown('set selected', [_this4.loginUser.username]).dropdown(_this4.actorsOpts);
+                    $(_this4.actorsRef).dropdown().dropdown('clear').dropdown(_this4.actorsOpts).dropdown('set selected', [_this4.loginUser.username]);
                 });
             }
         };
