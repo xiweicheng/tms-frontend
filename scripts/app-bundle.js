@@ -7869,6 +7869,7 @@ define('resources/elements/em-chat-schedule',['exports', 'aurelia-framework', 'm
 
             this.users = window.tmsUsers;
             _.defer(function () {
+                $(_this.scheduleRef).fullCalendar('option', 'height', $(window).height() - _this.offset);
                 $(_this.scheduleRef).fullCalendar('today');
             });
         };
@@ -7879,6 +7880,8 @@ define('resources/elements/em-chat-schedule',['exports', 'aurelia-framework', 'm
             _classCallCheck(this, EmChatSchedule);
 
             _initDefineProp(this, 'loginUser', _descriptor, this);
+
+            this.offset = 100;
 
             this.actorsOpts = {
                 onAdd: function onAdd(addedValue, addedText, $addedChoice) {},
@@ -7908,7 +7911,7 @@ define('resources/elements/em-chat-schedule',['exports', 'aurelia-framework', 'm
                     center: 'title',
                     right: 'month,agendaWeek,agendaDay,listWeek'
                 },
-                height: $(window).height() - 100,
+                height: $(window).height() - this.offset,
                 defaultDate: new Date(),
                 defaultView: 'listWeek',
                 editable: true,

@@ -10,9 +10,12 @@ export class EmChatSchedule {
 
     @bindable loginUser;
 
+    offset = 100;
+
     show() {
         this.users = window.tmsUsers;
         _.defer(() => {
+            $(this.scheduleRef).fullCalendar('option', 'height', $(window).height() - this.offset);
             $(this.scheduleRef).fullCalendar('today');
         });
     }
@@ -51,7 +54,7 @@ export class EmChatSchedule {
                 center: 'title',
                 right: 'month,agendaWeek,agendaDay,listWeek'
             },
-            height: $(window).height() - 100,
+            height: $(window).height() - this.offset,
             defaultDate: new Date(),
             defaultView: 'listWeek',
             editable: true,
