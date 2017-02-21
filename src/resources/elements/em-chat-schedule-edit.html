@@ -4,8 +4,7 @@
     <div ref="popopRef" class="ui popup bottom center transition hidden em-chat-schedule-edit">
         <div class="ui form ${event.creator.username == loginUser.username ? '' : 'tms-disabled'}">
             <div class="field">
-                <!-- <input type="text" value.bind="event.title" placeholder="日程内容" style="width: 270px;"> -->
-                <textarea ref="titleRef" autosize value.bind="event.title" rows="1" placeholder="日程内容" style="width: 270px; padding-top: 5px; padding-bottom: 0;"></textarea>
+                <textarea ref="titleRef" keyup.trigger="titleKeyupHandler($event)" autosize value.bind="event.title" rows="1" placeholder="日程内容" style="width: 270px; padding-top: 5px; padding-bottom: 0;"></textarea>
             </div>
             <div class="field tms-date-field">
                 <div class="ui calendar" ref="startRef">
@@ -33,7 +32,7 @@
                     <div class="menu">
                         <div repeat.for="item of users | sortUsers:loginUser.username" task.bind="initMembersUI($last)" class="item" data-value="${item.username}">
                             ${item.name ? item.name : item.username}
-                            <input type="hidden" class="${loginUser.username == item.username ? 'owner' : ''}">
+                            <input type="hidden" class="${(event.creator.username == item.username) ? 'owner' : ''}">
                         </div>
                     </div>
                 </div>

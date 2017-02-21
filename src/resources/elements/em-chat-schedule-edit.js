@@ -67,6 +67,12 @@ export class EmChatScheduleEdit {
         }
     }
 
+    titleKeyupHandler(event) {
+        if (event.ctrlKey && event.keyCode === 13) {
+            this.updateHandler();
+        }
+    }
+
     clearStartDateHandler() {
         $(this.startRef).calendar('clear');
     }
@@ -117,6 +123,7 @@ export class EmChatScheduleEdit {
 
             $(this.actorsRef).dropdown('set selected', actors).dropdown(this.actorsOpts);
 
+            $(this.titleRef).focus();
             autosize.update(this.titleRef);
         });
 

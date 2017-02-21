@@ -14,7 +14,6 @@ export class EmChatSchedule {
         this.users = window.tmsUsers;
         _.defer(() => {
             $(this.scheduleRef).fullCalendar('today');
-            // $(this.scheduleRef).fullCalendar('changeView', 'agendaWeek');
         });
     }
 
@@ -41,15 +40,6 @@ export class EmChatSchedule {
      */
     unbind() {
         this.subscribe.dispose();
-    }
-
-    _fetchEvents() {
-
-        // var todayDate = moment().startOf('day');
-        // var YM = todayDate.format('YYYY-MM');
-        // var YESTERDAY = todayDate.clone().subtract(1, 'day').format('YYYY-MM-DD');
-        // var TODAY = todayDate.format('YYYY-MM-DD');
-        // var TOMORROW = todayDate.clone().add(1, 'day').format('YYYY-MM-DD');
     }
 
     attached() {
@@ -154,6 +144,10 @@ export class EmChatSchedule {
                 delay: {
                     show: 300,
                     hide: 300
+                },
+                onVisible: () => {
+                    $(this.titleRef).focus();
+                    autosize.update(this.titleRef);
                 }
             });
 
@@ -167,6 +161,12 @@ export class EmChatSchedule {
         });
 
         this._reset();
+    }
+
+    titleKeyupHandler(event) {
+        if (event.ctrlKey && event.keyCode === 13) {
+            this.addHandler();
+        }
     }
 
     _updateDate(id, start, end) {
@@ -255,7 +255,7 @@ export class EmChatSchedule {
         $(this.endRef).calendar('clear');
         $(this.actorsRef).dropdown('clear');
         if (this.loginUser && this.loginUser.username) {
-            $(this.actorsRef).dropdown('set selected', [this.loginUser.username]);
+            $(this.actorsRef).dropdown('set selected', [this.loginUser.username]).dropdown('set value', this.loginUser.username);
         }
     }
 }
