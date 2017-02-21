@@ -15,9 +15,13 @@ export class EmChatSchedule {
     show() {
         this.users = window.tmsUsers;
         _.defer(() => {
-            $(this.scheduleRef).fullCalendar('option', 'height', $(window).height() - this.offset);
+            // $(this.scheduleRef).fullCalendar('option', 'height', $(window).height() - this.offset);
+            // $(this.scheduleRef).fullCalendar('option', 'height', 'parent');
             $(this.scheduleRef).fullCalendar('today');
         });
+        _.delay(() => {
+            $(this.scheduleRef).fullCalendar('option', 'height', 'parent');
+        }, 500);
     }
 
     /**
@@ -54,7 +58,8 @@ export class EmChatSchedule {
                 center: 'title',
                 right: 'month,agendaWeek,agendaDay,listWeek'
             },
-            height: $(window).height() - this.offset,
+            // height: $(window).height() - this.offset,
+            height: 'parent',
             defaultDate: new Date(),
             defaultView: 'listWeek',
             editable: true,
