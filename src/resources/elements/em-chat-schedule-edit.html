@@ -4,7 +4,7 @@
     <div ref="popopRef" class="ui popup bottom center transition hidden em-chat-schedule-edit">
         <div class="ui form ${event.creator.username == loginUser.username ? '' : 'tms-disabled'}">
             <div class="field">
-                <textarea ref="titleRef" keyup.trigger="titleKeyupHandler($event)" autosize value.bind="event.title" rows="1" placeholder="日程内容" style="width: 270px; padding-top: 5px; padding-bottom: 0;"></textarea>
+                <textarea ref="titleRef" keyup.trigger="titleKeyupHandler($event)" autosize value.bind="event.title" rows="1" placeholder="日程内容(ctrl+enter更新)" style="width: 270px; padding-top: 5px; padding-bottom: 0;"></textarea>
             </div>
             <div class="field tms-date-field">
                 <div class="ui calendar" ref="startRef">
