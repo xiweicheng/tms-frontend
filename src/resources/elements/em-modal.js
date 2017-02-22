@@ -38,6 +38,7 @@ export class EmModal {
             closable: false,
             autofocus: false,
             observeChanges: true,
+            allowMultiple: true,
             // detachable: false,
             onShow: () => {
                 this.onshow && this.onshow(this);

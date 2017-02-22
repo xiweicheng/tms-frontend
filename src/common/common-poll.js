@@ -43,7 +43,7 @@ function oneHandler() {
  */
 function _start() {
     // TODO for debugging
-    console.log('poll start...');
+    // console.log('poll start...');
 
     _isPause = false;
 
@@ -68,7 +68,7 @@ function _start() {
 
 function _stop() {
     // TODO for debugging
-    console.log("poll stop...");
+    // console.log("poll stop...");
 
     inc = 0;
     interval = minInterval;
@@ -79,7 +79,7 @@ function _stop() {
 
 function _reset() {
     // TODO for debugging
-    console.log("poll reset...");
+    // console.log("poll reset...");
 
     _stop();
     _start();
@@ -87,7 +87,7 @@ function _reset() {
 
 function _pause() {
     // TODO for debugging
-    console.log("pause reset...");
+    // console.log("pause reset...");
     _isPause = true;
 }
 

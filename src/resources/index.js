@@ -48,6 +48,7 @@ export function configure(aurelia) {
         'resources/elements/em-chat-attach',
         'resources/elements/em-chat-schedule',
         'resources/elements/em-chat-schedule-edit',
+        'resources/elements/em-chat-schedule-remind',
         'resources/elements/em-user-avatar',
         'resources/elements/em-user-edit',
     ]);
