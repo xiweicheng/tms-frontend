@@ -14,13 +14,13 @@ export class EmChatSchedule {
 
     show() {
         this.users = window.tmsUsers;
+
         _.defer(() => {
-            // $(this.scheduleRef).fullCalendar('option', 'height', $(window).height() - this.offset);
-            // $(this.scheduleRef).fullCalendar('option', 'height', 'parent');
             $(this.scheduleRef).fullCalendar('today');
         });
         _.delay(() => {
             $(this.scheduleRef).fullCalendar('option', 'height', 'parent');
+            $(this.scheduleRef).fullCalendar('refetchEvents');
         }, 500);
     }
 
