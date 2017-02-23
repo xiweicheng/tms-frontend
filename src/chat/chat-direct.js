@@ -112,6 +112,7 @@ export class ChatDirect {
             if (payload.item.__scroll) {
                 this.scrollToAfterImgLoaded(this.markId ? this.markId : 'b');
                 delete payload.item.__scroll;
+                this.markId = null;
             }
 
         });

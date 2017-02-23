@@ -296,6 +296,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                 if (payload.item.__scroll) {
                     _this.scrollToAfterImgLoaded(_this.markId ? _this.markId : 'b');
                     delete payload.item.__scroll;
+                    _this.markId = null;
                 }
             });
 
@@ -7923,7 +7924,12 @@ define('resources/elements/em-chat-schedule',['exports', 'aurelia-framework', 'm
                 navLinks: true,
 
                 timezone: 'local',
-                dayClick: function dayClick(date, jsEvent, view) {},
+                dayClick: function dayClick(date, jsEvent, view) {
+
+                    $(_this3.startRef).calendar('set date', date.toDate());
+                    _this3.isPopupShowForDayClick = true;
+                    $(_this3.addRef).popup('show');
+                },
                 eventClick: function eventClick(calEvent, jsEvent, view) {
                     _this3.scheduleEditVm.show(calEvent);
                 },
@@ -7998,6 +8004,10 @@ define('resources/elements/em-chat-schedule',['exports', 'aurelia-framework', 'm
                 onVisible: function onVisible() {
                     $(_this3.titleRef).focus();
                     autosize.update(_this3.titleRef);
+                    if (!_this3.title && !_this3.isPopupShowForDayClick) {
+                        $(_this3.startRef).calendar('set date', new Date());
+                    }
+                    _this3.isPopupShowForDayClick = false;
                 }
             });
 

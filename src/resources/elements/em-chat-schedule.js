@@ -70,15 +70,9 @@ export class EmChatSchedule {
             timezone: 'local',
             dayClick: (date, jsEvent, view) => {
 
-                // alert('Clicked on: ' + date.format());
-
-                // alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
-
-                // alert('Current view: ' + view.name);
-
-                // // change the day's background color just for fun
-                // $(this).css('background-color', 'red');
-
+                $(this.startRef).calendar('set date', date.toDate());
+                this.isPopupShowForDayClick = true;
+                $(this.addRef).popup('show');
             },
             eventClick: (calEvent, jsEvent, view) => {
                 this.scheduleEditVm.show(calEvent);
@@ -156,6 +150,10 @@ export class EmChatSchedule {
                 onVisible: () => {
                     $(this.titleRef).focus();
                     autosize.update(this.titleRef);
+                    if (!this.title && !this.isPopupShowForDayClick) {
+                        $(this.startRef).calendar('set date', new Date());
+                    }
+                    this.isPopupShowForDayClick = false;
                 }
             });
 
