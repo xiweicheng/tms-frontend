@@ -12,6 +12,12 @@ export class EmChatSidebarRight {
 
     basePath = utils.getBasePath();
 
+    headerMapping = {
+        [nsCons.ACTION_TYPE_SEARCH]: '无符合检索结果',
+        [nsCons.ACTION_TYPE_AT]: '暂无@消息',
+        [nsCons.ACTION_TYPE_STOW]: '暂无收藏消息',
+    };
+
     /**
      * 构造函数
      */

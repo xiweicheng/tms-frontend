@@ -22,7 +22,9 @@ export class EmChatTopMenu {
     ACTION_TYPE_ATTACH = nsCons.ACTION_TYPE_ATTACH;
     ACTION_TYPE_SCHEDULE = nsCons.ACTION_TYPE_SCHEDULE;
 
+    countAt = null;
     newAtCnt = 0;
+
     channelLinks = [];
 
     loginUserChanged() {
@@ -69,7 +71,10 @@ export class EmChatTopMenu {
         });
 
         this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_AT_NEW_CNT_UPDATE, (payload) => {
-            this.newAtCnt = payload.newAtCnt;
+            if(this.countAt !== null && this.newAtCnt <= 0) {
+                this.newAtCnt = payload.countAt - this.countAt;
+            }
+            this.countAt = payload.countAt;
         });
 
         this.subscribe2 = ea.subscribe(nsCons.EVENT_SWITCH_CHAT_TO, (payload) => {

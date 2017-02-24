@@ -4,7 +4,7 @@
         <div scrollbar="scrollbar-macosx">
             <div show.bind="forShow == 'chat-msg'" class="panel-chat-msg">
                 <div class="ui basic segment minimal selection list segment comments">
-                    <h1 show.bind="!chats.length" class="ui center aligned header">无符合检索结果</h1>
+                    <h1 show.bind="!chats.length" class="ui center aligned header">${headerMapping[forAction]}</h1>
                     <div repeat.for="item of chats" mouseleave.trigger="searchItemMouseleaveHandler(item)" mouseenter.trigger="searchItemMouseenterHandler(item)" swipebox class="comment item ${item.id == markId ? 'active' : ''}" data-id="${item.id}">
                         <em-user-avatar user.bind="item.creator"></em-user-avatar>
                         <div class="content">

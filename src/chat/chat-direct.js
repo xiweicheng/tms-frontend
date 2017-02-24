@@ -419,12 +419,11 @@ export class ChatDirect {
                         },
                         timeout: 5000
                     });
-
-                    ea.publish(nsCons.EVENT_CHAT_AT_NEW_CNT_UPDATE, {
-                        newAtCnt: cnt
-                    });
                 }
                 this.countAt = data.data.countAt;
+                ea.publish(nsCons.EVENT_CHAT_AT_NEW_CNT_UPDATE, {
+                    countAt: data.data.countAt
+                });
             }
         }).always(() => {
             this.pollOnGoing = false;
