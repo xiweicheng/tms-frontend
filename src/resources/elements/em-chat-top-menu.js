@@ -70,11 +70,12 @@ export class EmChatTopMenu {
             }
         });
 
-        this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_AT_NEW_CNT_UPDATE, (payload) => {
-            if(this.countAt !== null && this.newAtCnt <= 0) {
+        this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_POLL_UPDATE, (payload) => {
+            if (this.countAt !== null && this.newAtCnt <= 0) {
                 this.newAtCnt = payload.countAt - this.countAt;
             }
             this.countAt = payload.countAt;
+            this.countMyRecentSchedule = payload.countMyRecentSchedule;
         });
 
         this.subscribe2 = ea.subscribe(nsCons.EVENT_SWITCH_CHAT_TO, (payload) => {

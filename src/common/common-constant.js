@@ -22,7 +22,7 @@ window.nsCons = {
     EVENT_CHAT_MEMBER_POPUP_SHOW: 'event_chat_member_popup_show',
     EVENT_CHAT_MSG_WIKI_DIR: 'event_chat_msg_wiki_dir',
     EVENT_CHAT_CONTENT_SCROLL_TO: 'event_chat_content_scroll_to',
-    EVENT_CHAT_AT_NEW_CNT_UPDATE: 'event_chat_at_new_cnt_update',
+    EVENT_CHAT_POLL_UPDATE: 'event_chat_poll_update',
     EVENT_SWITCH_CHAT_TO: 'event_switch_chat_to',
     EVENT_CHANNEL_ACTIONS: 'event_channel_actions',
     EVENT_CHANNEL_LINKS_REFRESH: 'event_channel_links_refresh',

@@ -421,8 +421,9 @@ export class ChatDirect {
                     });
                 }
                 this.countAt = data.data.countAt;
-                ea.publish(nsCons.EVENT_CHAT_AT_NEW_CNT_UPDATE, {
-                    countAt: data.data.countAt
+                ea.publish(nsCons.EVENT_CHAT_POLL_UPDATE, {
+                    countAt: data.data.countAt,
+                    countMyRecentSchedule: data.data.countMyRecentSchedule
                 });
             }
         }).always(() => {
