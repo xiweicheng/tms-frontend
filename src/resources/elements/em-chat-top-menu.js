@@ -266,7 +266,7 @@ export class EmChatTopMenu {
         }
 
         this.activeType = nsCons.ACTION_TYPE_STOW;
-        $.get('/admin/chat/channel/getStows', (data) => {
+        this.ajaxStow = $.get('/admin/chat/channel/getStows', (data) => {
             if (data.success) {
                 let stowChats = _.map(data.data, (item) => {
                     let chatChannel = item.chatChannel;
@@ -293,7 +293,7 @@ export class EmChatTopMenu {
 
         this.activeType = nsCons.ACTION_TYPE_AT;
         this.newAtCnt = 0;
-        $.get('/admin/chat/channel/getAts', {
+        this.ajaxAt = $.get('/admin/chat/channel/getAts', {
             page: 0,
             size: 20
         }, (data) => {
