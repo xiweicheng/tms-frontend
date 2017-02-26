@@ -23,6 +23,7 @@ export function configure(aurelia) {
         'resources/attributes/attr-dimmer',
         'resources/attributes/attr-ui-dropdown',
         'resources/attributes/attr-ui-dropdown-action',
+        'resources/attributes/attr-ui-dropdown-hover',
         'resources/attributes/attr-ui-tab',
         'resources/attributes/attr-tablesort',
         'resources/attributes/attr-textcomplete',

@@ -143,9 +143,10 @@
                     </div>
                 </div>
             </div>
-            <div ui-dropdown class="ui top right dropdown item tms-login-user">
-                <i class="circular user icon"></i> ${loginUser.name}
-                <i class="dropdown icon"></i>
+            <div ui-dropdown-hover class="ui top right dropdown item tms-login-user">
+                <!-- <i class="circular user icon"></i> ${loginUser.name} -->
+                <em-user-avatar user.bind="loginUser"></em-user-avatar>
+                <!-- <i class="dropdown icon"></i> -->
                 <div class="menu">
                     <div class="header">账户操作</div>
                     <div class="divider"></div>
