@@ -12,6 +12,13 @@
         }
         .right.menu {
             .item {
+                &.tms-login-user {
+                    @media only screen and (max-width: 767px) {
+                        &.tms-hide {
+                            display: none;
+                        }
+                    }
+                }
                 &.tms-item {
                     padding-left: 0;
                     padding-right: 5px;
