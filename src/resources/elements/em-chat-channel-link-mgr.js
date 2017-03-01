@@ -5,6 +5,8 @@ export class EmChatChannelLinkMgr {
 
     @bindable channel;
 
+    @bindable loginUser;
+
     links = [];
 
     channelChanged(news, old) {

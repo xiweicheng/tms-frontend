@@ -27,6 +27,7 @@
                         <tr>
                             <th style="width: 180px;">标题</th>
                             <th>链接</th>
+                            <th></th>
                             <th style="width: 150px;">操作</th>
                         </tr>
                     </thead>
@@ -44,14 +45,15 @@
                                     <input type="text" value.bind="item.href" placeholder="链接地址">
                                 </div>
                             </td>
+                            <td><span data-tooltip="${item.creator.name ? item.creator.name : item.creator.username} 添加于 ${item.createDate | timeago}"><i class="info circle icon"></i></span></td>
                             <td>
-                                <button show.bind="!item.isEditing" click.delegate="editHandler(item)" class="mini ui button">
+                                <button if.bind="item.creator.username == loginUser.username || channel.owner.username == loginUser.username" show.bind="!item.isEditing" click.delegate="editHandler(item)" class="mini ui button">
                                     编辑
                                 </button>
-                                <button click.delegate="updateHandler(item)" show.bind="item.isEditing" class="mini green ui button">
+                                <button if.bind="item.creator.username == loginUser.username || channel.owner.username == loginUser.username" click.delegate="updateHandler(item)" show.bind="item.isEditing" class="mini green ui button">
                                     更新
                                 </button>
-                                <button click.delegate="delHandler(item)" class="mini ui red button">
+                                <button if.bind="item.creator.username == loginUser.username || channel.owner.username == loginUser.username" click.delegate="delHandler(item)" class="mini ui red button">
                                     删除
                                 </button>
                             </td>
