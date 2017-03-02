@@ -29,11 +29,22 @@ export class UserLogin {
             password: this.password,
             "remember-me": rm
         }).done(() => {
+
+            localStorage && localStorage.setItem(nsCons.KEY_LOGIN_USERNAME, this.username);
+
             let redirect = utils.urlQuery('redirect');
             if (redirect) {
                 window.location = decodeURIComponent(redirect);
             } else {
-                window.location = wurl('path');
+                let chatTo = null;
+                if (localStorage) {
+                    chatTo = localStorage.getItem(nsCons.KEY_REMEMBER_LAST_CHAT_TO);
+                }
+                if (chatTo) {
+                    window.location = wurl('path') + `#/chat/${chatTo}`;
+                } else {
+                    window.location = wurl('path') + `#/chat/@${this.username}`;
+                }
             }
 
         }).fail((xhr, sts, err) => {

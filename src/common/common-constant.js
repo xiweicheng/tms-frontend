@@ -36,4 +36,6 @@ window.nsCons = {
     ACTION_TYPE_SCHEDULE: 'action_type_schedule',
     NUM_TEXT_COMPLETE_MAX_COUNT: 20,
     STR_EMOJI_SEARCH_URL: 'http://emoji.muan.co/',
+    KEY_REMEMBER_LAST_CHAT_TO: 'tms/remember_last_chat_to',
+    KEY_LOGIN_USERNAME: 'tms/login_username',
 }

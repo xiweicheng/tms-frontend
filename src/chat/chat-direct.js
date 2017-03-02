@@ -170,6 +170,9 @@ export class ChatDirect {
             this.preChatId = this.chatId; // 记录切换前的沟通对象
         }
         this.chatId = nsCtx.chatId = params.username;
+
+        localStorage && localStorage.setItem(nsCons.KEY_REMEMBER_LAST_CHAT_TO, this.chatId);
+
         this.isAt = nsCtx.isAt = _.startsWith(params.username, '@');
         this.chatTo = nsCtx.chatTo = utils.getChatName(params.username);
 
@@ -214,7 +217,7 @@ export class ChatDirect {
                 });
 
                 if (this.channel) {
-                    routeConfig.navModel.setTitle(`${this.channel.name} | 频道 | TMS`);
+                    routeConfig.navModel.setTitle(`${this.channel.title} | 频道 | TMS`);
 
                     this.listChatChannel(true);
                 } else {
