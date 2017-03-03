@@ -74,6 +74,11 @@ export class App {
      */
     configureRouter(config, router) {
 
+        let chatTo = null;
+        if (localStorage) {
+            chatTo = localStorage.getItem(nsCons.KEY_REMEMBER_LAST_CHAT_TO);
+        }
+
         config.map([{
             route: ['pwd-reset'],
             name: 'reset',
@@ -106,7 +111,7 @@ export class App {
             title: '测试'
         }, {
             route: '',
-            redirect: 'chat/@admin'
+            redirect: `chat/${chatTo ? chatTo : '@admin'}`
         }]);
 
         this.router = router;
