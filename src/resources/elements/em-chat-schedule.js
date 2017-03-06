@@ -40,6 +40,43 @@ export class EmChatSchedule {
         this.subscribe = ea.subscribe(nsCons.EVENT_SCHEDULE_REFRESH, (payload) => {
             $(this.scheduleRef).fullCalendar('refetchEvents');
         });
+
+        this._getEvents();
+    }
+
+    _getEvents(start, end, callback) {
+        let data = {};
+        if (start) {
+            data.start = start.unix();
+        }
+        if (end) {
+            data.start = end.unix();
+        }
+        $.get('/admin/schedule/listMy', data, (data) => {
+            if (data.success) {
+                this.events = _.map(data.data, (item) => {
+                    let event = {
+                        id: item.id,
+                        title: item.title,
+                        actors: item.actors,
+                        creator: item.creator
+                    };
+
+                    if (item.startDate) {
+                        event.start = item.startDate;
+                    } else {
+                        event.start = new Date().getTime();
+                    }
+
+                    if (item.endDate) {
+                        event.end = item.endDate;
+                    }
+
+                    return event;
+                });
+                callback && callback(this.events);
+            }
+        });
     }
 
     /**
@@ -81,35 +118,7 @@ export class EmChatSchedule {
             eventMouseout: (event, jsEvent, view) => {},
             events: (start, end, timezone, callback) => {
 
-                $.get('/admin/schedule/listMy', {
-                    // our hypothetical feed requires UNIX timestamps
-                    start: start.unix(),
-                    end: end.unix()
-                }, (data) => {
-                    if (data.success) {
-                        this.events = _.map(data.data, (item) => {
-                            let event = {
-                                id: item.id,
-                                title: item.title,
-                                actors: item.actors,
-                                creator: item.creator
-                            };
-
-                            if (item.startDate) {
-                                event.start = item.startDate;
-                            } else {
-                                event.start = new Date().getTime();
-                            }
-
-                            if (item.endDate) {
-                                event.end = item.endDate;
-                            }
-
-                            return event;
-                        });
-                        callback(this.events);
-                    }
-                })
+                this._getEvents(start, end, callback);
             },
             eventDrop: (event, delta, revertFunc) => {
 

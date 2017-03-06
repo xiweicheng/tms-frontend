@@ -130,3 +130,12 @@ export class EmojiValueConverter {
         return value;
     }
 }
+
+export class Nl2brValueConverter {
+    toView(value) {
+        if (value) {
+            return _.replace(value, /\n/g, '<br/>');
+        }
+        return value;
+    }
+}

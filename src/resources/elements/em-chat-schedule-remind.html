@@ -21,7 +21,7 @@
                     </tr>
                     <tr>
                         <td>日程内容:</td>
-                        <td>${event.title}</td>
+                        <td innerhtml.bind="event.title | nl2br"></td>
                     </tr>
                 </tbody>
             </table>
