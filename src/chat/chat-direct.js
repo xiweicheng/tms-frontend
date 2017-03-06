@@ -370,6 +370,8 @@ export class ChatDirect {
                 $(this.commentsRef).parent('.scroll-content').scrollTo(`.comment[data-id="${to}"]`, {
                     offset: this.offset
                 });
+                $(this.commentsRef).find(`.comment[data-id]`).removeClass('active');
+                $(this.commentsRef).find(`.comment[data-id=${to}]`).addClass('active');
             } else {
                 $(this.commentsRef).parent('.scroll-content').scrollTo('max');
                 toastr.warning(`消息[${to}]不存在,可能已经被删除!`);
@@ -692,8 +694,6 @@ export class ChatDirect {
 
         let chat = _.find(this.chats, { id: item.id });
         if (chat) {
-            $(this.commentsRef).find(`.comment[data-id]`).removeClass('active');
-            $(this.commentsRef).find(`.comment[data-id=${item.id}]`).addClass('active');
             this.scrollToAfterImgLoaded(item.id);
         } else {
 

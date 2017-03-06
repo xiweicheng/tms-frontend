@@ -544,6 +544,8 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                     $(this.commentsRef).parent('.scroll-content').scrollTo('.comment[data-id="' + to + '"]', {
                         offset: this.offset
                     });
+                    $(this.commentsRef).find('.comment[data-id]').removeClass('active');
+                    $(this.commentsRef).find('.comment[data-id=' + to + ']').addClass('active');
                 } else {
                     $(this.commentsRef).parent('.scroll-content').scrollTo('max');
                     toastr.warning('\u6D88\u606F[' + to + ']\u4E0D\u5B58\u5728,\u53EF\u80FD\u5DF2\u7ECF\u88AB\u5220\u9664!');
@@ -885,8 +887,6 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
 
             var chat = _.find(this.chats, { id: item.id });
             if (chat) {
-                $(this.commentsRef).find('.comment[data-id]').removeClass('active');
-                $(this.commentsRef).find('.comment[data-id=' + item.id + ']').addClass('active');
                 this.scrollToAfterImgLoaded(item.id);
             } else {
 
