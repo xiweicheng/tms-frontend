@@ -16,6 +16,7 @@
     "aurelia-templating": "1.1.0",
     "aurelia-templating-resources": "1.0.0",
     "aurelia-templating-router": "1.0.0",
+    "aurelia-pal-browser": "1.0.0",
     "aurelia-pal": "1.0.0",
     "aurelia-router": "1.0.3",
     "autosize": "^3.0.17",
