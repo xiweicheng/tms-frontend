@@ -140,19 +140,10 @@ export class EmChatScheduleEdit {
             return;
         }
 
-        let p1 = $.post('/admin/schedule/update', {
+        let data = {
             id: this.event.id,
             basePath: utils.getBasePath(),
             title: this.event.title
-        }, (data, textStatus, xhr) => {
-            if (data.success) {} else {
-                toastr.error(data.data);
-            }
-        });
-
-        let data = {
-            id: this.event.id,
-            basePath: utils.getBasePath()
         };
         let start = $(this.startRef).calendar('get date');
         let end = $(this.endRef).calendar('get date');
@@ -167,18 +158,15 @@ export class EmChatScheduleEdit {
             data.endDate = end;
         }
 
-        let p2 = $.post('/admin/schedule/updateStartEndDate', data, (data, textStatus, xhr) => {
-            if (data.success) {} else {
+        $.post('/admin/schedule/update2', data, (data, textStatus, xhr) => {
+            if (data.success) {
+                toastr.success('更新日程成功!');
+                $(this.scheduleEditRef).popup('hide');
+                ea.publish(nsCons.EVENT_SCHEDULE_REFRESH, {});
+            } else {
                 toastr.error(data.data);
             }
         });
-
-        $.when(p1, p2).done(() => {
-            toastr.success('更新日程成功!');
-            $(this.scheduleEditRef).popup('hide');
-            ea.publish(nsCons.EVENT_SCHEDULE_REFRESH, {});
-        });
-
     }
 
     delHandler() {
