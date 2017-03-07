@@ -74,7 +74,7 @@
     "http-proxy-middleware": "^0.17.1",
     "minimatch": "^3.0.2",
     "through2": "^2.0.1",
-    "uglify-js": "^2.6.3",
+    "uglify-js": "2.7.5",
     "vinyl-fs": "^2.4.3"
   }
 }
