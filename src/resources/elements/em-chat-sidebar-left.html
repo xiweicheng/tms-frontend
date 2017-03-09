@@ -2,7 +2,7 @@
     <require from="./em-chat-sidebar-left.css"></require>
     <div class="ui left visible sidebar tms-left-sidebar">
         <div class="tms-header">
-            <h1 class="ui header"><img ref="logoRef" src="img/tms-x32.png" alt=""><a href="/admin/dynamic?scroll=1">TMS沟通</a></h1>
+            <h1 class="ui header"><img ref="logoRef" src="img/tms-x32.png" alt=""><a href="/admin">TMS沟通</a></h1>
             <input value.bind="filter" keyup.trigger="chatToUserFilerKeyupHanlder($event)" type="text" placeholder="过滤沟通频道|用户">
             <i show.bind="filter" title="清空过滤输入" click.delegate="clearFilterHandler()" class="close icon link"></i>
         </div>
@@ -46,7 +46,7 @@
                         <!-- <i class="plus link circular icon"></i> -->
                     </div>
                     <div ref="userListRef" class="ui middle aligned selection list">
-                        <a repeat.for="item of users | sortUsers:loginUser.username" title="${item.name}(@${item.username})" show.bind="!item.hidden" href="#/chat/@${item.username}" class="item ${(isAt && item.username == chatTo) ? 'active' : ''}" data-id="${item.username}">
+                        <a repeat.for="item of users | sortUsers:loginUser.username" if.bind="item.enabled" title="${item.name}(@${item.username})" show.bind="!item.hidden" href="#/chat/@${item.username}" class="item ${(isAt && item.username == chatTo) ? 'active' : ''}" data-id="${item.username}">
                             <i style="font-weight: bold;" class="at icon"></i>
                             <div class="content">
                                 <div class="tms-name">${item.name ? item.name : item.username} ${item.username == loginUser.username ? '(自己)' : ''}</div>

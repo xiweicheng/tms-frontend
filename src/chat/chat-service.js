@@ -21,7 +21,7 @@ class ChatService {
 
             // users
             await $.get('/admin/user/all', {
-                enabled: true
+                // enabled: true
             }, (data) => {
                 if (data.success) {
                     this.users = data.data;

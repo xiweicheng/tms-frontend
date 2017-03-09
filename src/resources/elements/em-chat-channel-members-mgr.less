@@ -1,9 +1,11 @@
 .tms-em-chat-channel-members-mgr {
     .ui.dropdown {
-        > a.ui.label {
-            > input.owner + i.delete.icon {
-                display: none;
-            }
+        span.owner + i.delete.icon {
+            display: none;
+        }
+        span.disabled-user {
+            text-decoration: line-through;
+            font-style: italic;
         }
     }
     .member-table {

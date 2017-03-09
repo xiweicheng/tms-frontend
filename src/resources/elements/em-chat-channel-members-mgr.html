@@ -12,8 +12,9 @@
                         <div class="default text"></div>
                         <div class="menu">
                             <div repeat.for="item of users | sortUsers:channel.owner.username" task.bind="initMembersUI($last)" class="item" data-value="${item.username}">
-                                ${item.name ? item.name : item.username}
-                                <input type="hidden" class="${channel.owner.username == item.username ? 'owner' : ''}">
+                                <!-- <input type="hidden" class="${!item.enabled ? 'disabled-user' : ''}"> -->
+                                <span class="${channel.owner.username == item.username ? 'owner' : ''} ${!item.enabled ? 'disabled-user' : ''}">${item.name ? item.name : item.username}</span>
+                                <!-- <input type="hidden" class="${channel.owner.username == item.username ? 'owner' : ''}"> -->
                             </div>
                         </div>
                     </div>
