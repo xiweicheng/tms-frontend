@@ -14,7 +14,12 @@
                             </div>
                             <div ref="mkbodyRef" class="text markdown-body ${item.isOpen ? 'tms-open' : ''}" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
                             <div class="actions">
-                                <a if.bind="item.chatStow" click.delegate="removeStowHandler(item)" class="tms-remove" title="移除收藏消息" href="">移除</a>
+                                <div ui-dropdown-action style="margin-right: .75em;" class="ui icon top left pointing dropdown" title="移除收藏消息">
+                                    移除
+                                    <div class="menu">
+                                        <div style="color: red;" class="item" click.delegate="removeStowHandler(item)"><i class="trash outline icon"></i>确认移除</div>
+                                    </div>
+                                </div>
                                 <a if.bind="item.chatAt" click.delegate="removeAtHandler(item)" class="tms-read" title="标记@消息已读" href="">知悉</a>
                                 <a click.delegate="gotoChatHandler(item)" class="tms-goto" href="" title="定位到消息">定位</a>
                                 <a class="tms-copy tms-clipboard" data-clipboard-text="${item.content}" title="复制消息内容到剪贴板">复制</a>

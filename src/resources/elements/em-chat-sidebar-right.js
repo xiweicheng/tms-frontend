@@ -164,22 +164,16 @@ export class EmChatSidebarRight {
     }
 
     removeStowHandler(item) {
-        this.emConfirmModal.show({
-            onapprove: () => {
-
-                $.post('/admin/chat/channel/removeStow', {
-                    id: item.chatStow.id
-                }, (data, textStatus, xhr) => {
-                    if (data.success) {
-                        this.chats = _.reject(this.chats, {
-                            id: item.id
-                        });
-                        toastr.success('移除收藏消息成功!');
-                    } else {
-                        toastr.error(data.data, '移除收藏消息失败!');
-                    }
+        $.post('/admin/chat/channel/removeStow', {
+            id: item.chatStow.id
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                this.chats = _.reject(this.chats, {
+                    id: item.id
                 });
-
+                toastr.success('移除收藏消息成功!');
+            } else {
+                toastr.error(data.data, '移除收藏消息失败!');
             }
         });
     }
