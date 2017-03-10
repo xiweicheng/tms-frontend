@@ -63,6 +63,19 @@ export class EmChatInput {
         this.initDropzone();
         this.initPaste();
         this.initHotkeys();
+
+        // https://github.com/humaan/Modaal
+        $(this.blogWriteRef).modaal({
+            fullscreen: true,
+            before_open: () => {},
+            after_open: () => {
+                this.blogWriteVm.init();
+            },
+            before_close: () => {
+                this.blogWriteVm.destroy();
+            },
+            after_close: () => {}
+        });
     }
 
     initPaste() {

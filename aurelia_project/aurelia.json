@@ -158,6 +158,15 @@
             "deps": ["jquery"]
           },
           {
+            "name": "modaal",
+            "path": "../node_modules/modaal",
+            "main": "dist/js/modaal.min",
+            "resources": [
+              "dist/css/modaal.min.css"
+            ],
+            "deps": ["jquery"]
+          },
+          {
             "name": "fullcalendar",
             "path": "../node_modules/fullcalendar",
             "main": "dist/fullcalendar.min",

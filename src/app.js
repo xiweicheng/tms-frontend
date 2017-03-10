@@ -1,6 +1,7 @@
 import 'tms-semantic-ui';
 import 'semantic-ui-calendar';
 import 'jquery-format';
+import 'modaal';
 
 export class App {
 

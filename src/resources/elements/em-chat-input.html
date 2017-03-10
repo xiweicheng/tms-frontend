@@ -7,14 +7,21 @@
             <div ref="chatBtnRef" class="ui icon button">
                 <i class="plus icon"></i>
             </div>
-            <div class="ui flowing popup bottom left transition hidden">
-                <div class="ui middle aligned selection list">
-                    <div ref="btnItemUploadRef" class="item">
-                        <i class="upload icon"></i>
-                        <div class="content">
-                            上传文件
-                        </div>
+            <div class="ui flowing popup bottom left transition hidden vertical menu">
+                <a ref="btnItemUploadRef" class="item">
+                    <i class="upload icon"></i>
+                    <div class="content">
+                        上传文件
                     </div>
+                </a>
+                <a ref="blogWriteRef" href="#modaal-blog-write" class="item">
+                    <i class="write icon"></i>
+                    <div class="content">
+                        博文写作
+                    </div>
+                </a>
+                <div id="modaal-blog-write" style="display:none;">
+                    <em-chat-blog-write view-model.ref="blogWriteVm"></em-chat-blog-write>
                 </div>
             </div>
             <div class="textareaWrapper">
