@@ -1,7 +1,6 @@
 import 'tms-semantic-ui';
 import 'semantic-ui-calendar';
 import 'jquery-format';
-import 'modaal';
 
 export class App {
 
@@ -98,6 +97,18 @@ export class App {
             moduleId: 'chat/chat-direct',
             nav: false,
             title: '私聊'
+        }, {
+            route: ['blog'],
+            name: 'chat',
+            moduleId: 'blog/blog',
+            nav: false,
+            title: '博文'
+        }, {
+            route: ['blog/:id'],
+            name: 'chat',
+            moduleId: 'blog/blog',
+            nav: false,
+            title: '博文'
         }, {
             route: ['login'],
             name: 'login',

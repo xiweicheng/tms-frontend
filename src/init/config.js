@@ -32,6 +32,7 @@ import {
 import {
     default as ColorHash
 } from 'color-hash';
+import 'modaal';
 
 export class Config {
 
@@ -239,6 +240,19 @@ export class Config {
     initEmoji() {
         emojify && emojify.setConfig({
             img_dir: utils.getResourceBase() + '/img/emoji'
+        });
+        return this;
+    }
+
+    initModaal() {
+        _.extend($.fn.modaal.options, {
+            close_text: '关闭',
+            close_aria_label: '按[esc]关闭',
+            confirm_button_text: '确认',
+            confirm_cancel_button_text: '取消',
+            confirm_title: '操作确认',
+            accessible_title: '对话框窗口',
+            confirm_content: '<p>默认确认对话框内容.</p>',
         });
         return this;
     }

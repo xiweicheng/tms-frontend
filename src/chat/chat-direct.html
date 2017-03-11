@@ -1,10 +1,5 @@
 <template>
     <require from="./chat-direct.css"></require>
-    <require from="./md-github.css"></require>
-    <require from="dropzone/dist/basic.css"></require>
-    <require from="swipebox/src/css/swipebox.min.css"></require>
-    <require from="simplemde/dist/simplemde.min.css"></require>
-    <require from="highlight/styles/github.css"></require>
     <div ref="chatContainerRef" class="tms-chat-direct">
         <em-chat-top-menu users.bind="users" chat-user.bind="user" login-user.bind="loginUser" channels.bind="channels" channel.bind="channel" login-user.bind="loginUser" chat-id.bind="chatId" chat-to.bind="chatTo" is-at.bind="isAt"></em-chat-top-menu>
         <em-chat-sidebar-left users.bind="users" login-user.bind="loginUser" channels.bind="channels" chat-to.bind="chatTo" is-at.bind="isAt"></em-chat-sidebar-left>

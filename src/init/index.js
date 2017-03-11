@@ -17,5 +17,6 @@ export function configure(aurelia, params) {
         .initToastr()
         .initMarked()
         .initAnimateCss()
-        .initEmoji();
+        .initEmoji()
+        .initModaal();
 }

@@ -6,11 +6,7 @@ import {
 @containerless
 export class EmChatBlogWrite {
 
-    @bindable value;
-
-    valueChanged(newValue, oldValue) {
-
-    }
+    @bindable members;
 
     init() {
 
@@ -30,7 +26,7 @@ export class EmChatBlogWrite {
             },
         });
 
-        this.simplemde.value("This text will appear in the editor");
+        $(this.stickyRef).sticky('refresh');
 
     }
 
@@ -42,5 +38,56 @@ export class EmChatBlogWrite {
     /**
      * 当视图被附加到DOM中时被调用
      */
-    attached() {}
+    attached() {
+        $(this.stickyRef).sticky({ silent: true });
+        $('#blog-save-btn').click((event) => {
+            this.save();
+        });
+    }
+
+    save() {
+
+        let title = $('#blog-title-input').val();
+        let content = this.simplemde.value();
+
+        if (!$.trim(title)) {
+            $('#blog-title-input').val('');
+            toastr.error('标题不能为空!');
+            return;
+        }
+
+        if (!$.trim(content)) {
+            this.simplemde.value('');
+            toastr.error('内容不能为空!');
+            return;
+        }
+
+        if (this.sending) {
+            return;
+        }
+
+        this.sending = true;
+
+        var html = utils.md2html(content);
+
+        $.post(`/admin/blog/save`, {
+            url: utils.getBasePath(),
+            usernames: utils.parseUsernames(content, [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])]).join(','),
+            title: title,
+            content: content,
+            contentHtml: html
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                toastr.success('博文保存成功!');
+            } else {
+                toastr.error(data.data, '博文保存失败!');
+            }
+        }).always(() => {
+            this.sending = false;
+        });
+    }
+
 }
+
+// TODO
+// 保存,更新,版本控制,分享,查看,目录,标签
