@@ -1,14 +1,14 @@
 <template>
     <require from="./em-blog-write.css"></require>
     <div class="em-blog-write">
-        <div class="wrapper">
+        <div class="wrapper dropzone">
             <div class="title">
                 <div class="ui transparent fluid massive input">
                     <input id="blog-title-input" type="text" placeholder="标题">
                 </div>
                 <button id="blog-save-btn" class="ui mini positive button"><i style="display: none;" class="spinner loading icon"></i><span>保存</span></button>
             </div>
-            <div class="content markdown-body">
+            <div id="txt-blog-write-wrapper" class="content markdown-body">
                 <textarea style="width: 0; height: 0; border: 0; resize:none;" id="txt-blog-write"></textarea>
             </div>
         </div>

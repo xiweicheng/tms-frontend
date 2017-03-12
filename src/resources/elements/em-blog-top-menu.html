@@ -1,6 +1,13 @@
 <template>
     <require from="./em-blog-top-menu.css"></require>
     <div class="ui top fixed inverted blue menu em-blog-top-menu">
+        <div ui-dropdown-action class="ui dropdown item">
+            <i class="large content icon"></i>
+            <div class="menu">
+                <div class="header">系统外链</div>
+                <a repeat.for="item of sysLinks" href="${item.href}" class="item">${item.title}</a>
+            </div>
+        </div>
         <div class="item">
             <img ref="logoRef" src="img/tms-x32.png">
         </div>
@@ -15,9 +22,12 @@
         </div>
         <div class="right menu">
             <div class="item">
-                <div class="ui icon input">
-                    <input type="text" placeholder="搜索...">
-                    <i class="search link icon"></i>
+                <div ref="searchRef" class="ui search">
+                    <div class="ui icon input">
+                        <input class="prompt" type="text" placeholder="搜索...">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
                 </div>
             </div>
         </div>

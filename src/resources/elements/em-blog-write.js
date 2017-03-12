@@ -2,6 +2,9 @@ import { bindable, containerless } from 'aurelia-framework';
 import {
     default as SimpleMDE
 } from 'simplemde';
+import {
+    default as Dropzone
+} from 'dropzone';
 
 @containerless
 export class EmBlogWrite {
@@ -80,12 +83,123 @@ export class EmBlogWrite {
             },
         });
 
-        if (this.action == 'edit') { // edit
-            this._editInit();
-        } else { // create
-            // this._reset();
+        this.$chatMsgInputRef = $('#txt-blog-write-wrapper').find('.CodeMirror textarea');
+        if (this.$chatMsgInputRef.size() === 0) {
+            this.$chatMsgInputRef = $('#txt-blog-write-wrapper').find('.CodeMirror [contenteditable="true"]');
         }
 
+        if (this.action == 'edit') { // edit
+            this._editInit();
+        }
+
+        this.initPaste();
+
+        this.initUploadDropzone($('.CodeMirror-wrap', '#txt-blog-write-wrapper'), () => {
+            return this.$chatMsgInputRef
+        }, false);
+
+    }
+
+    initPaste() {
+
+        let $paste;
+        if (this.$chatMsgInputRef.is('textarea')) {
+            $paste = $(this.$chatMsgInputRef).pastableTextarea();
+        } else {
+            $paste = $(this.$chatMsgInputRef).pastableContenteditable();
+        }
+
+        $paste && ($paste.on('pasteImage', (ev, data) => {
+
+            $.post('/admin/file/base64', {
+                dataURL: data.dataURL,
+                type: data.blob.type,
+                toType: 'Blog'
+            }, (data, textStatus, xhr) => {
+                if (data.success) {
+                    this.insertContent('![{name}]({baseURL}{path}{uuidName})'
+                        .replace(/\{name\}/g, data.data.name)
+                        .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
+                        .replace(/\{path\}/g, data.data.path)
+                        .replace(/\{uuidName\}/g, data.data.uuidName));
+                }
+            });
+        }).on('pasteImageError', (ev, data) => {
+            toastr.error(data.message, '剪贴板粘贴图片错误!');
+        }));
+    }
+
+    initUploadDropzone(domRef, getInputTargetCb, clickable) {
+
+        let _this = this;
+
+        $(domRef).dropzone({
+            url: "/admin/file/upload",
+            paramName: 'file',
+            clickable: !!clickable,
+            dictDefaultMessage: '',
+            maxFilesize: 10,
+            addRemoveLinks: true,
+            // previewsContainer: this.chatStatusBarRef,
+            // previewTemplate: this.previewTemplateRef.innerHTML,
+            dictCancelUpload: '取消上传',
+            dictCancelUploadConfirmation: '确定要取消上传吗?',
+            dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
+            init: function() {
+                this.on("sending", function(file, xhr, formData) {
+                    if (!getInputTargetCb()) {
+                        this.removeAllFiles(true);
+                    } else {
+                        formData.append('toType', 'Blog');
+                    }
+                });
+                this.on("success", function(file, data) {
+                    if (data.success) {
+
+                        $.each(data.data, function(index, item) {
+                            if (item.type == 'Image') {
+                                _this.insertContent('![{name}]({baseURL}{path}{uuidName}) '
+                                    .replace(/\{name\}/g, item.name)
+                                    .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
+                                    .replace(/\{path\}/g, item.path)
+                                    .replace(/\{uuidName\}/g, item.uuidName));
+                            } else {
+                                _this.insertContent('[{name}]({baseURL}{path}{uuidName}) '
+                                    .replace(/\{name\}/g, item.name)
+                                    .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
+                                    .replace(/\{path\}/g, "admin/file/download/")
+                                    .replace(/\{uuidName\}/g, item.id));
+                            }
+                        });
+                        toastr.success('上传成功!');
+                    } else {
+                        toastr.error(data.data, '上传失败!');
+                    }
+
+                });
+                this.on("error", function(file, errorMessage, xhr) {
+                    toastr.error(errorMessage, '上传失败!');
+                });
+                this.on("complete", function(file) {
+                    this.removeFile(file);
+                });
+            }
+        });
+    }
+
+    /**
+     * 编辑器插入自定义沟通内容
+     * @param  {[type]} cm      [description]
+     * @param  {[type]} comment [description]
+     * @return {[type]}         [description]
+     */
+    insertContent(content, mde) {
+        let cm = mde ? mde.codemirror : this.simplemde.codemirror;
+        var cursor = cm.getCursor();
+        if (cursor) {
+            cm.replaceRange(content, cursor, cursor);
+            cm.focus();
+        }
     }
 
     destroy() {

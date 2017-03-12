@@ -89,4 +89,28 @@ export class EmBlogContent {
     editHandler() {
         ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'edit', id: this.blog.id });
     }
+
+    deleteHandler() {
+
+        this.emConfirmModal.show({
+            onapprove: () => {
+                $.post("/admin/blog/delete", {
+                    id: this.blog.id
+                }, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        toastr.success('删除博文成功!');
+                        window.location.href = "/#/blog";
+                        window.location.reload();
+                        // ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                        //     action: 'updated',
+                        //     blog: this.blog
+                        // });
+                    } else {
+                        toastr.error(data.data, '删除博文失败!');
+                    }
+                });
+            }
+        });
+
+    }
 }

@@ -482,6 +482,68 @@ export class CommonUtils {
         }
         return false;
     }
+
+    /**
+     * 判断是否为全角字符
+     * @param  {[type]}  str 待判断字符
+     * @return {Boolean}    true: 全角 false: 半角 
+     */
+    isSBCcase(str) {
+        // [^\x00-\xff]全角字符
+        return /[^\x00-\xff]/.test(str);
+    }
+
+    /**
+     * 判断是否为汉字
+     * @param  {[type]}  str 待判断字符
+     * @return {Boolean}    true: 汉字 false: 非汉字
+     */
+    isHanzi(str) {
+        // [\u4e00-\u9fa5]汉字 
+        return /[\u4e00-\u9fa5]/ig.test(str);
+    }
+
+    /**
+     * 获取字符串byte长度
+     * val: 要计算的字符串
+     * return: 字符串byte长度
+     */
+    getByteLen(val) {
+        var len = 0;
+        for (var i = 0; i < val.length; i++) {
+            if (this.isHanzi(val[i]) || this.isSBCcase(val[i])) {
+                len += 2;
+            } else {
+                len += 1;
+            }
+        }
+        return len;
+    }
+
+    /**
+     * 制字符串的最大显示长度
+     * value: 要处理的字符串
+     * maxLen: 限制长度
+     * return: 处理截取后的字符串
+     */
+    abbreviate(value, maxLen) {
+        if (value && maxLen) {
+
+            var len = 0;
+            for (var i = 0; i < value.length; i++) {
+                if (this.isHanzi(value[i]) || this.isSBCcase(value[i])) {
+                    len += 2;
+                } else {
+                    len += 1;
+                }
+
+                if (len > maxLen) {
+                    return value.substr(0, i) + '...';
+                }
+            }
+        }
+        return value;
+    }
 }
 
 export default new CommonUtils();
