@@ -4,7 +4,9 @@
         <div class="tms-body">
             <div scrollbar="scrollbar-macosx">
                 <div class="ui bulleted list">
-                    <a repeat.for="item of blogs" title="${item.title}" href="/#/blog/${item.id}" class="item ${item.id == blog.id ? 'active' : ''}">${item.title}</a>
+                    <div repeat.for="item of blogs" class="item ${item.id == blog.id ? 'active' : ''}">
+                        <a title="${item.title}" href="/#/blog/${item.id}">${item.title}</a>
+                    </div>
                 </div>
             </div>
         </div>

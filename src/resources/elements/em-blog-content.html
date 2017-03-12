@@ -1,6 +1,26 @@
 <template>
     <require from="./em-blog-content.css"></require>
     <div class="em-blog-content">
+        <div class="actions">
+            <a href="#" class="ui basic mini button" click.delegate="editHandler()">
+                <i class="large icon edit"></i> 编辑
+            </a>
+            <div ui-dropdown-action class="ui top right pointing dropdown basic mini icon button">
+                <i class="large ellipsis horizontal icon"></i>
+                <div class="menu">
+                    <div class="item" style="color: red;">
+                        <i class="trash outline icon"></i> 删除
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header">
+            <h1 class="ui header">${blog.title}
+	            <div class="sub header">
+	            	<i class="wait icon"></i>${blog.creator.name} 创建于 <span title="${blog.createDate | date}">${blog.createDate | timeago}</span>, ${blog.updater.name} 最后修改于 <span title="${blog.updateDate | date}">${blog.updateDate | timeago}</span>
+	            </div>
+            </h1>
+        </div>
         <div ref="mkbodyRef" class="markdown-body" innerhtml.bind="blog.content | parseMd | emoji:mkbodyRef"></div>
     </div>
 </template>

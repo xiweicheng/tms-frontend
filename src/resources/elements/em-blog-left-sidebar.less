@@ -6,12 +6,18 @@
         background-color: #f5f5f5;
         box-shadow: none!important;
         .tms-body {
-            .ui.list {
+            .ui.bulleted.list {
                 padding: 16px;
-                > a.item {
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
+                > div.item {
+                    > a {
+                        display: block;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                    &:before {
+                        color: #999;
+                    }
                 }
             }
         }

@@ -27,7 +27,7 @@ export class Blog {
      * @return {[promise]}                      你可以可选的返回一个延迟许诺(promise), 告诉路由等待执行bind和attach视图(view), 直到你完成你的处理工作.
      */
     activate(params, routeConfig, navigationInstruction) {
-        toastr.info(`Blog: ${params.id}`);
+        // toastr.info(`Blog: ${params.id}`);
 
         nsCtx.blogId = params.id;
 

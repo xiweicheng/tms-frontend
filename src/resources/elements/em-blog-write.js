@@ -25,6 +25,16 @@ export class EmBlogWrite {
                 this.destroy();
             }
         });
+        this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_ACTION, (payload) => {
+            this.action = payload.action;
+            $.get('/admin/blog/get', { id: payload.id }, (data) => {
+                if (data.success) {
+                    this.blog = data.data;
+                    $('a[href="#modaal-blog-write"]').click();
+                }
+            });
+
+        });
     }
 
     /**
@@ -33,6 +43,23 @@ export class EmBlogWrite {
     unbind() {
         this.subscribe.dispose();
         this.subscribe2.dispose();
+        this.subscribe3.dispose();
+    }
+
+    _reset() {
+        this.action = null;
+        this.blog = null;
+        $('#blog-save-btn span').text('保存');
+        $('#blog-title-input').val('');
+        this.simplemde.value('');
+        this.simplemde.toTextArea();
+        this.simplemde = null;
+    }
+
+    _editInit() {
+        $('#blog-title-input').val(this.blog.title);
+        this.simplemde.value(this.blog.content);
+        $('#blog-save-btn span').text('更新');
     }
 
     init() {
@@ -49,15 +76,20 @@ export class EmBlogWrite {
                 table: ["", "\n\n| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n\n"],
             },
             previewRender: (plainText, preview) => { // Async method
-                return this.simplemde.markdown(utils.preParse(plainText));
+                return marked(utils.preParse(plainText));
             },
         });
+
+        if (this.action == 'edit') { // edit
+            this._editInit();
+        } else { // create
+            // this._reset();
+        }
 
     }
 
     destroy() {
-        this.simplemde.toTextArea();
-        this.simplemde = null;
+        this._reset();
     }
 
     /**
@@ -91,27 +123,62 @@ export class EmBlogWrite {
         }
 
         this.sending = true;
+        $('#blog-save-btn i').show();
 
         var html = utils.md2html(content);
+        let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
 
-        $.post(`/admin/blog/create`, {
-            url: utils.getBasePath(),
-            usernames: utils.parseUsernames(content, [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])]).join(','),
-            title: title,
-            content: content,
-            contentHtml: html
-        }, (data, textStatus, xhr) => {
-            if (data.success) {
-                toastr.success('博文保存成功!');
-            } else {
-                toastr.error(data.data, '博文保存失败!');
-            }
-        }).always(() => {
-            this.sending = false;
-        });
+        if (!this.blog) {
+            $.post(`/admin/blog/create`, {
+                url: utils.getBasePath(),
+                usernames: utils.parseUsernames(content, users).join(','),
+                title: title,
+                content: content,
+                contentHtml: html
+            }, (data, textStatus, xhr) => {
+                if (data.success) {
+                    this.blog = data.data;
+                    $('#blog-save-btn span').text('更新');
+                    toastr.success('博文保存成功!');
+                    ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                        action: 'created',
+                        blog: this.blog
+                    });
+                } else {
+                    toastr.error(data.data, '博文保存失败!');
+                }
+            }).always(() => {
+                this.sending = false;
+                $('#blog-save-btn i').hide();
+            });
+        } else {
+            $.post('/admin/blog/update', {
+                url: utils.getBasePath(),
+                id: this.blog.id,
+                version: this.blog.version,
+                usernames: utils.parseUsernames(content, users).join(','),
+                title: title,
+                content: content,
+                diff: utils.diffS(this.blog.content, content),
+                // contentHtml: html,
+                // contentHtmlOld: htmlOld
+            }, (data, textStatus, xhr) => {
+                if (data.success) {
+                    this.blog = data.data;
+                    toastr.success('博文更新成功!');
+                    ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                        action: 'updated',
+                        blog: this.blog
+                    });
+                } else {
+                    toastr.error(data.data, '博文更新失败!');
+                }
+            }).always(() => {
+                this.sending = false;
+                $('#blog-save-btn i').hide();
+            });
+        }
+
     }
 
 }
-
-// TODO
-// 保存,更新,版本控制,分享,查看,目录,标签
