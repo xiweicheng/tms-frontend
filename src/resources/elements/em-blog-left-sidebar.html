@@ -1,0 +1,14 @@
+<template>
+    <require from="./em-blog-left-sidebar.css"></require>
+    <div class="ui left visible sidebar em-blog-left-sidebar">
+        <div class="tms-body">
+            <div scrollbar="scrollbar-macosx">
+                <div class="ui bulleted list">
+                    <a repeat.for="item of blogs" title="${item.title}" href="/#/blog/${item.id}" class="item ${item.id == blog.id ? 'active' : ''}">${item.title}</a>
+                </div>
+            </div>
+        </div>
+        <div class="tms-footer">
+        </div>
+    </div>
+</template>

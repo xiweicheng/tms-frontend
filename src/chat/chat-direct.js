@@ -176,64 +176,66 @@ export class ChatDirect {
         this.isAt = nsCtx.isAt = _.startsWith(params.username, '@');
         this.chatTo = nsCtx.chatTo = utils.getChatName(params.username);
 
-        chatService.loginUser(false).then((user) => {
-            this.loginUser = user;
-            nsCtx.isSuper = utils.isSuperUser(this.loginUser);
-            nsCtx.isAdmin = utils.isAdminUser(this.loginUser);
-        });
-
-        chatService.listUsers(false).then((users) => {
-            this.users = users;
-            window.tmsUsers = users;
-            if (this.isAt) {
-                this.channel = null;
-                this.user = _.find(this.users, {
-                    username: this.chatTo
-                });
-
-                if (this.user) {
-                    let name = this.user ? this.user.name : this.chatTo;
-                    routeConfig.navModel.setTitle(`${name} | 私聊 | TMS`);
-
-                    this.listChatDirect(true);
-                } else {
-                    toastr.error(`聊天用户[${this.chatTo}]不存在或者没有权限访问!`);
-                    if (this.preChatId) {
-                        window.location = wurl('path') + `#/chat/${this.preChatId}`;
-                    } else {
-                        window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
-                    }
-                }
-
-            }
-        });
-
-        chatService.listChannels(false).then((channels) => {
-            this.channels = channels;
-            if (!this.isAt) {
-                this.user = null;
-                this.channel = _.find(this.channels, {
-                    name: this.chatTo
-                });
-
-                if (this.channel) {
-                    routeConfig.navModel.setTitle(`${this.channel.title} | 频道 | TMS`);
-
-                    this.listChatChannel(true);
-                } else {
-                    toastr.error(`聊天频道[${this.chatTo}]不存在或者没有权限访问!`);
-                    if (this.preChatId) {
-                        window.location = wurl('path') + `#/chat/${this.preChatId}`;
-                    } else {
-                        window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
-                    }
-                }
-            }
-        });
-
         if (this.markId) {
             history.replaceState(null, '', utils.removeUrlQuery('id'));
         }
+
+        return Promise.all([chatService.loginUser(false).then((user) => {
+                this.loginUser = user;
+                nsCtx.loginUser = user;
+                nsCtx.isSuper = utils.isSuperUser(this.loginUser);
+                nsCtx.isAdmin = utils.isAdminUser(this.loginUser);
+            }),
+            chatService.listUsers(false).then((users) => {
+                this.users = users;
+                nsCtx.users = users;
+                window.tmsUsers = users;
+                if (this.isAt) {
+                    this.channel = null;
+                    this.user = _.find(this.users, {
+                        username: this.chatTo
+                    });
+
+                    if (this.user) {
+                        let name = this.user ? this.user.name : this.chatTo;
+                        routeConfig.navModel.setTitle(`${name} | 私聊 | TMS`);
+
+                        this.listChatDirect(true);
+                    } else {
+                        toastr.error(`聊天用户[${this.chatTo}]不存在或者没有权限访问!`);
+                        if (this.preChatId) {
+                            window.location = wurl('path') + `#/chat/${this.preChatId}`;
+                        } else {
+                            window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
+                        }
+                    }
+
+                }
+            }),
+            chatService.listChannels(false).then((channels) => {
+                this.channels = channels;
+                nsCtx.channels = channels;
+                if (!this.isAt) {
+                    this.user = null;
+                    this.channel = _.find(this.channels, {
+                        name: this.chatTo
+                    });
+
+                    if (this.channel) {
+                        routeConfig.navModel.setTitle(`${this.channel.title} | 频道 | TMS`);
+
+                        this.listChatChannel(true);
+                    } else {
+                        toastr.error(`聊天频道[${this.chatTo}]不存在或者没有权限访问!`);
+                        if (this.preChatId) {
+                            window.location = wurl('path') + `#/chat/${this.preChatId}`;
+                        } else {
+                            window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
+                        }
+                    }
+                }
+            })
+        ]);
 
     }
 

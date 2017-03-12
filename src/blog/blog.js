@@ -1,4 +1,5 @@
 import { bindable, inject } from 'aurelia-framework';
+import chatService from 'chat/chat-service';
 
 export class Blog {
 
@@ -8,27 +9,6 @@ export class Blog {
      * 当视图被附加到DOM中时被调用
      */
     attached() {
-        // https://github.com/humaan/Modaal
-        $(this.blogWriteRef).modaal({
-            fullscreen: true,
-            overlay_close: false,
-            start_open: true,
-            // background: '#FFF',
-            // overlay_opacity: 1,
-            // close_text: '关闭',
-            // close_aria_label: '按[esc]关闭',
-            // confirm_button_text: '确认',
-            // confirm_cancel_button_text: '取消',
-            // confirm_title: '确认标题',
-            before_open: () => {},
-            after_open: () => {
-                this.blogWriteVm.init();
-            },
-            before_close: () => {
-                this.blogWriteVm.destroy();
-            },
-            after_close: () => {}
-        });
 
     }
 
@@ -47,6 +27,21 @@ export class Blog {
      * @return {[promise]}                      你可以可选的返回一个延迟许诺(promise), 告诉路由等待执行bind和attach视图(view), 直到你完成你的处理工作.
      */
     activate(params, routeConfig, navigationInstruction) {
-    	toastr.info(`Blog: ${params.id}`);
+        toastr.info(`Blog: ${params.id}`);
+
+        nsCtx.blogId = params.id;
+
+        ea.publish(nsCons.EVENT_BLOG_SWITCH, { id: params.id });
+
+        return Promise.all([chatService.loginUser().then((user) => {
+                nsCtx.loginUser = user;
+                nsCtx.isSuper = utils.isSuperUser(this.loginUser);
+                nsCtx.isAdmin = utils.isAdminUser(this.loginUser);
+            }),
+            chatService.listUsers().then((users) => {
+                nsCtx.users = users;
+                window.tmsUsers = users;
+            })
+        ]);
     }
 }

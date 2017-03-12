@@ -1,14 +1,8 @@
 <template>
     <require from="./blog.css"></require>
     <div class="tms-blog">
-        <div class="ui container">
-            <h1></h1>
-        </div>
-    </div>
-    <a ref="blogWriteRef" href="#modaal-blog-write" class="ui button">
-        <i class="write icon"></i> 博文写作
-    </a>
-    <div id="modaal-blog-write" style="display:none;">
-        <em-chat-blog-write view-model.ref="blogWriteVm"></em-chat-blog-write>
+        <em-blog-top-menu></em-blog-top-menu>
+        <em-blog-left-sidebar></em-blog-left-sidebar>
+        <em-blog-content></em-blog-content>
     </div>
 </template>

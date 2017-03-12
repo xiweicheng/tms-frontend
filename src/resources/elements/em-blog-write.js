@@ -4,9 +4,36 @@ import {
 } from 'simplemde';
 
 @containerless
-export class EmChatBlogWrite {
+export class EmBlogWrite {
 
     @bindable members;
+
+    static NAME = 'blog-create';
+
+    /**
+     * 构造函数
+     */
+    constructor() {
+
+        this.subscribe = ea.subscribe(nsCons.EVENT_MODAAL_AFTER_OPEN, (payload) => {
+            if (payload.id == EmBlogWrite.NAME) {
+                this.init();
+            }
+        });
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_MODAAL_BEFORE_CLOSE, (payload) => {
+            if (payload.id == EmBlogWrite.NAME) {
+                this.destroy();
+            }
+        });
+    }
+
+    /**
+     * 当数据绑定引擎从视图解除绑定时被调用
+     */
+    unbind() {
+        this.subscribe.dispose();
+        this.subscribe2.dispose();
+    }
 
     init() {
 
@@ -26,8 +53,6 @@ export class EmChatBlogWrite {
             },
         });
 
-        $(this.stickyRef).sticky('refresh');
-
     }
 
     destroy() {
@@ -39,7 +64,6 @@ export class EmChatBlogWrite {
      * 当视图被附加到DOM中时被调用
      */
     attached() {
-        $(this.stickyRef).sticky({ silent: true });
         $('#blog-save-btn').click((event) => {
             this.save();
         });
@@ -70,7 +94,7 @@ export class EmChatBlogWrite {
 
         var html = utils.md2html(content);
 
-        $.post(`/admin/blog/save`, {
+        $.post(`/admin/blog/create`, {
             url: utils.getBasePath(),
             usernames: utils.parseUsernames(content, [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])]).join(','),
             title: title,

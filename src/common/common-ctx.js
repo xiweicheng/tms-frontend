@@ -1,4 +1,9 @@
 window.nsCtx = {
+    loginUser: {},
+    isSuper: false,
+    isAdmin: false,
+    users: [],
+    channels: [],
     memberAll: {
         username: 'all',
         enabled: true,
@@ -10,4 +15,5 @@ window.nsCtx = {
     chatId: null, // chat to channel name or @username 
     isSuper: false,
     isAdmin: false,
+    blogId: null,
 }

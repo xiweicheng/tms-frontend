@@ -1,0 +1,6 @@
+<template>
+    <require from="./em-blog-content.css"></require>
+    <div class="em-blog-content">
+        <div ref="mkbodyRef" class="markdown-body" innerhtml.bind="blog.content | parseMd | emoji:mkbodyRef"></div>
+    </div>
+</template>

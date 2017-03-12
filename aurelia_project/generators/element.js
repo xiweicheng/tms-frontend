@@ -18,7 +18,8 @@ export default class ElementGenerator {
 
         this.project.elements.add(
           ProjectItem.text(`${fileName}.js`, this.generateJSSource(className)),
-          ProjectItem.text(`${fileName}.html`, this.generateHTMLSource(className))
+          ProjectItem.text(`${fileName}.html`, this.generateHTMLSource(className, name)),
+          ProjectItem.text(`${fileName}.less`, this.generateCssSource(name))
         );
 
         return this.project.commitChanges()
@@ -42,9 +43,17 @@ export class ${className} {
 `;
   }
 
-  generateHTMLSource(className) {
+  generateHTMLSource(className, name) {
 return `<template>
-  <h1>\${value}</h1>
+  <require from="./${name}.css"></require>
+  <div class="${name}">
+    <h1>\${value}</h1>
+  </div>
 </template>`
   }
+
+  generateCssSource(className) {
+    return `.${className} {}`;
+  }
+
 }

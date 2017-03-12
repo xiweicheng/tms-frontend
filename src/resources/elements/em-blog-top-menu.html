@@ -1,0 +1,25 @@
+<template>
+    <require from="./em-blog-top-menu.css"></require>
+    <div class="ui top fixed inverted blue menu em-blog-top-menu">
+        <div class="item">
+            <img src="img/tms-x32.png">
+        </div>
+        <div class="header item">
+            TMS博文
+        </div>
+        <div class="item">
+            <a modaal="blog-create" href="#modaal-blog-write" class="ui primary button">创建</a>
+        </div>
+        <div id="modaal-blog-write" style="display:none;">
+            <em-blog-write></em-blog-write>
+        </div>
+        <div class="right menu">
+            <div class="item">
+                <div class="ui icon input">
+                    <input type="text" placeholder="搜索...">
+                    <i class="search link icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

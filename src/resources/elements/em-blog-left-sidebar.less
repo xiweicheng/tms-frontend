@@ -1,0 +1,19 @@
+.em-blog-left-sidebar {
+    &.ui.left.sidebar {
+        width: 300px;
+        top: 55px;
+        height: e("calc(100vh - 55px)")!important;
+        background-color: #f5f5f5;
+        box-shadow: none!important;
+        .tms-body {
+            .ui.list {
+                padding: 16px;
+                > a.item {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
+        }
+    }
+}
