@@ -20,6 +20,9 @@ export class EmBlogLeftSidebar {
                 _.extend(_.find(this.blogs, { id: payload.blog.id }), payload.blog);
             }
         });
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, (payload) => {
+            this.blog = _.find(this.blogs, { id: +nsCtx.blogId });
+        });
     }
 
     /**
@@ -27,6 +30,7 @@ export class EmBlogLeftSidebar {
      */
     unbind() {
         this.subscribe.dispose();
+        this.subscribe2.dispose();
     }
 
     /**
@@ -45,7 +49,7 @@ export class EmBlogLeftSidebar {
         }, (data) => {
             if (data.success) {
                 this.blogs = data.data.content;
-                this.blog = _.find(this.blogs, { id: nsCtx.blogId });
+                this.blog = _.find(this.blogs, { id: +nsCtx.blogId });
             }
         });
     }
