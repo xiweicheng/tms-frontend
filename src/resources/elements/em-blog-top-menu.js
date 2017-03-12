@@ -32,7 +32,7 @@ export class EmBlogTopMenu {
                                 title: item.title,
                                 // description: utils.abbreviate(item.content, 65),
                                 description: `<i class="wait icon"></i>${item.creator.name} 创建于 ${tg.format(item.createDate, 'zh_CN')}`,
-                                url: `/#/blog/${item.id}`
+                                url: `#/blog/${item.id}`
                             });
                         });
                         return response;
