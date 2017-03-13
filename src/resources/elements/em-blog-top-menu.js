@@ -5,11 +5,7 @@ let tg = timeago();
 @containerless
 export class EmBlogTopMenu {
 
-    @bindable value;
-
-    valueChanged(newValue, oldValue) {
-
-    }
+    isHide = true;
 
     /**
      * 当视图被附加到DOM中时被调用
@@ -56,5 +52,18 @@ export class EmBlogTopMenu {
                 this.sysLinks = [];
             }
         });
+    }
+
+    searchBlurHandler() {
+        this.isSearchFocus = false;
+    }
+
+    searchFocusHandler() {
+        this.isSearchFocus = true;
+    }
+
+    toggleHandler() {
+        this.isHide = !this.isHide;
+        ea.publish(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR, this.isHide);
     }
 }

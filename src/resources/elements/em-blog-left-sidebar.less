@@ -1,5 +1,10 @@
 .em-blog-left-sidebar {
     &.ui.left.sidebar {
+        @media only screen and (max-width: 767px) {
+            &.mobile-hide {
+                width: 0;
+            }
+        }
         width: 300px;
         top: 55px;
         height: e("calc(100vh - 55px)")!important;

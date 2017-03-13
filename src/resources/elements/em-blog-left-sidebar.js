@@ -3,11 +3,7 @@ import { bindable, containerless } from 'aurelia-framework';
 @containerless
 export class EmBlogLeftSidebar {
 
-    @bindable value;
-
-    valueChanged(newValue, oldValue) {
-
-    }
+    isHide = true;
 
     /**
      * 构造函数
@@ -23,6 +19,9 @@ export class EmBlogLeftSidebar {
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, (payload) => {
             this.blog = _.find(this.blogs, { id: +nsCtx.blogId });
         });
+        this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR, (payload) => {
+            this.isHide = payload;
+        });
     }
 
     /**
@@ -31,6 +30,7 @@ export class EmBlogLeftSidebar {
     unbind() {
         this.subscribe.dispose();
         this.subscribe2.dispose();
+        this.subscribe3.dispose();
     }
 
     /**
