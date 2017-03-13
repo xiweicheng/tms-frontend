@@ -2,13 +2,13 @@
     <require from="./em-blog-content.css"></require>
     <div show.bind="blog" class="em-blog-content">
         <div class="actions">
-            <a href="#" class="ui basic mini button" click.delegate="editHandler()">
+            <a if.bind="isSuper || blog.creator.username == loginUser.username" href="#" class="ui basic mini button" click.delegate="editHandler()">
                 <i class="large icon edit"></i> 编辑
             </a>
             <div ui-dropdown-action class="ui top right pointing dropdown basic mini icon button">
                 <i class="large ellipsis horizontal icon"></i>
                 <div class="menu">
-                    <div click.delegate="deleteHandler()" class="item" style="color: red;">
+                    <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="deleteHandler()" class="item" style="color: red;">
                         <i class="trash outline icon"></i> 删除
                     </div>
                 </div>

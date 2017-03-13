@@ -35,8 +35,8 @@ export class Blog {
 
         return Promise.all([chatService.loginUser().then((user) => {
                 nsCtx.loginUser = user;
-                nsCtx.isSuper = utils.isSuperUser(this.loginUser);
-                nsCtx.isAdmin = utils.isAdminUser(this.loginUser);
+                nsCtx.isSuper = utils.isSuperUser(user);
+                nsCtx.isAdmin = utils.isAdminUser(user);
             }),
             chatService.listUsers().then((users) => {
                 nsCtx.users = users;
