@@ -75,6 +75,48 @@ export class EmBlogWrite {
             // toolbar: false,
             forceSync: true,
             // autoDownloadFontAwesome: false,
+            toolbar: [
+                "bold",
+                "italic",
+                "strikethrough",
+                "heading-smaller",
+                "heading-bigger",
+                "|",
+                "code",
+                "quote",
+                "unordered-list",
+                "ordered-list", {
+                    name: "tasks",
+                    action: (editor) => {
+                        this.insertContent('- [ ] 未完成任务\n- [x] 已完成任务');
+                    },
+                    className: "fa fa-check-square-o ",
+                    title: "任务列表",
+                }, {
+                    name: "details",
+                    action: (editor) => {
+                        this.insertContent('<details>\n<summary>标题</summary>\n<p>详情内容</p>\n</details>');
+                    },
+                    className: "fa fa-play ",
+                    title: "折叠详情",
+                },
+                "|",
+                "link",
+                "image",
+                "table",
+                "horizontal-rule",
+                "|", {
+                    name: "upload",
+                    action: function(editor) {},
+                    className: "fa fa-upload",
+                    title: "上传文件",
+                }, "|",
+                "preview",
+                "side-by-side",
+                "fullscreen",
+                "guide"
+
+            ],
             insertTexts: {
                 table: ["", "\n\n| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n\n"],
             },
@@ -97,6 +139,10 @@ export class EmBlogWrite {
         this.initUploadDropzone($('.CodeMirror-wrap', '#txt-blog-write-wrapper'), () => {
             return this.$chatMsgInputRef
         }, false);
+
+        this.initUploadDropzone($('.editor-toolbar .fa.fa-upload', '#txt-blog-write-wrapper'), () => {
+            return this.$chatMsgInputRef
+        }, true);
 
     }
 
@@ -140,8 +186,8 @@ export class EmBlogWrite {
             dictDefaultMessage: '',
             maxFilesize: 10,
             addRemoveLinks: true,
-            // previewsContainer: this.chatStatusBarRef,
-            // previewTemplate: this.previewTemplateRef.innerHTML,
+            previewsContainer: '.em-blog-write .dropzone-previews',
+            previewTemplate: $('.em-blog-write .preview-template')[0].innerHTML,
             dictCancelUpload: '取消上传',
             dictCancelUploadConfirmation: '确定要取消上传吗?',
             dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',

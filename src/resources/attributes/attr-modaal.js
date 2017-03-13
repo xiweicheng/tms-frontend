@@ -15,6 +15,7 @@ export class AttrModaalCustomAttribute {
             $(this.element).modaal({
                 fullscreen: true,
                 overlay_close: false,
+                // is_locked: true,
                 // start_open: true,
                 before_open: () => {
                     ea.publish(nsCons.EVENT_MODAAL_BEFORE_OPEN, {
