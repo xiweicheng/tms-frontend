@@ -84,43 +84,43 @@ export class App {
             name: 'reset',
             moduleId: 'user/user-pwd-reset',
             nav: false,
-            title: '密码重置'
+            title: '密码重置 | TMS'
         }, {
             route: ['register'],
             name: 'register',
             moduleId: 'user/user-register',
             nav: false,
-            title: '用户注册'
+            title: '用户注册 | TMS'
         }, {
             route: ['chat/:username'],
             name: 'chat',
             moduleId: 'chat/chat-direct',
             nav: false,
-            title: '私聊'
+            title: '私聊 | TMS'
         }, {
             route: ['blog'],
             name: 'chat',
             moduleId: 'blog/blog',
             nav: false,
-            title: '博文'
+            title: '博文 | TMS'
         }, {
             route: ['blog/:id'],
             name: 'chat',
             moduleId: 'blog/blog',
             nav: false,
-            title: '博文'
+            title: '博文 | TMS'
         }, {
             route: ['login'],
             name: 'login',
             moduleId: 'user/user-login',
             nav: false,
-            title: '登录'
+            title: '登录 | TMS'
         }, {
             route: ['test'],
             name: 'test',
             moduleId: 'test/test-lifecycle',
             nav: false,
-            title: '测试'
+            title: '测试 | TMS'
         }, {
             route: '',
             redirect: `chat/${chatTo ? chatTo : '@admin'}`

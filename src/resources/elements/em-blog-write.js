@@ -96,6 +96,11 @@ export class EmBlogWrite {
                     className: "fa fa-strikethrough",
                     title: "删除线",
                 }, {
+                    name: "heading",
+                    action: SimpleMDE.toggleHeadingSmaller,
+                    className: "fa fa-header",
+                    title: "标题",
+                }, {
                     name: "heading-smaller",
                     action: SimpleMDE.toggleHeadingSmaller,
                     className: "fa fa-header fa-header-x fa-header-smaller",

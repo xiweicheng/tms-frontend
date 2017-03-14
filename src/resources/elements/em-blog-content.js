@@ -86,6 +86,7 @@ export class EmBlogContent {
         }, (data) => {
             if (data.success) {
                 this.blog = data.data;
+                ea.publish(nsCons.EVENT_BLOG_VIEW_CHANGED, this.blog);
             }
         });
     }

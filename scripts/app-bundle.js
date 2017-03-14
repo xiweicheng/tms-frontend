@@ -89,43 +89,43 @@ define('app',['exports', 'tms-semantic-ui', 'semantic-ui-calendar', 'jquery-form
                 name: 'reset',
                 moduleId: 'user/user-pwd-reset',
                 nav: false,
-                title: '密码重置'
+                title: '密码重置 | TMS'
             }, {
                 route: ['register'],
                 name: 'register',
                 moduleId: 'user/user-register',
                 nav: false,
-                title: '用户注册'
+                title: '用户注册 | TMS'
             }, {
                 route: ['chat/:username'],
                 name: 'chat',
                 moduleId: 'chat/chat-direct',
                 nav: false,
-                title: '私聊'
+                title: '私聊 | TMS'
             }, {
                 route: ['blog'],
                 name: 'chat',
                 moduleId: 'blog/blog',
                 nav: false,
-                title: '博文'
+                title: '博文 | TMS'
             }, {
                 route: ['blog/:id'],
                 name: 'chat',
                 moduleId: 'blog/blog',
                 nav: false,
-                title: '博文'
+                title: '博文 | TMS'
             }, {
                 route: ['login'],
                 name: 'login',
                 moduleId: 'user/user-login',
                 nav: false,
-                title: '登录'
+                title: '登录 | TMS'
             }, {
                 route: ['test'],
                 name: 'test',
                 moduleId: 'test/test-lifecycle',
                 nav: false,
-                title: '测试'
+                title: '测试 | TMS'
             }, {
                 route: '',
                 redirect: 'chat/' + (chatTo ? chatTo : '@admin')
@@ -212,8 +212,18 @@ define('blog/blog',['exports', 'aurelia-framework', 'chat/chat-service'], functi
 
     var Blog = exports.Blog = function () {
         function Blog() {
+            var _this = this;
+
             _classCallCheck(this, Blog);
+
+            this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_VIEW_CHANGED, function (payload) {
+                _this.routeConfig && _this.routeConfig.navModel.setTitle(payload.title + ' | \u535A\u6587 | TMS');
+            });
         }
+
+        Blog.prototype.unbind = function unbind() {
+            this.subscribe.dispose();
+        };
 
         Blog.prototype.attached = function attached() {};
 
@@ -221,6 +231,7 @@ define('blog/blog',['exports', 'aurelia-framework', 'chat/chat-service'], functi
 
         Blog.prototype.activate = function activate(params, routeConfig, navigationInstruction) {
 
+            this.routeConfig = routeConfig;
             nsCtx.blogId = params.id;
 
             ea.publish(nsCons.EVENT_BLOG_SWITCH, { id: params.id });
@@ -1198,6 +1209,7 @@ define('common/common-constant',[], function () {
         EVENT_BLOG_UPDATED: 'event_blog_updated',
         EVENT_BLOG_DELETED: 'event_blog_deleted',
         EVENT_BLOG_TOGGLE_SIDEBAR: 'event_blog_toggle_sidebar',
+        EVENT_BLOG_VIEW_CHANGED: 'event_blog_view_changed',
         ACTION_TYPE_SEARCH: 'action_type_search',
         ACTION_TYPE_STOW: 'action_type_stow',
         ACTION_TYPE_AT: 'action_type_at',
@@ -6075,6 +6087,7 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
             }, function (data) {
                 if (data.success) {
                     _this2.blog = data.data;
+                    ea.publish(nsCons.EVENT_BLOG_VIEW_CHANGED, _this2.blog);
                 }
             });
         };
@@ -6416,6 +6429,11 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
                     action: _simplemde2.default.toggleStrikethrough,
                     className: "fa fa-strikethrough",
                     title: "删除线"
+                }, {
+                    name: "heading",
+                    action: _simplemde2.default.toggleHeadingSmaller,
+                    className: "fa fa-header",
+                    title: "标题"
                 }, {
                     name: "heading-smaller",
                     action: _simplemde2.default.toggleHeadingSmaller,

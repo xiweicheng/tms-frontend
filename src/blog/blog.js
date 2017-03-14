@@ -3,7 +3,21 @@ import chatService from 'chat/chat-service';
 
 export class Blog {
 
-    // @bindable prop = null;
+    /**
+     * 构造函数
+     */
+    constructor() {
+        this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_VIEW_CHANGED, (payload) => {
+            this.routeConfig && this.routeConfig.navModel.setTitle(`${payload.title} | 博文 | TMS`);
+        });
+    }
+
+    /**
+     * 当数据绑定引擎从视图解除绑定时被调用
+     */
+    unbind() {
+        this.subscribe.dispose();
+    }
 
     /**
      * 当视图被附加到DOM中时被调用
@@ -27,8 +41,8 @@ export class Blog {
      * @return {[promise]}                      你可以可选的返回一个延迟许诺(promise), 告诉路由等待执行bind和attach视图(view), 直到你完成你的处理工作.
      */
     activate(params, routeConfig, navigationInstruction) {
-        // toastr.info(`Blog: ${params.id}`);
 
+        this.routeConfig = routeConfig;
         nsCtx.blogId = params.id;
 
         ea.publish(nsCons.EVENT_BLOG_SWITCH, { id: params.id });
