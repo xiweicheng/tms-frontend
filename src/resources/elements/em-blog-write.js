@@ -75,17 +75,57 @@ export class EmBlogWrite {
             // toolbar: false,
             forceSync: true,
             // autoDownloadFontAwesome: false,
-            toolbar: [
-                "bold",
-                "italic",
-                "strikethrough",
-                "heading-smaller",
-                "heading-bigger",
-                "|",
-                "code",
-                "quote",
-                "unordered-list",
-                "ordered-list", {
+            // autosave: {
+            //     enabled: true,
+            //     delay: 5000,
+            //     uniqueId: 'tms-blog-create-or-edit'
+            // },
+            toolbar: [{
+                    name: "bold",
+                    action: SimpleMDE.toggleBold,
+                    className: "fa fa-bold",
+                    title: "粗体",
+                }, {
+                    name: "italic",
+                    action: SimpleMDE.toggleItalic,
+                    className: "fa fa-italic",
+                    title: "斜体",
+                }, {
+                    name: "strikethrough",
+                    action: SimpleMDE.toggleStrikethrough,
+                    className: "fa fa-strikethrough",
+                    title: "删除线",
+                }, {
+                    name: "heading-smaller",
+                    action: SimpleMDE.toggleHeadingSmaller,
+                    className: "fa fa-header fa-header-x fa-header-smaller",
+                    title: "变小标题",
+                }, {
+                    name: "heading-bigger",
+                    action: SimpleMDE.toggleHeadingBigger,
+                    className: "fa fa-header fa-header-x fa-header-bigger",
+                    title: "变大标题",
+                }, "|", {
+                    name: "code",
+                    action: SimpleMDE.toggleCodeBlock,
+                    className: "fa fa-code",
+                    title: "代码",
+                }, {
+                    name: "quote",
+                    action: SimpleMDE.toggleBlockquote,
+                    className: "fa fa-quote-left",
+                    title: "引用",
+                }, {
+                    name: "unordered-list",
+                    action: SimpleMDE.toggleUnorderedList,
+                    className: "fa fa-list-ul",
+                    title: "无序列表",
+                }, {
+                    name: "ordered-list",
+                    action: SimpleMDE.toggleOrderedList,
+                    className: "fa fa-list-ol",
+                    title: "有序列表",
+                }, {
                     name: "tasks",
                     action: (editor) => {
                         this.insertContent('- [ ] 未完成任务\n- [x] 已完成任务');
@@ -99,22 +139,52 @@ export class EmBlogWrite {
                     },
                     className: "fa fa-play ",
                     title: "折叠详情",
-                },
-                "|",
-                "link",
-                "image",
-                "table",
-                "horizontal-rule",
-                "|", {
+                }, "|", {
+                    name: "link",
+                    action: SimpleMDE.drawLink,
+                    className: "fa fa-link",
+                    title: "创建链接",
+                }, {
+                    name: "image",
+                    action: SimpleMDE.drawImage,
+                    className: "fa fa-picture-o",
+                    title: "插入图片",
+                }, {
+                    name: "table",
+                    action: SimpleMDE.drawTable,
+                    className: "fa fa-table",
+                    title: "插入表格",
+                }, {
+                    name: "horizontal-rule",
+                    action: SimpleMDE.drawHorizontalRule,
+                    className: "fa fa-minus",
+                    title: "插入水平分割线",
+                }, "|", {
                     name: "upload",
                     action: function(editor) {},
                     className: "fa fa-upload",
                     title: "上传文件",
-                }, "|",
-                "preview",
-                "side-by-side",
-                "fullscreen",
-                "guide"
+                }, "|", {
+                    name: "preview",
+                    action: SimpleMDE.togglePreview,
+                    className: "fa fa-eye no-disable",
+                    title: "切换预览",
+                }, {
+                    name: "side-by-side",
+                    action: SimpleMDE.toggleSideBySide,
+                    className: "fa fa-columns no-disable no-mobile",
+                    title: "切换预览",
+                }, {
+                    name: "fullscreen",
+                    action: SimpleMDE.toggleFullScreen,
+                    className: "fa fa-arrows-alt no-disable no-mobile",
+                    title: "切换预览",
+                }, {
+                    name: "guide",
+                    action: 'https://simplemde.com/markdown-guide',
+                    className: "fa fa-question-circle",
+                    title: "Markdown指南",
+                }
 
             ],
             insertTexts: {

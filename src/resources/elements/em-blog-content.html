@@ -16,12 +16,23 @@
         </div>
         <div class="header">
             <h1 class="ui header">${blog.title}
-	            <div class="sub header">
-	            	<i class="wait icon"></i>${blog.creator.name} 创建于 <span title="${blog.createDate | date}">${blog.createDate | timeago}</span>, ${blog.updater.name} 最后修改于 <span title="${blog.updateDate | date}">${blog.updateDate | timeago}</span>
-	            </div>
+                <div class="sub header">
+                    <i class="wait icon"></i>${blog.creator.name} 创建于 <span title="${blog.createDate | date}">${blog.createDate | timeago}</span>, ${blog.updater.name} 最后修改于 <span title="${blog.updateDate | date}">${blog.updateDate | timeago}</span>
+                </div>
             </h1>
         </div>
         <div ref="mkbodyRef" class="markdown-body" innerhtml.bind="blog.content | parseMd | emoji:mkbodyRef"></div>
+    </div>
+    <div show.bind="!blog" class="em-blog-content">
+        <div class="ui positive icon huge message transition">
+            <i class="info circle icon"></i>
+            <div class="content">
+                <div class="header">
+                    欢迎使用TMS博文进行知识的分享总结!
+                </div>
+                <span>现在就去创建自己的博文吧!</span> <a click.delegate="createHandler()" class="ui mini blue button">创建</a>
+            </div>
+        </div>
     </div>
     <em-confirm-modal em-confirm-modal.ref="emConfirmModal"></em-confirm-modal>
 </template>

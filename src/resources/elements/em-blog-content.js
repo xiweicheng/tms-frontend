@@ -18,7 +18,7 @@ export class EmBlogContent {
     loginUser = nsCtx.loginUser;
     isSuper = nsCtx.isSuper;
     isAdmin = nsCtx.isAdmin;
-    
+
     /**
      * 构造函数
      */
@@ -112,5 +112,9 @@ export class EmBlogContent {
             }
         });
 
+    }
+
+    createHandler() {
+        $('a[href="#modaal-blog-write"]').click();
     }
 }
