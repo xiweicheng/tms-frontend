@@ -18,7 +18,7 @@
         <div class="header">
             <h1 class="ui header">${blog.title}
                 <div class="sub header">
-                    <i class="wait icon"></i>${blog.creator.name} 创建于 <span title="${blog.createDate | date}">${blog.createDate | timeago}</span>, ${blog.updater.name} 最后修改于 <span title="${blog.updateDate | date}">${blog.updateDate | timeago}</span>
+                    <i class="wait icon"></i> <a class="author" data-value="${blog.creator.username}">${blog.creator.name}</a> 创建于 <span title="${blog.createDate | date}">${blog.createDate | timeago}</span>, <a class="author" data-value="${blog.updater.username}">${blog.updater.name}</a> 最后修改于 <span title="${blog.updateDate | date}">${blog.updateDate | timeago}</span>
                 </div>
             </h1>
         </div>

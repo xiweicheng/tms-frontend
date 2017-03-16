@@ -15,6 +15,9 @@ export class EmChatMemberPopup {
             this.username = payload.username;
             this.target = payload.target;
             if (this.username == 'all') {
+                if (!this.channel) {
+                    return;
+                }
                 this.members = this.channel.members;
             } else {
                 this.member = utils.getUser(this.username);

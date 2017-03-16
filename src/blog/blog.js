@@ -23,7 +23,15 @@ export class Blog {
      * 当视图被附加到DOM中时被调用
      */
     attached() {
-
+        // 用户信息popup
+        $('.tms-blog').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+            event.preventDefault();
+            var $a = $(event.currentTarget);
+            ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {
+                username: $a.attr('data-value'),
+                target: event.currentTarget
+            });
+        });
     }
 
     /**

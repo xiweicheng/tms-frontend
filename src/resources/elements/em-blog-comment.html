@@ -8,7 +8,7 @@
                     <em-user-avatar user.bind="item.creator"></em-user-avatar>
                 </a>
                 <div class="content">
-                    <a class="author">${item.creator.name}</a>
+                    <a class="author" data-value=${item.creator.username}>${item.creator.name}</a>
                     <div class="metadata">
                         <span class="date" title="${item.createDate | date}">${item.createDate | timeago}</span>
                     </div>
@@ -26,6 +26,7 @@
                 <div class="ui divider"></div>
             </div>
             <form class="ui reply form dropzone">
+                <div class="tms-blog-comment-status-bar"></div>
                 <div class="dropzone-previews"></div>
                 <div ref="markdownRef" class="field markdown-body">
                     <textarea ref="commentRef"></textarea>
