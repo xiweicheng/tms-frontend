@@ -29583,6 +29583,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
             this.offset = 0;
             this.isSuper = nsCtx.isSuper;
             this.loginUser = nsCtx.loginUser;
+            this.users = nsCtx.users;
 
             _initDefineProp(this, 'blog', _descriptor, this);
         }
@@ -30034,6 +30035,104 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
             }
         };
 
+        EmBlogComment.prototype.editHandler = function editHandler(item, editTxtRef) {
+            $.get('/admin/blog/comment/get', {
+                cid: item.id
+            }, function (data) {
+                if (data.success) {
+                    if (item.version != data.data.version) {
+                        _.extend(item, data.data);
+                    }
+                    item.isEditing = true;
+                    item.contentOld = item.content;
+                    _.defer(function () {
+                        $(editTxtRef).focus().select();
+                        autosize.update(editTxtRef);
+                    });
+                } else {
+                    toastr.error(data.data);
+                }
+            });
+        };
+
+        EmBlogComment.prototype.refreshHandler = function refreshHandler(item) {
+            $.get('/admin/blog/comment/get', {
+                cid: item.id
+            }, function (data) {
+                if (item.version != data.data.version) {
+                    _.extend(item, data.data);
+                    toastr.success('刷新同步成功!');
+                } else {
+                    toastr.info('博文评论内容暂无变更!');
+                }
+            });
+        };
+
+        EmBlogComment.prototype.eidtKeydownHandler = function eidtKeydownHandler(evt, item, txtRef) {
+
+            if (this.sending) {
+                return false;
+            }
+
+            if (evt.ctrlKey && evt.keyCode === 13) {
+
+                this.editSave(item, txtRef);
+
+                return false;
+            } else if (evt.ctrlKey && evt.keyCode === 85) {
+                $(txtRef).next('.tms-blog-comment-edit-actions').find('.upload').click();
+                return false;
+            } else if (evt.keyCode === 27) {
+                this.editCancelHandler(evt, item, txtRef);
+            }
+
+            return true;
+        };
+
+        EmBlogComment.prototype.editOkHandler = function editOkHandler(evt, item, txtRef) {
+            this.editSave(item, txtRef);
+            item.isEditing = false;
+        };
+
+        EmBlogComment.prototype.editCancelHandler = function editCancelHandler(evt, item, txtRef) {
+            item.content = item.contentOld;
+            $(txtRef).val(item.content);
+            item.isEditing = false;
+        };
+
+        EmBlogComment.prototype.editSave = function editSave(item, txtRef) {
+            var _this9 = this;
+
+            this.sending = true;
+
+            item.content = $(txtRef).val();
+
+            var html = utils.md2html(item.content);
+            var htmlOld = utils.md2html(item.contentOld);
+
+            var users = [nsCtx.memberAll].concat(window.tmsUsers ? tmsUsers : []);
+            $.post('/admin/blog/comment/update', {
+                basePath: utils.getBasePath(),
+                id: this.blog.id,
+                cid: item.id,
+                version: item.version,
+                users: utils.parseUsernames(item.content, users).join(','),
+                content: item.content,
+                contentHtml: html,
+                diff: utils.diffS(item.contentOld, item.content)
+            }, function (data, textStatus, xhr) {
+                if (data.success) {
+                    toastr.success('博文评论更新成功!');
+                    item.isEditing = false;
+                    item.version = data.data.version;
+                } else {
+                    toastr.error(data.data, '博文评论更新失败!');
+                }
+            }).always(function () {
+                _this9.sending = false;
+            });
+        };
+
         return EmBlogComment;
     }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'blog', [_aureliaFramework.bindable], {
         enumerable: true,
@@ -30284,8 +30383,8 @@ define('text!resources/elements/em-modal.html', ['module'], function(module) { m
 define('text!resources/elements/em-user-edit.css', ['module'], function(module) { module.exports = ".tms-em-user-edit .ui.form .field > label {\n  width: 45px!important;\n}\n.tms-em-user-edit .ui.form .field .user-username {\n  margin-left: 0;\n}\n.em-user-edit-modal {\n  /* Tablet & PC */\n}\n@media only screen and (min-width: 768px) {\n  .em-user-edit-modal {\n    width: 500px!important;\n    margin-left: -250px !important;\n  }\n}\n"; });
 define('text!resources/elements/em-user-avatar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-user-avatar.css\"></require>\r\n    <a ref=\"avatarRef\" css=\"background-color: ${bgColor};\" data-value=\"${user.username}\" class=\"avatar ui mini circular image em-user-avatar\">\r\n        <span css=\"color: ${color}\" class=\"text-char\">${nameChar}</span>\r\n    </a>\r\n</template>\r\n"; });
 define('text!resources/elements/em-user-edit.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-user-edit.css\"></require>\n    <em-modal classes=\"small em-user-edit-modal\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\n        <div slot=\"header\">个人信息编辑</div>\n        <div slot=\"content\" class=\"tms-em-user-edit\">\n            <div ref=\"frm\" class=\"ui form\">\n                <div class=\"ui form\" with.bind=\"user\">\n                    <div class=\"inline field\">\n                        <label>用户名:</label>\n                        <div class=\"ui basic label user-username\">${username}</div>\n                    </div>\n                    <div class=\"inline field\">\n                        <label>密码:</label>\n                        <input name=\"password\" value.bind=\"password\" placeholder=\"密码\" type=\"text\">\n                    </div>\n                    <div class=\"required inline field\">\n                        <label>姓名:</label>\n                        <input name=\"name\" value.bind=\"name\" placeholder=\"姓名\" type=\"text\">\n                    </div>\n                    <div class=\"required inline field\">\n                        <label>邮箱:</label>\n                        <input name=\"mail\" value.bind=\"mails\" placeholder=\"邮箱\" type=\"text\">\n                    </div>\n                </div>\n            </div>\n        </div>\n    </em-modal>\n</template>\n"; });
-define('text!resources/elements/em-blog-comment.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-comment.css\"></require>\r\n    <div class=\"em-blog-comment\">\r\n        <div class=\"ui minimal comments\">\r\n            <h3 class=\"ui dividing header\">${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>\r\n            <div repeat.for=\"item of comments\" class=\"comment\" data-id=\"${item.id}\">\r\n                <a class=\"avatar\">\r\n                    <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\r\n                </a>\r\n                <div class=\"content\">\r\n                    <a class=\"author\" data-value=${item.creator.username}>${item.creator.name}</a>\r\n                    <div class=\"metadata\">\r\n                        <span class=\"date\" title=\"${item.createDate | date}\">${item.createDate | timeago}</span>\r\n                    </div>\r\n                    <div swipebox ref=\"mkbodyRef\" class=\"text markdown-body\" innerhtml.bind=\"item.content | parseMd | emoji:mkbodyRef\"></div>\r\n                    <div class=\"actions\">\r\n                        <a click.delegate=\"replyHandler(item)\" class=\"reply\">回复</a>\r\n                        <div if.bind=\"isSuper || item.creator.username == loginUser.username\" ui-dropdown-action style=\"margin-right: .75em;\" class=\"ui icon top right pointing dropdown\" title=\"移除收藏消息\">\r\n                            移除\r\n                            <div class=\"menu\">\r\n                                <div style=\"color: red;\" class=\"item\" click.delegate=\"removeHandler(item)\"><i class=\"trash outline icon\"></i>确认移除</div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui divider\"></div>\r\n            </div>\r\n            <form class=\"ui reply form dropzone\">\r\n                <div class=\"tms-blog-comment-status-bar\"></div>\r\n                <div class=\"dropzone-previews\"></div>\r\n                <div ref=\"markdownRef\" class=\"field markdown-body\">\r\n                    <textarea ref=\"commentRef\"></textarea>\r\n                </div>\r\n                <div click.delegate=\"addHandler()\" title=\"提交评论(ctrl+enter)\" class=\"ui blue labeled submit icon button\">\r\n                    <i class=\"icon edit\"></i> 添加评论\r\n                </div>\r\n            </form>\r\n        </div>\r\n        <div class=\"preview-template\" style=\"display: none;\">\r\n            <div class=\"dz-preview dz-file-preview\">\r\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!resources/elements/em-blog-comment.css', ['module'], function(module) { module.exports = ".em-blog-comment {\n  margin-top: 32px;\n  margin-bottom: 32px;\n}\n.em-blog-comment .ui.comments {\n  max-width: 100%;\n}\n.em-blog-comment .ui.comments .comment.active {\n  background-color: #f5f5f5;\n}\n.em-blog-comment .CodeMirror {\n  min-height: 60px;\n}\n.em-blog-comment .CodeMirror-scroll {\n  min-height: 60px;\n}\n.em-blog-comment .dropzone {\n  position: relative;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar {\n  position: absolute;\n  bottom: 180px;\n  left: 0;\n  width: 100%;\n}\n.em-blog-comment .dropzone .dropzone-previews {\n  position: absolute;\n  top: -12px;\n  left: 0;\n  width: 100%;\n}\n.em-blog-comment .dropzone .dropzone-previews .dz-preview {\n  width: 100%;\n  margin: 0;\n}\n.em-blog-comment .dropzone .dropzone-previews .dz-preview .dz-progress {\n  height: 2px;\n  background-color: #aaa;\n  border: none;\n}\n.em-blog-comment .dropzone .dropzone-previews .dz-preview .dz-remove {\n  display: none;\n}\n"; });
+define('text!resources/elements/em-blog-comment.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-comment.css\"></require>\r\n    <div class=\"em-blog-comment\">\r\n        <div class=\"ui minimal comments\">\r\n            <h3 class=\"ui dividing header\">${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>\r\n            <div repeat.for=\"item of comments\" class=\"comment\" data-id=\"${item.id}\">\r\n                <a class=\"avatar\">\r\n                    <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\r\n                </a>\r\n                <div class=\"content\">\r\n                    <a class=\"author\" data-value=${item.creator.username}>${item.creator.name}</a>\r\n                    <div class=\"metadata\">\r\n                        <span class=\"date\" title=\"${item.createDate | date}\">${item.createDate | timeago}</span>\r\n                    </div>\r\n                    <div swipebox show.bind=\"!item.isEditing\" ref=\"mkbodyRef\" class=\"text markdown-body\" innerhtml.bind=\"item.content | parseMd | emoji:mkbodyRef\"></div>\r\n                    <div class=\"textcomplete-container\" show.bind=\"item.isEditing\">\r\n                        <div class=\"append-to\"></div>\r\n                    </div>\r\n                    <textarea ref=\"editTxtRef\" data-id=\"${item.id}\" textcomplete.bind=\"users\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content & oneWay\" class=\"tms-blog-comment-edit-textarea\" rows=\"1\"></textarea>\r\n                    <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-blog-comment-edit-actions\">\r\n                        <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\r\n                            <i class=\"checkmark icon\"></i>\r\n                        </button>\r\n                        <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\r\n                            <i class=\"remove icon\"></i>\r\n                        </button>\r\n                        <button dropzone=\"clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\r\n                            <i class=\"upload icon\"></i>\r\n                        </button>\r\n                    </div>\r\n                    <div class=\"actions\">\r\n                        <a click.delegate=\"replyHandler(item)\" class=\"reply\">回复</a>\r\n                        <a if.bind=\"isSuper || item.creator.username == loginUser.username\" click.delegate=\"editHandler(item, editTxtRef)\" class=\"reply\">编辑</a>\r\n                        <div if.bind=\"isSuper || item.creator.username == loginUser.username\" ui-dropdown-action style=\"margin-right: .75em;\" class=\"ui icon top right pointing dropdown\" title=\"移除收藏消息\">\r\n                            移除\r\n                            <div class=\"menu\">\r\n                                <div style=\"color: red;\" class=\"item\" click.delegate=\"removeHandler(item)\"><i class=\"trash outline icon\"></i>确认移除</div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"tools\">\r\n                        <button show.bind=\"!item.isEditing\" click.delegate=\"refreshHandler(item)\" title=\"刷新同步\" class=\"mini circular ui icon button\">\r\n                            <i class=\"refresh icon\"></i>\r\n                        </button>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui divider\"></div>\r\n            </div>\r\n            <form class=\"ui reply form dropzone\">\r\n                <div class=\"tms-blog-comment-status-bar\"></div>\r\n                <div class=\"dropzone-previews\"></div>\r\n                <div ref=\"markdownRef\" class=\"field markdown-body\">\r\n                    <textarea ref=\"commentRef\"></textarea>\r\n                </div>\r\n                <div click.delegate=\"addHandler()\" title=\"提交评论(ctrl+enter)\" class=\"ui blue labeled submit icon button\">\r\n                    <i class=\"icon edit\"></i> 添加评论\r\n                </div>\r\n            </form>\r\n        </div>\r\n        <div class=\"preview-template\" style=\"display: none;\">\r\n            <div class=\"dz-preview dz-file-preview\">\r\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-blog-comment.css', ['module'], function(module) { module.exports = ".em-blog-comment {\n  margin-top: 32px;\n  margin-bottom: 32px;\n}\n.em-blog-comment .ui.comments {\n  max-width: 100%;\n}\n.em-blog-comment .ui.comments > .ui.dividing.header {\n  margin-bottom: 0;\n}\n.em-blog-comment .ui.comments .comment {\n  margin-top: 0;\n}\n.em-blog-comment .ui.comments .comment:hover {\n  background: rgba(0, 0, 0, 0.03);\n  color: rgba(0, 0, 0, 0.8);\n}\n.em-blog-comment .ui.comments .comment:hover .content .tools {\n  display: block;\n}\n.em-blog-comment .ui.comments .comment > .ui.divider {\n  margin-bottom: 0;\n}\n.em-blog-comment .ui.comments .comment .content .tms-blog-comment-edit-textarea {\n  width: 100%;\n}\n.em-blog-comment .ui.comments .comment .content .textcomplete-container {\n  position: relative;\n}\n.em-blog-comment .ui.comments .comment .content .textcomplete-container .append-to {\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  width: 100%;\n}\n.em-blog-comment .ui.comments .comment .content > .tools {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  display: none;\n}\n.em-blog-comment .ui.comments .comment .content > .tools > .ui.button {\n  margin: 0;\n  background-color: rgba(224, 225, 226, 0.5);\n}\n.em-blog-comment .ui.comments .comment .content > .tools > .ui.button:hover {\n  background-color: #e0e1e2;\n}\n.em-blog-comment .ui.comments .comment.active {\n  background-color: #f5f5f5;\n}\n.em-blog-comment .CodeMirror {\n  min-height: 60px;\n}\n.em-blog-comment .CodeMirror-scroll {\n  min-height: 60px;\n}\n.em-blog-comment .dropzone {\n  position: relative;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar {\n  position: absolute;\n  bottom: 180px;\n  left: 0;\n  width: 100%;\n}\n.em-blog-comment .dropzone .dropzone-previews {\n  position: absolute;\n  top: -12px;\n  left: 0;\n  width: 100%;\n}\n.em-blog-comment .dropzone .dropzone-previews .dz-preview {\n  width: 100%;\n  margin: 0;\n}\n.em-blog-comment .dropzone .dropzone-previews .dz-preview .dz-progress {\n  height: 2px;\n  background-color: #aaa;\n  border: none;\n}\n.em-blog-comment .dropzone .dropzone-previews .dz-preview .dz-remove {\n  display: none;\n}\n"; });
 define('text!resources/elements/em-blog-share.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-share.css\"></require>\r\n    <div ref=\"shareRef\" class=\"ui basic mini button\">\r\n        <i class=\"large icon share\"></i> 分享\r\n    </div>\r\n    <div class=\"ui popup bottom right transition hidden em-blog-share\">\r\n        <div ref=\"searchRef\" class=\"ui search\">\r\n            <div class=\"ui icon input\">\r\n                <input ref=\"inputSearchRef\" class=\"prompt\" type=\"text\" placeholder=\"用户名，频道\">\r\n                <i class=\"search icon\"></i>\r\n            </div>\r\n            <div class=\"results\"></div>\r\n        </div>\r\n        <div class=\"ui list\">\r\n            <div repeat.for=\"item of shares\" class=\"item\">\r\n                <div class=\"right floated content\">\r\n                    <i click.delegate=\"removeShareHandler(item)\" class=\"red trash link icon\"></i>\r\n                </div>\r\n                <template if.bind=\"item.username\">\r\n                    <i class=\"user icon\"></i>\r\n                    <div class=\"content\">\r\n                        ${item.name} (${item.username})\r\n                    </div>\r\n                </template>\r\n                <template if.bind=\"!item.username\">\r\n                    <i class=\"users icon\"></i>\r\n                    <div class=\"content\">\r\n                        ${item.title} (${item.name})\r\n                    </div>\r\n                </template>\r\n            </div>\r\n        </div>\r\n        <div class=\"ui form\">\r\n            <div class=\"field\">\r\n                <textarea value.bind=\"desc\" placeholder=\"添加一个可选的说明\" rows=\"3\"></textarea>\r\n            </div>\r\n        </div>\r\n        <div class=\"footer\">\r\n            <a click.delegate=\"cancelHandler()\" href=\"\" class=\"btn-cancel\">取消</a>\r\n            <button click.delegate=\"shareHandler()\" class=\"ui basic ${shares.length == 0 ? 'disabled' : ''} right floated mini button\">\r\n                分享\r\n            </button>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-share.css', ['module'], function(module) { module.exports = ".em-blog-share:after {\n  content: '';\n  clear: both;\n}\n.em-blog-share .footer {\n  margin-top: 16px;\n}\n.em-blog-share .footer .btn-cancel {\n  float: right;\n  margin-top: 6px;\n  margin-left: 8px;\n}\n"; });
 //# sourceMappingURL=app-bundle.js.map

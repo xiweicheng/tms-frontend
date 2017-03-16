@@ -12,15 +12,36 @@
                     <div class="metadata">
                         <span class="date" title="${item.createDate | date}">${item.createDate | timeago}</span>
                     </div>
-                    <div swipebox ref="mkbodyRef" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
+                    <div swipebox show.bind="!item.isEditing" ref="mkbodyRef" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
+                    <div class="textcomplete-container" show.bind="item.isEditing">
+                        <div class="append-to"></div>
+                    </div>
+                    <textarea ref="editTxtRef" data-id="${item.id}" textcomplete.bind="users" pastable autosize dropzone keydown.trigger="eidtKeydownHandler($event, item, editTxtRef)" show.bind="item.isEditing" value.bind="item.content & oneWay" class="tms-blog-comment-edit-textarea" rows="1"></textarea>
+                    <div show.bind="item.isEditing" class="ui compact icon buttons tms-blog-comment-edit-actions">
+                        <button click.delegate="editOkHandler($event, item, editTxtRef)" title="保存 (ctrl+enter)" class="ui left attached compact icon button">
+                            <i class="checkmark icon"></i>
+                        </button>
+                        <button click.delegate="editCancelHandler($event, item, editTxtRef)" title="取消 (esc)" class="ui attached compact icon button">
+                            <i class="remove icon"></i>
+                        </button>
+                        <button dropzone="clickable.bind: !0; target.bind: editTxtRef" title="上传 (ctrl+u)" class="ui right attached compact icon button">
+                            <i class="upload icon"></i>
+                        </button>
+                    </div>
                     <div class="actions">
                         <a click.delegate="replyHandler(item)" class="reply">回复</a>
+                        <a if.bind="isSuper || item.creator.username == loginUser.username" click.delegate="editHandler(item, editTxtRef)" class="reply">编辑</a>
                         <div if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown" title="移除收藏消息">
                             移除
                             <div class="menu">
                                 <div style="color: red;" class="item" click.delegate="removeHandler(item)"><i class="trash outline icon"></i>确认移除</div>
                             </div>
                         </div>
+                    </div>
+                    <div class="tools">
+                        <button show.bind="!item.isEditing" click.delegate="refreshHandler(item)" title="刷新同步" class="mini circular ui icon button">
+                            <i class="refresh icon"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="ui divider"></div>

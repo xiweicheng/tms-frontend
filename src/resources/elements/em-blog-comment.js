@@ -16,6 +16,7 @@ export class EmBlogComment {
     offset = 0;
     isSuper = nsCtx.isSuper;
     loginUser = nsCtx.loginUser;
+    users = nsCtx.users;
 
     @bindable blog;
 
@@ -478,6 +479,104 @@ export class EmBlogComment {
                 toastr.warning(`博文评论[${to}]不存在,可能已经被删除!`);
             }
         }
+    }
+
+    editHandler(item, editTxtRef) {
+        $.get(`/admin/blog/comment/get`, {
+            cid: item.id
+        }, (data) => {
+            if (data.success) {
+                if (item.version != data.data.version) {
+                    _.extend(item, data.data);
+                }
+                item.isEditing = true;
+                item.contentOld = item.content;
+                _.defer(() => {
+                    $(editTxtRef).focus().select();
+                    autosize.update(editTxtRef);
+                });
+            } else {
+                toastr.error(data.data);
+            }
+
+        });
+    }
+
+    refreshHandler(item) {
+        $.get('/admin/blog/comment/get', {
+            cid: item.id
+        }, (data) => {
+            if (item.version != data.data.version) {
+                _.extend(item, data.data);
+                toastr.success('刷新同步成功!');
+            } else {
+                toastr.info('博文评论内容暂无变更!');
+            }
+        });
+    }
+
+    eidtKeydownHandler(evt, item, txtRef) {
+
+        if (this.sending) {
+            return false;
+        }
+
+        if (evt.ctrlKey && evt.keyCode === 13) {
+
+            this.editSave(item, txtRef);
+
+            return false;
+        } else if (evt.ctrlKey && evt.keyCode === 85) {
+            $(txtRef).next('.tms-blog-comment-edit-actions').find('.upload').click();
+            return false;
+        } else if (evt.keyCode === 27) {
+            this.editCancelHandler(evt, item, txtRef);
+        }
+
+        return true;
+    }
+
+    editOkHandler(evt, item, txtRef) {
+        this.editSave(item, txtRef);
+        item.isEditing = false;
+    }
+
+    editCancelHandler(evt, item, txtRef) {
+        item.content = item.contentOld;
+        $(txtRef).val(item.content);
+        item.isEditing = false;
+    }
+
+    editSave(item, txtRef) {
+
+        this.sending = true;
+
+        item.content = $(txtRef).val();
+
+        var html = utils.md2html(item.content);
+        var htmlOld = utils.md2html(item.contentOld);
+
+        let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
+        $.post(`/admin/blog/comment/update`, {
+            basePath: utils.getBasePath(),
+            id: this.blog.id,
+            cid: item.id,
+            version: item.version,
+            users: utils.parseUsernames(item.content, users).join(','),
+            content: item.content,
+            contentHtml: html,
+            diff: utils.diffS(item.contentOld, item.content),
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                toastr.success('博文评论更新成功!');
+                item.isEditing = false;
+                item.version = data.data.version;
+            } else {
+                toastr.error(data.data, '博文评论更新失败!');
+            }
+        }).always(() => {
+            this.sending = false;
+        });
     }
 
 }
