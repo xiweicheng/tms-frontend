@@ -15,7 +15,7 @@
                     <div ref="mkbodyRef" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
                     <div class="actions">
                         <a click.delegate="replyHandler(item)" class="reply">回复</a>
-                        <div ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown" title="移除收藏消息">
+                        <div if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown" title="移除收藏消息">
                             移除
                             <div class="menu">
                                 <div style="color: red;" class="item" click.delegate="removeHandler(item)"><i class="trash outline icon"></i>确认移除</div>

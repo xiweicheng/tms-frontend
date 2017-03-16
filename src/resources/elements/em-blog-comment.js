@@ -13,6 +13,8 @@ export class EmBlogComment {
 
     baseUrl = utils.getUrl();
     offset = 0;
+    isSuper = nsCtx.isSuper;
+    loginUser = loginUser;
 
     @bindable blog;
 
