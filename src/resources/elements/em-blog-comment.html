@@ -12,7 +12,7 @@
                     <div class="metadata">
                         <span class="date" title="${item.createDate | date}">${item.createDate | timeago}</span>
                     </div>
-                    <div ref="mkbodyRef" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
+                    <div swipebox ref="mkbodyRef" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
                     <div class="actions">
                         <a click.delegate="replyHandler(item)" class="reply">回复</a>
                         <div if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown" title="移除收藏消息">
@@ -23,13 +23,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="ui divider"></div>
             </div>
             <form class="ui reply form dropzone">
                 <div class="dropzone-previews"></div>
                 <div ref="markdownRef" class="field markdown-body">
                     <textarea ref="commentRef"></textarea>
                 </div>
-                <div click.delegate="addHandler()" class="ui blue labeled submit icon button">
+                <div click.delegate="addHandler()" title="提交评论(ctrl+enter)" class="ui blue labeled submit icon button">
                     <i class="icon edit"></i> 添加评论
                 </div>
             </form>

@@ -22,7 +22,7 @@
                 </div>
             </h1>
         </div>
-        <div ref="mkbodyRef" class="markdown-body" innerhtml.bind="blog.content | parseMd | emoji:mkbodyRef"></div>
+        <div swipebox ref="mkbodyRef" class="markdown-body" innerhtml.bind="blog.content | parseMd | emoji:mkbodyRef"></div>
         <em-blog-comment blog.bind="blog"></em-blog-comment>
     </div>
     <div show.bind="!blog" class="em-blog-content">

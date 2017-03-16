@@ -23,6 +23,9 @@ export class EmBlogComment {
     }
 
     _refresh() {
+        if (!this.blog) {
+            return;
+        }
         $.get('/admin/blog/comment/query', {
             id: this.blog.id,
             page: 0,
@@ -53,7 +56,7 @@ export class EmBlogComment {
         this.simplemde = new SimpleMDE({
             element: this.commentRef,
             spellChecker: false,
-            // status: false,
+            status: false,
             autofocus: true,
             // toolbar: false,
             forceSync: true,
