@@ -25,6 +25,7 @@ export function configure(aurelia) {
         'resources/attributes/attr-ui-dropdown-action',
         'resources/attributes/attr-ui-dropdown-hover',
         'resources/attributes/attr-ui-tab',
+        'resources/attributes/attr-ui-popup',
         'resources/attributes/attr-tablesort',
         'resources/attributes/attr-textcomplete',
         'resources/attributes/attr-scrollbar',
@@ -55,6 +56,7 @@ export function configure(aurelia) {
         'resources/elements/em-blog-left-sidebar',
         'resources/elements/em-blog-content',
         'resources/elements/em-blog-top-menu',
+        'resources/elements/em-blog-share',
         'resources/elements/em-user-avatar',
         'resources/elements/em-user-edit',
     ]);

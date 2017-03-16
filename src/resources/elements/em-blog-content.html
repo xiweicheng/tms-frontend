@@ -5,6 +5,7 @@
             <a if.bind="isSuper || blog.creator.username == loginUser.username" href="#" class="ui basic mini button" click.delegate="editHandler()">
                 <i class="large icon edit"></i> 编辑
             </a>
+            <em-blog-share blog.bind="blog"></em-blog-share>
             <div ui-dropdown-action class="ui top right pointing dropdown basic mini icon button">
                 <i class="large ellipsis horizontal icon"></i>
                 <div class="menu">
