@@ -1,0 +1,43 @@
+<template>
+    <require from="./em-blog-comment.css"></require>
+    <div class="em-blog-comment">
+        <div class="ui minimal comments">
+            <h3 class="ui dividing header">${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>
+            <div repeat.for="item of comments" class="comment" data-id="${item.id}">
+                <a class="avatar">
+                    <em-user-avatar user.bind="item.creator"></em-user-avatar>
+                </a>
+                <div class="content">
+                    <a class="author">${item.creator.name}</a>
+                    <div class="metadata">
+                        <span class="date" title="${item.createDate | date}">${item.createDate | timeago}</span>
+                    </div>
+                    <div ref="mkbodyRef" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
+                    <div class="actions">
+                        <a click.delegate="replyHandler(item)" class="reply">回复</a>
+                        <div ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown" title="移除收藏消息">
+                            移除
+                            <div class="menu">
+                                <div style="color: red;" class="item" click.delegate="removeHandler(item)"><i class="trash outline icon"></i>确认移除</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form class="ui reply form dropzone">
+                <div class="dropzone-previews"></div>
+                <div ref="markdownRef" class="field markdown-body">
+                    <textarea ref="commentRef"></textarea>
+                </div>
+                <div click.delegate="addHandler()" class="ui blue labeled submit icon button">
+                    <i class="icon edit"></i> 添加评论
+                </div>
+            </form>
+        </div>
+        <div class="preview-template" style="display: none;">
+            <div class="dz-preview dz-file-preview">
+                <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
+            </div>
+        </div>
+    </div>
+</template>

@@ -57,6 +57,7 @@ export function configure(aurelia) {
         'resources/elements/em-blog-content',
         'resources/elements/em-blog-top-menu',
         'resources/elements/em-blog-share',
+        'resources/elements/em-blog-comment',
         'resources/elements/em-user-avatar',
         'resources/elements/em-user-edit',
     ]);

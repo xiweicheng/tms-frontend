@@ -7,68 +7,49 @@ import {
 } from 'dropzone';
 
 @containerless
-export class EmBlogWrite {
+export class EmBlogComment {
 
-    @bindable members;
+    comments = [];
 
-    static NAME = 'blog-create';
+    baseUrl = utils.getUrl();
+    offset = 0;
 
-    /**
-     * 构造函数
-     */
-    constructor() {
+    @bindable blog;
 
-        this.subscribe = ea.subscribe(nsCons.EVENT_MODAAL_AFTER_OPEN, (payload) => {
-            if (payload.id == EmBlogWrite.NAME) {
-                this.init();
-            }
-        });
-        this.subscribe2 = ea.subscribe(nsCons.EVENT_MODAAL_BEFORE_CLOSE, (payload) => {
-            if (payload.id == EmBlogWrite.NAME) {
-                this.destroy();
-            }
-        });
-        this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_ACTION, (payload) => {
-            this.action = payload.action;
-            $.get('/admin/blog/get', { id: payload.id }, (data) => {
-                if (data.success) {
-                    this.blog = data.data;
-                    $('a[href="#modaal-blog-write"]').click();
+    blogChanged(newValue, oldValue) {
+        this._refresh();
+    }
+
+    _refresh() {
+        $.get('/admin/blog/comment/query', {
+            id: this.blog.id,
+            page: 0,
+            size: 1000
+        }, (data) => {
+            if (data.success) {
+                this.comments = data.data.content;
+                let cid = utils.urlQuery('cid');
+                if (cid) {
+                    _.defer(() => {
+                        this.scrollToAfterImgLoaded(cid);
+                    });
                 }
-            });
-
+            } else {
+                toastr.error(data.data);
+            }
         });
     }
 
     /**
-     * 当数据绑定引擎从视图解除绑定时被调用
+     * 当视图被附加到DOM中时被调用
      */
-    unbind() {
-        this.subscribe.dispose();
-        this.subscribe2.dispose();
-        this.subscribe3.dispose();
+    attached() {
+        this._init();
     }
 
-    _reset() {
-        this.action = null;
-        this.blog = null;
-        $('#blog-save-btn span').text('保存');
-        $('#blog-title-input').val('');
-        this.simplemde.value('');
-        this.simplemde.toTextArea();
-        this.simplemde = null;
-    }
-
-    _editInit() {
-        $('#blog-title-input').val(this.blog.title);
-        this.simplemde.value(this.blog.content);
-        $('#blog-save-btn span').text('更新');
-    }
-
-    init() {
-
+    _init() {
         this.simplemde = new SimpleMDE({
-            element: $('#txt-blog-write')[0],
+            element: this.commentRef,
             spellChecker: false,
             // status: false,
             autofocus: true,
@@ -197,31 +178,111 @@ export class EmBlogWrite {
 
         this.simplemde.codemirror.on('keyup', (cm, e) => {
             if (e.ctrlKey && e.keyCode == 13) { // Ctrl+Enter
-                this.save();
+                this.addHandler();
             } else if (e.keyCode == 27) { // Esc
                 this.simplemde.value('');
             }
         });
 
-        this.$chatMsgInputRef = $('#txt-blog-write-wrapper').find('.CodeMirror textarea');
+        this.$chatMsgInputRef = $(this.markdownRef).find('.CodeMirror textarea');
         if (this.$chatMsgInputRef.size() === 0) {
-            this.$chatMsgInputRef = $('#txt-blog-write-wrapper').find('.CodeMirror [contenteditable="true"]');
-        }
-
-        if (this.action == 'edit') { // edit
-            this._editInit();
+            this.$chatMsgInputRef = $(this.markdownRef).find('.CodeMirror [contenteditable="true"]');
         }
 
         this.initPaste();
 
-        this.initUploadDropzone($('.CodeMirror-wrap', '#txt-blog-write-wrapper'), () => {
+        this.initUploadDropzone($('.CodeMirror-wrap', this.markdownRef), () => {
             return this.$chatMsgInputRef
         }, false);
 
-        this.initUploadDropzone($('.editor-toolbar .fa.fa-upload', '#txt-blog-write-wrapper'), () => {
+        this.initUploadDropzone($('.editor-toolbar .fa.fa-upload', this.markdownRef), () => {
             return this.$chatMsgInputRef
         }, true);
+    }
 
+    /**
+     * 当数据绑定引擎从视图解除绑定时被调用
+     */
+    unbind() {
+        this._reset();
+    }
+
+    _reset() {
+        this.blog = null;
+        this.simplemde.value('');
+        this.simplemde.toTextArea();
+        this.simplemde = null;
+    }
+
+    /**
+     * 编辑器插入自定义沟通内容
+     * @param  {[type]} cm      [description]
+     * @param  {[type]} comment [description]
+     * @return {[type]}         [description]
+     */
+    insertContent(content, mde) {
+        let cm = mde ? mde.codemirror : this.simplemde.codemirror;
+        var cursor = cm.getCursor();
+        if (cursor) {
+            cm.replaceRange(content, cursor, cursor);
+            cm.focus();
+        }
+    }
+
+    replyHandler(item) {
+        this.insertContent(`[[回复评论#${item.id}](${this.baseUrl}?cid=${item.id}){~${item.creator.username}}]\n\n`);
+        this._scrollTo('b');
+    }
+
+    removeHandler(item) {
+        $.post('/admin/blog/comment/remove', {
+            cid: item.id
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                this.comments = _.reject(this.comments, { id: item.id });
+                toastr.success('博文评论移除成功!');
+            } else {
+                toastr.error(data.data, '博文评论移除失败!');
+            }
+        });
+    }
+
+    addHandler() {
+        let content = this.simplemde.value();
+
+        if (!$.trim(content)) {
+            this.simplemde.value('');
+            toastr.error('评论内容不能为空!');
+            return;
+        }
+
+        if (this.sending) {
+            return;
+        }
+
+        this.sending = true;
+
+        var html = utils.md2html(content);
+        let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
+
+        $.post(`/admin/blog/comment/create`, {
+            basePath: utils.getBasePath(),
+            id: this.blog.id,
+            users: utils.parseUsernames(content, users).join(','),
+            content: content,
+            contentHtml: html
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                this.comments = [...this.comments, data.data];
+                this.simplemde.value('');
+                toastr.success('博文评论提交成功!');
+                this.scrollToAfterImgLoaded('b');
+            } else {
+                toastr.error(data.data, '博文评论提交失败!');
+            }
+        }).always(() => {
+            this.sending = false;
+        });
     }
 
     initPaste() {
@@ -264,8 +325,8 @@ export class EmBlogWrite {
             dictDefaultMessage: '',
             maxFilesize: 10,
             addRemoveLinks: true,
-            previewsContainer: '.em-blog-write .dropzone-previews',
-            previewTemplate: $('.em-blog-write .preview-template')[0].innerHTML,
+            previewsContainer: '.em-blog-comment .dropzone-previews',
+            previewTemplate: $('.em-blog-comment .preview-template')[0].innerHTML,
             dictCancelUpload: '取消上传',
             dictCancelUploadConfirmation: '确定要取消上传吗?',
             dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
@@ -311,112 +372,34 @@ export class EmBlogWrite {
         });
     }
 
-    /**
-     * 编辑器插入自定义沟通内容
-     * @param  {[type]} cm      [description]
-     * @param  {[type]} comment [description]
-     * @return {[type]}         [description]
-     */
-    insertContent(content, mde) {
-        let cm = mde ? mde.codemirror : this.simplemde.codemirror;
-        var cursor = cm.getCursor();
-        if (cursor) {
-            cm.replaceRange(content, cursor, cursor);
-            cm.focus();
-        }
-    }
+    scrollToAfterImgLoaded(to) {
+        _.defer(() => {
+            new ImagesLoaded($('.em-blog-content')[0]).always(() => {
+                this._scrollTo(to);
+            });
 
-    destroy() {
-        this._reset();
-    }
-
-    /**
-     * 当视图被附加到DOM中时被调用
-     */
-    attached() {
-        $('#blog-save-btn').click((event) => {
-            this.save();
+            this._scrollTo(to);
         });
+
     }
 
-    save() {
-
-        let title = $('#blog-title-input').val();
-        let content = this.simplemde.value();
-
-        if (!$.trim(title)) {
-            $('#blog-title-input').val('');
-            toastr.error('标题不能为空!');
-            return;
-        }
-
-        if (!$.trim(content)) {
-            this.simplemde.value('');
-            toastr.error('内容不能为空!');
-            return;
-        }
-
-        if (this.sending) {
-            return;
-        }
-
-        this.sending = true;
-        $('#blog-save-btn i').show();
-
-        var html = utils.md2html(content);
-        let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
-
-        if (!this.blog) {
-            $.post(`/admin/blog/create`, {
-                url: utils.getBasePath(),
-                usernames: utils.parseUsernames(content, users).join(','),
-                title: title,
-                content: content,
-                contentHtml: html
-            }, (data, textStatus, xhr) => {
-                if (data.success) {
-                    this.blog = data.data;
-                    $('#blog-save-btn span').text('更新');
-                    toastr.success('博文保存成功!');
-                    ea.publish(nsCons.EVENT_BLOG_CHANGED, {
-                        action: 'created',
-                        blog: this.blog
-                    });
-                } else {
-                    toastr.error(data.data, '博文保存失败!');
-                }
-            }).always(() => {
-                this.sending = false;
-                $('#blog-save-btn i').hide();
-            });
+    _scrollTo(to) {
+        if (to == 'b') {
+            $('.em-blog-content').scrollTo('max');
+        } else if (to == 't') {
+            $('.em-blog-content').scrollTo(0);
         } else {
-            $.post('/admin/blog/update', {
-                url: utils.getBasePath(),
-                id: this.blog.id,
-                version: this.blog.version,
-                usernames: utils.parseUsernames(content, users).join(','),
-                title: title,
-                content: content,
-                diff: utils.diffS(this.blog.content, content),
-                // contentHtml: html,
-                // contentHtmlOld: htmlOld
-            }, (data, textStatus, xhr) => {
-                if (data.success) {
-                    this.blog = data.data;
-                    toastr.success('博文更新成功!');
-                    ea.publish(nsCons.EVENT_BLOG_CHANGED, {
-                        action: 'updated',
-                        blog: this.blog
-                    });
-                } else {
-                    toastr.error(data.data, '博文更新失败!');
-                }
-            }).always(() => {
-                this.sending = false;
-                $('#blog-save-btn i').hide();
-            });
+            if (_.some(this.comments, { id: +to })) {
+                $('.em-blog-content').scrollTo(`.comment[data-id="${to}"]`, {
+                    offset: this.offset
+                });
+                $('.em-blog-content').find(`.comment[data-id]`).removeClass('active');
+                $('.em-blog-content').find(`.comment[data-id=${to}]`).addClass('active');
+            } else {
+                $('.em-blog-content').scrollTo('max');
+                toastr.warning(`博文评论[${to}]不存在,可能已经被删除!`);
+            }
         }
-
     }
 
 }

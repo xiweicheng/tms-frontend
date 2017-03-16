@@ -23,6 +23,7 @@
             </h1>
         </div>
         <div ref="mkbodyRef" class="markdown-body" innerhtml.bind="blog.content | parseMd | emoji:mkbodyRef"></div>
+        <em-blog-comment blog.bind="blog"></em-blog-comment>
     </div>
     <div show.bind="!blog" class="em-blog-content">
         <div class="ui positive icon huge message transition">
