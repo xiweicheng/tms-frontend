@@ -29602,7 +29602,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
             this.baseUrl = utils.getUrl();
             this.offset = 0;
             this.isSuper = nsCtx.isSuper;
-            this.loginUser = loginUser;
+            this.loginUser = nsCtx.loginUser;
 
             _initDefineProp(this, 'blog', _descriptor, this);
         }
