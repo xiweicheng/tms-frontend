@@ -22,7 +22,7 @@ export class EmBlogSpaceCreate {
                 $(this.chk).checkbox('set unchecked');
                 toastr.success('空间创建成功!');
                 $(this.ppRef).popup('hide');
-                // TODO
+                ea.publish(nsCons.EVENT_SPACE_CHANGED, { action: 'created', space: data.data });
             } else {
                 toastr.error(data.data, '空间创建失败!');
             }
