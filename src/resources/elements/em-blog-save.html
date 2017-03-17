@@ -1,0 +1,28 @@
+<template>
+    <require from="./em-blog-save.css"></require>
+    <em-modal classes="small" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
+        <div slot="header">博文保存</div>
+        <div slot="content" class="em-blog-save">
+            <form class="ui form">
+                <div class="field">
+                    <div ref="spacesRef" class="ui fluid search selection dropdown">
+                        <input type="hidden" name="country">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">选择空间(可选)</div>
+                        <div class="menu">
+                            <template repeat.for="item of spaces">
+                                <div if.bind="!item.privated || item.creator.username == loginUser.username" task.bind="initSpacesHandler($last)" class="item" data-value="${item.id}">${item.name}</div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div ref="chk" class="ui checkbox">
+                        <input type="checkbox" tabindex="0" class="hidden">
+                        <label>私有博文(不公开)</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </em-modal>
+</template>

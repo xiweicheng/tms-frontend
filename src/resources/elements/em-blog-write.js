@@ -38,6 +38,14 @@ export class EmBlogWrite {
             });
 
         });
+        this.subscribe4 = ea.subscribe(nsCons.EVENT_BLOG_CHANGED, (payload) => {
+            this.action = payload.action;
+            if (payload.action === 'created') {
+                this.blog = payload.blog;
+                $('#blog-save-btn span').text('更新');
+            }
+
+        });
     }
 
     /**
@@ -47,6 +55,7 @@ export class EmBlogWrite {
         this.subscribe.dispose();
         this.subscribe2.dispose();
         this.subscribe3.dispose();
+        this.subscribe4.dispose();
     }
 
     _reset() {
@@ -356,40 +365,23 @@ export class EmBlogWrite {
             return;
         }
 
-        if (this.sending) {
-            return;
-        }
-
-        this.sending = true;
-        $('#blog-save-btn i').show();
-
-        var html = utils.md2html(content);
-        let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
-
         if (!this.blog) {
-            $.post(`/admin/blog/create`, {
-                url: utils.getBasePath(),
-                usernames: utils.parseUsernames(content, users).join(','),
+            ea.publish(nsCons.EVENT_BLOG_SAVE, {
                 title: title,
                 content: content,
-                contentHtml: html
-            }, (data, textStatus, xhr) => {
-                if (data.success) {
-                    this.blog = data.data;
-                    $('#blog-save-btn span').text('更新');
-                    toastr.success('博文保存成功!');
-                    ea.publish(nsCons.EVENT_BLOG_CHANGED, {
-                        action: 'created',
-                        blog: this.blog
-                    });
-                } else {
-                    toastr.error(data.data, '博文保存失败!');
-                }
-            }).always(() => {
-                this.sending = false;
-                $('#blog-save-btn i').hide();
             });
         } else {
+
+            if (this.sending) {
+                return;
+            }
+
+            this.sending = true;
+            $('#blog-save-btn i').show();
+
+            var html = utils.md2html(content);
+            let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
+
             $.post('/admin/blog/update', {
                 url: utils.getBasePath(),
                 id: this.blog.id,

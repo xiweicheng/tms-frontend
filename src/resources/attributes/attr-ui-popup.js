@@ -16,7 +16,7 @@ export class AttrUiPopupCustomAttribute {
                 inline: true,
                 silent: true,
                 // hoverable: true,
-                position: 'bottom right',
+                position: newValue ? newValue : 'bottom right',
                 jitter: 300,
                 delay: {
                     show: 300,
