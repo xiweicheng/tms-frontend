@@ -24,7 +24,7 @@
                         <button click.delegate="editCancelHandler($event, item, editTxtRef)" title="取消 (esc)" class="ui attached compact icon button">
                             <i class="remove icon"></i>
                         </button>
-                        <button dropzone="clickable.bind: !0; target.bind: editTxtRef" title="上传 (ctrl+u)" class="ui right attached compact icon button">
+                        <button dropzone="type:Blog; clickable.bind: !0; target.bind: editTxtRef" title="上传 (ctrl+u)" class="ui right attached compact icon button">
                             <i class="upload icon"></i>
                         </button>
                     </div>
@@ -47,8 +47,10 @@
                 <div class="ui divider"></div>
             </div>
             <form class="ui reply form dropzone">
-                <div class="tms-blog-comment-status-bar"></div>
-                <div class="dropzone-previews"></div>
+                <div class="tms-blog-comment-status-bar-wrapper">
+                    <div class="tms-blog-comment-status-bar"></div>
+                    <div class="dropzone-previews"></div>
+                </div>
                 <div ref="markdownRef" class="field markdown-body">
                     <textarea ref="commentRef"></textarea>
                 </div>

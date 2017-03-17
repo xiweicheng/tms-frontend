@@ -61,27 +61,32 @@
     }
     .dropzone {
         position: relative;
-        .tms-blog-comment-status-bar {
-            position: absolute;
-            bottom: 180px;
-            left: 0;
+        .tms-blog-comment-status-bar-wrapper {
+            position: relative;
             width: 100%;
-        }
-        .dropzone-previews {
-            position: absolute;
-            top: -12px;
-            left: 0;
-            width: 100%;
-            .dz-preview {
+            height: 0;
+            .tms-blog-comment-status-bar {
+                position: absolute;
+                bottom: 0;
+                left: 0;
                 width: 100%;
-                margin: 0;
-                .dz-progress {
-                    height: 2px;
-                    background-color: #aaa;
-                    border: none;
-                }
-                .dz-remove {
-                    display: none;
+            }
+            .dropzone-previews {
+                position: absolute;
+                left: 0;
+                bottom: -7px;
+                width: 100%;
+                .dz-preview {
+                    width: 100%;
+                    margin: 0;
+                    .dz-progress {
+                        height: 2px;
+                        background-color: #aaa;
+                        border: none;
+                    }
+                    .dz-remove {
+                        display: none;
+                    }
                 }
             }
         }

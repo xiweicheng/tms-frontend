@@ -11,6 +11,7 @@ export class AttrDropzone {
 
     @bindable clickable;
     @bindable target;
+    @bindable type;
 
     constructor(element, eventAggregator) {
         this.element = element;
@@ -26,6 +27,7 @@ export class AttrDropzone {
     valueChanged(newValue, oldValue) {
 
         let target = this.target ? this.target : this.element;
+        let toType = this.type ? this.type : (nsCtx.isAt ? 'User' : 'Channel');
 
         $(this.element).children().andSelf().dropzone({
             url: "/admin/file/upload",
@@ -41,8 +43,10 @@ export class AttrDropzone {
             dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
             init: function() {
                 this.on("sending", function(file, xhr, formData) {
-                    formData.append('toType', nsCtx.isAt ? 'User' : 'Channel');
-                    formData.append('toId', nsCtx.chatTo);
+                    formData.append('toType', toType);
+                    if('Blog' !== toType) {
+                        formData.append('toId', nsCtx.chatTo);
+                    }
                 });
                 this.on("success", function(file, data) {
                     if (data.success) {
