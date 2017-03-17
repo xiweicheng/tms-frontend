@@ -69,6 +69,9 @@ export class EmBlogLeftSidebar {
                     if (blog.space) {
                         if (blog.space.id === space.id) {
                             space.blogs.push(blog);
+                            if (nsCtx.blogId == blog.id) {
+                                space.open = true;
+                            }
                         }
                     } else {
                         this.noSpaceBlogs.push(blog);

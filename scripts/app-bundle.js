@@ -6230,6 +6230,9 @@ define('resources/elements/em-blog-left-sidebar',['exports', 'aurelia-framework'
                         if (blog.space) {
                             if (blog.space.id === space.id) {
                                 space.blogs.push(blog);
+                                if (nsCtx.blogId == blog.id) {
+                                    space.open = true;
+                                }
                             }
                         } else {
                             _this3.noSpaceBlogs.push(blog);
