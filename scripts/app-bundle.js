@@ -6223,25 +6223,23 @@ define('resources/elements/em-blog-left-sidebar',['exports', 'aurelia-framework'
             var _this3 = this;
 
             this.noSpaceBlogs = [];
-            if (this.spaces && this.spaces.length > 0) {
-                $.each(this.spaces, function (index, space) {
-                    space.blogs = [];
-                    $.each(_this3.blogs, function (index, blog) {
-                        if (blog.space) {
-                            if (blog.space.id === space.id) {
-                                space.blogs.push(blog);
-                                if (nsCtx.blogId == blog.id) {
-                                    space.open = true;
-                                }
+            $.each(this.spaces, function (index, space) {
+                space.blogs = [];
+                $.each(_this3.blogs, function (index, blog) {
+                    if (blog.space) {
+                        if (blog.space.id === space.id) {
+                            space.blogs.push(blog);
+                            if (nsCtx.blogId == blog.id) {
+                                space.open = true;
                             }
-                        } else {
-                            _this3.noSpaceBlogs.push(blog);
                         }
-                    });
+                    }
                 });
-            } else {
-                this.noSpaceBlogs = [].concat(this.blogs);
-            }
+            });
+
+            this.noSpaceBlogs = _.filter(this.blogs, function (b) {
+                return !b.space;
+            });
         };
 
         EmBlogLeftSidebar.prototype.spaceToggleHandler = function spaceToggleHandler(space) {
