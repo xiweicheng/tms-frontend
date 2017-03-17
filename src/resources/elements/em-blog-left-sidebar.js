@@ -62,18 +62,23 @@ export class EmBlogLeftSidebar {
 
     calcTree() {
         this.noSpaceBlogs = [];
-        $.each(this.spaces, (index, space) => {
-            space.blogs = [];
-            $.each(this.blogs, (index, blog) => {
-                if (blog.space) {
-                    if (blog.space.id === space.id) {
-                        space.blogs.push(blog);
+        if (this.spaces && this.spaces.length > 0) {
+            $.each(this.spaces, (index, space) => {
+                space.blogs = [];
+                $.each(this.blogs, (index, blog) => {
+                    if (blog.space) {
+                        if (blog.space.id === space.id) {
+                            space.blogs.push(blog);
+                        }
+                    } else {
+                        this.noSpaceBlogs.push(blog);
                     }
-                } else {
-                    this.noSpaceBlogs.push(blog);
-                }
+                });
             });
-        });
+        } else {
+            this.noSpaceBlogs = [...this.blogs];
+        }
+
     }
 
     spaceToggleHandler(space) {
