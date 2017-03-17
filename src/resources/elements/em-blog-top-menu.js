@@ -8,6 +8,22 @@ export class EmBlogTopMenu {
     isHide = true;
 
     /**
+     * 构造函数
+     */
+    constructor() {
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, (payload) => {
+            this.toggleHandler();
+        });
+    }
+
+    /**
+     * 当数据绑定引擎从视图解除绑定时被调用
+     */
+    unbind() {
+        this.subscribe.dispose();
+    }
+
+    /**
      * 当视图被附加到DOM中时被调用
      */
     attached() {
