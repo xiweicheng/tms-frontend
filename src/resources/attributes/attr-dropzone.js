@@ -29,6 +29,8 @@ export class AttrDropzone {
         let target = this.target ? this.target : this.element;
         let toType = this.type ? this.type : (nsCtx.isAt ? 'User' : 'Channel');
 
+        $(this.element).parent().addClass('tms-dropzone-preview-hidden');
+
         $(this.element).children().andSelf().dropzone({
             url: "/admin/file/upload",
             paramName: 'file',

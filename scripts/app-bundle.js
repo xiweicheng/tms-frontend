@@ -5200,6 +5200,8 @@ define('resources/attributes/attr-dropzone',['exports', 'aurelia-framework', 'au
             var target = this.target ? this.target : this.element;
             var toType = this.type ? this.type : nsCtx.isAt ? 'User' : 'Channel';
 
+            $(this.element).parent().addClass('tms-dropzone-preview-hidden');
+
             $(this.element).children().andSelf().dropzone({
                 url: "/admin/file/upload",
                 paramName: 'file',
@@ -6007,211 +6009,6 @@ define('resources/binding-behaviors/bb-key',['exports'], function (exports) {
         };
 
         return KeyBindingBehavior;
-    }();
-});
-define('resources/value-converters/vc-common',['exports', 'jquery-format', 'timeago'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.Nl2brValueConverter = exports.EmojiValueConverter = exports.UserNameValueConverter = exports.SortChannelsValueConverter = exports.SortUsernamesValueConverter = exports.SortUsersValueConverter = exports.SortValueConverter = exports.ParseMdValueConverter = exports.TimeagoValueConverter = exports.NumberValueConverter = exports.DateValueConverter = exports.LowerValueConverter = exports.UpperValueConverter = undefined;
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    var tg = timeago();
-
-    var UpperValueConverter = exports.UpperValueConverter = function () {
-        function UpperValueConverter() {
-            _classCallCheck(this, UpperValueConverter);
-        }
-
-        UpperValueConverter.prototype.toView = function toView(value) {
-            return value && value.toUpperCase();
-        };
-
-        return UpperValueConverter;
-    }();
-
-    var LowerValueConverter = exports.LowerValueConverter = function () {
-        function LowerValueConverter() {
-            _classCallCheck(this, LowerValueConverter);
-        }
-
-        LowerValueConverter.prototype.toView = function toView(value) {
-            return value && value.toLowerCase();
-        };
-
-        return LowerValueConverter;
-    }();
-
-    var DateValueConverter = exports.DateValueConverter = function () {
-        function DateValueConverter() {
-            _classCallCheck(this, DateValueConverter);
-        }
-
-        DateValueConverter.prototype.toView = function toView(value) {
-            var format = arguments.length <= 1 || arguments[1] === undefined ? 'yyyy-MM-dd hh:mm:ss' : arguments[1];
-
-            return _.isInteger(_.toNumber(value)) ? $.format.date(new Date(value), format) : value ? value : '';
-        };
-
-        return DateValueConverter;
-    }();
-
-    var NumberValueConverter = exports.NumberValueConverter = function () {
-        function NumberValueConverter() {
-            _classCallCheck(this, NumberValueConverter);
-        }
-
-        NumberValueConverter.prototype.toView = function toView(value) {
-            var format = arguments.length <= 1 || arguments[1] === undefined ? '#,##0.00' : arguments[1];
-
-            return _.isNumber(_.toNumber(value)) ? $.format.number(value, format) : value ? value : '';
-        };
-
-        return NumberValueConverter;
-    }();
-
-    var TimeagoValueConverter = exports.TimeagoValueConverter = function () {
-        function TimeagoValueConverter() {
-            _classCallCheck(this, TimeagoValueConverter);
-        }
-
-        TimeagoValueConverter.prototype.toView = function toView(value) {
-            return value ? tg.format(value, 'zh_CN') : '';
-        };
-
-        return TimeagoValueConverter;
-    }();
-
-    var ParseMdValueConverter = exports.ParseMdValueConverter = function () {
-        function ParseMdValueConverter() {
-            _classCallCheck(this, ParseMdValueConverter);
-        }
-
-        ParseMdValueConverter.prototype.toView = function toView(value) {
-            return value ? marked(utils.preParse(value)) : '';
-        };
-
-        return ParseMdValueConverter;
-    }();
-
-    var SortValueConverter = exports.SortValueConverter = function () {
-        function SortValueConverter() {
-            _classCallCheck(this, SortValueConverter);
-        }
-
-        SortValueConverter.prototype.toView = function toView(value, prop) {
-            return _.isArray(value) ? _.sortBy(value, prop) : value;
-        };
-
-        return SortValueConverter;
-    }();
-
-    var SortUsersValueConverter = exports.SortUsersValueConverter = function () {
-        function SortUsersValueConverter() {
-            _classCallCheck(this, SortUsersValueConverter);
-        }
-
-        SortUsersValueConverter.prototype.toView = function toView(value, username) {
-            if (_.isArray(value) && username) {
-                var user = _.find(value, { username: username });
-                if (user) {
-                    return [user].concat(_.reject(value, { username: username }));
-                }
-            }
-            return value;
-        };
-
-        return SortUsersValueConverter;
-    }();
-
-    var SortUsernamesValueConverter = exports.SortUsernamesValueConverter = function () {
-        function SortUsernamesValueConverter() {
-            _classCallCheck(this, SortUsernamesValueConverter);
-        }
-
-        SortUsernamesValueConverter.prototype.toView = function toView(value, username) {
-            if (_.isArray(value) && username) {
-                if (_.includes(value, username)) {
-                    return [username].concat(_.without(value, username));
-                }
-            }
-            return value;
-        };
-
-        return SortUsernamesValueConverter;
-    }();
-
-    var SortChannelsValueConverter = exports.SortChannelsValueConverter = function () {
-        function SortChannelsValueConverter() {
-            _classCallCheck(this, SortChannelsValueConverter);
-        }
-
-        SortChannelsValueConverter.prototype.toView = function toView(value) {
-            if (_.isArray(value)) {
-                var channelAll = _.find(value, { name: 'all' });
-                if (channelAll) {
-                    return [channelAll].concat(_.reject(value, { name: 'all' }));
-                }
-            }
-            return value;
-        };
-
-        return SortChannelsValueConverter;
-    }();
-
-    var UserNameValueConverter = exports.UserNameValueConverter = function () {
-        function UserNameValueConverter() {
-            _classCallCheck(this, UserNameValueConverter);
-        }
-
-        UserNameValueConverter.prototype.toView = function toView(value) {
-            var user = _.find(window.tmsUsers, { username: value });
-            if (user) {
-                return user.name;
-            }
-            return value;
-        };
-
-        return UserNameValueConverter;
-    }();
-
-    var EmojiValueConverter = exports.EmojiValueConverter = function () {
-        function EmojiValueConverter() {
-            _classCallCheck(this, EmojiValueConverter);
-        }
-
-        EmojiValueConverter.prototype.toView = function toView(value, mkbodyDom) {
-            if (emojify) {
-                _.defer(function () {
-                    emojify.run(mkbodyDom);
-                });
-            }
-            return value;
-        };
-
-        return EmojiValueConverter;
-    }();
-
-    var Nl2brValueConverter = exports.Nl2brValueConverter = function () {
-        function Nl2brValueConverter() {
-            _classCallCheck(this, Nl2brValueConverter);
-        }
-
-        Nl2brValueConverter.prototype.toView = function toView(value) {
-            if (value) {
-                return _.replace(value, /\n/g, '<br/>');
-            }
-            return value;
-        };
-
-        return Nl2brValueConverter;
     }();
 });
 define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'simplemde', 'dropzone', 'common/common-emoji'], function (exports, _aureliaFramework, _simplemde, _dropzone, _commonEmoji) {
@@ -12250,6 +12047,211 @@ define('resources/elements/em-user-edit',['exports', 'aurelia-framework'], funct
         enumerable: true,
         initializer: null
     })), _class2)) || _class;
+});
+define('resources/value-converters/vc-common',['exports', 'jquery-format', 'timeago'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.Nl2brValueConverter = exports.EmojiValueConverter = exports.UserNameValueConverter = exports.SortChannelsValueConverter = exports.SortUsernamesValueConverter = exports.SortUsersValueConverter = exports.SortValueConverter = exports.ParseMdValueConverter = exports.TimeagoValueConverter = exports.NumberValueConverter = exports.DateValueConverter = exports.LowerValueConverter = exports.UpperValueConverter = undefined;
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var tg = timeago();
+
+    var UpperValueConverter = exports.UpperValueConverter = function () {
+        function UpperValueConverter() {
+            _classCallCheck(this, UpperValueConverter);
+        }
+
+        UpperValueConverter.prototype.toView = function toView(value) {
+            return value && value.toUpperCase();
+        };
+
+        return UpperValueConverter;
+    }();
+
+    var LowerValueConverter = exports.LowerValueConverter = function () {
+        function LowerValueConverter() {
+            _classCallCheck(this, LowerValueConverter);
+        }
+
+        LowerValueConverter.prototype.toView = function toView(value) {
+            return value && value.toLowerCase();
+        };
+
+        return LowerValueConverter;
+    }();
+
+    var DateValueConverter = exports.DateValueConverter = function () {
+        function DateValueConverter() {
+            _classCallCheck(this, DateValueConverter);
+        }
+
+        DateValueConverter.prototype.toView = function toView(value) {
+            var format = arguments.length <= 1 || arguments[1] === undefined ? 'yyyy-MM-dd hh:mm:ss' : arguments[1];
+
+            return _.isInteger(_.toNumber(value)) ? $.format.date(new Date(value), format) : value ? value : '';
+        };
+
+        return DateValueConverter;
+    }();
+
+    var NumberValueConverter = exports.NumberValueConverter = function () {
+        function NumberValueConverter() {
+            _classCallCheck(this, NumberValueConverter);
+        }
+
+        NumberValueConverter.prototype.toView = function toView(value) {
+            var format = arguments.length <= 1 || arguments[1] === undefined ? '#,##0.00' : arguments[1];
+
+            return _.isNumber(_.toNumber(value)) ? $.format.number(value, format) : value ? value : '';
+        };
+
+        return NumberValueConverter;
+    }();
+
+    var TimeagoValueConverter = exports.TimeagoValueConverter = function () {
+        function TimeagoValueConverter() {
+            _classCallCheck(this, TimeagoValueConverter);
+        }
+
+        TimeagoValueConverter.prototype.toView = function toView(value) {
+            return value ? tg.format(value, 'zh_CN') : '';
+        };
+
+        return TimeagoValueConverter;
+    }();
+
+    var ParseMdValueConverter = exports.ParseMdValueConverter = function () {
+        function ParseMdValueConverter() {
+            _classCallCheck(this, ParseMdValueConverter);
+        }
+
+        ParseMdValueConverter.prototype.toView = function toView(value) {
+            return value ? marked(utils.preParse(value)) : '';
+        };
+
+        return ParseMdValueConverter;
+    }();
+
+    var SortValueConverter = exports.SortValueConverter = function () {
+        function SortValueConverter() {
+            _classCallCheck(this, SortValueConverter);
+        }
+
+        SortValueConverter.prototype.toView = function toView(value, prop) {
+            return _.isArray(value) ? _.sortBy(value, prop) : value;
+        };
+
+        return SortValueConverter;
+    }();
+
+    var SortUsersValueConverter = exports.SortUsersValueConverter = function () {
+        function SortUsersValueConverter() {
+            _classCallCheck(this, SortUsersValueConverter);
+        }
+
+        SortUsersValueConverter.prototype.toView = function toView(value, username) {
+            if (_.isArray(value) && username) {
+                var user = _.find(value, { username: username });
+                if (user) {
+                    return [user].concat(_.reject(value, { username: username }));
+                }
+            }
+            return value;
+        };
+
+        return SortUsersValueConverter;
+    }();
+
+    var SortUsernamesValueConverter = exports.SortUsernamesValueConverter = function () {
+        function SortUsernamesValueConverter() {
+            _classCallCheck(this, SortUsernamesValueConverter);
+        }
+
+        SortUsernamesValueConverter.prototype.toView = function toView(value, username) {
+            if (_.isArray(value) && username) {
+                if (_.includes(value, username)) {
+                    return [username].concat(_.without(value, username));
+                }
+            }
+            return value;
+        };
+
+        return SortUsernamesValueConverter;
+    }();
+
+    var SortChannelsValueConverter = exports.SortChannelsValueConverter = function () {
+        function SortChannelsValueConverter() {
+            _classCallCheck(this, SortChannelsValueConverter);
+        }
+
+        SortChannelsValueConverter.prototype.toView = function toView(value) {
+            if (_.isArray(value)) {
+                var channelAll = _.find(value, { name: 'all' });
+                if (channelAll) {
+                    return [channelAll].concat(_.reject(value, { name: 'all' }));
+                }
+            }
+            return value;
+        };
+
+        return SortChannelsValueConverter;
+    }();
+
+    var UserNameValueConverter = exports.UserNameValueConverter = function () {
+        function UserNameValueConverter() {
+            _classCallCheck(this, UserNameValueConverter);
+        }
+
+        UserNameValueConverter.prototype.toView = function toView(value) {
+            var user = _.find(window.tmsUsers, { username: value });
+            if (user) {
+                return user.name;
+            }
+            return value;
+        };
+
+        return UserNameValueConverter;
+    }();
+
+    var EmojiValueConverter = exports.EmojiValueConverter = function () {
+        function EmojiValueConverter() {
+            _classCallCheck(this, EmojiValueConverter);
+        }
+
+        EmojiValueConverter.prototype.toView = function toView(value, mkbodyDom) {
+            if (emojify) {
+                _.defer(function () {
+                    emojify.run(mkbodyDom);
+                });
+            }
+            return value;
+        };
+
+        return EmojiValueConverter;
+    }();
+
+    var Nl2brValueConverter = exports.Nl2brValueConverter = function () {
+        function Nl2brValueConverter() {
+            _classCallCheck(this, Nl2brValueConverter);
+        }
+
+        Nl2brValueConverter.prototype.toView = function toView(value) {
+            if (value) {
+                return _.replace(value, /\n/g, '<br/>');
+            }
+            return value;
+        };
+
+        return Nl2brValueConverter;
+    }();
 });
 define('aurelia-templating-resources/compose',['exports', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-templating', 'aurelia-pal'], function (exports, _aureliaDependencyInjection, _aureliaTaskQueue, _aureliaTemplating, _aureliaPal) {
   'use strict';
@@ -30165,7 +30167,7 @@ define('highlight/lib/languages/zephir',['require','exports','module'],function 
 
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./app.css\"></require>\r\n    <require from=\"./common.css\"></require>\r\n    <require from=\"./override.css\"></require>\r\n    <require from=\"./chat/md-github.css\"></require>\r\n    <require from=\"common/common-scrollbar.css\"></require>\r\n    <require from=\"nprogress/nprogress.css\"></require>\r\n    <require from=\"toastr/build/toastr.css\"></require>\r\n    <require from=\"tms-semantic-ui/semantic.min.css\"></require>\r\n    <require from=\"semantic-ui-calendar/dist/calendar.min.css\"></require>\r\n    <require from=\"modaal/dist/css/modaal.min.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <router-view></router-view>\r\n</template>\r\n"; });
 define('text!blog/blog.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./blog.css\"></require>\r\n    <div class=\"tms-blog\">\r\n        <em-blog-top-menu></em-blog-top-menu>\r\n        <em-blog-left-sidebar></em-blog-left-sidebar>\r\n        <em-blog-content></em-blog-content>\r\n        <em-chat-member-popup></em-chat-member-popup>\r\n    </div>\r\n</template>\r\n"; });
-define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n  overflow: hidden;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n"; });
+define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n  overflow: hidden;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n.tms-dropzone-preview-hidden .dz-preview {\n  display: none!important;\n}\n"; });
 define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" chat-user.bind=\"user\" login-user.bind=\"loginUser\" channels.bind=\"channels\" channel.bind=\"channel\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div class=\"tms-comments-container\" ref=\"scrollbarRef\" scrollbar>\r\n                    <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                        <div if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</div>\r\n                        <em-chat-content-item chat-to.bind=\"chatTo\" mark-id.bind=\"markId\" channel.bind=\"channel\" is-at.bind=\"isAt\" chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                        <div if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})\r\n                            <div click.trigger=\"refreshLatestHandler($event)\" title=\"刷新最新消息\" class=\"ui basic circular mini icon button\">\r\n                                <i class=\"refresh icon\"></i>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <div show.bind=\"isShowHead\" title=\"滚至头部(alt+↑)\" class=\"tms-go tms-go-head\"><div click.delegate=\"goHeadHandler()\" class=\"circular ui icon button\"><i class=\"chevron up icon\"></i></div></div>\r\n                    <div show.bind=\"isShowFoot\" title=\"滚至尾部(alt+↓)\" class=\"tms-go tms-go-foot\"><div click.delegate=\"goFootHandler()\" class=\"circular ui icon button\"><i class=\"chevron down icon\"></i></div></div>\r\n                </div>\r\n                <em-chat-input channel.bind=\"channel\" is-at.bind=\"isAt\" chat-to.bind=\"chatTo\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right login-user.bind=\"loginUser\" channel.bind=\"channel\" login-user.bind=\"loginUser\" is-at.bind=\"isAt\"></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n    <em-chat-msg-popup></em-chat-msg-popup>\r\n    <em-chat-member-popup></em-chat-member-popup>\r\n</template>\r\n"; });
 define('text!common.css', ['module'], function(module) { module.exports = "code.nx {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  white-space: nowrap;\n}\n.markdown-body .pre-code-wrapper {\n  position: relative;\n}\n.markdown-body .pre-code-wrapper > i.copy.icon {\n  display: none;\n  position: absolute;\n  top: 0;\n  right: 0;\n  cursor: pointer;\n}\n.markdown-body .pre-code-wrapper:hover > i.copy.icon {\n  display: block;\n}\n.tms-disabled {\n  pointer-events: none;\n}\n.animated {\n  -webkit-animation-duration: 1s;\n  animation-duration: 1s;\n  -webkit-animation-fill-mode: both;\n  animation-fill-mode: both;\n}\n@keyframes flip {\n  from {\n    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -360deg);\n    transform: perspective(400px) rotate3d(0, 1, 0, -360deg);\n    -webkit-animation-timing-function: ease-out;\n    animation-timing-function: ease-out;\n  }\n  40% {\n    -webkit-transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -190deg);\n    transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -190deg);\n    -webkit-animation-timing-function: ease-out;\n    animation-timing-function: ease-out;\n  }\n  50% {\n    -webkit-transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -170deg);\n    transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -170deg);\n    -webkit-animation-timing-function: ease-in;\n    animation-timing-function: ease-in;\n  }\n  80% {\n    -webkit-transform: perspective(400px) scale3d(0.95, 0.95, 0.95);\n    transform: perspective(400px) scale3d(0.95, 0.95, 0.95);\n    -webkit-animation-timing-function: ease-in;\n    animation-timing-function: ease-in;\n  }\n  to {\n    -webkit-transform: perspective(400px);\n    transform: perspective(400px);\n    -webkit-animation-timing-function: ease-in;\n    animation-timing-function: ease-in;\n  }\n}\n.animated.flip {\n  -webkit-backface-visibility: visible;\n  backface-visibility: visible;\n  -webkit-animation-name: flip;\n  animation-name: flip;\n}\n.cbutton {\n  position: relative;\n}\n.cbutton::after {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  margin: -7px 0 0 -7px;\n  width: 14px;\n  height: 14px;\n  border-radius: 50%;\n  content: '';\n  opacity: 0;\n  pointer-events: none;\n}\n/* Novak */\n.cbutton--effect-novak::after {\n  background: rgba(111, 148, 182, 0.25);\n}\n.cbutton--effect-novak.cbutton--click::after {\n  -webkit-animation: anim-effect-novak 0.5s forwards;\n  animation: anim-effect-novak 0.5s forwards;\n}\n@-webkit-keyframes anim-effect-novak {\n  0% {\n    opacity: 1;\n    -webkit-transform: scale3d(0.1, 0.1, 1);\n    transform: scale3d(0.1, 0.1, 1);\n  }\n  100% {\n    opacity: 0;\n    -webkit-transform: scale3d(8, 8, 1);\n    transform: scale3d(30, 30, 1);\n  }\n}\n@keyframes anim-effect-novak {\n  0% {\n    opacity: 1;\n    -webkit-transform: scale3d(0.1, 0.1, 1);\n    transform: scale3d(0.1, 0.1, 1);\n  }\n  100% {\n    opacity: 0;\n    -webkit-transform: scale3d(8, 8, 1);\n    transform: scale3d(30, 30, 1);\n  }\n}\n.emoji {\n  width: 1.5em;\n  height: 1.5em;\n  display: inline-block;\n  margin-bottom: -0.25em;\n  background-size: contain;\n}\n"; });
 define('text!test/test-lifecycle.html', ['module'], function(module) { module.exports = "<template>\r\n    <!-- <require from=\"\"></require> -->\r\n    <div class=\"ui container\">\r\n        <h1 class=\"ui header\">Aurelia框架模块生命周期钩子函数调用顺序测试(看console输出)</h1>\r\n    </div>\r\n</template>\r\n"; });
@@ -30227,10 +30229,10 @@ define('text!resources/elements/em-chat-system-link-mgr.css', ['module'], functi
 define('text!resources/elements/em-confirm-modal.html', ['module'], function(module) { module.exports = "<template>\n    <div ref=\"md\" class=\"ui small modal nx-ui-confirm tms-md450\">\n        <div class=\"header\">\n            ${config.title}\n        </div>\n        <div class=\"content\">\n            <i if.bind=\"config.warning\" class=\"large yellow warning sign icon\" style=\"float: left;\"></i>\n            <i if.bind=\"!config.warning\" class=\"large blue info circle icon\" style=\"float: left;\"></i>\n            <p style=\"margin-left: 20px;\">\n                <span innerhtml.bind=\"config.content\"></span>\n            </p>\n        </div>\n        <div class=\"actions\">\n            <div class=\"ui cancel basic blue left floated button\">取消</div>\n            <div class=\"ui ok blue button\">确认</div>\n        </div>\n    </div>\n</template>\n"; });
 define('text!resources/elements/em-chat-top-menu.css', ['module'], function(module) { module.exports = ".tms-em-chat-top-menu.ui.top.menu {\n  padding-left: 220px;\n  height: 60px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .tms-chat-at.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .item.tms-item:before {\n  display: none;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-login-user.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item {\n  padding-left: 0;\n  padding-right: 5px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.tms-hide {\n    display: none;\n  }\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.tms-mobile-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item button .ui.floating.label {\n  top: 0;\n  right: 0;\n  left: auto;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown {\n  display: none;\n  padding-left: 5px;\n  margin-right: 5px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown {\n    display: flex;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown > i.icon {\n  margin-left: 5px;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown .menu > .item .ui.button {\n  margin: 0;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown .menu > .item .ui.button i.icon {\n  margin: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-search {\n    padding-left: 10px;\n    padding-right: 10px;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search input {\n  width: 95px;\n  transition: width 0.15s ease-out 0s;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search i.remove.icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu {\n    padding-left: 0;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .ui.basic.button {\n  box-shadow: none;\n}\n@media only screen and (min-width: 768px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown {\n    min-width: 175px;\n    padding-top: 0;\n    padding-left: 13px;\n    padding-bottom: 20px;\n  }\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown.item:before {\n    width: 0;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .text > .actions {\n  display: none;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata {\n  position: absolute;\n  display: flex;\n  top: 35px;\n  font-size: 12px;\n  left: 0;\n  height: 15px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item:before {\n  top: 5px;\n  height: 50%;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item.tms-channel-info:before {\n  width: 0;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item.tms-user-info:before {\n  width: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .tms-channel-links .menu .header {\n  min-width: 200px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .text {\n    display: none;\n  }\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .dropdown.icon {\n    margin-left: 6px;\n    margin-right: 6px;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .header i.plus.icon {\n  position: absolute;\n  right: 5px;\n  top: 7px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item:hover .actions {\n  display: inline-block;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item .icon {\n  margin-right: 4px!important;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item > .actions {\n  display: none;\n  position: absolute;\n  right: 5px;\n  top: 10px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item > .actions .large.ellipsis.horizontal.icon {\n  font-size: 1.3em!important;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item.disabled-user {\n  text-decoration: line-through;\n  font-style: italic;\n}\n"; });
 define('text!resources/elements/em-dropdown.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"dropdown\" class=\"ui dropdown ${classes}\">\r\n        <input type=\"hidden\" name=\"${name}\">\r\n        <i class=\"dropdown icon\"></i>\r\n        <div class=\"default text\">${text}</div>\r\n        <div class=\"menu\">\r\n            <div repeat.for=\"item of menuItems\" task.bind=\"initDropdownHandler($last)\" class=\"item\" data-value=\"${item[valueProp]}\">${item[labelProp]}</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!resources/elements/em-hotkeys-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-hotkeys-modal.css\"></require>\r\n    <div ref=\"md\" class=\"ui basic modal tms-em-hotkeys-modal\">\r\n        <i class=\"close icon\"></i>\r\n        <div class=\"content\">\r\n            <h1 class=\"ui center inverted aligned header\">键盘快捷键\r\n\t\t\t\t<span style=\"position: relative; top: -0.375rem; left: 1rem;\" aria-hidden=\"true\">\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Control\">Ctrl</span>\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Question mark\">/</span>\r\n\t\t\t\t</span>\r\n            </h1>\r\n            <div class=\"ui grid\">\r\n                <div class=\"three column row\">\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>上一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>下一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>第一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>最后一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>快速切换: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">k</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>\r\n                                自动补全\r\n                                <ul>\r\n                                    <li>提示: <span class=\"keyboard\">/</span></li>\r\n                                    <li>用户: <span class=\"keyboard\">@</span></li>\r\n                                    <li>表情: <span class=\"keyboard\">:</span></li>\r\n                                </ul>\r\n                            </li>\r\n                            <li>输入聚焦: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">i</span></li>\r\n                            <li>编辑: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">DblClick</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>切换边栏: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">.</span></li>\r\n                            <li>上传文件: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">u</span></li>\r\n                            <li>复制代码: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Click</span></li>\r\n                            <li>关闭对话框: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                        </ul>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <!-- <div class=\"image\">\r\n                <i class=\"archive icon\"></i>\r\n            </div>\r\n            <div class=\"description\">\r\n                <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>\r\n            </div> -->\r\n        </div>\r\n        <!-- <div class=\"actions\">\r\n            <div class=\"two fluid ui inverted buttons\">\r\n                <div class=\"ui cancel red basic inverted button\">\r\n                    <i class=\"remove icon\"></i> No\r\n                </div>\r\n                <div class=\"ui ok green basic inverted button\">\r\n                    <i class=\"checkmark icon\"></i> Yes\r\n                </div>\r\n            </div>\r\n        </div> -->\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(module) { module.exports = ".tms-em-hotkeys-modal ul {\n  padding-left: 30px;\n}\n.tms-em-hotkeys-modal ul.no_bullets {\n  margin: 0 0 2rem;\n}\n.tms-em-hotkeys-modal ul.no_bullets li {\n  line-height: 2rem;\n  list-style-type: none;\n  padding: 0;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.tms-em-hotkeys-modal > .content {\n  background-color: rgba(11, 7, 11, 0.78) !important;\n}\n.tms-em-hotkeys-modal .keyboard i.icon {\n  margin-right: 0px!important;\n}\n.tms-em-hotkeys-modal .subtle_silver {\n  color: #9e9ea6!important;\n}\n.tms-em-hotkeys-modal .ui.grid .column {\n  padding: 0!important;\n}\n"; });
-define('text!resources/elements/em-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"modal\" class=\"ui modal ${classes}\">\r\n        <i class=\"close icon\" style=\"top: 0; right: 0; color: #214262;\"></i>\r\n        <div class=\"header\">\r\n            <slot name=\"header\">modal header...</slot>\r\n        </div>\r\n        <div class=\"content\">\r\n            <div class=\"ui inverted dimmer\" style=\"background-color: rgba(255, 255, 255, 0.5) !important;\">\r\n                <div class=\"ui loader\"></div>\r\n            </div>\r\n            <slot name=\"content\">modal content...</slot>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <slot name=\"actions\">\r\n                <div style=\"margin-left: 3.5px;\" class=\"ui cancel basic blue left floated button\" textcontent.bind=\"cancelLabel\">取消</div>\r\n                <div show.bind=\"showConfirm\" class=\"ui ok blue button ${(loading || disabled) ? 'disabled' : ''}\" textcontent.bind=\"confirmLabel\">确认</div>\r\n            </slot>\r\n            <div style=\"clear: both;\"></div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-hotkeys-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-hotkeys-modal.css\"></require>\r\n    <div ref=\"md\" class=\"ui basic modal tms-em-hotkeys-modal\">\r\n        <i class=\"close icon\"></i>\r\n        <div class=\"content\">\r\n            <h1 class=\"ui center inverted aligned header\">键盘快捷键\r\n\t\t\t\t<span style=\"position: relative; top: -0.375rem; left: 1rem;\" aria-hidden=\"true\">\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Control\">Ctrl</span>\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Question mark\">/</span>\r\n\t\t\t\t</span>\r\n            </h1>\r\n            <div class=\"ui grid\">\r\n                <div class=\"three column row\">\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>上一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>下一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>第一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>最后一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\">Ctrl</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>快速切换: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">k</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>\r\n                                自动补全\r\n                                <ul>\r\n                                    <li>提示: <span class=\"keyboard\">/</span></li>\r\n                                    <li>用户: <span class=\"keyboard\">@</span></li>\r\n                                    <li>表情: <span class=\"keyboard\">:</span></li>\r\n                                </ul>\r\n                            </li>\r\n                            <li>输入聚焦: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">i</span></li>\r\n                            <li>编辑: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">DblClick</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>切换边栏: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">.</span></li>\r\n                            <li>上传文件: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">u</span></li>\r\n                            <li>复制代码: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Click</span></li>\r\n                            <li>关闭对话框: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                        </ul>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <!-- <div class=\"image\">\r\n                <i class=\"archive icon\"></i>\r\n            </div>\r\n            <div class=\"description\">\r\n                <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>\r\n            </div> -->\r\n        </div>\r\n        <!-- <div class=\"actions\">\r\n            <div class=\"two fluid ui inverted buttons\">\r\n                <div class=\"ui cancel red basic inverted button\">\r\n                    <i class=\"remove icon\"></i> No\r\n                </div>\r\n                <div class=\"ui ok green basic inverted button\">\r\n                    <i class=\"checkmark icon\"></i> Yes\r\n                </div>\r\n            </div>\r\n        </div> -->\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-user-avatar.css', ['module'], function(module) { module.exports = ".em-user-avatar.avatar.ui.mini.circular.image {\n  width: 35px;\n  height: 35px;\n  font-size: 35px;\n  background-color: rgba(150, 178, 183, 0.4);\n  text-align: center;\n  margin: 0;\n  padding-right: 0;\n}\n.em-user-avatar .text-char {\n  display: inline-block;\n  height: 35px;\n  line-height: 35px;\n  vertical-align: top;\n}\n"; });
+define('text!resources/elements/em-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"modal\" class=\"ui modal ${classes}\">\r\n        <i class=\"close icon\" style=\"top: 0; right: 0; color: #214262;\"></i>\r\n        <div class=\"header\">\r\n            <slot name=\"header\">modal header...</slot>\r\n        </div>\r\n        <div class=\"content\">\r\n            <div class=\"ui inverted dimmer\" style=\"background-color: rgba(255, 255, 255, 0.5) !important;\">\r\n                <div class=\"ui loader\"></div>\r\n            </div>\r\n            <slot name=\"content\">modal content...</slot>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <slot name=\"actions\">\r\n                <div style=\"margin-left: 3.5px;\" class=\"ui cancel basic blue left floated button\" textcontent.bind=\"cancelLabel\">取消</div>\r\n                <div show.bind=\"showConfirm\" class=\"ui ok blue button ${(loading || disabled) ? 'disabled' : ''}\" textcontent.bind=\"confirmLabel\">确认</div>\r\n            </slot>\r\n            <div style=\"clear: both;\"></div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-user-edit.css', ['module'], function(module) { module.exports = ".tms-em-user-edit .ui.form .field > label {\n  width: 45px!important;\n}\n.tms-em-user-edit .ui.form .field .user-username {\n  margin-left: 0;\n}\n.em-user-edit-modal {\n  /* Tablet & PC */\n}\n@media only screen and (min-width: 768px) {\n  .em-user-edit-modal {\n    width: 500px!important;\n    margin-left: -250px !important;\n  }\n}\n"; });
 define('text!resources/elements/em-user-avatar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-user-avatar.css\"></require>\r\n    <a ref=\"avatarRef\" css=\"background-color: ${bgColor};\" data-value=\"${user.username}\" class=\"avatar ui mini circular image em-user-avatar\">\r\n        <span css=\"color: ${color}\" class=\"text-char\">${nameChar}</span>\r\n    </a>\r\n</template>\r\n"; });
 define('text!resources/elements/em-user-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-user-edit.css\"></require>\r\n    <em-modal classes=\"small em-user-edit-modal\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\r\n        <div slot=\"header\">个人信息编辑</div>\r\n        <div slot=\"content\" class=\"tms-em-user-edit\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"ui form\" with.bind=\"user\">\r\n                    <div class=\"inline field\">\r\n                        <label>用户名:</label>\r\n                        <div class=\"ui basic label user-username\">${username}</div>\r\n                    </div>\r\n                    <div class=\"inline field\">\r\n                        <label>密码:</label>\r\n                        <input name=\"password\" value.bind=\"password\" placeholder=\"密码\" type=\"text\">\r\n                    </div>\r\n                    <div class=\"required inline field\">\r\n                        <label>姓名:</label>\r\n                        <input name=\"name\" value.bind=\"name\" placeholder=\"姓名\" type=\"text\">\r\n                    </div>\r\n                    <div class=\"required inline field\">\r\n                        <label>邮箱:</label>\r\n                        <input name=\"mail\" value.bind=\"mails\" placeholder=\"邮箱\" type=\"text\">\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
