@@ -1,16 +1,23 @@
 <template>
     <require from="./em-blog-content.css"></require>
     <div show.bind="blog" class="em-blog-content">
-        <div class="actions">
-            <a if.bind="isSuper || blog.creator.username == loginUser.username" href="#" class="ui basic mini button" click.delegate="editHandler()">
-                <i class="large icon edit"></i> 编辑
-            </a>
-            <em-blog-share blog.bind="blog"></em-blog-share>
-            <div ui-dropdown-action class="ui top right pointing dropdown basic mini icon button">
-                <i class="large ellipsis horizontal icon"></i>
-                <div class="menu">
-                    <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="deleteHandler()" class="item" style="color: red;">
-                        <i class="trash outline icon"></i> 删除
+        <div class="topbar">
+            <div class="ui breadcrumb">
+                <a class="section">TMS</a>
+                <div class="divider"> / </div>
+                <a class="section active">博文</a>
+            </div>
+            <div class="actions">
+                <a if.bind="isSuper || blog.creator.username == loginUser.username" href="#" class="ui basic mini button" click.delegate="editHandler()">
+                    <i class="large icon edit"></i> 编辑
+                </a>
+                <em-blog-share blog.bind="blog"></em-blog-share>
+                <div ui-dropdown-action class="ui top right pointing dropdown basic mini icon button">
+                    <i class="large ellipsis horizontal icon"></i>
+                    <div class="menu">
+                        <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="deleteHandler()" class="item" style="color: red;">
+                            <i class="trash outline icon"></i> 删除
+                        </div>
                     </div>
                 </div>
             </div>

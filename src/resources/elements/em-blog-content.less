@@ -24,15 +24,25 @@
         }
         margin-bottom: 24px;
     }
-    .actions {
-        position: absolute;
-        right: 16px;
-        top: 8px;
-        > .ui.basic.button {
-            padding: 8px;
-            box-shadow: none;
-            &:hover {
-                box-shadow: 0 0 0 1px rgba(34, 36, 38, .35) inset, 0 0 0 0 rgba(34, 36, 38, .15) inset;
+    .topbar {
+        position: relative;
+        height: 30px;
+        margin-bottom: 8px;
+        > .ui.breadcrumb {
+            line-height: 30px;
+        }
+        &:after {
+            content: '';
+            clear: both;
+        }
+        .actions {
+            float: right;
+            > .ui.basic.button {
+                padding: 8px;
+                box-shadow: none;
+                &:hover {
+                    box-shadow: 0 0 0 1px rgba(34, 36, 38, .35) inset, 0 0 0 0 rgba(34, 36, 38, .15) inset;
+                }
             }
         }
     }
