@@ -6,10 +6,11 @@
                 <a class="section">TMS博文</a>
                 <div show.bind="blog.space" class="divider"> / </div>
                 <a show.bind="blog.space" class="section active">${blog.space.name}</a>
-                <span data-tooltip="${blog.privated ? '私有博文' : '公开博文'}" data-position="right center" style="margin-left: 16px;"><i click.delegate="updatePrivatedHandler()" class="link icon ${blog.privated ? 'lock' : 'unlock alternate'}"></i></span>
+                <span if.bind="isSuper || blog.creator.username == loginUser.username" data-tooltip="${blog.privated ? '私有博文' : '公开博文'}" data-position="right center" style="margin-left: 16px;"><i click.delegate="updatePrivatedHandler()" class="link icon ${blog.privated ? 'lock' : 'unlock alternate'}"></i></span>
+                <span if.bind="(isSuper || blog.creator.username == loginUser.username) && blog.openEdit" data-tooltip="开放编辑中,点击可关闭" data-position="right center" style="margin-left: 8px; top: -2px;"><i click.delegate="openEditHandler()" class="link icon write"></i></span>
             </div>
             <div class="actions">
-                <a if.bind="isSuper || blog.creator.username == loginUser.username" href="#" class="ui basic mini button" click.delegate="editHandler()">
+                <a if.bind="blog.openEdit || isSuper || blog.creator.username == loginUser.username" href="#" class="ui basic mini button" click.delegate="editHandler()">
                     <i class="large icon edit"></i> 编辑
                 </a>
                 <em-blog-share blog.bind="blog"></em-blog-share>
@@ -18,6 +19,9 @@
                     <div class="menu">
                         <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="updateSpaceHandler()" class="item">
                             <i class="exchange icon"></i> 移动
+                        </div>
+                        <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="openEditHandler()" class="item">
+                            <i class="write icon"></i> ${blog.openEdit ? '关闭协作编辑' : '开放协作编辑'}
                         </div>
                         <div class="divider"></div>
                         <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="deleteHandler()" class="item" style="color: red;">
@@ -35,6 +39,9 @@
             </h1>
         </div>
         <div swipebox ref="mkbodyRef" class="markdown-body" innerhtml.bind="blog.content | parseMd | emoji:mkbodyRef"></div>
+        <div class="footer">
+            <span click.delegate="rateHandler()" class="rate"><i class="link icon thumbs outline up"></i>${blog.voteZan && blog.voteZan.split(',').includes(loginUser.username) ? '踩' : '赞'}</span> <span show.bind="!blog.voteZanCnt">成为第一个赞同者</span> <span show.bind="blog.voteZan && blog.voteZan.split(',').includes(loginUser.username)">你赞了它</span>
+        </div>
         <em-blog-comment blog.bind="blog"></em-blog-comment>
     </div>
     <div show.bind="!blog" class="em-blog-content">

@@ -136,4 +136,42 @@ export class EmBlogContent {
             }
         });
     }
+
+    isZanDone() {
+        let voteZan = this.blog.voteZan;
+        if (!voteZan) {
+            return false;
+        }
+
+        return voteZan.split(',').includes(this.loginUser.username);
+    }
+
+    rateHandler() {
+        $.post('/admin/blog/vote', {
+            id: this.blog.id,
+            url: utils.getBasePath(),
+            contentHtml: utils.md2html(this.blog.content),
+            type: this.isZanDone() ? 'Cai' : 'Zan'
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                _.extend(this.blog, data.data);
+            } else {
+                toastr.error(data.data, '博文投票失败!');
+            }
+        });
+    }
+
+    openEditHandler() {
+        $.post('/admin/blog/openEdit', {
+            id: this.blog.id,
+            open: !this.blog.openEdit
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                this.blog.openEdit = !this.blog.openEdit;
+                toastr.success(this.blog.openEdit ? '开放协作编辑成功!' : '关闭协作编辑成功!');
+            } else {
+                toastr.error(data.data, '协作编辑操作失败!');
+            }
+        });
+    }
 }
