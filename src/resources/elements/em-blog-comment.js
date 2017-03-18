@@ -157,17 +157,19 @@ export class EmBlogComment {
                     action: SimpleMDE.togglePreview,
                     className: "fa fa-eye no-disable",
                     title: "切换预览",
-                }, {
-                    name: "side-by-side",
-                    action: SimpleMDE.toggleSideBySide,
-                    className: "fa fa-columns no-disable no-mobile",
-                    title: "实时预览",
-                }, {
-                    name: "fullscreen",
-                    action: SimpleMDE.toggleFullScreen,
-                    className: "fa fa-arrows-alt no-disable no-mobile",
-                    title: "全屏",
-                }, {
+                },
+                // {
+                //     name: "side-by-side",
+                //     action: SimpleMDE.toggleSideBySide,
+                //     className: "fa fa-columns no-disable no-mobile",
+                //     title: "实时预览",
+                // }, {
+                //     name: "fullscreen",
+                //     action: SimpleMDE.toggleFullScreen,
+                //     className: "fa fa-arrows-alt no-disable no-mobile",
+                //     title: "全屏",
+                // }, 
+                {
                     name: "guide",
                     action: 'https://simplemde.com/markdown-guide',
                     className: "fa fa-question-circle",

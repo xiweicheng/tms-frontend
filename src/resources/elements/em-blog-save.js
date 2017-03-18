@@ -6,6 +6,7 @@ export class EmBlogSave {
     @bindable trigger;
 
     loginUser = nsCtx.loginUser;
+    isSuper = nsCtx.isSuper;
 
     triggerChanged() {
 

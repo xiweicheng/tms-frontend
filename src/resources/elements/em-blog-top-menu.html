@@ -1,6 +1,6 @@
 <template>
     <require from="./em-blog-top-menu.css"></require>
-    <div class="ui top fixed inverted blue menu em-blog-top-menu ${isSearchFocus ? 'search-focus' : ''}">
+    <div ref="topMenuRef" class="ui top fixed inverted blue menu em-blog-top-menu ${isSearchFocus ? 'search-focus' : ''}">
         <div click.delegate="toggleHandler()" class="item tms-toggle">
             <i class="large ${isHide ? 'indent' : 'outdent'} icon"></i>
         </div>

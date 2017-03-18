@@ -17,6 +17,12 @@
                 margin-bottom: 0px;
                 padding-bottom: 8px;
                 > .item {
+                    position: relative;
+                    &:hover {
+                        > .actions {
+                            display: inline-block;
+                        }
+                    }
                     > .icon {
                         padding-right: 0;
                     }
@@ -25,6 +31,12 @@
                         overflow: hidden;
                         text-overflow: ellipsis;
                         max-width: 245px;
+                    }
+                    > .actions {
+                        display: none;
+                        position: absolute;
+                        right: 0;
+                        top: 0;
                     }
                 }
                 .ui.bulleted.list {

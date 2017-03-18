@@ -60,6 +60,8 @@ export function configure(aurelia) {
         'resources/elements/em-blog-comment',
         'resources/elements/em-blog-save',
         'resources/elements/em-blog-space-create',
+        'resources/elements/em-blog-space-edit',
+        'resources/elements/em-blog-space-update',
         'resources/elements/em-user-avatar',
         'resources/elements/em-user-edit',
     ]);

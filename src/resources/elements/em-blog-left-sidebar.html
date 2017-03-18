@@ -4,17 +4,29 @@
         <div class="tms-body">
             <div scrollbar="scrollbar-macosx">
                 <div class="ui list space">
-                    <div repeat.for="space of spaces" class="item">
-                        <i click.delegate="spaceToggleHandler(space)" class="angle ${space.open ? 'down' : 'right'} link icon"></i>
-                        <div class="content">
-                            ${space.name}
-                            <div show.bind="space.open" class="ui bulleted list">
-                                <div repeat.for="item of space.blogs" class="item ${item.id == blog.id ? 'active' : ''}">
-                                    <a title="${item.title}" href="#/blog/${item.id}">${item.title}</a>
+                    <template repeat.for="space of spaces">
+                        <div if.bind="!space.privated || isSuper || space.creator.username == loginUser.username" class="item">
+                            <i click.delegate="spaceToggleHandler(space)" class="angle ${space.open ? 'down' : 'right'} link icon"></i>
+                            <div class="content">
+                                <span style="cursor: pointer;" click.delegate="spaceToggleHandler(space)">${space.name}</span>
+                                <div show.bind="space.open" class="ui bulleted list">
+                                    <div repeat.for="item of space.blogs" class="item ${item.id == blog.id ? 'active' : ''}">
+                                        <a title="${item.title}" href="#/blog/${item.id}">${item.title}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="actions">
+                                <div if.bind="isSuper || space.creator.username == loginUser.username" ui-dropdown class="ui right pointing dropdown">
+                                    <i class="large ellipsis horizontal icon"></i>
+                                    <div class="menu">
+                                        <div class="item" click.delegate="editSpaceHandler(space)"><i class="icon edit"></i>编辑</div>
+                                        <div class="divider"></div>
+                                        <div class="item" style="color: red;" click.delegate="delSpaceHandler(space)"><i class="trash outline icon"></i>删除</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </template>
                 </div>
                 <div class="ui bulleted list no-space">
                     <div repeat.for="item of noSpaceBlogs" class="item ${item.id == blog.id ? 'active' : ''}">
@@ -26,7 +38,21 @@
         <div class="tms-footer">
             <div class="ui icon menu">
                 <em-blog-space-create></em-blog-space-create>
+                <div class="right menu">
+                    <div class="ui dropdown icon item" ui-dropdown>
+                        <i class="content icon"></i>
+                        <div class="menu">
+                            <div class="header">
+                                <i class="linkify icon"></i> 系统外链
+                            </div>
+                            <div if.bind="!sysLinks || sysLinks.length == 0" class="item">暂无系统外链</div>
+                            <a repeat.for="item of sysLinks | sort:'title'" target="_blank" href="${item.href}" class="item">${item.title}</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <em-confirm-modal em-confirm-modal.ref="confirmMd"></em-confirm-modal>
+    <em-blog-space-edit view-model.ref="spaceEditVm"></em-blog-space-edit>
 </template>

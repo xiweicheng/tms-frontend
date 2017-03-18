@@ -15,7 +15,7 @@
             <div class="field">
                 <div ref="chk" class="ui checkbox">
                     <input type="checkbox" tabindex="0" class="hidden">
-                    <label>私有空间(不公开)</label>
+                    <label><i class="lock icon"></i>私有空间(不公开)</label>
                 </div>
             </div>
             <button click.delegate="createHandler()" class="ui ${(!name || (ajax && ajax.readyState != 4)) ? 'disabled' : ''} blue mini button" type="submit"><i show.bind="ajax && ajax.readyState != 4" class="spinner loading icon"></i>创建</button>

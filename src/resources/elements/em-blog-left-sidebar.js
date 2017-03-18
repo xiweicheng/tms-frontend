@@ -8,6 +8,9 @@ export class EmBlogLeftSidebar {
     spaces = [];
     noSpaceBlogs = [];
 
+    loginUser = nsCtx.loginUser;
+    isSuper = nsCtx.isSuper;
+
     /**
      * 构造函数
      */
@@ -18,6 +21,7 @@ export class EmBlogLeftSidebar {
                 this.calcTree();
             } else if (payload.action == 'updated') {
                 _.extend(_.find(this.blogs, { id: payload.blog.id }), payload.blog);
+                this.calcTree();
             }
         });
         this.subscribe4 = ea.subscribe(nsCons.EVENT_SPACE_CHANGED, (payload) => {
@@ -26,6 +30,7 @@ export class EmBlogLeftSidebar {
                 this.calcTree();
             } else if (payload.action == 'updated') {
                 _.extend(_.find(this.spaces, { id: payload.space.id }), payload.space);
+                this.calcTree();
             }
         });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, (payload) => {
@@ -52,6 +57,18 @@ export class EmBlogLeftSidebar {
     attached() {
 
         this.refresh();
+        this._refreshSysLinks();
+    }
+
+
+    _refreshSysLinks() {
+        $.get('/admin/link/listByApp', (data) => {
+            if (data.success) {
+                this.sysLinks = data.data;
+            } else {
+                this.sysLinks = [];
+            }
+        });
     }
 
     refresh() {
@@ -99,6 +116,27 @@ export class EmBlogLeftSidebar {
         return $.get('/admin/space/list', {}, (data) => {
             if (data.success) {
                 this.spaces = data.data;
+            }
+        });
+    }
+
+    editSpaceHandler(space) {
+        this.spaceEditVm.show(space);
+    }
+
+    delSpaceHandler(space) {
+        this.confirmMd.show({
+            onapprove: () => {
+                $.post('/admin/space/delete', {
+                    id: space.id
+                }, (data) => {
+                    if (data.success) {
+                        toastr.success('删除空间成功!');
+                        this.spaces = _.reject(this.spaces, { id: space.id });
+                    } else {
+                        toastr.error(data.data, '删除空间失败!');
+                    }
+                });
             }
         });
     }

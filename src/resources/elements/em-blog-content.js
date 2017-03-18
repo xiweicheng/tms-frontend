@@ -118,4 +118,22 @@ export class EmBlogContent {
     createHandler() {
         $('a[href="#modaal-blog-write"]').click();
     }
+
+    updateSpaceHandler() {
+        this.blogSpaceUpdateVm.show(this.blog);
+    }
+
+    updatePrivatedHandler() {
+        $.post('/admin/blog/privated/update', {
+            id: this.blog.id,
+            privated: !this.blog.privated
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                this.blog.privated = data.data.privated;
+                toastr.success('更新博文可见性成功!');
+            } else {
+                toastr.error(data.data, '更新博文可见性失败!');
+            }
+        });
+    }
 }
