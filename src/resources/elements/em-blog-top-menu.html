@@ -33,6 +33,16 @@
                     <div class="results"></div>
                 </div>
             </div>
+            <div ui-dropdown-hover class="ui top right dropdown item tms-login-user ${isActiveSearch ? 'tms-hide' : ''}">
+                <em-user-avatar user.bind="loginUser"></em-user-avatar>
+                <div class="menu">
+                    <div class="header">账户操作</div>
+                    <div class="divider"></div>
+                    <a class="item" click.delegate="userEditHandler()"><i class="edit icon"></i>修改</a>
+                    <a class="item" click.delegate="logoutHandler()"><i class="sign out icon"></i>退出</a>
+                </div>
+            </div>
         </div>
     </div>
+    <em-user-edit user.bind="loginUser" view-model.ref="userEditMd"></em-user-edit>
 </template>

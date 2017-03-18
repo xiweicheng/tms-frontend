@@ -7,12 +7,14 @@ export class EmBlogTopMenu {
 
     isHide = true;
 
+    loginUser = nsCtx.loginUser;
+
     /**
      * 构造函数
      */
     constructor() {
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, (payload) => {
-            this.toggleHandler();
+            !this.isHide && this.toggleHandler();
         });
     }
 
@@ -81,5 +83,15 @@ export class EmBlogTopMenu {
     toggleHandler() {
         this.isHide = !this.isHide;
         ea.publish(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR, this.isHide);
+    }
+
+    userEditHandler() {
+        this.userEditMd.show();
+    }
+
+    logoutHandler() {
+        $.post('/admin/logout').always(() => {
+            utils.redirect2Login();
+        });
     }
 }

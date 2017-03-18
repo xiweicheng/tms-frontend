@@ -6,12 +6,23 @@
         .item {
             &.tms-toggle {
                 display: none;
+                i.icon {
+                    margin-right: 0;
+                }
+            }
+            &.tms-links {
+                i.icon {
+                    margin-right: 0;
+                }
             }
         }
         @media only screen and (max-width: 767px) {
             .item {
-            	&.tms-links {
-                	display: none;
+                &.tms-links {
+                    display: none;
+                }
+                &.tms-logo {
+                    display: none;
                 }
                 &.header {
                     display: none;
@@ -44,6 +55,9 @@
                                 transition: width 0.15s ease-out 0s;
                             }
                         }
+                    }
+                    .tms-login-user {
+                        display: none;
                     }
                 }
             }
