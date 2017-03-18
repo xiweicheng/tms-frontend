@@ -7797,7 +7797,7 @@ define('resources/elements/em-blog-top-menu',['exports', 'aurelia-framework', 't
             this.isHide = true;
             this.loginUser = nsCtx.loginUser;
 
-            this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, function (payload) {
+            this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, function (payload) {
                 !_this.isHide && _this.toggleHandler();
             });
         }

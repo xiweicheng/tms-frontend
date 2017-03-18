@@ -13,7 +13,7 @@ export class EmBlogTopMenu {
      * 构造函数
      */
     constructor() {
-        this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, (payload) => {
+        this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, (payload) => {
             !this.isHide && this.toggleHandler();
         });
     }
