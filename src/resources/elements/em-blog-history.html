@@ -24,7 +24,7 @@
                             </td>
                             <td><a click.delegate="viewHistoryHandler(blog, histories.length + 1, true)">当前</a>(v.${histories.length + 1})</td>
                             <td title="${blog.updateDate | date}">${blog.updateDate | timeago}</td>
-                            <td>${blog.creator.name}</td>
+                            <td>${blog.updater.name}</td>
                             <td></td>
                         </tr>
                         <tr repeat.for="item of histories">
