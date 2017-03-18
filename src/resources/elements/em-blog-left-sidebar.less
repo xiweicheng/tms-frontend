@@ -1,5 +1,6 @@
 .em-blog-left-sidebar {
     &.ui.left.sidebar {
+        transition: width 0.15s ease-out 0s;
         @media only screen and (max-width: 767px) {
             z-index: 104;
             &.mobile-hide {
@@ -25,6 +26,8 @@
                     }
                     > .icon {
                         padding-right: 0;
+                        position: relative;
+                        top: -1px;
                     }
                     > .content {
                         white-space: nowrap;
