@@ -81,7 +81,7 @@ export class EmBlogContent {
         if (!nsCtx.blogId) {
             return;
         }
-        $.get('/admin/blog/get', {
+        return $.get('/admin/blog/get', {
             id: nsCtx.blogId
         }, (data) => {
             if (data.success) {
@@ -173,5 +173,10 @@ export class EmBlogContent {
                 toastr.error(data.data, '协作编辑操作失败!');
             }
         });
+    }
+
+    refreshHandler() {
+        let p = this.getBlog();
+        p && p.done(() => { toastr.success('刷新操作成功!'); });
     }
 }

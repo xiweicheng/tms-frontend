@@ -17,13 +17,16 @@
                 <div ui-dropdown-action class="ui top right pointing dropdown basic mini icon button">
                     <i class="large ellipsis horizontal icon"></i>
                     <div class="menu">
+                        <div click.delegate="refreshHandler()" class="item">
+                            <i class="refresh icon"></i> 刷新
+                        </div>
                         <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="updateSpaceHandler()" class="item">
                             <i class="exchange icon"></i> 移动
                         </div>
                         <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="openEditHandler()" class="item">
                             <i class="write icon"></i> ${blog.openEdit ? '关闭协作编辑' : '开放协作编辑'}
                         </div>
-                        <div class="divider"></div>
+                        <div if.bind="isSuper || blog.creator.username == loginUser.username" class="divider"></div>
                         <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="deleteHandler()" class="item" style="color: red;">
                             <i class="trash outline icon"></i> 删除
                         </div>

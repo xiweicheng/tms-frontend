@@ -94,4 +94,5 @@ export class EmBlogTopMenu {
             utils.redirect2Login();
         });
     }
+
 }
