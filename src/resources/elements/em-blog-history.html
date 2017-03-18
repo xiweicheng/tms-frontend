@@ -32,8 +32,8 @@
                                 <em-checkbox checked.bind="item.checked"></em-checkbox>
                             </td>
                             <td><a click.delegate="viewHistoryHandler(item, histories.length - $index)">v.${histories.length - $index}</a></td>
-                            <td title="${item.createDate | date}">${item.createDate | timeago}</td>
-                            <td>${item.creator.name}</td>
+                            <td title="${item.blogUpdateDate | date}">${item.blogUpdateDate | timeago}</td>
+                            <td>${item.blogUpdater.name}</td>
                             <td>
                                 <a if.bind="isSuper || blog.creator.username == loginUser.username || blog.openEdit" class="${!$parent.ajax1 || $parent.ajax1.readyState == 4 ? '' : 'tms-disabled'}" click.delegate="restoreHandler(item)">还原此版本</a> ·
                                 <a if.bind="isSuper || blog.creator.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown ${!$parent.ajax2 || $parent.ajax2.readyState == 4 ? '' : 'disabled'}" title="删除博文历史记录">
