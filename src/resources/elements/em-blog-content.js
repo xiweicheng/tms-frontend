@@ -179,4 +179,8 @@ export class EmBlogContent {
         let p = this.getBlog();
         p && p.done(() => { toastr.success('刷新操作成功!'); });
     }
+
+    historyHandler() {
+        this.blogHistoryVm.show(this.blog);
+    }
 }
