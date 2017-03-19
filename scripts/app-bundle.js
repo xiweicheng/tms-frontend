@@ -1222,6 +1222,7 @@ define('common/common-constant',[], function () {
         EVENT_BLOG_VIEW_CHANGED: 'event_blog_view_changed',
         EVENT_BLOG_SAVE: 'event_blog_save',
         EVENT_BLOG_HISTORY_CHANGED: 'event_blog_history_changed',
+        EVENT_BLOG_COMMENT_POPUP_SHOW: 'event_blog_comment_popup_show',
         ACTION_TYPE_SEARCH: 'action_type_search',
         ACTION_TYPE_STOW: 'action_type_stow',
         ACTION_TYPE_AT: 'action_type_at',
@@ -4440,7 +4441,7 @@ define('resources/index',['exports'], function (exports) {
     exports.configure = configure;
     function configure(aurelia) {
 
-        aurelia.globalResources(['resources/value-converters/vc-common', 'resources/binding-behaviors/bb-key', 'resources/attributes/attr-task', 'resources/attributes/attr-swipebox', 'resources/attributes/attr-pastable', 'resources/attributes/attr-autosize', 'resources/attributes/attr-dropzone', 'resources/attributes/attr-attr', 'resources/attributes/attr-c2c', 'resources/attributes/attr-dimmer', 'resources/attributes/attr-ui-dropdown', 'resources/attributes/attr-ui-dropdown-action', 'resources/attributes/attr-ui-dropdown-hover', 'resources/attributes/attr-ui-tab', 'resources/attributes/attr-ui-popup', 'resources/attributes/attr-ui-checkbox', 'resources/attributes/attr-tablesort', 'resources/attributes/attr-textcomplete', 'resources/attributes/attr-scrollbar', 'resources/attributes/attr-modaal', 'resources/elements/em-modal', 'resources/elements/em-dropdown', 'resources/elements/em-checkbox', 'resources/elements/em-confirm-modal', 'resources/elements/em-hotkeys-modal', 'resources/elements/em-chat-input', 'resources/elements/em-chat-top-menu', 'resources/elements/em-chat-sidebar-left', 'resources/elements/em-chat-content-item', 'resources/elements/em-chat-sidebar-right', 'resources/elements/em-chat-channel-create', 'resources/elements/em-chat-channel-join', 'resources/elements/em-chat-channel-edit', 'resources/elements/em-chat-channel-members-mgr', 'resources/elements/em-chat-channel-members-show', 'resources/elements/em-chat-channel-link-mgr', 'resources/elements/em-chat-system-link-mgr', 'resources/elements/em-chat-msg-popup', 'resources/elements/em-chat-member-popup', 'resources/elements/em-chat-attach', 'resources/elements/em-chat-schedule', 'resources/elements/em-chat-schedule-edit', 'resources/elements/em-chat-schedule-remind', 'resources/elements/em-blog-write', 'resources/elements/em-blog-left-sidebar', 'resources/elements/em-blog-content', 'resources/elements/em-blog-top-menu', 'resources/elements/em-blog-share', 'resources/elements/em-blog-comment', 'resources/elements/em-blog-save', 'resources/elements/em-blog-space-create', 'resources/elements/em-blog-space-edit', 'resources/elements/em-blog-space-update', 'resources/elements/em-blog-history', 'resources/elements/em-blog-history-view', 'resources/elements/em-blog-history-diff', 'resources/elements/em-user-avatar', 'resources/elements/em-user-edit']);
+        aurelia.globalResources(['resources/value-converters/vc-common', 'resources/binding-behaviors/bb-key', 'resources/attributes/attr-task', 'resources/attributes/attr-swipebox', 'resources/attributes/attr-pastable', 'resources/attributes/attr-autosize', 'resources/attributes/attr-dropzone', 'resources/attributes/attr-attr', 'resources/attributes/attr-c2c', 'resources/attributes/attr-dimmer', 'resources/attributes/attr-ui-dropdown', 'resources/attributes/attr-ui-dropdown-action', 'resources/attributes/attr-ui-dropdown-hover', 'resources/attributes/attr-ui-tab', 'resources/attributes/attr-ui-popup', 'resources/attributes/attr-ui-checkbox', 'resources/attributes/attr-tablesort', 'resources/attributes/attr-textcomplete', 'resources/attributes/attr-scrollbar', 'resources/attributes/attr-modaal', 'resources/elements/em-modal', 'resources/elements/em-dropdown', 'resources/elements/em-checkbox', 'resources/elements/em-confirm-modal', 'resources/elements/em-hotkeys-modal', 'resources/elements/em-chat-input', 'resources/elements/em-chat-top-menu', 'resources/elements/em-chat-sidebar-left', 'resources/elements/em-chat-content-item', 'resources/elements/em-chat-sidebar-right', 'resources/elements/em-chat-channel-create', 'resources/elements/em-chat-channel-join', 'resources/elements/em-chat-channel-edit', 'resources/elements/em-chat-channel-members-mgr', 'resources/elements/em-chat-channel-members-show', 'resources/elements/em-chat-channel-link-mgr', 'resources/elements/em-chat-system-link-mgr', 'resources/elements/em-chat-msg-popup', 'resources/elements/em-chat-member-popup', 'resources/elements/em-chat-attach', 'resources/elements/em-chat-schedule', 'resources/elements/em-chat-schedule-edit', 'resources/elements/em-chat-schedule-remind', 'resources/elements/em-blog-write', 'resources/elements/em-blog-left-sidebar', 'resources/elements/em-blog-content', 'resources/elements/em-blog-top-menu', 'resources/elements/em-blog-share', 'resources/elements/em-blog-comment', 'resources/elements/em-blog-save', 'resources/elements/em-blog-space-create', 'resources/elements/em-blog-space-edit', 'resources/elements/em-blog-space-update', 'resources/elements/em-blog-history', 'resources/elements/em-blog-history-view', 'resources/elements/em-blog-history-diff', 'resources/elements/em-blog-comment-popup', 'resources/elements/em-user-avatar', 'resources/elements/em-user-edit']);
     }
 });
 define('test/test-lifecycle',['exports', 'aurelia-framework', 'aurelia-event-aggregator'], function (exports, _aureliaFramework, _aureliaEventAggregator) {
@@ -6337,6 +6338,15 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
 
         EmBlogComment.prototype.attached = function attached() {
             this._init();
+
+            $('.em-blog-comment .comments').on('mouseenter', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', function (event) {
+                event.preventDefault();
+                var $a = $(event.currentTarget);
+                ea.publish(nsCons.EVENT_BLOG_COMMENT_POPUP_SHOW, {
+                    id: utils.urlQuery('cid', $a.attr('href')),
+                    target: event.currentTarget
+                });
+            });
         };
 
         EmBlogComment.prototype._init = function _init() {
@@ -31326,8 +31336,70 @@ define('resources/elements/em-checkbox',['exports', 'aurelia-framework'], functi
         initializer: null
     })), _class2)) || _class);
 });
+define('resources/elements/em-blog-comment-popup',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.EmBlogCommentPopup = undefined;
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _class;
+
+    var EmBlogCommentPopup = exports.EmBlogCommentPopup = (0, _aureliaFramework.containerless)(_class = function () {
+        function EmBlogCommentPopup() {
+            var _this = this;
+
+            _classCallCheck(this, EmBlogCommentPopup);
+
+            this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_COMMENT_POPUP_SHOW, function (payload) {
+                _this.id = payload.id;
+                _this.target = payload.target;
+
+                $(_this.target).popup({
+                    popup: _this.popup,
+                    hoverable: true,
+                    inline: false,
+                    movePopup: false,
+
+                    silent: true,
+                    position: 'bottom left',
+                    jitter: 300,
+                    prefer: 'opposite',
+                    delay: {
+                        show: 300,
+                        hide: 300
+                    },
+                    onShow: function onShow() {
+                        $.get('/admin/blog/comment/get', {
+                            cid: _this.id
+                        }, function (data) {
+                            if (data.success) {
+                                _this.comment = data.data;
+                            } else {
+                                toastr.error(data.data, "加载失败!");
+                            }
+                        });
+                    }
+                }).popup('show');
+            });
+        }
+
+        EmBlogCommentPopup.prototype.unbind = function unbind() {
+            this.subscribe.dispose();
+        };
+
+        return EmBlogCommentPopup;
+    }()) || _class;
+});
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./app.css\"></require>\r\n    <require from=\"./common.css\"></require>\r\n    <require from=\"./override.css\"></require>\r\n    <require from=\"./chat/md-github.css\"></require>\r\n    <require from=\"common/common-scrollbar.css\"></require>\r\n    <require from=\"nprogress/nprogress.css\"></require>\r\n    <require from=\"toastr/build/toastr.css\"></require>\r\n    <require from=\"tms-semantic-ui/semantic.min.css\"></require>\r\n    <require from=\"semantic-ui-calendar/dist/calendar.min.css\"></require>\r\n    <require from=\"modaal/dist/css/modaal.min.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <router-view></router-view>\r\n</template>\r\n"; });
-define('text!blog/blog.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./blog.css\"></require>\r\n    <div class=\"tms-blog\">\r\n        <em-blog-top-menu></em-blog-top-menu>\r\n        <em-blog-left-sidebar></em-blog-left-sidebar>\r\n        <em-blog-content></em-blog-content>\r\n        <em-chat-member-popup></em-chat-member-popup>\r\n    </div>\r\n</template>\r\n"; });
+define('text!blog/blog.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./blog.css\"></require>\r\n    <div class=\"tms-blog\">\r\n        <em-blog-top-menu></em-blog-top-menu>\r\n        <em-blog-left-sidebar></em-blog-left-sidebar>\r\n        <em-blog-content></em-blog-content>\r\n        <em-chat-member-popup></em-chat-member-popup>\r\n    </div>\r\n    <em-blog-comment-popup></em-blog-comment-popup>\r\n</template>\r\n"; });
 define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n  overflow: hidden;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n.tms-dropzone-preview-hidden .dz-preview {\n  display: none!important;\n}\n"; });
 define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" chat-user.bind=\"user\" login-user.bind=\"loginUser\" channels.bind=\"channels\" channel.bind=\"channel\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div class=\"tms-comments-container\" ref=\"scrollbarRef\" scrollbar>\r\n                    <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                        <div if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</div>\r\n                        <em-chat-content-item chat-to.bind=\"chatTo\" mark-id.bind=\"markId\" channel.bind=\"channel\" is-at.bind=\"isAt\" chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                        <div if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})\r\n                            <div click.trigger=\"refreshLatestHandler($event)\" title=\"刷新最新消息\" class=\"ui basic circular mini icon button\">\r\n                                <i class=\"refresh icon\"></i>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <div show.bind=\"isShowHead\" title=\"滚至头部(alt+↑)\" class=\"tms-go tms-go-head\"><div click.delegate=\"goHeadHandler()\" class=\"circular ui icon button\"><i class=\"chevron up icon\"></i></div></div>\r\n                    <div show.bind=\"isShowFoot\" title=\"滚至尾部(alt+↓)\" class=\"tms-go tms-go-foot\"><div click.delegate=\"goFootHandler()\" class=\"circular ui icon button\"><i class=\"chevron down icon\"></i></div></div>\r\n                </div>\r\n                <em-chat-input channel.bind=\"channel\" is-at.bind=\"isAt\" chat-to.bind=\"chatTo\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right login-user.bind=\"loginUser\" channel.bind=\"channel\" login-user.bind=\"loginUser\" is-at.bind=\"isAt\"></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n    <em-chat-msg-popup></em-chat-msg-popup>\r\n    <em-chat-member-popup></em-chat-member-popup>\r\n</template>\r\n"; });
 define('text!common.css', ['module'], function(module) { module.exports = "code.nx {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  white-space: nowrap;\n}\n.markdown-body .pre-code-wrapper {\n  position: relative;\n}\n.markdown-body .pre-code-wrapper > i.copy.icon {\n  display: none;\n  position: absolute;\n  top: 0;\n  right: 0;\n  cursor: pointer;\n}\n.markdown-body .pre-code-wrapper:hover > i.copy.icon {\n  display: block;\n}\n.tms-disabled {\n  cursor: default;\n  opacity: .45!important;\n  background-image: none!important;\n  box-shadow: none!important;\n  pointer-events: none!important;\n}\n.animated {\n  -webkit-animation-duration: 1s;\n  animation-duration: 1s;\n  -webkit-animation-fill-mode: both;\n  animation-fill-mode: both;\n}\n@keyframes flip {\n  from {\n    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -360deg);\n    transform: perspective(400px) rotate3d(0, 1, 0, -360deg);\n    -webkit-animation-timing-function: ease-out;\n    animation-timing-function: ease-out;\n  }\n  40% {\n    -webkit-transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -190deg);\n    transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -190deg);\n    -webkit-animation-timing-function: ease-out;\n    animation-timing-function: ease-out;\n  }\n  50% {\n    -webkit-transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -170deg);\n    transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -170deg);\n    -webkit-animation-timing-function: ease-in;\n    animation-timing-function: ease-in;\n  }\n  80% {\n    -webkit-transform: perspective(400px) scale3d(0.95, 0.95, 0.95);\n    transform: perspective(400px) scale3d(0.95, 0.95, 0.95);\n    -webkit-animation-timing-function: ease-in;\n    animation-timing-function: ease-in;\n  }\n  to {\n    -webkit-transform: perspective(400px);\n    transform: perspective(400px);\n    -webkit-animation-timing-function: ease-in;\n    animation-timing-function: ease-in;\n  }\n}\n.animated.flip {\n  -webkit-backface-visibility: visible;\n  backface-visibility: visible;\n  -webkit-animation-name: flip;\n  animation-name: flip;\n}\n.cbutton {\n  position: relative;\n}\n.cbutton::after {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  margin: -7px 0 0 -7px;\n  width: 14px;\n  height: 14px;\n  border-radius: 50%;\n  content: '';\n  opacity: 0;\n  pointer-events: none;\n}\n/* Novak */\n.cbutton--effect-novak::after {\n  background: rgba(111, 148, 182, 0.25);\n}\n.cbutton--effect-novak.cbutton--click::after {\n  -webkit-animation: anim-effect-novak 0.5s forwards;\n  animation: anim-effect-novak 0.5s forwards;\n}\n@-webkit-keyframes anim-effect-novak {\n  0% {\n    opacity: 1;\n    -webkit-transform: scale3d(0.1, 0.1, 1);\n    transform: scale3d(0.1, 0.1, 1);\n  }\n  100% {\n    opacity: 0;\n    -webkit-transform: scale3d(8, 8, 1);\n    transform: scale3d(30, 30, 1);\n  }\n}\n@keyframes anim-effect-novak {\n  0% {\n    opacity: 1;\n    -webkit-transform: scale3d(0.1, 0.1, 1);\n    transform: scale3d(0.1, 0.1, 1);\n  }\n  100% {\n    opacity: 0;\n    -webkit-transform: scale3d(8, 8, 1);\n    transform: scale3d(30, 30, 1);\n  }\n}\n.emoji {\n  width: 1.5em;\n  height: 1.5em;\n  display: inline-block;\n  margin-bottom: -0.25em;\n  background-size: contain;\n}\n"; });
@@ -31413,4 +31485,6 @@ define('text!resources/elements/em-blog-history-diff.html', ['module'], function
 define('text!resources/elements/em-blog-history-diff.css', ['module'], function(module) { module.exports = ".em-blog-history-diff > .content {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
 define('text!resources/elements/em-checkbox.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-checkbox.css\"></require>\n    <div class=\"ui ${classes} checkbox em-checkbox\" title.bind=\"title\" ref=\"checkbox\">\n        <input type=\"checkbox\">\n        <label>${label}</label>\n    </div>\n</template>\n"; });
 define('text!resources/elements/em-checkbox.css', ['module'], function(module) { module.exports = ""; });
+define('text!resources/elements/em-blog-comment-popup.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-blog-comment-popup.css\"></require>\n    <div ref=\"popup\" class=\"ui flowing popup transition hidden em-blog-comment-popup\">\n        <div class=\"ui items\">\n            <div class=\"item\">\n                <div class=\"content\" style=\"width:300px; word-break: break-all;\">\n                    <a class=\"header pp-not\" href=\"javascript:void(0);\">评论#${comment.id}</a>\n                    <div class=\"meta\" style=\"width:300px; word-break: break-all; font-size: 12px;\">\n                        <i class=\"wait icon\"></i>\n                        <span>\n                            ${comment.creator ? (comment.creator.name ? comment.creator.name : comment.creator.username) : ''}\n                        </span>\n                        <span>发表于</span>\n                        <span class=\"cinema timeago\" style=\"font-style: italic;\" title=\"${comment.createDate | date}\">${comment.createDate | timeago}</span>\n                    </div>\n                    <div class=\"ui divider\"></div>\n                    <div class=\"description markdown-body\" style=\"width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;\" innerhtml.bind=\"comment.content | parseMd\"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-blog-comment-popup.css', ['module'], function(module) { module.exports = ""; });
 //# sourceMappingURL=app-bundle.js.map

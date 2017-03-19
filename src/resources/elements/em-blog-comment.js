@@ -52,6 +52,16 @@ export class EmBlogComment {
      */
     attached() {
         this._init();
+
+        // 消息popup
+        $('.em-blog-comment .comments').on('mouseenter', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', (event) => {
+            event.preventDefault();
+            var $a = $(event.currentTarget);
+            ea.publish(nsCons.EVENT_BLOG_COMMENT_POPUP_SHOW, {
+                id: utils.urlQuery('cid', $a.attr('href')),
+                target: event.currentTarget
+            });
+        });
     }
 
     _init() {
