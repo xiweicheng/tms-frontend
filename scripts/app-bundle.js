@@ -8182,6 +8182,14 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
                     _this3.save(e, true);
                 } else if (e.keyCode == 27) {
                     _this3.simplemde.value('');
+                } else if (e.keyCode == 13) {
+                    var val = $('#blog-title-input').val();
+                    if (!val) {
+                        var ms = /#{1,6}[\s]+(.+)\n?/g.exec(_this3.simplemde.value());
+                        if (ms && ms.length > 1) {
+                            $('#blog-title-input').val(ms[1]);
+                        }
+                    }
                 }
             });
 

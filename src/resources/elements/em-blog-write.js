@@ -216,6 +216,14 @@ export class EmBlogWrite {
                 this.save(e, true);
             } else if (e.keyCode == 27) { // Esc
                 this.simplemde.value('');
+            } else if (e.keyCode == 13) { // Enter
+                let val = $('#blog-title-input').val();
+                if (!val) {
+                    let ms = /#{1,6}[\s]+(.+)\n?/g.exec(this.simplemde.value());
+                    if (ms && ms.length > 1) {
+                        $('#blog-title-input').val(ms[1]);
+                    }
+                }
             }
         });
 
@@ -502,7 +510,7 @@ export class EmBlogWrite {
                         action: 'updated',
                         blog: this.blog
                     });
-                    if(!isKey) {
+                    if (!isKey) {
                         (event && event.ctrlKey) && this.close();
                     } else {
                         (event && event.ctrlKey && event.shiftKey) && this.close();
