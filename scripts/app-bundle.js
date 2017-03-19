@@ -7044,6 +7044,10 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
             }, function (data, textStatus, xhr) {
                 if (data.success) {
                     _this4.blog.privated = data.data.privated;
+                    ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                        action: 'updated',
+                        blog: _this4.blog
+                    });
                     toastr.success('更新博文可见性成功!');
                 } else {
                     toastr.error(data.data, '更新博文可见性失败!');
@@ -7086,6 +7090,10 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
             }, function (data, textStatus, xhr) {
                 if (data.success) {
                     _this6.blog.openEdit = !_this6.blog.openEdit;
+                    ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                        action: 'updated',
+                        blog: _this6.blog
+                    });
                     toastr.success(_this6.blog.openEdit ? '开放协作编辑成功!' : '关闭协作编辑成功!');
                 } else {
                     toastr.error(data.data, '协作编辑操作失败!');

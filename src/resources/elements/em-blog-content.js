@@ -130,6 +130,10 @@ export class EmBlogContent {
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 this.blog.privated = data.data.privated;
+                ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                    action: 'updated',
+                    blog: this.blog
+                });
                 toastr.success('更新博文可见性成功!');
             } else {
                 toastr.error(data.data, '更新博文可见性失败!');
@@ -168,6 +172,10 @@ export class EmBlogContent {
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 this.blog.openEdit = !this.blog.openEdit;
+                ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                    action: 'updated',
+                    blog: this.blog
+                });
                 toastr.success(this.blog.openEdit ? '开放协作编辑成功!' : '关闭协作编辑成功!');
             } else {
                 toastr.error(data.data, '协作编辑操作失败!');
