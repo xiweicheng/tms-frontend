@@ -129,7 +129,7 @@ export class EmBlogContent {
             privated: !this.blog.privated
         }, (data, textStatus, xhr) => {
             if (data.success) {
-                this.blog.privated = data.data.privated;
+                _.extend(this.blog, data.data);
                 ea.publish(nsCons.EVENT_BLOG_CHANGED, {
                     action: 'updated',
                     blog: this.blog
