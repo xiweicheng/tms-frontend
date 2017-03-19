@@ -1,5 +1,15 @@
+@top: 15px;
+.modaal-wrapper .modaal-close {
+    @media only screen and (max-width: 827px) {
+        top: initial!important;
+        bottom: 10px;
+        z-index: 2;
+    }
+}
+
 .em-blog-write {
     margin-top: -30px;
+    margin-bottom: 20px;
     > .wrapper {
         max-width: 768px;
         margin: auto;
@@ -7,12 +17,12 @@
             position: fixed;
             z-index: 2;
             margin-bottom: 8px;
-            width: e("calc(100vw - 90px)");
+            width: e("calc(100vw - 60px)");
             @media only screen and (min-width: 828px) {
                 width: 768px;
             }
             background-color: white;
-            padding-top: 18px;
+            padding-top: @top + 3px;
             box-shadow: 0px 1px 0px 0px #dddddd;
             > .ui.input {
                 padding-right: 80px;
@@ -20,11 +30,11 @@
             > .ui.button {
                 position: absolute;
                 right: 0;
-                top: 15px;
+                top: @top;
             }
         }
         > .content {
-            padding-top: 60px;
+            padding-top: @top + 45px;
             .editor-toolbar {
                 &.fullscreen {
                     z-index: 800;
@@ -35,7 +45,7 @@
     .dropzone {
         .dropzone-previews {
             position: absolute;
-            top: 48px;
+            top: @top + 33px;
             width: 100%;
             .dz-preview {
                 width: 100%;
