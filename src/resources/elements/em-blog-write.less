@@ -60,5 +60,22 @@
                 }
             }
         }
+        position: relative;
+    }
+    .tms-blog-write-status-bar-wrapper {
+        position: fixed;
+        z-index: 800;
+        height: 0;
+        top: 120px;
+        width: e("calc(100vw - 60px)");
+        @media only screen and (min-width: 828px) {
+            width: 768px;
+        }
+        .tms-blog-write-status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
     }
 }

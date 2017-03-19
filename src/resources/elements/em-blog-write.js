@@ -5,6 +5,7 @@ import {
 import {
     default as Dropzone
 } from 'dropzone';
+import emojis from 'common/common-emoji';
 
 @containerless
 export class EmBlogWrite {
@@ -200,6 +201,9 @@ export class EmBlogWrite {
                 table: ["", "\n\n| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n\n"],
             },
             previewRender: (plainText, preview) => { // Async method
+                if (emojify) {
+                    plainText = emojify.replace(plainText);
+                }
                 return marked(utils.preParse(plainText));
             },
         });
@@ -222,6 +226,7 @@ export class EmBlogWrite {
         }
 
         this.initPaste();
+        this.initTextcomplete();
 
         this.initUploadDropzone($('.CodeMirror-wrap', '#txt-blog-write-wrapper'), () => {
             return this.$chatMsgInputRef
@@ -231,6 +236,72 @@ export class EmBlogWrite {
             return this.$chatMsgInputRef
         }, true);
 
+    }
+
+    initTextcomplete() {
+
+        $(this.$chatMsgInputRef).textcomplete([{ // @user
+            match: /(^|\s)@(\w*)$/,
+            search: (term, callback) => {
+                callback($.map(nsCtx.users, (member) => {
+                    return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
+                }));
+            },
+            template: (value, term) => {
+                let user = _.find(nsCtx.users, { username: value });
+                return `${user.name} - ${user.mails} (${user.username})`;
+            },
+            replace: (value) => {
+                return `$1{~${value}}`;
+            }
+        }, { // emoji
+            match: /(^|\s):([\+\-\w]*)$/,
+            search: function(term, callback) {
+                callback($.map(emojis, (emoji) => {
+                    return _.some(emoji.split('_'), (item) => {
+                        return item.indexOf(term) === 0;
+                    }) ? emoji : null;
+                }));
+            },
+            template: (value, term) => {
+                if (value == 'search') {
+                    return `表情查找 - :search`;
+                }
+                let emojiKey = `:${value}:`;
+                return `${emojify.replace(emojiKey)} - ${emojiKey}`;
+            },
+            replace: (value) => {
+                if (this.tipsActionHandler(value)) {
+                    return '$1:' + value + ': ';
+                } else {
+                    return '';
+                }
+            }
+        }], {
+            appendTo: '.tms-blog-write-status-bar',
+            maxCount: 5
+        });
+
+        this.simplemde.codemirror.on('keydown', (cm, e) => {
+            if (_.includes([13, 38, 40], e.keyCode) && this.isTipsShow()) { // enter | up | down
+                e.preventDefault();
+            }
+        });
+    }
+
+    isTipsShow() {
+        return $('.tms-blog-write-status-bar').find('.textcomplete-dropdown:visible').size() === 1;
+    }
+
+    tipsActionHandler(value) {
+
+        if (value == 'search') {
+            _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
+        } else {
+            return true;
+        }
+
+        return false;
     }
 
     initPaste() {

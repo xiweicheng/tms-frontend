@@ -8,10 +8,23 @@
                         <div if.bind="!space.privated || isSuper || space.creator.username == loginUser.username" class="item">
                             <i click.delegate="spaceToggleHandler(space)" class="angle ${space.open ? 'down' : 'right'} link icon"></i>
                             <div class="content">
-                                <span style="cursor: pointer;" click.delegate="spaceToggleHandler(space)">${space.name}</span>
+                                <!-- <span style="cursor: pointer;" click.delegate="spaceToggleHandler(space)"><i class="folder outline icon"></i>${space.name}</span> -->
+                                <span style="cursor: pointer;" click.delegate="spaceToggleHandler(space)">
+                                    <i class="icons">
+                                        <i class="folder outline icon"></i>
+                                    <i show.bind="space.privated" class="corner lock icon"></i>
+                                    </i>
+                                    ${space.name}
+                                </span>
                                 <div show.bind="space.open" class="ui bulleted list">
                                     <div repeat.for="item of space.blogs" class="item ${item.id == blog.id ? 'active' : ''}">
-                                        <a title="${item.title}" href="#/blog/${item.id}">${item.title}</a>
+                                        <!-- <a title="${item.title}" href="#/blog/${item.id}"><i class="file outline icon"></i>${item.title}</a> -->
+                                        <a title="${item.title}" href="#/blog/${item.id}">
+                                            <i class="icons">
+                                                <i class="file outline icon"></i>
+                                            <i show.bind="item.privated" class="corner lock icon"></i>
+                                            </i>
+                                            ${item.title}</a>
                                     </div>
                                 </div>
                             </div>
@@ -20,7 +33,7 @@
                                     <i class="large ellipsis horizontal icon"></i>
                                     <div class="menu">
                                         <div class="item" click.delegate="editSpaceHandler(space)"><i class="icon edit"></i>编辑</div>
-                                        <div class="divider"></div>
+                                        <!-- <div class="divider"></div> -->
                                         <div class="item" style="color: red;" click.delegate="delSpaceHandler(space)"><i class="trash outline icon"></i>删除</div>
                                     </div>
                                 </div>
@@ -30,7 +43,13 @@
                 </div>
                 <div class="ui bulleted list no-space">
                     <div repeat.for="item of noSpaceBlogs" class="item ${item.id == blog.id ? 'active' : ''}">
-                        <a title="${item.title}" href="#/blog/${item.id}">${item.title}</a>
+                        <!-- <a title="${item.title}" href="#/blog/${item.id}"><i class="file outline icon"></i>${item.title}</a> -->
+                        <a title="${item.title}" href="#/blog/${item.id}">
+                            <i class="icons">
+                                <i class="file outline icon"></i>
+                            <i show.bind="item.privated" class="corner lock icon"></i>
+                            </i>
+                            </i>${item.title}</a>
                     </div>
                 </div>
             </div>
