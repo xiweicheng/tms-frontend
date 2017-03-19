@@ -7413,6 +7413,7 @@ define('resources/elements/em-blog-save',['exports', 'aurelia-framework'], funct
                         blog: _this4.blog
                     });
                     modal.hide();
+                    $('a[href="#modaal-blog-write"]').modaal('close');
                 } else {
                     toastr.error(data.data, '博文保存失败!');
                 }
@@ -8014,6 +8015,7 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
                 if (payload.action === 'created') {
                     _this2.blog = payload.blog;
                     $('#blog-save-btn span').text('更新');
+                    $('#blog-save-btn').attr('title', 'ctrl+click更新后关闭窗口');
                 }
             });
         }
@@ -8029,6 +8031,7 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
             this.action = null;
             this.blog = null;
             $('#blog-save-btn span').text('保存');
+            $('#blog-save-btn').attr('title', 'ctrl+click快速保存');
             $('#blog-title-input').val('');
             this.simplemde.value('');
             this.simplemde.toTextArea();
@@ -8039,6 +8042,7 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
             $('#blog-title-input').val(this.blog.title);
             this.simplemde.value(this.blog.content);
             $('#blog-save-btn span').text('更新');
+            $('#blog-save-btn').attr('title', 'ctrl+click更新后关闭窗口');
         };
 
         EmBlogWrite.prototype.init = function init() {
@@ -8175,7 +8179,7 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
 
             this.simplemde.codemirror.on('keyup', function (cm, e) {
                 if (e.ctrlKey && e.keyCode == 13) {
-                    _this3.save();
+                    _this3.save(e, true);
                 } else if (e.keyCode == 27) {
                     _this3.simplemde.value('');
                 }
@@ -8200,6 +8204,10 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
             this.initUploadDropzone($('.editor-toolbar .fa.fa-upload', '#txt-blog-write-wrapper'), function () {
                 return _this3.$chatMsgInputRef;
             }, true);
+        };
+
+        EmBlogWrite.prototype.close = function close() {
+            $('a[href="#modaal-blog-write"]').modaal('close');
         };
 
         EmBlogWrite.prototype.initTextcomplete = function initTextcomplete() {
@@ -8363,11 +8371,11 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
             var _this6 = this;
 
             $('#blog-save-btn').click(function (event) {
-                _this6.save();
+                _this6.save(event);
             });
         };
 
-        EmBlogWrite.prototype.save = function save() {
+        EmBlogWrite.prototype.save = function save(event, isKey) {
             var _this7 = this;
 
             var title = $('#blog-title-input').val();
@@ -8386,10 +8394,34 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
             }
 
             if (!this.blog) {
-                ea.publish(nsCons.EVENT_BLOG_SAVE, {
-                    title: title,
-                    content: content
-                });
+                if (event.ctrlKey) {
+                    $.post('/admin/blog/create', {
+                        url: utils.getBasePath(),
+                        usernames: utils.parseUsernames(content, [nsCtx.memberAll].concat(window.tmsUsers ? tmsUsers : [])).join(','),
+                        title: title,
+                        content: content,
+                        spaceId: '',
+                        privated: false,
+                        contentHtml: utils.md2html(content)
+                    }, function (data, textStatus, xhr) {
+                        if (data.success) {
+                            _this7.blog = data.data;
+                            toastr.success('博文保存成功!');
+                            ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                                action: 'created',
+                                blog: _this7.blog
+                            });
+                            $('a[href="#modaal-blog-write"]').modaal('close');
+                        } else {
+                            toastr.error(data.data, '博文保存失败!');
+                        }
+                    });
+                } else {
+                    ea.publish(nsCons.EVENT_BLOG_SAVE, {
+                        title: title,
+                        content: content
+                    });
+                }
             } else {
 
                 if (this.sending) {
@@ -8418,6 +8450,11 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
                             action: 'updated',
                             blog: _this7.blog
                         });
+                        if (!isKey) {
+                            event && event.ctrlKey && _this7.close();
+                        } else {
+                            event && event.ctrlKey && event.shiftKey && _this7.close();
+                        }
                     } else {
                         toastr.error(data.data, '博文更新失败!');
                     }
@@ -31440,7 +31477,7 @@ define('text!resources/elements/em-blog-share.css', ['module'], function(module)
 define('text!resources/elements/em-blog-top-menu.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-blog-top-menu.css\"></require>\n    <div ref=\"topMenuRef\" class=\"ui top fixed inverted blue menu em-blog-top-menu ${isSearchFocus ? 'search-focus' : ''}\">\n        <div click.delegate=\"toggleHandler()\" class=\"item tms-toggle\">\n            <i class=\"large ${isHide ? 'indent' : 'outdent'} icon\"></i>\n        </div>\n        <div ui-dropdown-action class=\"ui dropdown item tms-links\">\n            <i class=\"large content icon\"></i>\n            <div class=\"menu\">\n                <div class=\"header\">系统外链</div>\n                <a repeat.for=\"item of sysLinks\" href=\"${item.href}\" target=\"_blank\" class=\"item\">${item.title}</a>\n            </div>\n        </div>\n        <div class=\"item tms-logo\">\n            <a href=\"#/\"><img ref=\"logoRef\" src=\"img/tms-x32.png\"></a>\n        </div>\n        <div class=\"header item\">\n            TMS博文\n        </div>\n        <div class=\"item tms-create\">\n            <a modaal=\"blog-create\" href=\"#modaal-blog-write\" class=\"ui primary button\">创建</a>\n        </div>\n        <div id=\"modaal-blog-write\" style=\"display:none;\">\n            <em-blog-write></em-blog-write>\n        </div>\n        <div class=\"right menu\">\n            <div class=\"item\">\n                <div ref=\"searchRef\" class=\"ui search\">\n                    <div class=\"ui icon input\">\n                        <input blur.trigger=\"searchBlurHandler()\" focus.trigger=\"searchFocusHandler()\" class=\"prompt\" type=\"text\" placeholder=\"搜索...\">\n                        <i class=\"search icon\"></i>\n                    </div>\n                    <div class=\"results\"></div>\n                </div>\n            </div>\n            <div ui-dropdown-hover class=\"ui top right dropdown item tms-login-user ${isActiveSearch ? 'tms-hide' : ''}\">\n                <em-user-avatar user.bind=\"loginUser\"></em-user-avatar>\n                <div class=\"menu\">\n                    <div class=\"header\">账户操作</div>\n                    <div class=\"divider\"></div>\n                    <a class=\"item\" click.delegate=\"userEditHandler()\"><i class=\"edit icon\"></i>修改</a>\n                    <a class=\"item\" click.delegate=\"logoutHandler()\"><i class=\"sign out icon\"></i>退出</a>\n                </div>\n            </div>\n        </div>\n    </div>\n    <em-user-edit user.bind=\"loginUser\" view-model.ref=\"userEditMd\"></em-user-edit>\n</template>\n"; });
 define('text!resources/elements/em-blog-space-create.css', ['module'], function(module) { module.exports = ".em-blog-space-create.ui.popup .ui.form {\n  width: 260px;\n}\n"; });
 define('text!resources/elements/em-blog-space-edit.css', ['module'], function(module) { module.exports = ""; });
-define('text!resources/elements/em-blog-write.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-blog-write.css\"></require>\n    <div class=\"em-blog-write\">\n        <div class=\"wrapper dropzone\">\n            <div class=\"title\">\n                <div class=\"ui transparent fluid massive input\">\n                    <input id=\"blog-title-input\" type=\"text\" placeholder=\"标题\">\n                </div>\n                <button id=\"blog-save-btn\" class=\"ui mini positive button\"><i style=\"display: none;\" class=\"spinner loading icon\"></i><span>保存</span></button>\n            </div>\n            <div class=\"dropzone-previews\"></div>\n            <div id=\"txt-blog-write-wrapper\" class=\"content markdown-body\">\n                <textarea style=\"width: 0; height: 0; border: 0; resize:none;\" id=\"txt-blog-write\"></textarea>\n            </div>\n            <div class=\"tms-blog-write-status-bar-wrapper\">\n                <div class=\"tms-blog-write-status-bar\"></div>\n            </div>\n        </div>\n        <div class=\"preview-template\" style=\"display: none;\">\n            <div class=\"dz-preview dz-file-preview\">\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\n            </div>\n        </div>\n    </div>\n    <em-blog-save view-model.ref=\"blogSaveVm\"></em-blog-save>\n</template>\n"; });
+define('text!resources/elements/em-blog-write.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-blog-write.css\"></require>\n    <div class=\"em-blog-write\">\n        <div class=\"wrapper dropzone\">\n            <div class=\"title\">\n                <div class=\"ui transparent fluid massive input\">\n                    <input id=\"blog-title-input\" type=\"text\" placeholder=\"标题\">\n                </div>\n                <button id=\"blog-save-btn\" title=\"ctrl+click快速保存\" class=\"ui mini positive button\"><i style=\"display: none;\" class=\"spinner loading icon\"></i><span>保存</span></button>\n            </div>\n            <div class=\"dropzone-previews\"></div>\n            <div id=\"txt-blog-write-wrapper\" class=\"content markdown-body\">\n                <textarea style=\"width: 0; height: 0; border: 0; resize:none;\" id=\"txt-blog-write\"></textarea>\n            </div>\n            <div class=\"tms-blog-write-status-bar-wrapper\">\n                <div class=\"tms-blog-write-status-bar\"></div>\n            </div>\n        </div>\n        <div class=\"preview-template\" style=\"display: none;\">\n            <div class=\"dz-preview dz-file-preview\">\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\n            </div>\n        </div>\n    </div>\n    <em-blog-save view-model.ref=\"blogSaveVm\"></em-blog-save>\n</template>\n"; });
 define('text!resources/elements/em-blog-space-update.css', ['module'], function(module) { module.exports = ""; });
 define('text!resources/elements/em-chat-attach.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-chat-attach.css\"></require>\n    <div class=\"em-chat-attach tms-attach-search-input\">\n        <div class=\"ui fluid left action icon input\">\n            <button class=\"ui basic icon button\">\n                <i show.bind=\"!ajax || ajax.readyState == 4\" class=\"${type == 'Image' ? 'image' : ''} file outline icon\"></i>\n                <i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i>\n            </button>\n            <input ref=\"searchRef\" type=\"text\" value.bind=\"search\" keyup.trigger=\"keyupHandler($event)\" placeholder=\"${type == 'Image' ? '图片' : '文件'}搜索(Enter确认, Esc取消)...\">\n            <i click.delegate=\"searchHandler()\" class=\"search link icon\"></i>\n        </div>\n    </div>\n    <div ref=\"tabRef\" class=\"ui pointing secondary menu em-chat-attach\">\n        <a click.delegate=\"tabClickHandler('Image')\" class=\"active item\" data-tab=\"Image\"><i show.bind=\"!ajax || ajax.readyState == 4 || type == 'Attachment'\" class=\"file image outline icon\"></i><i show.bind=\"ajax && ajax.readyState != 4 && type == 'Image'\" class=\"spinner loading icon\"></i>图片${(page && type == 'Image') ? '(' + page.totalElements + ')' : ''}</a>\n        <a click.delegate=\"tabClickHandler('Attachment')\" class=\"item\" data-tab=\"Attachment\"><i show.bind=\"!ajax || ajax.readyState == 4 || type == 'Image'\" class=\"file outline icon\"></i><i show.bind=\"ajax && ajax.readyState != 4 && type == 'Attachment'\" class=\"spinner loading icon\"></i>文件${(page && type == 'Attachment') ? '(' + page.totalElements + ')' : ''}</a>\n    </div>\n    <div swipebox class=\"ui active tab basic segment em-chat-attach\" data-tab=\"Image\">\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无图片</h1>\n        <div if.bind=\"type == 'Image'\" class=\"ui small bordered images\">\n            <img repeat.for=\"item of attachs\" if.bind=\"item.type == 'Image'\" src=\"/${item.path + item.uuidName}\" alt=\"${item.name}\" title=\"${item.username | userName}上传于${item.createDate | timeago}\">\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\n        </div>\n    </div>\n    <div class=\"ui tab basic segment em-chat-attach\" data-tab=\"Attachment\">\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无文件</h1>\n        <div if.bind=\"type == 'Attachment'\" class=\"divided list selection ui\">\n            <div repeat.for=\"item of attachs\" if.bind=\"item.type == 'Attachment'\" class=\"item\">\n                <i class=\"file outline icon\"></i>\n                <div class=\"content\">\n                    <div class=\"header\"><a href=\"/admin/file/download/${item.id}\">${item.name}</a></div>\n                    <div class=\"description\"><i class=\"wait icon\"></i><b>${item.username | userName}</b>上传于<span title=\"${item.createDate | date}\">${item.createDate | timeago}</span></div>\n                </div>\n            </div>\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\n        </div>\n    </div>\n</template>\n"; });
 define('text!resources/elements/em-chat-channel-create.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-create.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" show-confirm.bind=\"activeTab == 'channel-create'\" confirm-label=\"创建\">\r\n        <div slot=\"header\">频道管理</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"tabRef\" class=\"ui pointing secondary menu\">\r\n                <a class=\"active item\" data-tab=\"channel-create\">创建频道</a>\r\n                <a class=\"item\" data-tab=\"channel-join\">加入频道</a>\r\n            </div>\r\n            <div class=\"ui active tab basic segment tms-create\" data-tab=\"channel-create\">\r\n                <div ref=\"frm\" class=\"ui form\">\r\n                    <div class=\"inline required field\">\r\n                        <label>标识</label>\r\n                        <input type=\"text\" name=\"name\" value.bind=\"name\" placeholder=\"小写字母数组-_组合\">\r\n                    </div>\r\n                    <div class=\"inline required field\">\r\n                        <label>名称</label>\r\n                        <input type=\"text\" name=\"title\" value.bind=\"title\" placeholder=\"\">\r\n                    </div>\r\n                    <div class=\"inline field\">\r\n                        <label style=\"visibility: hidden;\">公开</label>\r\n                        <div ref=\"chk\" class=\"ui checkbox\">\r\n                            <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                            <label>非公开(公开频道用户可以自由加入)</label>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"field\">\r\n                        <label>描述</label>\r\n                        <textarea name=\"desc\" value.bind=\"desc\" placeholder=\"\" rows=\"5\"></textarea>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"ui tab basic segment tms-join\" data-tab=\"channel-join\">\r\n                <em-chat-channel-join em-chat-channel-join.ref=\"channelJoinVm\" login-user.bind=\"loginUser\"></em-chat-channel-join>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });

@@ -44,6 +44,7 @@ export class EmBlogWrite {
             if (payload.action === 'created') {
                 this.blog = payload.blog;
                 $('#blog-save-btn span').text('更新');
+                $('#blog-save-btn').attr('title', 'ctrl+click更新后关闭窗口');
             }
 
         });
@@ -63,6 +64,7 @@ export class EmBlogWrite {
         this.action = null;
         this.blog = null;
         $('#blog-save-btn span').text('保存');
+        $('#blog-save-btn').attr('title', 'ctrl+click快速保存');
         $('#blog-title-input').val('');
         this.simplemde.value('');
         this.simplemde.toTextArea();
@@ -73,6 +75,7 @@ export class EmBlogWrite {
         $('#blog-title-input').val(this.blog.title);
         this.simplemde.value(this.blog.content);
         $('#blog-save-btn span').text('更新');
+        $('#blog-save-btn').attr('title', 'ctrl+click更新后关闭窗口');
     }
 
     init() {
@@ -210,7 +213,7 @@ export class EmBlogWrite {
 
         this.simplemde.codemirror.on('keyup', (cm, e) => {
             if (e.ctrlKey && e.keyCode == 13) { // Ctrl+Enter
-                this.save();
+                this.save(e, true);
             } else if (e.keyCode == 27) { // Esc
                 this.simplemde.value('');
             }
@@ -236,6 +239,10 @@ export class EmBlogWrite {
             return this.$chatMsgInputRef
         }, true);
 
+    }
+
+    close() {
+        $('a[href="#modaal-blog-write"]').modaal('close');
     }
 
     initTextcomplete() {
@@ -415,11 +422,11 @@ export class EmBlogWrite {
      */
     attached() {
         $('#blog-save-btn').click((event) => {
-            this.save();
+            this.save(event);
         });
     }
 
-    save() {
+    save(event, isKey) {
 
         let title = $('#blog-title-input').val();
         let content = this.simplemde.value();
@@ -437,10 +444,34 @@ export class EmBlogWrite {
         }
 
         if (!this.blog) {
-            ea.publish(nsCons.EVENT_BLOG_SAVE, {
-                title: title,
-                content: content,
-            });
+            if (event.ctrlKey) {
+                $.post(`/admin/blog/create`, {
+                    url: utils.getBasePath(),
+                    usernames: utils.parseUsernames(content, [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])]).join(','),
+                    title: title,
+                    content: content,
+                    spaceId: '',
+                    privated: false,
+                    contentHtml: utils.md2html(content)
+                }, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        this.blog = data.data;
+                        toastr.success('博文保存成功!');
+                        ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                            action: 'created',
+                            blog: this.blog
+                        });
+                        $('a[href="#modaal-blog-write"]').modaal('close');
+                    } else {
+                        toastr.error(data.data, '博文保存失败!');
+                    }
+                });
+            } else {
+                ea.publish(nsCons.EVENT_BLOG_SAVE, {
+                    title: title,
+                    content: content,
+                });
+            }
         } else {
 
             if (this.sending) {
@@ -471,6 +502,11 @@ export class EmBlogWrite {
                         action: 'updated',
                         blog: this.blog
                     });
+                    if(!isKey) {
+                        (event && event.ctrlKey) && this.close();
+                    } else {
+                        (event && event.ctrlKey && event.shiftKey) && this.close();
+                    }
                 } else {
                     toastr.error(data.data, '博文更新失败!');
                 }

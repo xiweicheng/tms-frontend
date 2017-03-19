@@ -75,6 +75,7 @@ export class EmBlogSave {
                     blog: this.blog
                 });
                 modal.hide();
+                $('a[href="#modaal-blog-write"]').modaal('close');
             } else {
                 toastr.error(data.data, '博文保存失败!');
             }
