@@ -31,7 +31,9 @@
                     <div class="actions">
                         <a click.delegate="replyHandler(item)" class="reply">回复</a>
                         <a if.bind="isSuper || item.creator.username == loginUser.username" click.delegate="editHandler(item, editTxtRef)" class="reply">编辑</a>
-                        <div if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown" title="移除收藏消息">
+                        <a class="item tms-clipboard" data-clipboard-text="${item.content}" title="复制评论内容">复制</a>
+                        <a class="item tms-clipboard" data-clipboard-text="${basePath + '#/blog/' + blog.id + '?cid=' + item.id}" title="复制评论链接">分享</a>
+                        <div if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown" title="移除评论">
                             移除
                             <div class="menu">
                                 <div style="color: red;" class="item" click.delegate="removeHandler(item)"><i class="trash outline icon"></i>确认移除</div>

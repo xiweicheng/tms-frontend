@@ -13,6 +13,7 @@ export class EmBlogComment {
     comments = [];
 
     baseUrl = utils.getUrl();
+    basePath = utils.getBasePath();
     offset = 0;
     isSuper = nsCtx.isSuper;
     loginUser = nsCtx.loginUser;
