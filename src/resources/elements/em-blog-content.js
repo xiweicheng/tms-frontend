@@ -9,11 +9,7 @@ import {
 @containerless
 export class EmBlogContent {
 
-    @bindable blog;
-
-    blogChanged(newValue, oldValue) {
-
-    }
+    blog;
 
     loginUser = nsCtx.loginUser;
     isSuper = nsCtx.isSuper;
@@ -25,10 +21,14 @@ export class EmBlogContent {
     constructor() {
         this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, (payload) => {
             this.getBlog();
+            ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, {
+                toggle: false
+            });
         });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_CHANGED, (payload) => {
             if (payload.action == 'updated') {
                 _.extend(this.blog, payload.blog);
+                _.defer(() => this._dir());
             }
         });
     }
@@ -75,6 +75,21 @@ export class EmBlogContent {
                 );
             }
         });
+
+        $('.em-blog-right-sidebar').on('click', '.panel-blog-dir .wiki-dir-item', (event) => {
+            event.preventDefault();
+            if ($(window).width() <= 768) {
+                ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, { toggle: false });
+            }
+            $('.em-blog-content').scrollTo(`#${$(event.currentTarget).attr('data-id')}`, 200, {
+                offset: 0
+            });
+        });
+    }
+
+    _dir() {
+        this.dir = utils.dir($(this.mkbodyRef), 'tms-blog-dir-item-');
+        return this.dir;
     }
 
     getBlog() {
@@ -87,6 +102,7 @@ export class EmBlogContent {
             if (data.success) {
                 this.blog = data.data;
                 ea.publish(nsCons.EVENT_BLOG_VIEW_CHANGED, this.blog);
+                _.defer(() => this._dir());
             }
         });
     }
@@ -190,5 +206,12 @@ export class EmBlogContent {
 
     historyHandler() {
         this.blogHistoryVm.show(this.blog);
+    }
+
+    catalogHandler() {
+        ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, {
+            action: 'dir',
+            dir: this._dir()
+        });
     }
 }

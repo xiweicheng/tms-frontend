@@ -3,12 +3,21 @@ import chatService from 'chat/chat-service';
 
 export class Blog {
 
+    rightSidebarShow = false;
+
     /**
      * 构造函数
      */
     constructor() {
         this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_VIEW_CHANGED, (payload) => {
             this.routeConfig && this.routeConfig.navModel.setTitle(`${payload.title} | 博文 | TMS`);
+        });
+        this.subscribe1 = ea.subscribe(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, (payload) => {
+            if (payload && !_.isUndefined(payload.toggle)) {
+                this.rightSidebarShow = payload.toggle;
+            } else {
+                this.rightSidebarShow = !this.rightSidebarShow;
+            }
         });
     }
 
@@ -17,6 +26,7 @@ export class Blog {
      */
     unbind() {
         this.subscribe.dispose();
+        this.subscribe1.dispose();
     }
 
     /**

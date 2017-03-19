@@ -56,6 +56,7 @@ export function configure(aurelia) {
         'resources/elements/em-chat-schedule-remind',
         'resources/elements/em-blog-write',
         'resources/elements/em-blog-left-sidebar',
+        'resources/elements/em-blog-right-sidebar',
         'resources/elements/em-blog-content',
         'resources/elements/em-blog-top-menu',
         'resources/elements/em-blog-share',

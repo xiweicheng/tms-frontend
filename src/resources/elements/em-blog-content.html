@@ -10,7 +10,10 @@
                 <span if.bind="(isSuper || blog.creator.username == loginUser.username) && blog.openEdit" data-tooltip="开放编辑中,点击可关闭" data-position="right center" style="margin-left: 8px; top: -1px;"><i click.delegate="openEditHandler()" class="link icon write"></i></span>
             </div>
             <div class="actions">
-                <a if.bind="blog.openEdit || isSuper || blog.creator.username == loginUser.username" href="#" class="ui basic mini button" click.delegate="editHandler()">
+                <a if.bind="dir" class="ui basic mini button" click.delegate="catalogHandler()">
+                    <i class="unordered list icon"></i> 目录
+                </a>
+                <a if.bind="blog.openEdit || isSuper || blog.creator.username == loginUser.username" class="ui basic mini button" click.delegate="editHandler()">
                     <i class="large icon edit"></i> 编辑
                 </a>
                 <em-blog-share blog.bind="blog"></em-blog-share>
