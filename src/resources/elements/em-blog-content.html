@@ -7,7 +7,7 @@
                 <div show.bind="blog.space" class="divider"> / </div>
                 <a show.bind="blog.space" class="section active">${blog.space.name}</a>
                 <span if.bind="isSuper || blog.creator.username == loginUser.username" data-tooltip="${blog.privated ? '私有博文,点击可公开' : '公开博文,点击可关闭'}" data-position="right center" style="margin-left: 16px;"><i click.delegate="updatePrivatedHandler()" class="link icon ${blog.privated ? 'lock' : 'unlock alternate'}"></i></span>
-                <span if.bind="(isSuper || blog.creator.username == loginUser.username) && blog.openEdit" data-tooltip="开放编辑中,点击可关闭" data-position="right center" style="margin-left: 8px; top: -2px;"><i click.delegate="openEditHandler()" class="link icon write"></i></span>
+                <span if.bind="(isSuper || blog.creator.username == loginUser.username) && blog.openEdit" data-tooltip="开放编辑中,点击可关闭" data-position="right center" style="margin-left: 8px; top: -1px;"><i click.delegate="openEditHandler()" class="link icon write"></i></span>
             </div>
             <div class="actions">
                 <a if.bind="blog.openEdit || isSuper || blog.creator.username == loginUser.username" href="#" class="ui basic mini button" click.delegate="editHandler()">

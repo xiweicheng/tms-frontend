@@ -59,7 +59,7 @@ export class EmBlogComment {
             element: this.commentRef,
             spellChecker: false,
             status: false,
-            autofocus: true,
+            // autofocus: true,
             // toolbar: false,
             forceSync: true,
             // autoDownloadFontAwesome: false,
