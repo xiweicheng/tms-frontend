@@ -32,6 +32,13 @@
                         <div if.bind="!blog.privated && (isSuper || blog.creator.username == loginUser.username)" click.delegate="openEditHandler()" class="item">
                             <i class="write icon"></i> ${blog.openEdit ? '关闭协作编辑' : '开放协作编辑'}
                         </div>
+                        <div class="divider"></div>
+                        <a href="/admin/blog/download/${blog.id}?type=pdf" class="item">
+                            <i class="file pdf outline icon"></i> 导出为PDF
+                        </a>
+                        <a href="/admin/blog/download/${blog.id}?type=md" class="item">
+                            <i class="file text outline icon"></i> 导出为Markdown
+                        </a>
                         <div if.bind="isSuper || blog.creator.username == loginUser.username" class="divider"></div>
                         <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="deleteHandler()" class="item" style="color: red;">
                             <i class="trash outline icon"></i> 删除
