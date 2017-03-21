@@ -27,7 +27,7 @@
             <div class="item">
                 <div ref="searchRef" class="ui search">
                     <div class="ui icon input">
-                        <input blur.trigger="searchBlurHandler()" focus.trigger="searchFocusHandler()" class="prompt" type="text" placeholder="搜索...">
+                        <input keyup.trigger="searchKeyupHandler($event)" blur.trigger="searchBlurHandler()" focus.trigger="searchFocusHandler()" class="prompt" type="text" placeholder="搜索...">
                         <i class="search icon"></i>
                     </div>
                     <div class="results"></div>

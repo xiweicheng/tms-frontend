@@ -95,4 +95,9 @@ export class EmBlogTopMenu {
         });
     }
 
+    searchKeyupHandler(event) {
+        if (event.keyCode == 27) {
+            $(this.searchRef).search('set value', '');
+        }
+    }
 }

@@ -41,11 +41,18 @@
                     <a class="text" title="更多操作"><i class="ellipsis horizontal large icon"></i></a>
                     <!-- <i class="dropdown icon"></i> -->
                     <div class="menu">
-                        <div class="item" if.bind="!isAt && (item.creator.username == loginUser.username)" click.delegate="openEditHandler(item)" title="${item.openEdit ? '关闭协作编辑' :'开启协作编辑'}">${item.openEdit ? '关闭' :'协作'}</div>
-                        <div class="item tms-clipboard" data-clipboard-text="${item.content}" title="复制消息内容">复制</div>
-                        <div class="item tms-clipboard" data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}" title="复制消息链接">分享</div>
+                        <div class="item" if.bind="!isAt && (item.creator.username == loginUser.username)" click.delegate="openEditHandler(item)" title="${item.openEdit ? '关闭协作编辑' :'开启协作编辑'}"><i class="write icon"></i> ${item.openEdit ? '关闭' :'协作'}</div>
+                        <div class="item tms-clipboard" data-clipboard-text="${item.content}" title="复制消息内容"><i class="icon copy"></i> 复制</div>
+                        <div class="item tms-clipboard" data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}" title="复制消息链接"><i class="icon share"></i> 分享</div>
+                        <div class="divider"></div>
+                        <a href="/admin/chat/${isAt ? 'direct' : 'channel'}/download/${item.id}?type=pdf" style="display: block; color: rgba(0,0,0,.87);" class="item">
+                            <i class="file pdf outline icon"></i> 导出为PDF
+                        </a>
+                        <a href="/admin/chat/${isAt ? 'direct' : 'channel'}/download/${item.id}?type=md" style="display: block; color: rgba(0,0,0,.87);" class="item">
+                            <i class="file text outline icon"></i> 导出为Markdown
+                        </a>
                         <div if.bind="item.creator.username == loginUser.username" class="divider"></div>
-                        <div class="item tms-red" if.bind="item.creator.username == loginUser.username" click.delegate="deleteHandler(item)" title="删除消息">删除</div>
+                        <div class="item tms-red" if.bind="item.creator.username == loginUser.username" click.delegate="deleteHandler(item)" title="删除消息"><i class="trash outline icon"></i> 删除</div>
                     </div>
                 </div>
             </div>
