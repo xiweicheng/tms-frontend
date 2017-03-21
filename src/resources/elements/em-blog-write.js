@@ -78,6 +78,35 @@ export class EmBlogWrite {
         $('#blog-save-btn').attr('title', 'ctrl+click更新后关闭窗口');
     }
 
+    _writeInit() {
+        let ccid = utils.urlQuery('ccid'); // chat channel id
+        let cdid = utils.urlQuery('cdid'); // chat direct id
+        let url = null;
+        let id = null;
+        if (ccid) {
+            url = `/admin/chat/channel/get`;
+            id = ccid;
+        } else if (cdid) {
+            url = `/admin/chat/direct/get`;
+            id = cdid;
+        }
+
+        if (url) {
+            $.get(url, { id: +id }, (data) => {
+                if (data.success) {
+                    this.simplemde.value(data.data.content);
+                    let val = $('#blog-title-input').val();
+                    if (!val) {
+                        let ms = /#{1,6}[\s]+(.+)\n?/g.exec(data.data.content);
+                        if (ms && ms.length > 1) {
+                            $('#blog-title-input').val(ms[1]);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
     init() {
 
         this.simplemde = new SimpleMDE({
@@ -234,6 +263,8 @@ export class EmBlogWrite {
 
         if (this.action == 'edit') { // edit
             this._editInit();
+        } else {
+            this._writeInit();
         }
 
         this.initPaste();

@@ -93,7 +93,7 @@ export class EmBlogContent {
     }
 
     getBlog() {
-        if (!nsCtx.blogId) {
+        if (!nsCtx.blogId || isNaN(new Number(nsCtx.blogId))) {
             return;
         }
         return $.get('/admin/blog/get', {

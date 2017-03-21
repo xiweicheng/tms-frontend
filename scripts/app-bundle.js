@@ -188,6 +188,86 @@ define('main',['exports', './environment'], function (exports, _environment) {
     });
   }
 });
+define('blog/blog',['exports', 'aurelia-framework', 'chat/chat-service'], function (exports, _aureliaFramework, _chatService) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.Blog = undefined;
+
+    var _chatService2 = _interopRequireDefault(_chatService);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var Blog = exports.Blog = function () {
+        function Blog() {
+            var _this = this;
+
+            _classCallCheck(this, Blog);
+
+            this.rightSidebarShow = false;
+
+            this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_VIEW_CHANGED, function (payload) {
+                _this.routeConfig && _this.routeConfig.navModel.setTitle(payload.title + ' | 博文 | TMS');
+            });
+            this.subscribe1 = ea.subscribe(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, function (payload) {
+                if (payload && !_.isUndefined(payload.toggle)) {
+                    _this.rightSidebarShow = payload.toggle;
+                } else {
+                    _this.rightSidebarShow = !_this.rightSidebarShow;
+                }
+            });
+        }
+
+        Blog.prototype.unbind = function unbind() {
+            this.subscribe.dispose();
+            this.subscribe1.dispose();
+        };
+
+        Blog.prototype.attached = function attached() {
+            $('.tms-blog').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].author:not(.pp-not)', function (event) {
+                event.preventDefault();
+                var $a = $(event.currentTarget);
+                ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {
+                    username: $a.attr('data-value'),
+                    target: event.currentTarget
+                });
+            });
+        };
+
+        Blog.prototype.detached = function detached() {};
+
+        Blog.prototype.activate = function activate(params, routeConfig, navigationInstruction) {
+
+            this.routeConfig = routeConfig;
+            nsCtx.blogId = params.id;
+
+            ea.publish(nsCons.EVENT_BLOG_SWITCH, { id: params.id });
+
+            return Promise.all([_chatService2.default.loginUser().then(function (user) {
+                nsCtx.loginUser = user;
+                nsCtx.isSuper = utils.isSuperUser(user);
+                nsCtx.isAdmin = utils.isAdminUser(user);
+            }), _chatService2.default.listUsers().then(function (users) {
+                nsCtx.users = users;
+                window.tmsUsers = users;
+            })]);
+        };
+
+        return Blog;
+    }();
+});
 define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll', 'clipboard', 'clipboard-js', 'dropzone', './chat-service'], function (exports, _aureliaFramework, _commonPoll, _clipboard, _clipboardJs, _dropzone, _chatService) {
     'use strict';
 
@@ -1103,86 +1183,6 @@ define('chat/chat-service',['exports'], function (exports) {
     }();
 
     exports.default = new ChatService();
-});
-define('blog/blog',['exports', 'aurelia-framework', 'chat/chat-service'], function (exports, _aureliaFramework, _chatService) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.Blog = undefined;
-
-    var _chatService2 = _interopRequireDefault(_chatService);
-
-    function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-            default: obj
-        };
-    }
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    var Blog = exports.Blog = function () {
-        function Blog() {
-            var _this = this;
-
-            _classCallCheck(this, Blog);
-
-            this.rightSidebarShow = false;
-
-            this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_VIEW_CHANGED, function (payload) {
-                _this.routeConfig && _this.routeConfig.navModel.setTitle(payload.title + ' | 博文 | TMS');
-            });
-            this.subscribe1 = ea.subscribe(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, function (payload) {
-                if (payload && !_.isUndefined(payload.toggle)) {
-                    _this.rightSidebarShow = payload.toggle;
-                } else {
-                    _this.rightSidebarShow = !_this.rightSidebarShow;
-                }
-            });
-        }
-
-        Blog.prototype.unbind = function unbind() {
-            this.subscribe.dispose();
-            this.subscribe1.dispose();
-        };
-
-        Blog.prototype.attached = function attached() {
-            $('.tms-blog').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].author:not(.pp-not)', function (event) {
-                event.preventDefault();
-                var $a = $(event.currentTarget);
-                ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {
-                    username: $a.attr('data-value'),
-                    target: event.currentTarget
-                });
-            });
-        };
-
-        Blog.prototype.detached = function detached() {};
-
-        Blog.prototype.activate = function activate(params, routeConfig, navigationInstruction) {
-
-            this.routeConfig = routeConfig;
-            nsCtx.blogId = params.id;
-
-            ea.publish(nsCons.EVENT_BLOG_SWITCH, { id: params.id });
-
-            return Promise.all([_chatService2.default.loginUser().then(function (user) {
-                nsCtx.loginUser = user;
-                nsCtx.isSuper = utils.isSuperUser(user);
-                nsCtx.isAdmin = utils.isAdminUser(user);
-            }), _chatService2.default.listUsers().then(function (users) {
-                nsCtx.users = users;
-                window.tmsUsers = users;
-            })]);
-        };
-
-        return Blog;
-    }();
 });
 define('common/common-constant',[], function () {
     'use strict';
@@ -4443,6 +4443,18 @@ define('init/index',['exports', './config', 'jquery', 'jquery.scrollto', 'timeag
         _config2.default.context(aurelia).initGlobalVar().initAjax().initToastr().initMarked().initAnimateCss().initEmoji().initModaal();
     }
 });
+define('resources/index',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.configure = configure;
+    function configure(aurelia) {
+
+        aurelia.globalResources(['resources/value-converters/vc-common', 'resources/binding-behaviors/bb-key', 'resources/attributes/attr-task', 'resources/attributes/attr-swipebox', 'resources/attributes/attr-pastable', 'resources/attributes/attr-autosize', 'resources/attributes/attr-dropzone', 'resources/attributes/attr-attr', 'resources/attributes/attr-c2c', 'resources/attributes/attr-dimmer', 'resources/attributes/attr-ui-dropdown', 'resources/attributes/attr-ui-dropdown-action', 'resources/attributes/attr-ui-dropdown-hover', 'resources/attributes/attr-ui-tab', 'resources/attributes/attr-ui-popup', 'resources/attributes/attr-ui-checkbox', 'resources/attributes/attr-tablesort', 'resources/attributes/attr-textcomplete', 'resources/attributes/attr-scrollbar', 'resources/attributes/attr-modaal', 'resources/elements/em-modal', 'resources/elements/em-dropdown', 'resources/elements/em-checkbox', 'resources/elements/em-confirm-modal', 'resources/elements/em-hotkeys-modal', 'resources/elements/em-chat-input', 'resources/elements/em-chat-top-menu', 'resources/elements/em-chat-sidebar-left', 'resources/elements/em-chat-content-item', 'resources/elements/em-chat-sidebar-right', 'resources/elements/em-chat-channel-create', 'resources/elements/em-chat-channel-join', 'resources/elements/em-chat-channel-edit', 'resources/elements/em-chat-channel-members-mgr', 'resources/elements/em-chat-channel-members-show', 'resources/elements/em-chat-channel-link-mgr', 'resources/elements/em-chat-system-link-mgr', 'resources/elements/em-chat-msg-popup', 'resources/elements/em-chat-member-popup', 'resources/elements/em-chat-attach', 'resources/elements/em-chat-schedule', 'resources/elements/em-chat-schedule-edit', 'resources/elements/em-chat-schedule-remind', 'resources/elements/em-blog-write', 'resources/elements/em-blog-left-sidebar', 'resources/elements/em-blog-right-sidebar', 'resources/elements/em-blog-content', 'resources/elements/em-blog-top-menu', 'resources/elements/em-blog-share', 'resources/elements/em-blog-comment', 'resources/elements/em-blog-save', 'resources/elements/em-blog-space-create', 'resources/elements/em-blog-space-edit', 'resources/elements/em-blog-space-update', 'resources/elements/em-blog-history', 'resources/elements/em-blog-history-view', 'resources/elements/em-blog-history-diff', 'resources/elements/em-blog-comment-popup', 'resources/elements/em-user-avatar', 'resources/elements/em-user-edit']);
+    }
+});
 define('test/test-lifecycle',['exports', 'aurelia-framework', 'aurelia-event-aggregator'], function (exports, _aureliaFramework, _aureliaEventAggregator) {
     'use strict';
 
@@ -4556,18 +4568,6 @@ define('test/test-lifecycle',['exports', 'aurelia-framework', 'aurelia-event-agg
             return null;
         }
     })), _class);
-});
-define('resources/index',['exports'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.configure = configure;
-    function configure(aurelia) {
-
-        aurelia.globalResources(['resources/value-converters/vc-common', 'resources/binding-behaviors/bb-key', 'resources/attributes/attr-task', 'resources/attributes/attr-swipebox', 'resources/attributes/attr-pastable', 'resources/attributes/attr-autosize', 'resources/attributes/attr-dropzone', 'resources/attributes/attr-attr', 'resources/attributes/attr-c2c', 'resources/attributes/attr-dimmer', 'resources/attributes/attr-ui-dropdown', 'resources/attributes/attr-ui-dropdown-action', 'resources/attributes/attr-ui-dropdown-hover', 'resources/attributes/attr-ui-tab', 'resources/attributes/attr-ui-popup', 'resources/attributes/attr-ui-checkbox', 'resources/attributes/attr-tablesort', 'resources/attributes/attr-textcomplete', 'resources/attributes/attr-scrollbar', 'resources/attributes/attr-modaal', 'resources/elements/em-modal', 'resources/elements/em-dropdown', 'resources/elements/em-checkbox', 'resources/elements/em-confirm-modal', 'resources/elements/em-hotkeys-modal', 'resources/elements/em-chat-input', 'resources/elements/em-chat-top-menu', 'resources/elements/em-chat-sidebar-left', 'resources/elements/em-chat-content-item', 'resources/elements/em-chat-sidebar-right', 'resources/elements/em-chat-channel-create', 'resources/elements/em-chat-channel-join', 'resources/elements/em-chat-channel-edit', 'resources/elements/em-chat-channel-members-mgr', 'resources/elements/em-chat-channel-members-show', 'resources/elements/em-chat-channel-link-mgr', 'resources/elements/em-chat-system-link-mgr', 'resources/elements/em-chat-msg-popup', 'resources/elements/em-chat-member-popup', 'resources/elements/em-chat-attach', 'resources/elements/em-chat-schedule', 'resources/elements/em-chat-schedule-edit', 'resources/elements/em-chat-schedule-remind', 'resources/elements/em-blog-write', 'resources/elements/em-blog-left-sidebar', 'resources/elements/em-blog-right-sidebar', 'resources/elements/em-blog-content', 'resources/elements/em-blog-top-menu', 'resources/elements/em-blog-share', 'resources/elements/em-blog-comment', 'resources/elements/em-blog-save', 'resources/elements/em-blog-space-create', 'resources/elements/em-blog-space-edit', 'resources/elements/em-blog-space-update', 'resources/elements/em-blog-history', 'resources/elements/em-blog-history-view', 'resources/elements/em-blog-history-diff', 'resources/elements/em-blog-comment-popup', 'resources/elements/em-user-avatar', 'resources/elements/em-user-edit']);
-    }
 });
 define('user/user-login',['exports'], function (exports) {
     'use strict';
@@ -5981,6 +5981,286 @@ define('resources/attributes/attr-ui-tab',['exports', 'aurelia-framework'], func
         return AttrUiTabCustomAttribute;
     }()) || _class) || _class);
 });
+define('resources/binding-behaviors/bb-key',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var keyCodes = {
+        'esc': 27,
+        'tab': 9,
+        'enter': 13,
+        'space': 32,
+        'up': 38,
+        'left': 37,
+        'right': 39,
+        'down': 40,
+        'backspace': 8,
+        'delete': 46
+    };
+
+    function keyHandler(event) {
+
+        if (event && event.ctrlKey == this.keyState.ctrl && event.altKey == this.keyState.alt && event.shiftKey == this.keyState.shift && event.keyCode == this.keyState.keyCode) {
+            this.originalMethod(event);
+        } else {}
+
+        return true;
+    }
+
+    var KeyBindingBehavior = exports.KeyBindingBehavior = function () {
+        function KeyBindingBehavior() {
+            _classCallCheck(this, KeyBindingBehavior);
+        }
+
+        KeyBindingBehavior.prototype.bind = function bind(binding, source) {
+            var key = arguments.length <= 2 || arguments[2] === undefined ? 13 : arguments[2];
+            var metaKeys = arguments[3];
+
+            var methodName = 'updateTarget';
+            if (binding.callSource) {
+                methodName = 'callSource';
+            } else if (binding.updateSource && binding.mode === bindingMode.twoWay) {
+                methodName = 'updateSource';
+            }
+
+            binding.originalMethod = binding[methodName];
+            binding.originalMethod.originalName = methodName;
+
+            binding[methodName] = keyHandler;
+            var keyCode = _.isInteger(key) ? key : key.length === 1 ? key.charCodeAt(0) : keyCodes[key];
+            if (_.isUndefined(keyCode)) {
+                console.warn('Unmapping keyCode for KeyBindingBehavior!');
+            }
+            binding.keyState = {
+                ctrl: _.includes(metaKeys, 'ctrl'),
+                alt: _.includes(metaKeys, 'alt'),
+                shift: _.includes(metaKeys, 'shift'),
+                keyCode: keyCode
+            };
+        };
+
+        KeyBindingBehavior.prototype.unbind = function unbind(binding, source) {
+            binding[binding.originalMethod.originalName] = binding.originalMethod;
+            binding.originalMethod = null;
+        };
+
+        return KeyBindingBehavior;
+    }();
+});
+define('resources/value-converters/vc-common',['exports', 'jquery-format', 'timeago'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.Nl2brValueConverter = exports.EmojiValueConverter = exports.UserNameValueConverter = exports.SortChannelsValueConverter = exports.SortUsernamesValueConverter = exports.SortUsersValueConverter = exports.SortValueConverter = exports.ParseMdValueConverter = exports.TimeagoValueConverter = exports.NumberValueConverter = exports.DateValueConverter = exports.LowerValueConverter = exports.UpperValueConverter = undefined;
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var tg = timeago();
+
+    var UpperValueConverter = exports.UpperValueConverter = function () {
+        function UpperValueConverter() {
+            _classCallCheck(this, UpperValueConverter);
+        }
+
+        UpperValueConverter.prototype.toView = function toView(value) {
+            return value && value.toUpperCase();
+        };
+
+        return UpperValueConverter;
+    }();
+
+    var LowerValueConverter = exports.LowerValueConverter = function () {
+        function LowerValueConverter() {
+            _classCallCheck(this, LowerValueConverter);
+        }
+
+        LowerValueConverter.prototype.toView = function toView(value) {
+            return value && value.toLowerCase();
+        };
+
+        return LowerValueConverter;
+    }();
+
+    var DateValueConverter = exports.DateValueConverter = function () {
+        function DateValueConverter() {
+            _classCallCheck(this, DateValueConverter);
+        }
+
+        DateValueConverter.prototype.toView = function toView(value) {
+            var format = arguments.length <= 1 || arguments[1] === undefined ? 'yyyy-MM-dd hh:mm:ss' : arguments[1];
+
+            return _.isInteger(_.toNumber(value)) ? $.format.date(new Date(value), format) : value ? value : '';
+        };
+
+        return DateValueConverter;
+    }();
+
+    var NumberValueConverter = exports.NumberValueConverter = function () {
+        function NumberValueConverter() {
+            _classCallCheck(this, NumberValueConverter);
+        }
+
+        NumberValueConverter.prototype.toView = function toView(value) {
+            var format = arguments.length <= 1 || arguments[1] === undefined ? '#,##0.00' : arguments[1];
+
+            return _.isNumber(_.toNumber(value)) ? $.format.number(value, format) : value ? value : '';
+        };
+
+        return NumberValueConverter;
+    }();
+
+    var TimeagoValueConverter = exports.TimeagoValueConverter = function () {
+        function TimeagoValueConverter() {
+            _classCallCheck(this, TimeagoValueConverter);
+        }
+
+        TimeagoValueConverter.prototype.toView = function toView(value) {
+            return value ? tg.format(value, 'zh_CN') : '';
+        };
+
+        return TimeagoValueConverter;
+    }();
+
+    var ParseMdValueConverter = exports.ParseMdValueConverter = function () {
+        function ParseMdValueConverter() {
+            _classCallCheck(this, ParseMdValueConverter);
+        }
+
+        ParseMdValueConverter.prototype.toView = function toView(value) {
+            return value ? marked(utils.preParse(value)) : '';
+        };
+
+        return ParseMdValueConverter;
+    }();
+
+    var SortValueConverter = exports.SortValueConverter = function () {
+        function SortValueConverter() {
+            _classCallCheck(this, SortValueConverter);
+        }
+
+        SortValueConverter.prototype.toView = function toView(value, prop) {
+            return _.isArray(value) ? _.sortBy(value, prop) : value;
+        };
+
+        return SortValueConverter;
+    }();
+
+    var SortUsersValueConverter = exports.SortUsersValueConverter = function () {
+        function SortUsersValueConverter() {
+            _classCallCheck(this, SortUsersValueConverter);
+        }
+
+        SortUsersValueConverter.prototype.toView = function toView(value, username) {
+            if (_.isArray(value) && username) {
+                var user = _.find(value, { username: username });
+                if (user) {
+                    return [user].concat(_.reject(value, { username: username }));
+                }
+            }
+            return value;
+        };
+
+        return SortUsersValueConverter;
+    }();
+
+    var SortUsernamesValueConverter = exports.SortUsernamesValueConverter = function () {
+        function SortUsernamesValueConverter() {
+            _classCallCheck(this, SortUsernamesValueConverter);
+        }
+
+        SortUsernamesValueConverter.prototype.toView = function toView(value, username) {
+            if (_.isArray(value) && username) {
+                if (_.includes(value, username)) {
+                    return [username].concat(_.without(value, username));
+                }
+            }
+            return value;
+        };
+
+        return SortUsernamesValueConverter;
+    }();
+
+    var SortChannelsValueConverter = exports.SortChannelsValueConverter = function () {
+        function SortChannelsValueConverter() {
+            _classCallCheck(this, SortChannelsValueConverter);
+        }
+
+        SortChannelsValueConverter.prototype.toView = function toView(value) {
+            if (_.isArray(value)) {
+                var channelAll = _.find(value, { name: 'all' });
+                if (channelAll) {
+                    return [channelAll].concat(_.reject(value, { name: 'all' }));
+                }
+            }
+            return value;
+        };
+
+        return SortChannelsValueConverter;
+    }();
+
+    var UserNameValueConverter = exports.UserNameValueConverter = function () {
+        function UserNameValueConverter() {
+            _classCallCheck(this, UserNameValueConverter);
+        }
+
+        UserNameValueConverter.prototype.toView = function toView(value) {
+            var user = _.find(window.tmsUsers, { username: value });
+            if (user) {
+                return user.name;
+            }
+            return value;
+        };
+
+        return UserNameValueConverter;
+    }();
+
+    var EmojiValueConverter = exports.EmojiValueConverter = function () {
+        function EmojiValueConverter() {
+            _classCallCheck(this, EmojiValueConverter);
+        }
+
+        EmojiValueConverter.prototype.toView = function toView(value, mkbodyDom) {
+            if (emojify) {
+                _.defer(function () {
+                    emojify.run(mkbodyDom);
+                });
+            }
+            return value;
+        };
+
+        return EmojiValueConverter;
+    }();
+
+    var Nl2brValueConverter = exports.Nl2brValueConverter = function () {
+        function Nl2brValueConverter() {
+            _classCallCheck(this, Nl2brValueConverter);
+        }
+
+        Nl2brValueConverter.prototype.toView = function toView(value) {
+            if (value) {
+                return _.replace(value, /\n/g, '<br/>');
+            }
+            return value;
+        };
+
+        return Nl2brValueConverter;
+    }();
+});
 define('resources/elements/em-blog-comment-popup',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
     'use strict';
 
@@ -6787,7 +7067,7 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
         EmBlogContent.prototype.getBlog = function getBlog() {
             var _this2 = this;
 
-            if (!nsCtx.blogId) {
+            if (!nsCtx.blogId || isNaN(new Number(nsCtx.blogId))) {
                 return;
             }
             return $.get('/admin/blog/get', {
@@ -8092,8 +8372,39 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
             $('#blog-save-btn').attr('title', 'ctrl+click更新后关闭窗口');
         };
 
-        EmBlogWrite.prototype.init = function init() {
+        EmBlogWrite.prototype._writeInit = function _writeInit() {
             var _this3 = this;
+
+            var ccid = utils.urlQuery('ccid');
+            var cdid = utils.urlQuery('cdid');
+            var url = null;
+            var id = null;
+            if (ccid) {
+                url = '/admin/chat/channel/get';
+                id = ccid;
+            } else if (cdid) {
+                url = '/admin/chat/direct/get';
+                id = cdid;
+            }
+
+            if (url) {
+                $.get(url, { id: +id }, function (data) {
+                    if (data.success) {
+                        _this3.simplemde.value(data.data.content);
+                        var val = $('#blog-title-input').val();
+                        if (!val) {
+                            var ms = /#{1,6}[\s]+(.+)\n?/g.exec(data.data.content);
+                            if (ms && ms.length > 1) {
+                                $('#blog-title-input').val(ms[1]);
+                            }
+                        }
+                    }
+                });
+            }
+        };
+
+        EmBlogWrite.prototype.init = function init() {
+            var _this4 = this;
 
             this.simplemde = new _simplemde2.default({
                 element: $('#txt-blog-write')[0],
@@ -8156,14 +8467,14 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
                 }, {
                     name: "tasks",
                     action: function action(editor) {
-                        _this3.insertContent('- [ ] 未完成任务\n- [x] 已完成任务');
+                        _this4.insertContent('- [ ] 未完成任务\n- [x] 已完成任务');
                     },
                     className: "fa fa-check-square-o ",
                     title: "任务列表"
                 }, {
                     name: "details",
                     action: function action(editor) {
-                        _this3.insertContent('<details>\n<summary>标题</summary>\n<p>详情内容</p>\n</details>');
+                        _this4.insertContent('<details>\n<summary>标题</summary>\n<p>详情内容</p>\n</details>');
                     },
                     className: "fa fa-play ",
                     title: "折叠详情"
@@ -8226,13 +8537,13 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
 
             this.simplemde.codemirror.on('keyup', function (cm, e) {
                 if (e.ctrlKey && e.keyCode == 13) {
-                    _this3.save(e, true);
+                    _this4.save(e, true);
                 } else if (e.keyCode == 27) {
-                    _this3.simplemde.value('');
+                    _this4.simplemde.value('');
                 } else if (e.keyCode == 13) {
                     var val = $('#blog-title-input').val();
                     if (!val) {
-                        var ms = /#{1,6}[\s]+(.+)\n?/g.exec(_this3.simplemde.value());
+                        var ms = /#{1,6}[\s]+(.+)\n?/g.exec(_this4.simplemde.value());
                         if (ms && ms.length > 1) {
                             $('#blog-title-input').val(ms[1]);
                         }
@@ -8247,17 +8558,19 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
 
             if (this.action == 'edit') {
                 this._editInit();
+            } else {
+                this._writeInit();
             }
 
             this.initPaste();
             this.initTextcomplete();
 
             this.initUploadDropzone($('.CodeMirror-wrap', '#txt-blog-write-wrapper'), function () {
-                return _this3.$chatMsgInputRef;
+                return _this4.$chatMsgInputRef;
             }, false);
 
             this.initUploadDropzone($('.editor-toolbar .fa.fa-upload', '#txt-blog-write-wrapper'), function () {
-                return _this3.$chatMsgInputRef;
+                return _this4.$chatMsgInputRef;
             }, true);
         };
 
@@ -8266,7 +8579,7 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
         };
 
         EmBlogWrite.prototype.initTextcomplete = function initTextcomplete() {
-            var _this4 = this;
+            var _this5 = this;
 
             $(this.$chatMsgInputRef).textcomplete([{
                 match: /(^|\s)@(\w*)$/,
@@ -8299,7 +8612,7 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
                     return emojify.replace(emojiKey) + ' - ' + emojiKey;
                 },
                 replace: function replace(value) {
-                    if (_this4.tipsActionHandler(value)) {
+                    if (_this5.tipsActionHandler(value)) {
                         return '$1:' + value + ': ';
                     } else {
                         return '';
@@ -8311,7 +8624,7 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
             });
 
             this.simplemde.codemirror.on('keydown', function (cm, e) {
-                if (_.includes([13, 38, 40], e.keyCode) && _this4.isTipsShow()) {
+                if (_.includes([13, 38, 40], e.keyCode) && _this5.isTipsShow()) {
                     e.preventDefault();
                 }
             });
@@ -8335,7 +8648,7 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
         };
 
         EmBlogWrite.prototype.initPaste = function initPaste() {
-            var _this5 = this;
+            var _this6 = this;
 
             var $paste = void 0;
             if (this.$chatMsgInputRef.is('textarea')) {
@@ -8352,7 +8665,7 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
                     toType: 'Blog'
                 }, function (data, textStatus, xhr) {
                     if (data.success) {
-                        _this5.insertContent('![{name}]({baseURL}{path}{uuidName})'.replace(/\{name\}/g, data.data.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, data.data.path).replace(/\{uuidName\}/g, data.data.uuidName));
+                        _this6.insertContent('![{name}]({baseURL}{path}{uuidName})'.replace(/\{name\}/g, data.data.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, data.data.path).replace(/\{uuidName\}/g, data.data.uuidName));
                     }
                 });
             }).on('pasteImageError', function (ev, data) {
@@ -8423,15 +8736,15 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
         };
 
         EmBlogWrite.prototype.attached = function attached() {
-            var _this6 = this;
+            var _this7 = this;
 
             $('#blog-save-btn').click(function (event) {
-                _this6.save(event);
+                _this7.save(event);
             });
         };
 
         EmBlogWrite.prototype.save = function save(event, isKey) {
-            var _this7 = this;
+            var _this8 = this;
 
             var title = $('#blog-title-input').val();
             var content = this.simplemde.value();
@@ -8460,11 +8773,11 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
                         contentHtml: utils.md2html(content)
                     }, function (data, textStatus, xhr) {
                         if (data.success) {
-                            _this7.blog = data.data;
+                            _this8.blog = data.data;
                             toastr.success('博文保存成功!');
                             ea.publish(nsCons.EVENT_BLOG_CHANGED, {
                                 action: 'created',
-                                blog: _this7.blog
+                                blog: _this8.blog
                             });
                             $('a[href="#modaal-blog-write"]').modaal('close');
                         } else {
@@ -8499,22 +8812,22 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
                     diff: utils.diffS(this.blog.content, content)
                 }, function (data, textStatus, xhr) {
                     if (data.success) {
-                        _this7.blog = data.data;
+                        _this8.blog = data.data;
                         toastr.success('博文更新成功!');
                         ea.publish(nsCons.EVENT_BLOG_CHANGED, {
                             action: 'updated',
-                            blog: _this7.blog
+                            blog: _this8.blog
                         });
                         if (!isKey) {
-                            event && event.ctrlKey && _this7.close();
+                            event && event.ctrlKey && _this8.close();
                         } else {
-                            event && event.ctrlKey && event.shiftKey && _this7.close();
+                            event && event.ctrlKey && event.shiftKey && _this8.close();
                         }
                     } else {
                         toastr.error(data.data, '博文更新失败!');
                     }
                 }).always(function () {
-                    _this7.sending = false;
+                    _this8.sending = false;
                     $('#blog-save-btn i').hide();
                 });
             }
@@ -13096,286 +13409,6 @@ define('resources/elements/em-user-edit',['exports', 'aurelia-framework'], funct
         enumerable: true,
         initializer: null
     })), _class2)) || _class;
-});
-define('resources/value-converters/vc-common',['exports', 'jquery-format', 'timeago'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.Nl2brValueConverter = exports.EmojiValueConverter = exports.UserNameValueConverter = exports.SortChannelsValueConverter = exports.SortUsernamesValueConverter = exports.SortUsersValueConverter = exports.SortValueConverter = exports.ParseMdValueConverter = exports.TimeagoValueConverter = exports.NumberValueConverter = exports.DateValueConverter = exports.LowerValueConverter = exports.UpperValueConverter = undefined;
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    var tg = timeago();
-
-    var UpperValueConverter = exports.UpperValueConverter = function () {
-        function UpperValueConverter() {
-            _classCallCheck(this, UpperValueConverter);
-        }
-
-        UpperValueConverter.prototype.toView = function toView(value) {
-            return value && value.toUpperCase();
-        };
-
-        return UpperValueConverter;
-    }();
-
-    var LowerValueConverter = exports.LowerValueConverter = function () {
-        function LowerValueConverter() {
-            _classCallCheck(this, LowerValueConverter);
-        }
-
-        LowerValueConverter.prototype.toView = function toView(value) {
-            return value && value.toLowerCase();
-        };
-
-        return LowerValueConverter;
-    }();
-
-    var DateValueConverter = exports.DateValueConverter = function () {
-        function DateValueConverter() {
-            _classCallCheck(this, DateValueConverter);
-        }
-
-        DateValueConverter.prototype.toView = function toView(value) {
-            var format = arguments.length <= 1 || arguments[1] === undefined ? 'yyyy-MM-dd hh:mm:ss' : arguments[1];
-
-            return _.isInteger(_.toNumber(value)) ? $.format.date(new Date(value), format) : value ? value : '';
-        };
-
-        return DateValueConverter;
-    }();
-
-    var NumberValueConverter = exports.NumberValueConverter = function () {
-        function NumberValueConverter() {
-            _classCallCheck(this, NumberValueConverter);
-        }
-
-        NumberValueConverter.prototype.toView = function toView(value) {
-            var format = arguments.length <= 1 || arguments[1] === undefined ? '#,##0.00' : arguments[1];
-
-            return _.isNumber(_.toNumber(value)) ? $.format.number(value, format) : value ? value : '';
-        };
-
-        return NumberValueConverter;
-    }();
-
-    var TimeagoValueConverter = exports.TimeagoValueConverter = function () {
-        function TimeagoValueConverter() {
-            _classCallCheck(this, TimeagoValueConverter);
-        }
-
-        TimeagoValueConverter.prototype.toView = function toView(value) {
-            return value ? tg.format(value, 'zh_CN') : '';
-        };
-
-        return TimeagoValueConverter;
-    }();
-
-    var ParseMdValueConverter = exports.ParseMdValueConverter = function () {
-        function ParseMdValueConverter() {
-            _classCallCheck(this, ParseMdValueConverter);
-        }
-
-        ParseMdValueConverter.prototype.toView = function toView(value) {
-            return value ? marked(utils.preParse(value)) : '';
-        };
-
-        return ParseMdValueConverter;
-    }();
-
-    var SortValueConverter = exports.SortValueConverter = function () {
-        function SortValueConverter() {
-            _classCallCheck(this, SortValueConverter);
-        }
-
-        SortValueConverter.prototype.toView = function toView(value, prop) {
-            return _.isArray(value) ? _.sortBy(value, prop) : value;
-        };
-
-        return SortValueConverter;
-    }();
-
-    var SortUsersValueConverter = exports.SortUsersValueConverter = function () {
-        function SortUsersValueConverter() {
-            _classCallCheck(this, SortUsersValueConverter);
-        }
-
-        SortUsersValueConverter.prototype.toView = function toView(value, username) {
-            if (_.isArray(value) && username) {
-                var user = _.find(value, { username: username });
-                if (user) {
-                    return [user].concat(_.reject(value, { username: username }));
-                }
-            }
-            return value;
-        };
-
-        return SortUsersValueConverter;
-    }();
-
-    var SortUsernamesValueConverter = exports.SortUsernamesValueConverter = function () {
-        function SortUsernamesValueConverter() {
-            _classCallCheck(this, SortUsernamesValueConverter);
-        }
-
-        SortUsernamesValueConverter.prototype.toView = function toView(value, username) {
-            if (_.isArray(value) && username) {
-                if (_.includes(value, username)) {
-                    return [username].concat(_.without(value, username));
-                }
-            }
-            return value;
-        };
-
-        return SortUsernamesValueConverter;
-    }();
-
-    var SortChannelsValueConverter = exports.SortChannelsValueConverter = function () {
-        function SortChannelsValueConverter() {
-            _classCallCheck(this, SortChannelsValueConverter);
-        }
-
-        SortChannelsValueConverter.prototype.toView = function toView(value) {
-            if (_.isArray(value)) {
-                var channelAll = _.find(value, { name: 'all' });
-                if (channelAll) {
-                    return [channelAll].concat(_.reject(value, { name: 'all' }));
-                }
-            }
-            return value;
-        };
-
-        return SortChannelsValueConverter;
-    }();
-
-    var UserNameValueConverter = exports.UserNameValueConverter = function () {
-        function UserNameValueConverter() {
-            _classCallCheck(this, UserNameValueConverter);
-        }
-
-        UserNameValueConverter.prototype.toView = function toView(value) {
-            var user = _.find(window.tmsUsers, { username: value });
-            if (user) {
-                return user.name;
-            }
-            return value;
-        };
-
-        return UserNameValueConverter;
-    }();
-
-    var EmojiValueConverter = exports.EmojiValueConverter = function () {
-        function EmojiValueConverter() {
-            _classCallCheck(this, EmojiValueConverter);
-        }
-
-        EmojiValueConverter.prototype.toView = function toView(value, mkbodyDom) {
-            if (emojify) {
-                _.defer(function () {
-                    emojify.run(mkbodyDom);
-                });
-            }
-            return value;
-        };
-
-        return EmojiValueConverter;
-    }();
-
-    var Nl2brValueConverter = exports.Nl2brValueConverter = function () {
-        function Nl2brValueConverter() {
-            _classCallCheck(this, Nl2brValueConverter);
-        }
-
-        Nl2brValueConverter.prototype.toView = function toView(value) {
-            if (value) {
-                return _.replace(value, /\n/g, '<br/>');
-            }
-            return value;
-        };
-
-        return Nl2brValueConverter;
-    }();
-});
-define('resources/binding-behaviors/bb-key',['exports'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    var keyCodes = {
-        'esc': 27,
-        'tab': 9,
-        'enter': 13,
-        'space': 32,
-        'up': 38,
-        'left': 37,
-        'right': 39,
-        'down': 40,
-        'backspace': 8,
-        'delete': 46
-    };
-
-    function keyHandler(event) {
-
-        if (event && event.ctrlKey == this.keyState.ctrl && event.altKey == this.keyState.alt && event.shiftKey == this.keyState.shift && event.keyCode == this.keyState.keyCode) {
-            this.originalMethod(event);
-        } else {}
-
-        return true;
-    }
-
-    var KeyBindingBehavior = exports.KeyBindingBehavior = function () {
-        function KeyBindingBehavior() {
-            _classCallCheck(this, KeyBindingBehavior);
-        }
-
-        KeyBindingBehavior.prototype.bind = function bind(binding, source) {
-            var key = arguments.length <= 2 || arguments[2] === undefined ? 13 : arguments[2];
-            var metaKeys = arguments[3];
-
-            var methodName = 'updateTarget';
-            if (binding.callSource) {
-                methodName = 'callSource';
-            } else if (binding.updateSource && binding.mode === bindingMode.twoWay) {
-                methodName = 'updateSource';
-            }
-
-            binding.originalMethod = binding[methodName];
-            binding.originalMethod.originalName = methodName;
-
-            binding[methodName] = keyHandler;
-            var keyCode = _.isInteger(key) ? key : key.length === 1 ? key.charCodeAt(0) : keyCodes[key];
-            if (_.isUndefined(keyCode)) {
-                console.warn('Unmapping keyCode for KeyBindingBehavior!');
-            }
-            binding.keyState = {
-                ctrl: _.includes(metaKeys, 'ctrl'),
-                alt: _.includes(metaKeys, 'alt'),
-                shift: _.includes(metaKeys, 'shift'),
-                keyCode: keyCode
-            };
-        };
-
-        KeyBindingBehavior.prototype.unbind = function unbind(binding, source) {
-            binding[binding.originalMethod.originalName] = binding.originalMethod;
-            binding.originalMethod = null;
-        };
-
-        return KeyBindingBehavior;
-    }();
 });
 define('aurelia-templating-resources/compose',['exports', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-templating', 'aurelia-pal'], function (exports, _aureliaDependencyInjection, _aureliaTaskQueue, _aureliaTemplating, _aureliaPal) {
   'use strict';
@@ -31294,58 +31327,58 @@ define('text!blog/blog.html', ['module'], function(module) { module.exports = "<
 define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n  overflow: hidden;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n.tms-dropzone-preview-hidden .dz-preview {\n  display: none!important;\n}\n"; });
 define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" chat-user.bind=\"user\" login-user.bind=\"loginUser\" channels.bind=\"channels\" channel.bind=\"channel\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div class=\"tms-comments-container\" ref=\"scrollbarRef\" scrollbar>\r\n                    <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                        <div if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</div>\r\n                        <em-chat-content-item chat-to.bind=\"chatTo\" mark-id.bind=\"markId\" channel.bind=\"channel\" is-at.bind=\"isAt\" chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                        <div if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})\r\n                            <div click.trigger=\"refreshLatestHandler($event)\" title=\"刷新最新消息\" class=\"ui basic circular mini icon button\">\r\n                                <i class=\"refresh icon\"></i>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <div show.bind=\"isShowHead\" title=\"滚至头部(alt+↑)\" class=\"tms-go tms-go-head\"><div click.delegate=\"goHeadHandler()\" class=\"circular ui icon button\"><i class=\"chevron up icon\"></i></div></div>\r\n                    <div show.bind=\"isShowFoot\" title=\"滚至尾部(alt+↓)\" class=\"tms-go tms-go-foot\"><div click.delegate=\"goFootHandler()\" class=\"circular ui icon button\"><i class=\"chevron down icon\"></i></div></div>\r\n                </div>\r\n                <em-chat-input channel.bind=\"channel\" is-at.bind=\"isAt\" chat-to.bind=\"chatTo\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right login-user.bind=\"loginUser\" channel.bind=\"channel\" login-user.bind=\"loginUser\" is-at.bind=\"isAt\"></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n    <em-chat-msg-popup></em-chat-msg-popup>\r\n    <em-chat-member-popup></em-chat-member-popup>\r\n</template>\r\n"; });
 define('text!common.css', ['module'], function(module) { module.exports = "code.nx {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  white-space: nowrap;\n}\n.markdown-body .pre-code-wrapper {\n  position: relative;\n}\n.markdown-body .pre-code-wrapper > i.copy.icon {\n  display: none;\n  position: absolute;\n  top: 0;\n  right: 0;\n  cursor: pointer;\n}\n.markdown-body .pre-code-wrapper:hover > i.copy.icon {\n  display: block;\n}\n.tms-disabled {\n  cursor: default;\n  opacity: .45!important;\n  background-image: none!important;\n  box-shadow: none!important;\n  pointer-events: none!important;\n}\n.animated {\n  -webkit-animation-duration: 1s;\n  animation-duration: 1s;\n  -webkit-animation-fill-mode: both;\n  animation-fill-mode: both;\n}\n@keyframes flip {\n  from {\n    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -360deg);\n    transform: perspective(400px) rotate3d(0, 1, 0, -360deg);\n    -webkit-animation-timing-function: ease-out;\n    animation-timing-function: ease-out;\n  }\n  40% {\n    -webkit-transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -190deg);\n    transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -190deg);\n    -webkit-animation-timing-function: ease-out;\n    animation-timing-function: ease-out;\n  }\n  50% {\n    -webkit-transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -170deg);\n    transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -170deg);\n    -webkit-animation-timing-function: ease-in;\n    animation-timing-function: ease-in;\n  }\n  80% {\n    -webkit-transform: perspective(400px) scale3d(0.95, 0.95, 0.95);\n    transform: perspective(400px) scale3d(0.95, 0.95, 0.95);\n    -webkit-animation-timing-function: ease-in;\n    animation-timing-function: ease-in;\n  }\n  to {\n    -webkit-transform: perspective(400px);\n    transform: perspective(400px);\n    -webkit-animation-timing-function: ease-in;\n    animation-timing-function: ease-in;\n  }\n}\n.animated.flip {\n  -webkit-backface-visibility: visible;\n  backface-visibility: visible;\n  -webkit-animation-name: flip;\n  animation-name: flip;\n}\n.cbutton {\n  position: relative;\n}\n.cbutton::after {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  margin: -7px 0 0 -7px;\n  width: 14px;\n  height: 14px;\n  border-radius: 50%;\n  content: '';\n  opacity: 0;\n  pointer-events: none;\n}\n/* Novak */\n.cbutton--effect-novak::after {\n  background: rgba(111, 148, 182, 0.25);\n}\n.cbutton--effect-novak.cbutton--click::after {\n  -webkit-animation: anim-effect-novak 0.5s forwards;\n  animation: anim-effect-novak 0.5s forwards;\n}\n@-webkit-keyframes anim-effect-novak {\n  0% {\n    opacity: 1;\n    -webkit-transform: scale3d(0.1, 0.1, 1);\n    transform: scale3d(0.1, 0.1, 1);\n  }\n  100% {\n    opacity: 0;\n    -webkit-transform: scale3d(8, 8, 1);\n    transform: scale3d(30, 30, 1);\n  }\n}\n@keyframes anim-effect-novak {\n  0% {\n    opacity: 1;\n    -webkit-transform: scale3d(0.1, 0.1, 1);\n    transform: scale3d(0.1, 0.1, 1);\n  }\n  100% {\n    opacity: 0;\n    -webkit-transform: scale3d(8, 8, 1);\n    transform: scale3d(30, 30, 1);\n  }\n}\n.emoji {\n  width: 1.5em;\n  height: 1.5em;\n  display: inline-block;\n  margin-bottom: -0.25em;\n  background-size: contain;\n}\n"; });
-define('text!test/test-lifecycle.html', ['module'], function(module) { module.exports = "<template>\r\n    <!-- <require from=\"\"></require> -->\r\n    <div class=\"ui container\">\r\n        <h1 class=\"ui header\">Aurelia框架模块生命周期钩子函数调用顺序测试(看console输出)</h1>\r\n    </div>\r\n</template>\r\n"; });
+define('text!user/user-login.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-login.css\"></require>\r\n    <div class=\"tms-user-login\">\r\n        <div class=\"container\">\r\n            <h2 class=\"ui center aligned icon header\">\r\n            <i class=\"circular users icon\"></i> 用户登录\r\n            </h2>\r\n            <div class=\"ui form segment\">\r\n                <div class=\"field\">\r\n                    <div class=\"ui left icon input\">\r\n                        <i class=\"user icon\"></i>\r\n                        <input type=\"text\" name=\"username\" value.bind=\"username\" placeholder=\"用户名\" />\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div class=\"ui left icon input\">\r\n                        <i class=\"lock icon\"></i>\r\n                        <input type=\"password\" name=\"password\" keydown.trigger=\"kdHandler($event)\" value.bind=\"password\" placeholder=\"密码\" />\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"rememberMeRef\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" name=\"remember-me\" />\r\n                        <label>记住我在此计算机的登录(2周)</label>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui center aligned header\">\r\n                    <button click.delegate=\"loginHandler()\" class=\"ui submit fluid button ${isReq ? 'disabled' : ''}\">登录</button>\r\n                </div>\r\n                <div style=\"text-align: center; font-size:12px;\">\r\n                    <a href=\"#/pwd-reset\">忘记密码</a> &nbsp;&nbsp;\r\n                    <a href=\"#/register\">注册用户</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!override.css', ['module'], function(module) { module.exports = ".ui.dimmer {\n  background-color: rgba(0, 0, 0, 0.5) !important;\n}\n.ui.dimmer.page.modals {\n  z-index: 10000;\n}\n.ui.modal > .actions > .ui.left.floated.button {\n  margin-left: 3.5px;\n}\n.ui.list .list .item {\n  display: list-item !important;\n  table-layout: fixed;\n  height: auto!important;\n  visibility: visible!important;\n}\n.ui.list .list .item:after {\n  content: '';\n  display: block;\n  height: 0;\n  clear: both;\n  visibility: hidden;\n}\n#swipebox-bottom-bar,\n#swipebox-top-bar {\n  background: rgba(0, 0, 0, 0.3) !important;\n}\n"; });
 define('text!blog/blog.css', ['module'], function(module) { module.exports = ""; });
-define('text!user/user-login.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-login.css\"></require>\r\n    <div class=\"tms-user-login\">\r\n        <div class=\"container\">\r\n            <h2 class=\"ui center aligned icon header\">\r\n            <i class=\"circular users icon\"></i> 用户登录\r\n            </h2>\r\n            <div class=\"ui form segment\">\r\n                <div class=\"field\">\r\n                    <div class=\"ui left icon input\">\r\n                        <i class=\"user icon\"></i>\r\n                        <input type=\"text\" name=\"username\" value.bind=\"username\" placeholder=\"用户名\" />\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div class=\"ui left icon input\">\r\n                        <i class=\"lock icon\"></i>\r\n                        <input type=\"password\" name=\"password\" keydown.trigger=\"kdHandler($event)\" value.bind=\"password\" placeholder=\"密码\" />\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"rememberMeRef\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" name=\"remember-me\" />\r\n                        <label>记住我在此计算机的登录(2周)</label>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui center aligned header\">\r\n                    <button click.delegate=\"loginHandler()\" class=\"ui submit fluid button ${isReq ? 'disabled' : ''}\">登录</button>\r\n                </div>\r\n                <div style=\"text-align: center; font-size:12px;\">\r\n                    <a href=\"#/pwd-reset\">忘记密码</a> &nbsp;&nbsp;\r\n                    <a href=\"#/register\">注册用户</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!chat/chat-direct.css', ['module'], function(module) { module.exports = ".tms-chat-direct {\n  height: 100%;\n}\n.tms-chat-direct .ui.comments {\n  min-height: calc(100vh - 170px);\n}\n.tms-chat-direct .ui.comments > .comment > .content {\n  display: block!important;\n}\n.tms-chat-direct .tms-edit-textarea {\n  width: 100%;\n}\n.tms-chat-direct .ui.selection.list > .item {\n  cursor: default;\n}\n.tms-chat-direct .ui.search .prompt {\n  border-radius: .28571429rem;\n}\n.tms-chat-direct .tms-content {\n  /* position: absolute;\n        top: 60px;\n        left: 220px;\n        bottom: 0;\n        right: 0; */\n  position: relative;\n  margin-left: 220px;\n  top: 60px;\n  height: calc(100vh - 60px);\n  display: flex;\n  align-items: stretch;\n}\n.tms-chat-direct .tms-content.tms-sidebar-show .tms-right-sidebar {\n  width: 388px;\n  border-left: 1px #e9e9e9 solid;\n  transition: width 0.15s ease-out 0s;\n  margin: 4px;\n  margin-right: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content {\n    margin-left: 0;\n  }\n}\n.tms-chat-direct .tms-content-body {\n  width: 100%;\n  max-width: 100%;\n  flex: 1 1 0;\n  display: flex;\n  align-items: stretch;\n  padding-bottom: 73px;\n}\n.tms-chat-direct .tms-content-body .ui.comments {\n  overflow: hidden;\n  flex: 1 1 0;\n  max-width: none;\n  margin-bottom: 12px;\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments > .ui.basic.button {\n  display: block;\n  margin-right: 0;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-pre-more {\n  margin-bottom: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-next-more {\n  margin-top: 10px;\n  position: relative;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-next-more .ui.icon.button {\n  position: absolute;\n  top: 2px;\n  right: -1px;\n}\n.tms-chat-direct .tms-content-body .tms-go {\n  position: fixed;\n  left: 240px;\n}\n.tms-chat-direct .tms-content-body .tms-go .ui.button {\n  margin: 0;\n  background-color: rgba(224, 225, 226, 0.5);\n}\n.tms-chat-direct .tms-content-body .tms-go .ui.button:hover {\n  background-color: #CACBCD;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content-body .tms-go {\n    left: 20px;\n  }\n}\n.tms-chat-direct .tms-content-body .tms-go-head {\n  top: 80px;\n}\n.tms-chat-direct .tms-content-body .tms-go-foot {\n  bottom: 90px;\n}\n.tms-chat-direct .tms-right-sidebar {\n  width: 0;\n  overflow: hidden;\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .ui.button.tms-search-more {\n  display: block;\n  margin: 0;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body {\n  max-height: 65px;\n  overflow-y: hidden;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body.tms-open {\n  max-height: none;\n  overflow-y: auto;\n  padding-bottom: 20px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .tms-btn-open-search-item {\n  display: none;\n  height: 25px;\n  background-color: rgba(0, 0, 0, 0.1);\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  text-align: center;\n  padding-top: 2px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment:hover .tms-btn-open-search-item {\n  display: block;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct {\n    /* .tms-login-user {\n            display: none!important;\n        } */\n  }\n  .tms-chat-direct .tms-left-sidebar {\n    display: none;\n  }\n  .tms-chat-direct .tms-right-sidebar {\n    position: fixed;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 59px;\n    background-color: white;\n    margin-left: 0!important;\n  }\n  .tms-chat-direct .tms-right-sidebar .panel-chat-msg .ui.basic.segment.minimal.selection.list.segment.comments {\n    padding-left: 0;\n    padding-right: 0;\n  }\n  .tms-chat-direct .tms-sidebar-show .tms-right-sidebar {\n    width: 100%!important;\n  }\n}\n.tms-chat-direct .tms-edit-actions .left.button {\n  border-top-left-radius: 0;\n}\n.tms-chat-direct .tms-edit-actions .right.button {\n  border-top-right-radius: 0;\n}\n"; });
 define('text!user/user-pwd-reset.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-pwd-reset.css\"></require>\r\n    <div class=\"ui container tms-user-pwd-reset\">\r\n        <div class=\"tms-flex\">\r\n            <div if.bind=\"!token\" ref=\"fm\" class=\"ui form segment\" style=\"width: 260px;\">\r\n                <div class=\"ui message\">输入您的邮箱地址,我们会发送密码重置链接到您的邮箱!</div>\r\n                <div class=\"field\">\r\n                    <label style=\"display:none;\">邮件地址</label>\r\n                    <input type=\"text\" name=\"mail\" autofocus=\"\" value.bind=\"mail\" placeholder=\"输入您的邮件地址\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"resetPwdHandler()\">发送密码重置邮件</div>\r\n            </div>\r\n            <div if.bind=\"token\" ref=\"fm2\" class=\"ui form segment\" style=\"width: 260px;\">\r\n                <div class=\"ui message\">设置您的新密码,密码长度要求至少8位字符!</div>\r\n                <div class=\"field\">\r\n                    <label style=\"display:none;\">新密码</label>\r\n                    <input type=\"password\" name=\"mail\" autofocus=\"\" value.bind=\"pwd\" placeholder=\"设置您的新密码\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"newPwdHandler()\">确认</div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!chat/md-github.css', ['module'], function(module) { module.exports = ".markdown-body {\n  font-size: 14px;\n  line-height: 1.6;\n}\n.markdown-body > br,\n.markdown-body ul br .markdown-body ol br {\n  display: none;\n}\n.markdown-body > *:first-child {\n  margin-top: 0 !important;\n}\n.markdown-body > *:last-child {\n  margin-bottom: 0 !important;\n}\n.markdown-body a.absent {\n  color: #CC0000;\n}\n.markdown-body a.anchor {\n  bottom: 0;\n  cursor: pointer;\n  display: block;\n  left: 0;\n  margin-left: -30px;\n  padding-left: 30px;\n  position: absolute;\n  top: 0;\n}\n.markdown-body h1,\n.markdown-body h2,\n.markdown-body h3,\n.markdown-body h4,\n.markdown-body h5,\n.markdown-body h6 {\n  cursor: text;\n  font-weight: bold;\n  margin: 20px 0 10px;\n  padding: 0;\n  position: relative;\n  word-break: break-all;\n}\n.markdown-body h1 .mini-icon-link,\n.markdown-body h2 .mini-icon-link,\n.markdown-body h3 .mini-icon-link,\n.markdown-body h4 .mini-icon-link,\n.markdown-body h5 .mini-icon-link,\n.markdown-body h6 .mini-icon-link {\n  color: #000000;\n  display: none;\n}\n.markdown-body h1:hover a.anchor,\n.markdown-body h2:hover a.anchor,\n.markdown-body h3:hover a.anchor,\n.markdown-body h4:hover a.anchor,\n.markdown-body h5:hover a.anchor,\n.markdown-body h6:hover a.anchor {\n  line-height: 1;\n  margin-left: -22px;\n  padding-left: 0;\n  text-decoration: none;\n  top: 15%;\n}\n.markdown-body h1:hover a.anchor .mini-icon-link,\n.markdown-body h2:hover a.anchor .mini-icon-link,\n.markdown-body h3:hover a.anchor .mini-icon-link,\n.markdown-body h4:hover a.anchor .mini-icon-link,\n.markdown-body h5:hover a.anchor .mini-icon-link,\n.markdown-body h6:hover a.anchor .mini-icon-link {\n  display: inline-block;\n}\n.markdown-body h1 tt,\n.markdown-body h1 code,\n.markdown-body h2 tt,\n.markdown-body h2 code,\n.markdown-body h3 tt,\n.markdown-body h3 code,\n.markdown-body h4 tt,\n.markdown-body h4 code,\n.markdown-body h5 tt,\n.markdown-body h5 code,\n.markdown-body h6 tt,\n.markdown-body h6 code {\n  font-size: inherit;\n}\n.markdown-body h1 {\n  color: #000000;\n  font-size: 28px;\n}\n.markdown-body h2 {\n  border-bottom: 1px solid #CCCCCC;\n  color: #000000;\n  font-size: 24px;\n}\n.markdown-body h3 {\n  font-size: 18px;\n}\n.markdown-body h4 {\n  font-size: 16px;\n}\n.markdown-body h5 {\n  font-size: 14px;\n}\n.markdown-body h6 {\n  color: #777777;\n  font-size: 14px;\n}\n.markdown-body p,\n.markdown-body blockquote,\n.markdown-body ul,\n.markdown-body ol,\n.markdown-body dl,\n.markdown-body table,\n.markdown-body pre {\n  margin: 15px 0;\n}\n.markdown-body hr {\n  overflow: hidden;\n  background: 0 0;\n}\n.markdown-body hr:before {\n  display: table;\n  content: \"\";\n}\n.markdown-body hr:after {\n  display: table;\n  clear: both;\n  content: \"\";\n}\n.markdown-body hr {\n  height: 4px;\n  padding: 0;\n  margin: 16px 0;\n  background-color: #e7e7e7;\n  border: 0;\n}\n.markdown-body hr {\n  -moz-box-sizing: content-box;\n  box-sizing: content-box;\n}\n.markdown-body > h2:first-child,\n.markdown-body > h1:first-child,\n.markdown-body > h1:first-child + h2,\n.markdown-body > h3:first-child,\n.markdown-body > h4:first-child,\n.markdown-body > h5:first-child,\n.markdown-body > h6:first-child {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body a:first-child h1,\n.markdown-body a:first-child h2,\n.markdown-body a:first-child h3,\n.markdown-body a:first-child h4,\n.markdown-body a:first-child h5,\n.markdown-body a:first-child h6 {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body h1 + p,\n.markdown-body h2 + p,\n.markdown-body h3 + p,\n.markdown-body h4 + p,\n.markdown-body h5 + p,\n.markdown-body h6 + p {\n  margin-top: 0;\n}\n.markdown-body li p.first {\n  display: inline-block;\n}\n.markdown-body ul,\n.markdown-body ol {\n  padding-left: 30px;\n}\n.markdown-body ul.no-list,\n.markdown-body ol.no-list {\n  list-style-type: none;\n  padding: 0;\n}\n.markdown-body ul li > *:first-child,\n.markdown-body ol li > *:first-child {\n  margin-top: 0;\n}\n.markdown-body ul ul,\n.markdown-body ul ol,\n.markdown-body ol ol,\n.markdown-body ol ul {\n  margin-bottom: 0;\n}\n.markdown-body dl {\n  padding: 0;\n}\n.markdown-body dl dt {\n  font-size: 14px;\n  font-style: italic;\n  font-weight: bold;\n  margin: 15px 0 5px;\n  padding: 0;\n}\n.markdown-body dl dt:first-child {\n  padding: 0;\n}\n.markdown-body dl dt > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dt > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body dl dd {\n  margin: 0 0 15px;\n  padding: 0 15px;\n}\n.markdown-body dl dd > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dd > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body blockquote {\n  border-left: 4px solid #DDDDDD;\n  color: #777777;\n  padding: 0 15px;\n}\n.markdown-body blockquote > *:first-child {\n  margin-top: 0;\n}\n.markdown-body blockquote > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body table th {\n  font-weight: bold;\n}\n.markdown-body table th,\n.markdown-body table td {\n  border: 1px solid #CCCCCC;\n  padding: 6px 13px;\n}\n.markdown-body table tr {\n  background-color: #FFFFFF;\n  border-top: 1px solid #CCCCCC;\n}\n.markdown-body table tr:nth-child(2n) {\n  background-color: #F8F8F8;\n}\n.markdown-body img {\n  max-width: 100%;\n}\n.markdown-body span.frame {\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.frame > span {\n  border: 1px solid #DDDDDD;\n  display: block;\n  float: left;\n  margin: 13px 0 0;\n  overflow: hidden;\n  padding: 7px;\n  width: auto;\n}\n.markdown-body span.frame span img {\n  display: block;\n  float: left;\n}\n.markdown-body span.frame span span {\n  clear: both;\n  color: #333333;\n  display: block;\n  padding: 5px 0 0;\n}\n.markdown-body span.align-center {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-center > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: center;\n}\n.markdown-body span.align-center span img {\n  margin: 0 auto;\n  text-align: center;\n}\n.markdown-body span.align-right {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-right > span {\n  display: block;\n  margin: 13px 0 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body span.align-right span img {\n  margin: 0;\n  text-align: right;\n}\n.markdown-body span.float-left {\n  display: block;\n  float: left;\n  margin-right: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-left span {\n  margin: 13px 0 0;\n}\n.markdown-body span.float-right {\n  display: block;\n  float: right;\n  margin-left: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-right > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body code,\n.markdown-body tt {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  /* white-space: nowrap; */\n  white-space: normal;\n  word-break: break-all;\n}\n.markdown-body pre > code {\n  background: none repeat scroll 0 0 transparent;\n  border: medium none;\n  margin: 0;\n  padding: 0;\n  white-space: pre;\n}\n.markdown-body .highlight pre,\n.markdown-body pre {\n  background-color: #F8F8F8;\n  border: 1px solid #CCCCCC;\n  border-radius: 3px 3px 3px 3px;\n  font-size: 13px;\n  line-height: 19px;\n  overflow: auto;\n  padding: 6px 10px;\n}\n.markdown-body pre code,\n.markdown-body pre tt {\n  background-color: transparent;\n  border: medium none;\n}\n"; });
 define('text!user/user-register.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-register.css\"></require>\r\n    <div class=\"ui container tms-user-register\">\r\n        <div class=\"tms-flex\">\r\n            <div if.bind=\"!token\" ref=\"fm\" class=\"ui form segment\" style=\"width: 280px;\">\r\n                <div class=\"ui message\">提交账户注册信息成功后,我们会向您的注册邮箱发送一封账户激活邮件,激活账户后即可登录!</div>\r\n                <div class=\"required field\">\r\n                    <label>用户名</label>\r\n                    <input type=\"text\" name=\"username\" autofocus=\"\" value.bind=\"username\" placeholder=\"输入您的登录用户名\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>密码</label>\r\n                    <input type=\"password\" name=\"pwd\" autofocus=\"\" value.bind=\"pwd\" placeholder=\"输入您的登录密码\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>姓名</label>\r\n                    <input type=\"text\" name=\"name\" autofocus=\"\" value.bind=\"name\" placeholder=\"输入您的显示名称\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>邮箱</label>\r\n                    <input type=\"text\" name=\"mail\" autofocus=\"\" value.bind=\"mail\" placeholder=\"输入您的账户激活邮箱\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"okHandler()\">确认</div>\r\n            </div>\r\n            <div if.bind=\"token\" class=\"ui center aligned very padded segment\" style=\"width: 320px;\">\r\n            \t<h1 class=\"ui header\">${header}</h1>\r\n            \t<a href=\"/admin/login\" class=\"ui green button\">返回登录页面</a>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!common/common-scrollbar.css', ['module'], function(module) { module.exports = "/*************** SCROLLBAR BASE CSS ***************/\n.scroll-wrapper {\n  overflow: hidden !important;\n  padding: 0 !important;\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.scroll-wrapper > .scroll-content {\n  border: none !important;\n  box-sizing: content-box !important;\n  height: auto;\n  left: 0;\n  margin: 0;\n  max-height: none;\n  max-width: none !important;\n  overflow: scroll !important;\n  padding: 0;\n  position: relative !important;\n  top: 0;\n  width: auto !important;\n}\n.scroll-wrapper > .scroll-content::-webkit-scrollbar {\n  height: 0;\n  width: 0;\n}\n.scroll-element {\n  display: none;\n}\n.scroll-element,\n.scroll-element div {\n  box-sizing: content-box;\n}\n.scroll-element.scroll-x.scroll-scrollx_visible,\n.scroll-element.scroll-y.scroll-scrolly_visible {\n  display: block;\n}\n.scroll-element .scroll-bar,\n.scroll-element .scroll-arrow {\n  cursor: default;\n}\n.scroll-textarea {\n  border: 1px solid #cccccc;\n  border-top-color: #999999;\n}\n.scroll-textarea > .scroll-content {\n  overflow: hidden !important;\n}\n.scroll-textarea > .scroll-content > textarea {\n  border: none !important;\n  box-sizing: border-box;\n  height: 100% !important;\n  margin: 0;\n  max-height: none !important;\n  max-width: none !important;\n  overflow: scroll !important;\n  outline: none;\n  padding: 2px;\n  position: relative !important;\n  top: 0;\n  width: 100% !important;\n}\n.scroll-textarea > .scroll-content > textarea::-webkit-scrollbar {\n  height: 0;\n  width: 0;\n}\n/*************** SIMPLE OUTER SCROLLBAR ***************/\n.scrollbar-outer > .scroll-element,\n.scrollbar-outer > .scroll-element div {\n  border: none;\n  margin: 0;\n  padding: 0;\n  position: absolute;\n  z-index: 10;\n}\n.scrollbar-outer > .scroll-element {\n  background-color: #ffffff;\n}\n.scrollbar-outer > .scroll-element div {\n  display: block;\n  height: 100%;\n  left: 0;\n  top: 0;\n  width: 100%;\n}\n.scrollbar-outer > .scroll-element.scroll-x {\n  bottom: 0;\n  height: 12px;\n  left: 0;\n  width: 100%;\n}\n.scrollbar-outer > .scroll-element.scroll-y {\n  height: 100%;\n  right: 0;\n  top: 0;\n  width: 12px;\n}\n.scrollbar-outer > .scroll-element.scroll-x .scroll-element_outer {\n  height: 8px;\n  top: 2px;\n}\n.scrollbar-outer > .scroll-element.scroll-y .scroll-element_outer {\n  left: 2px;\n  width: 8px;\n}\n.scrollbar-outer > .scroll-element .scroll-element_outer {\n  overflow: hidden;\n}\n.scrollbar-outer > .scroll-element .scroll-element_track {\n  background-color: #eeeeee;\n}\n.scrollbar-outer > .scroll-element .scroll-element_outer,\n.scrollbar-outer > .scroll-element .scroll-element_track,\n.scrollbar-outer > .scroll-element .scroll-bar {\n  -webkit-border-radius: 8px;\n  -moz-border-radius: 8px;\n  border-radius: 8px;\n}\n.scrollbar-outer > .scroll-element .scroll-bar {\n  background-color: #d9d9d9;\n}\n.scrollbar-outer > .scroll-element .scroll-bar:hover {\n  background-color: #c2c2c2;\n}\n.scrollbar-outer > .scroll-element.scroll-draggable .scroll-bar {\n  background-color: #919191;\n}\n/* scrollbar height/width & offset from container borders */\n.scrollbar-outer > .scroll-content.scroll-scrolly_visible {\n  left: -12px;\n  margin-left: 12px;\n}\n.scrollbar-outer > .scroll-content.scroll-scrollx_visible {\n  top: -12px;\n  margin-top: 12px;\n}\n.scrollbar-outer > .scroll-element.scroll-x .scroll-bar {\n  min-width: 10px;\n}\n.scrollbar-outer > .scroll-element.scroll-y .scroll-bar {\n  min-height: 10px;\n}\n/* update scrollbar offset if both scrolls are visible */\n.scrollbar-outer > .scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_track {\n  left: -14px;\n}\n.scrollbar-outer > .scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_track {\n  top: -14px;\n}\n.scrollbar-outer > .scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_size {\n  left: -14px;\n}\n.scrollbar-outer > .scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_size {\n  top: -14px;\n}\n/*************** SCROLLBAR MAC OS X ***************/\n.scrollbar-macosx > .scroll-element,\n.scrollbar-macosx > .scroll-element div {\n  background: none;\n  border: none;\n  margin: 0;\n  padding: 0;\n  position: absolute;\n  z-index: 10;\n}\n.scrollbar-macosx > .scroll-element div {\n  display: block;\n  height: 100%;\n  left: 0;\n  top: 0;\n  width: 100%;\n}\n.scrollbar-macosx > .scroll-element .scroll-element_track {\n  display: none;\n}\n.scrollbar-macosx > .scroll-element .scroll-bar {\n  background-color: #6C6E71;\n  display: block;\n  -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)\";\n  filter: alpha(opacity=0);\n  opacity: 0;\n  -webkit-border-radius: 7px;\n  -moz-border-radius: 7px;\n  border-radius: 7px;\n  -webkit-transition: opacity 0.2s linear;\n  -moz-transition: opacity 0.2s linear;\n  -o-transition: opacity 0.2s linear;\n  -ms-transition: opacity 0.2s linear;\n  transition: opacity 0.2s linear;\n}\n.scrollbar-macosx:hover > .scroll-element .scroll-bar,\n.scrollbar-macosx > .scroll-element.scroll-draggable .scroll-bar {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=70)\";\n  filter: alpha(opacity=70);\n  opacity: 0.7;\n}\n.scrollbar-macosx > .scroll-element.scroll-x {\n  bottom: 0px;\n  height: 0px;\n  left: 0;\n  min-width: 100%;\n  overflow: visible;\n  width: 100%;\n}\n.scrollbar-macosx > .scroll-element.scroll-y {\n  height: 100%;\n  min-height: 100%;\n  right: 0px;\n  top: 0;\n  width: 0px;\n}\n/* scrollbar height/width & offset from container borders */\n.scrollbar-macosx > .scroll-element.scroll-x .scroll-bar {\n  height: 7px;\n  min-width: 10px;\n  top: -9px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y .scroll-bar {\n  left: -9px;\n  min-height: 10px;\n  width: 7px;\n}\n.scrollbar-macosx > .scroll-element.scroll-x .scroll-element_outer {\n  left: 2px;\n}\n.scrollbar-macosx > .scroll-element.scroll-x .scroll-element_size {\n  left: -4px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y .scroll-element_outer {\n  top: 2px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y .scroll-element_size {\n  top: -4px;\n}\n/* update scrollbar offset if both scrolls are visible */\n.scrollbar-macosx > .scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_size {\n  left: -11px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_size {\n  top: -11px;\n}\n"; });
+define('text!chat/chat-direct.css', ['module'], function(module) { module.exports = ".tms-chat-direct {\n  height: 100%;\n}\n.tms-chat-direct .ui.comments {\n  min-height: calc(100vh - 170px);\n}\n.tms-chat-direct .ui.comments > .comment > .content {\n  display: block!important;\n}\n.tms-chat-direct .tms-edit-textarea {\n  width: 100%;\n}\n.tms-chat-direct .ui.selection.list > .item {\n  cursor: default;\n}\n.tms-chat-direct .ui.search .prompt {\n  border-radius: .28571429rem;\n}\n.tms-chat-direct .tms-content {\n  /* position: absolute;\n        top: 60px;\n        left: 220px;\n        bottom: 0;\n        right: 0; */\n  position: relative;\n  margin-left: 220px;\n  top: 60px;\n  height: calc(100vh - 60px);\n  display: flex;\n  align-items: stretch;\n}\n.tms-chat-direct .tms-content.tms-sidebar-show .tms-right-sidebar {\n  width: 388px;\n  border-left: 1px #e9e9e9 solid;\n  transition: width 0.15s ease-out 0s;\n  margin: 4px;\n  margin-right: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content {\n    margin-left: 0;\n  }\n}\n.tms-chat-direct .tms-content-body {\n  width: 100%;\n  max-width: 100%;\n  flex: 1 1 0;\n  display: flex;\n  align-items: stretch;\n  padding-bottom: 73px;\n}\n.tms-chat-direct .tms-content-body .ui.comments {\n  overflow: hidden;\n  flex: 1 1 0;\n  max-width: none;\n  margin-bottom: 12px;\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments > .ui.basic.button {\n  display: block;\n  margin-right: 0;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-pre-more {\n  margin-bottom: 10px;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-next-more {\n  margin-top: 10px;\n  position: relative;\n}\n.tms-chat-direct .tms-content-body .ui.comments .tms-next-more .ui.icon.button {\n  position: absolute;\n  top: 2px;\n  right: -1px;\n}\n.tms-chat-direct .tms-content-body .tms-go {\n  position: fixed;\n  left: 240px;\n}\n.tms-chat-direct .tms-content-body .tms-go .ui.button {\n  margin: 0;\n  background-color: rgba(224, 225, 226, 0.5);\n}\n.tms-chat-direct .tms-content-body .tms-go .ui.button:hover {\n  background-color: #CACBCD;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content-body .tms-go {\n    left: 20px;\n  }\n}\n.tms-chat-direct .tms-content-body .tms-go-head {\n  top: 80px;\n}\n.tms-chat-direct .tms-content-body .tms-go-foot {\n  bottom: 90px;\n}\n.tms-chat-direct .tms-right-sidebar {\n  width: 0;\n  overflow: hidden;\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .ui.button.tms-search-more {\n  display: block;\n  margin: 0;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body {\n  max-height: 65px;\n  overflow-y: hidden;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body.tms-open {\n  max-height: none;\n  overflow-y: auto;\n  padding-bottom: 20px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .tms-btn-open-search-item {\n  display: none;\n  height: 25px;\n  background-color: rgba(0, 0, 0, 0.1);\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  text-align: center;\n  padding-top: 2px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment:hover .tms-btn-open-search-item {\n  display: block;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct {\n    /* .tms-login-user {\n            display: none!important;\n        } */\n  }\n  .tms-chat-direct .tms-left-sidebar {\n    display: none;\n  }\n  .tms-chat-direct .tms-right-sidebar {\n    position: fixed;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 59px;\n    background-color: white;\n    margin-left: 0!important;\n  }\n  .tms-chat-direct .tms-right-sidebar .panel-chat-msg .ui.basic.segment.minimal.selection.list.segment.comments {\n    padding-left: 0;\n    padding-right: 0;\n  }\n  .tms-chat-direct .tms-sidebar-show .tms-right-sidebar {\n    width: 100%!important;\n  }\n}\n.tms-chat-direct .tms-edit-actions .left.button {\n  border-top-left-radius: 0;\n}\n.tms-chat-direct .tms-edit-actions .right.button {\n  border-top-right-radius: 0;\n}\n"; });
+define('text!test/test-lifecycle.html', ['module'], function(module) { module.exports = "<template>\r\n    <!-- <require from=\"\"></require> -->\r\n    <div class=\"ui container\">\r\n        <h1 class=\"ui header\">Aurelia框架模块生命周期钩子函数调用顺序测试(看console输出)</h1>\r\n    </div>\r\n</template>\r\n"; });
+define('text!chat/md-github.css', ['module'], function(module) { module.exports = ".markdown-body {\n  font-size: 14px;\n  line-height: 1.6;\n}\n.markdown-body > br,\n.markdown-body ul br .markdown-body ol br {\n  display: none;\n}\n.markdown-body > *:first-child {\n  margin-top: 0 !important;\n}\n.markdown-body > *:last-child {\n  margin-bottom: 0 !important;\n}\n.markdown-body a.absent {\n  color: #CC0000;\n}\n.markdown-body a.anchor {\n  bottom: 0;\n  cursor: pointer;\n  display: block;\n  left: 0;\n  margin-left: -30px;\n  padding-left: 30px;\n  position: absolute;\n  top: 0;\n}\n.markdown-body h1,\n.markdown-body h2,\n.markdown-body h3,\n.markdown-body h4,\n.markdown-body h5,\n.markdown-body h6 {\n  cursor: text;\n  font-weight: bold;\n  margin: 20px 0 10px;\n  padding: 0;\n  position: relative;\n  word-break: break-all;\n}\n.markdown-body h1 .mini-icon-link,\n.markdown-body h2 .mini-icon-link,\n.markdown-body h3 .mini-icon-link,\n.markdown-body h4 .mini-icon-link,\n.markdown-body h5 .mini-icon-link,\n.markdown-body h6 .mini-icon-link {\n  color: #000000;\n  display: none;\n}\n.markdown-body h1:hover a.anchor,\n.markdown-body h2:hover a.anchor,\n.markdown-body h3:hover a.anchor,\n.markdown-body h4:hover a.anchor,\n.markdown-body h5:hover a.anchor,\n.markdown-body h6:hover a.anchor {\n  line-height: 1;\n  margin-left: -22px;\n  padding-left: 0;\n  text-decoration: none;\n  top: 15%;\n}\n.markdown-body h1:hover a.anchor .mini-icon-link,\n.markdown-body h2:hover a.anchor .mini-icon-link,\n.markdown-body h3:hover a.anchor .mini-icon-link,\n.markdown-body h4:hover a.anchor .mini-icon-link,\n.markdown-body h5:hover a.anchor .mini-icon-link,\n.markdown-body h6:hover a.anchor .mini-icon-link {\n  display: inline-block;\n}\n.markdown-body h1 tt,\n.markdown-body h1 code,\n.markdown-body h2 tt,\n.markdown-body h2 code,\n.markdown-body h3 tt,\n.markdown-body h3 code,\n.markdown-body h4 tt,\n.markdown-body h4 code,\n.markdown-body h5 tt,\n.markdown-body h5 code,\n.markdown-body h6 tt,\n.markdown-body h6 code {\n  font-size: inherit;\n}\n.markdown-body h1 {\n  color: #000000;\n  font-size: 28px;\n}\n.markdown-body h2 {\n  border-bottom: 1px solid #CCCCCC;\n  color: #000000;\n  font-size: 24px;\n}\n.markdown-body h3 {\n  font-size: 18px;\n}\n.markdown-body h4 {\n  font-size: 16px;\n}\n.markdown-body h5 {\n  font-size: 14px;\n}\n.markdown-body h6 {\n  color: #777777;\n  font-size: 14px;\n}\n.markdown-body p,\n.markdown-body blockquote,\n.markdown-body ul,\n.markdown-body ol,\n.markdown-body dl,\n.markdown-body table,\n.markdown-body pre {\n  margin: 15px 0;\n}\n.markdown-body hr {\n  overflow: hidden;\n  background: 0 0;\n}\n.markdown-body hr:before {\n  display: table;\n  content: \"\";\n}\n.markdown-body hr:after {\n  display: table;\n  clear: both;\n  content: \"\";\n}\n.markdown-body hr {\n  height: 4px;\n  padding: 0;\n  margin: 16px 0;\n  background-color: #e7e7e7;\n  border: 0;\n}\n.markdown-body hr {\n  -moz-box-sizing: content-box;\n  box-sizing: content-box;\n}\n.markdown-body > h2:first-child,\n.markdown-body > h1:first-child,\n.markdown-body > h1:first-child + h2,\n.markdown-body > h3:first-child,\n.markdown-body > h4:first-child,\n.markdown-body > h5:first-child,\n.markdown-body > h6:first-child {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body a:first-child h1,\n.markdown-body a:first-child h2,\n.markdown-body a:first-child h3,\n.markdown-body a:first-child h4,\n.markdown-body a:first-child h5,\n.markdown-body a:first-child h6 {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body h1 + p,\n.markdown-body h2 + p,\n.markdown-body h3 + p,\n.markdown-body h4 + p,\n.markdown-body h5 + p,\n.markdown-body h6 + p {\n  margin-top: 0;\n}\n.markdown-body li p.first {\n  display: inline-block;\n}\n.markdown-body ul,\n.markdown-body ol {\n  padding-left: 30px;\n}\n.markdown-body ul.no-list,\n.markdown-body ol.no-list {\n  list-style-type: none;\n  padding: 0;\n}\n.markdown-body ul li > *:first-child,\n.markdown-body ol li > *:first-child {\n  margin-top: 0;\n}\n.markdown-body ul ul,\n.markdown-body ul ol,\n.markdown-body ol ol,\n.markdown-body ol ul {\n  margin-bottom: 0;\n}\n.markdown-body dl {\n  padding: 0;\n}\n.markdown-body dl dt {\n  font-size: 14px;\n  font-style: italic;\n  font-weight: bold;\n  margin: 15px 0 5px;\n  padding: 0;\n}\n.markdown-body dl dt:first-child {\n  padding: 0;\n}\n.markdown-body dl dt > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dt > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body dl dd {\n  margin: 0 0 15px;\n  padding: 0 15px;\n}\n.markdown-body dl dd > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dd > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body blockquote {\n  border-left: 4px solid #DDDDDD;\n  color: #777777;\n  padding: 0 15px;\n}\n.markdown-body blockquote > *:first-child {\n  margin-top: 0;\n}\n.markdown-body blockquote > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body table th {\n  font-weight: bold;\n}\n.markdown-body table th,\n.markdown-body table td {\n  border: 1px solid #CCCCCC;\n  padding: 6px 13px;\n}\n.markdown-body table tr {\n  background-color: #FFFFFF;\n  border-top: 1px solid #CCCCCC;\n}\n.markdown-body table tr:nth-child(2n) {\n  background-color: #F8F8F8;\n}\n.markdown-body img {\n  max-width: 100%;\n}\n.markdown-body span.frame {\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.frame > span {\n  border: 1px solid #DDDDDD;\n  display: block;\n  float: left;\n  margin: 13px 0 0;\n  overflow: hidden;\n  padding: 7px;\n  width: auto;\n}\n.markdown-body span.frame span img {\n  display: block;\n  float: left;\n}\n.markdown-body span.frame span span {\n  clear: both;\n  color: #333333;\n  display: block;\n  padding: 5px 0 0;\n}\n.markdown-body span.align-center {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-center > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: center;\n}\n.markdown-body span.align-center span img {\n  margin: 0 auto;\n  text-align: center;\n}\n.markdown-body span.align-right {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-right > span {\n  display: block;\n  margin: 13px 0 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body span.align-right span img {\n  margin: 0;\n  text-align: right;\n}\n.markdown-body span.float-left {\n  display: block;\n  float: left;\n  margin-right: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-left span {\n  margin: 13px 0 0;\n}\n.markdown-body span.float-right {\n  display: block;\n  float: right;\n  margin-left: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-right > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body code,\n.markdown-body tt {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  /* white-space: nowrap; */\n  white-space: normal;\n  word-break: break-all;\n}\n.markdown-body pre > code {\n  background: none repeat scroll 0 0 transparent;\n  border: medium none;\n  margin: 0;\n  padding: 0;\n  white-space: pre;\n}\n.markdown-body .highlight pre,\n.markdown-body pre {\n  background-color: #F8F8F8;\n  border: 1px solid #CCCCCC;\n  border-radius: 3px 3px 3px 3px;\n  font-size: 13px;\n  line-height: 19px;\n  overflow: auto;\n  padding: 6px 10px;\n}\n.markdown-body pre code,\n.markdown-body pre tt {\n  background-color: transparent;\n  border: medium none;\n}\n"; });
 define('text!resources/elements/em-blog-comment-popup.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-comment-popup.css\"></require>\r\n    <div ref=\"popup\" class=\"ui flowing popup transition hidden em-blog-comment-popup\">\r\n        <div class=\"ui items\">\r\n            <div class=\"item\">\r\n                <div class=\"content\" style=\"width:300px; word-break: break-all;\">\r\n                    <a class=\"header pp-not\" href=\"javascript:void(0);\">评论#${comment.id}</a>\r\n                    <div class=\"meta\" style=\"width:300px; word-break: break-all; font-size: 12px;\">\r\n                        <i class=\"wait icon\"></i>\r\n                        <span>\r\n                            ${comment.creator ? (comment.creator.name ? comment.creator.name : comment.creator.username) : ''}\r\n                        </span>\r\n                        <span>发表于</span>\r\n                        <span class=\"cinema timeago\" style=\"font-style: italic;\" title=\"${comment.createDate | date}\">${comment.createDate | timeago}</span>\r\n                    </div>\r\n                    <div class=\"ui divider\"></div>\r\n                    <div class=\"description markdown-body\" style=\"width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;\" innerhtml.bind=\"comment.content | parseMd\"></div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!user/user-login.css', ['module'], function(module) { module.exports = ".tms-user-login {\n  width: 100%;\n  min-height: 100%;\n  background-color: #5a3636;\n  overflow: hidden;\n}\n.tms-user-login .container {\n  width: 300px;\n  top: 50px;\n  margin-left: auto;\n  margin-right: auto;\n  position: relative;\n}\n.tms-user-login h2 {\n  color: rgba(197, 164, 164, 0.8) !important;\n}\n.tms-user-login .ui.form {\n  background-color: #353131;\n}\n.tms-user-login .ui.error.message {\n  background-color: #5a3636;\n}\n.tms-user-login .ui.error.message .header {\n  color: #e0b4b4;\n}\n.tms-user-login .ui.checkbox label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox input:focus ~ label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox label:hover {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.button {\n  background-color: #5a3636;\n  color: #ad8b75;\n}\n"; });
+define('text!common/common-scrollbar.css', ['module'], function(module) { module.exports = "/*************** SCROLLBAR BASE CSS ***************/\n.scroll-wrapper {\n  overflow: hidden !important;\n  padding: 0 !important;\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.scroll-wrapper > .scroll-content {\n  border: none !important;\n  box-sizing: content-box !important;\n  height: auto;\n  left: 0;\n  margin: 0;\n  max-height: none;\n  max-width: none !important;\n  overflow: scroll !important;\n  padding: 0;\n  position: relative !important;\n  top: 0;\n  width: auto !important;\n}\n.scroll-wrapper > .scroll-content::-webkit-scrollbar {\n  height: 0;\n  width: 0;\n}\n.scroll-element {\n  display: none;\n}\n.scroll-element,\n.scroll-element div {\n  box-sizing: content-box;\n}\n.scroll-element.scroll-x.scroll-scrollx_visible,\n.scroll-element.scroll-y.scroll-scrolly_visible {\n  display: block;\n}\n.scroll-element .scroll-bar,\n.scroll-element .scroll-arrow {\n  cursor: default;\n}\n.scroll-textarea {\n  border: 1px solid #cccccc;\n  border-top-color: #999999;\n}\n.scroll-textarea > .scroll-content {\n  overflow: hidden !important;\n}\n.scroll-textarea > .scroll-content > textarea {\n  border: none !important;\n  box-sizing: border-box;\n  height: 100% !important;\n  margin: 0;\n  max-height: none !important;\n  max-width: none !important;\n  overflow: scroll !important;\n  outline: none;\n  padding: 2px;\n  position: relative !important;\n  top: 0;\n  width: 100% !important;\n}\n.scroll-textarea > .scroll-content > textarea::-webkit-scrollbar {\n  height: 0;\n  width: 0;\n}\n/*************** SIMPLE OUTER SCROLLBAR ***************/\n.scrollbar-outer > .scroll-element,\n.scrollbar-outer > .scroll-element div {\n  border: none;\n  margin: 0;\n  padding: 0;\n  position: absolute;\n  z-index: 10;\n}\n.scrollbar-outer > .scroll-element {\n  background-color: #ffffff;\n}\n.scrollbar-outer > .scroll-element div {\n  display: block;\n  height: 100%;\n  left: 0;\n  top: 0;\n  width: 100%;\n}\n.scrollbar-outer > .scroll-element.scroll-x {\n  bottom: 0;\n  height: 12px;\n  left: 0;\n  width: 100%;\n}\n.scrollbar-outer > .scroll-element.scroll-y {\n  height: 100%;\n  right: 0;\n  top: 0;\n  width: 12px;\n}\n.scrollbar-outer > .scroll-element.scroll-x .scroll-element_outer {\n  height: 8px;\n  top: 2px;\n}\n.scrollbar-outer > .scroll-element.scroll-y .scroll-element_outer {\n  left: 2px;\n  width: 8px;\n}\n.scrollbar-outer > .scroll-element .scroll-element_outer {\n  overflow: hidden;\n}\n.scrollbar-outer > .scroll-element .scroll-element_track {\n  background-color: #eeeeee;\n}\n.scrollbar-outer > .scroll-element .scroll-element_outer,\n.scrollbar-outer > .scroll-element .scroll-element_track,\n.scrollbar-outer > .scroll-element .scroll-bar {\n  -webkit-border-radius: 8px;\n  -moz-border-radius: 8px;\n  border-radius: 8px;\n}\n.scrollbar-outer > .scroll-element .scroll-bar {\n  background-color: #d9d9d9;\n}\n.scrollbar-outer > .scroll-element .scroll-bar:hover {\n  background-color: #c2c2c2;\n}\n.scrollbar-outer > .scroll-element.scroll-draggable .scroll-bar {\n  background-color: #919191;\n}\n/* scrollbar height/width & offset from container borders */\n.scrollbar-outer > .scroll-content.scroll-scrolly_visible {\n  left: -12px;\n  margin-left: 12px;\n}\n.scrollbar-outer > .scroll-content.scroll-scrollx_visible {\n  top: -12px;\n  margin-top: 12px;\n}\n.scrollbar-outer > .scroll-element.scroll-x .scroll-bar {\n  min-width: 10px;\n}\n.scrollbar-outer > .scroll-element.scroll-y .scroll-bar {\n  min-height: 10px;\n}\n/* update scrollbar offset if both scrolls are visible */\n.scrollbar-outer > .scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_track {\n  left: -14px;\n}\n.scrollbar-outer > .scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_track {\n  top: -14px;\n}\n.scrollbar-outer > .scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_size {\n  left: -14px;\n}\n.scrollbar-outer > .scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_size {\n  top: -14px;\n}\n/*************** SCROLLBAR MAC OS X ***************/\n.scrollbar-macosx > .scroll-element,\n.scrollbar-macosx > .scroll-element div {\n  background: none;\n  border: none;\n  margin: 0;\n  padding: 0;\n  position: absolute;\n  z-index: 10;\n}\n.scrollbar-macosx > .scroll-element div {\n  display: block;\n  height: 100%;\n  left: 0;\n  top: 0;\n  width: 100%;\n}\n.scrollbar-macosx > .scroll-element .scroll-element_track {\n  display: none;\n}\n.scrollbar-macosx > .scroll-element .scroll-bar {\n  background-color: #6C6E71;\n  display: block;\n  -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)\";\n  filter: alpha(opacity=0);\n  opacity: 0;\n  -webkit-border-radius: 7px;\n  -moz-border-radius: 7px;\n  border-radius: 7px;\n  -webkit-transition: opacity 0.2s linear;\n  -moz-transition: opacity 0.2s linear;\n  -o-transition: opacity 0.2s linear;\n  -ms-transition: opacity 0.2s linear;\n  transition: opacity 0.2s linear;\n}\n.scrollbar-macosx:hover > .scroll-element .scroll-bar,\n.scrollbar-macosx > .scroll-element.scroll-draggable .scroll-bar {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=70)\";\n  filter: alpha(opacity=70);\n  opacity: 0.7;\n}\n.scrollbar-macosx > .scroll-element.scroll-x {\n  bottom: 0px;\n  height: 0px;\n  left: 0;\n  min-width: 100%;\n  overflow: visible;\n  width: 100%;\n}\n.scrollbar-macosx > .scroll-element.scroll-y {\n  height: 100%;\n  min-height: 100%;\n  right: 0px;\n  top: 0;\n  width: 0px;\n}\n/* scrollbar height/width & offset from container borders */\n.scrollbar-macosx > .scroll-element.scroll-x .scroll-bar {\n  height: 7px;\n  min-width: 10px;\n  top: -9px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y .scroll-bar {\n  left: -9px;\n  min-height: 10px;\n  width: 7px;\n}\n.scrollbar-macosx > .scroll-element.scroll-x .scroll-element_outer {\n  left: 2px;\n}\n.scrollbar-macosx > .scroll-element.scroll-x .scroll-element_size {\n  left: -4px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y .scroll-element_outer {\n  top: 2px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y .scroll-element_size {\n  top: -4px;\n}\n/* update scrollbar offset if both scrolls are visible */\n.scrollbar-macosx > .scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_size {\n  left: -11px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_size {\n  top: -11px;\n}\n"; });
 define('text!resources/elements/em-blog-comment.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-comment.css\"></require>\r\n    <div class=\"em-blog-comment\">\r\n        <div class=\"ui minimal comments\">\r\n            <h3 class=\"ui dividing header\">${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>\r\n            <div repeat.for=\"item of comments\" class=\"comment\" data-id=\"${item.id}\">\r\n                <a class=\"avatar\">\r\n                    <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\r\n                </a>\r\n                <div class=\"content\">\r\n                    <a class=\"author\" data-value=${item.creator.username}>${item.creator.name}</a>\r\n                    <div class=\"metadata\">\r\n                        <span class=\"date\" title=\"${item.createDate | date}\">${item.createDate | timeago}</span>\r\n                    </div>\r\n                    <div swipebox show.bind=\"!item.isEditing\" ref=\"mkbodyRef\" class=\"text markdown-body\" innerhtml.bind=\"item.content | parseMd | emoji:mkbodyRef\"></div>\r\n                    <div class=\"textcomplete-container\" show.bind=\"item.isEditing\">\r\n                        <div class=\"append-to\"></div>\r\n                    </div>\r\n                    <textarea ref=\"editTxtRef\" data-id=\"${item.id}\" textcomplete.bind=\"users\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content & oneWay\" class=\"tms-blog-comment-edit-textarea\" rows=\"1\"></textarea>\r\n                    <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-blog-comment-edit-actions\">\r\n                        <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\r\n                            <i class=\"checkmark icon\"></i>\r\n                        </button>\r\n                        <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\r\n                            <i class=\"remove icon\"></i>\r\n                        </button>\r\n                        <button dropzone=\"type:Blog; clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\r\n                            <i class=\"upload icon\"></i>\r\n                        </button>\r\n                    </div>\r\n                    <div class=\"actions\">\r\n                        <a click.delegate=\"replyHandler(item)\" class=\"reply\">回复</a>\r\n                        <a if.bind=\"isSuper || item.creator.username == loginUser.username\" click.delegate=\"editHandler(item, editTxtRef)\" class=\"reply\">编辑</a>\r\n                        <a class=\"item tms-clipboard\" data-clipboard-text=\"${item.content}\" title=\"复制评论内容\">复制</a>\r\n                        <a class=\"item tms-clipboard\" data-clipboard-text=\"${basePath + '#/blog/' + blog.id + '?cid=' + item.id}\" title=\"复制评论链接\">分享</a>\r\n                        <div if.bind=\"isSuper || item.creator.username == loginUser.username\" ui-dropdown-action style=\"margin-right: .75em;\" class=\"ui icon top right pointing dropdown\" title=\"移除评论\">\r\n                            移除\r\n                            <div class=\"menu\">\r\n                                <div style=\"color: red;\" class=\"item\" click.delegate=\"removeHandler(item)\"><i class=\"trash outline icon\"></i>确认移除</div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"tools\">\r\n                        <button show.bind=\"!item.isEditing\" click.delegate=\"refreshHandler(item)\" title=\"刷新同步\" class=\"mini circular ui icon button\">\r\n                            <i class=\"refresh icon\"></i>\r\n                        </button>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui divider\"></div>\r\n            </div>\r\n            <form class=\"ui reply form dropzone\">\r\n                <div class=\"tms-blog-comment-status-bar-wrapper\">\r\n                    <div class=\"tms-blog-comment-status-bar\"></div>\r\n                    <div class=\"dropzone-previews\"></div>\r\n                </div>\r\n                <div ref=\"markdownRef\" class=\"field markdown-body\">\r\n                    <textarea ref=\"commentRef\"></textarea>\r\n                </div>\r\n                <div click.delegate=\"addHandler()\" title=\"提交评论(ctrl+enter)\" class=\"ui blue labeled submit icon button\">\r\n                    <i class=\"icon edit\"></i> 添加评论\r\n                </div>\r\n            </form>\r\n        </div>\r\n        <div class=\"preview-template\" style=\"display: none;\">\r\n            <div class=\"dz-preview dz-file-preview\">\r\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!user/user-pwd-reset.css', ['module'], function(module) { module.exports = ".tms-user-pwd-reset {\n  height: 100%;\n}\n.tms-user-pwd-reset .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
+define('text!user/user-login.css', ['module'], function(module) { module.exports = ".tms-user-login {\n  width: 100%;\n  min-height: 100%;\n  background-color: #5a3636;\n  overflow: hidden;\n}\n.tms-user-login .container {\n  width: 300px;\n  top: 50px;\n  margin-left: auto;\n  margin-right: auto;\n  position: relative;\n}\n.tms-user-login h2 {\n  color: rgba(197, 164, 164, 0.8) !important;\n}\n.tms-user-login .ui.form {\n  background-color: #353131;\n}\n.tms-user-login .ui.error.message {\n  background-color: #5a3636;\n}\n.tms-user-login .ui.error.message .header {\n  color: #e0b4b4;\n}\n.tms-user-login .ui.checkbox label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox input:focus ~ label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox label:hover {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.button {\n  background-color: #5a3636;\n  color: #ad8b75;\n}\n"; });
 define('text!resources/elements/em-blog-content.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-content.css\"></require>\r\n    <div show.bind=\"blog\" class=\"em-blog-content\">\r\n        <div class=\"topbar\">\r\n            <div class=\"ui breadcrumb\">\r\n                <a class=\"section\">TMS博文</a>\r\n                <div show.bind=\"blog.space\" class=\"divider\"> / </div>\r\n                <a show.bind=\"blog.space\" class=\"section active\">${blog.space.name}</a>\r\n                <span if.bind=\"isSuper || blog.creator.username == loginUser.username\" data-tooltip=\"${blog.privated ? '私有博文,点击可公开' : '公开博文,点击可关闭'}\" data-position=\"right center\" style=\"margin-left: 16px;\"><i click.delegate=\"updatePrivatedHandler()\" class=\"link icon ${blog.privated ? 'lock' : 'unlock alternate'}\"></i></span>\r\n                <span if.bind=\"(isSuper || blog.creator.username == loginUser.username) && blog.openEdit\" data-tooltip=\"开放编辑中,点击可关闭\" data-position=\"right center\" style=\"margin-left: 8px; top: -1px;\"><i click.delegate=\"openEditHandler()\" class=\"link icon write\"></i></span>\r\n            </div>\r\n            <div class=\"actions\">\r\n                <a if.bind=\"dir\" class=\"ui basic mini button\" click.delegate=\"catalogHandler()\">\r\n                    <i class=\"unordered list icon\"></i> 目录\r\n                </a>\r\n                <a if.bind=\"blog.openEdit || isSuper || blog.creator.username == loginUser.username\" class=\"ui basic mini button\" click.delegate=\"editHandler()\">\r\n                    <i class=\"large icon edit\"></i> 编辑\r\n                </a>\r\n                <em-blog-share blog.bind=\"blog\"></em-blog-share>\r\n                <div ui-dropdown-action class=\"ui top right pointing dropdown basic mini icon button\">\r\n                    <i class=\"large ellipsis horizontal icon\"></i>\r\n                    <div class=\"menu\">\r\n                        <div click.delegate=\"refreshHandler()\" class=\"item\">\r\n                            <i class=\"refresh icon\"></i> 刷新\r\n                        </div>\r\n                        <div click.delegate=\"historyHandler()\" class=\"item\">\r\n                            <i class=\"history icon\"></i> 历史\r\n                        </div>\r\n                        <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"updateSpaceHandler()\" class=\"item\">\r\n                            <i class=\"exchange icon\"></i> 移动\r\n                        </div>\r\n                        <div if.bind=\"!blog.privated && (isSuper || blog.creator.username == loginUser.username)\" click.delegate=\"openEditHandler()\" class=\"item\">\r\n                            <i class=\"write icon\"></i> ${blog.openEdit ? '关闭协作编辑' : '开放协作编辑'}\r\n                        </div>\r\n                        <div class=\"divider\"></div>\r\n                        <a href=\"/admin/blog/download/${blog.id}?type=pdf\" class=\"item\">\r\n                            <i class=\"file pdf outline icon\"></i> 导出为PDF\r\n                        </a>\r\n                        <a href=\"/admin/blog/download/${blog.id}?type=md\" class=\"item\">\r\n                            <i class=\"file text outline icon\"></i> 导出为Markdown\r\n                        </a>\r\n                        <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" class=\"divider\"></div>\r\n                        <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"deleteHandler()\" class=\"item\" style=\"color: red;\">\r\n                            <i class=\"trash outline icon\"></i> 删除\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"header\">\r\n            <h1 class=\"ui header\">${blog.title}\r\n                <div class=\"sub header\">\r\n                    <i class=\"wait icon\"></i> <a class=\"author\" data-value=\"${blog.creator.username}\">${blog.creator.username == loginUser.username ? '自己' : blog.creator.name}</a> 创建于 <span title=\"${blog.createDate | date}\">${blog.createDate | timeago}</span>, <a class=\"author\" data-value=\"${blog.updater.username}\">${blog.updater.username == loginUser.username ? '自己' : blog.updater.name}</a> 最后修改于 <span title=\"${blog.updateDate | date}\">${blog.updateDate | timeago}</span>\r\n                </div>\r\n            </h1>\r\n        </div>\r\n        <div swipebox ref=\"mkbodyRef\" class=\"markdown-body\" innerhtml.bind=\"blog.content | parseMd | emoji:mkbodyRef\"></div>\r\n        <div class=\"footer\">\r\n            <span click.delegate=\"rateHandler()\" class=\"rate\"><i class=\"link icon thumbs outline up\"></i>${blog.voteZan && blog.voteZan.split(',').includes(loginUser.username) ? '踩' : '赞'}</span> <span show.bind=\"!blog.voteZanCnt\">成为第一个赞同者</span> <span show.bind=\"blog.voteZan && blog.voteZan.split(',').includes(loginUser.username)\">你赞了它</span> <span show.bind=\"blog.voteZan && !blog.voteZan.split(',').includes(loginUser.username)\" title=\"${blog.voteZan}\"><a href=\"javascript:void(0);\">${blog.voteZanCnt}</a>人赞了它</span>\r\n        </div>\r\n        <em-blog-comment blog.bind=\"blog\"></em-blog-comment>\r\n    </div>\r\n    <div show.bind=\"!blog\" class=\"em-blog-content\">\r\n        <div class=\"ui positive icon huge message transition\">\r\n            <i class=\"info circle icon\"></i>\r\n            <div class=\"content\">\r\n                <div class=\"header\">\r\n                    欢迎使用TMS博文进行知识的分享总结!\r\n                </div>\r\n                <span>现在就去创建自己的博文吧!</span> <a click.delegate=\"createHandler()\" class=\"ui mini blue button\">创建</a>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\r\n    <em-blog-space-update view-model.ref=\"blogSpaceUpdateVm\"></em-blog-space-update>\r\n    <em-blog-history view-model.ref=\"blogHistoryVm\"></em-blog-history>\r\n</template>\r\n"; });
+define('text!user/user-pwd-reset.css', ['module'], function(module) { module.exports = ".tms-user-pwd-reset {\n  height: 100%;\n}\n.tms-user-pwd-reset .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
+define('text!resources/elements/em-blog-history-diff.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-history-diff.css\"></require>\r\n    <em-modal classes=\"\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文历史版本比较(v.${sIndex + 1} <i class=\"resize horizontal icon\"></i> v.${fIndex + 1})</div>\r\n        <div slot=\"content\" class=\"em-blog-history-diff\">\r\n            <div class=\"content markdown-body\" innerhtml.bind=\"diffHtml\"></div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!user/user-register.css', ['module'], function(module) { module.exports = ".tms-user-register {\n  height: 100%;\n}\n.tms-user-register .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
 define('text!resources/elements/em-blog-comment-popup.css', ['module'], function(module) { module.exports = ""; });
-define('text!resources/elements/em-blog-history-diff.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-history-diff.css\"></require>\r\n    <em-modal classes=\"\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文历史版本比较(v.${sIndex + 1} <i class=\"resize horizontal icon\"></i> v.${fIndex + 1})</div>\r\n        <div slot=\"content\" class=\"em-blog-history-diff\">\r\n            <div class=\"content markdown-body\" innerhtml.bind=\"diffHtml\"></div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-history-view.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-history-view.css\"></require>\r\n    <em-modal classes=\"\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文历史版本查看(${isCurrentVer ? '当前 ' : ''}v.${ver})</div>\r\n        <div slot=\"content\" class=\"em-blog-history-view\">\r\n            <div class=\"topbar\">\r\n                <div click.delegate=\"restoreHandler()\" class=\"ui ${!ajax1 || ajax1.readyState == 4 ? '' : 'tms-disabled'} ${!isCurrentVer || (isSuper || blog.creator.username == loginUser.username || blog.openEdit) ? '' : 'disabled'} mini basic button\"><i class=\"undo icon\"></i>还原此历史版本</div>\r\n            </div>\r\n            <div ref=\"mkbodyRef\" class=\"content markdown-body\" innerhtml.bind=\"blogHistory.content | parseMd | emoji:mkbodyRef\"></div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-blog-comment.css', ['module'], function(module) { module.exports = ".em-blog-comment {\n  margin-top: 32px;\n  margin-bottom: 32px;\n}\n.em-blog-comment .ui.comments {\n  max-width: 100%;\n}\n.em-blog-comment .ui.comments > .ui.dividing.header {\n  margin-bottom: 0;\n}\n.em-blog-comment .ui.comments .comment {\n  margin-top: 0;\n}\n.em-blog-comment .ui.comments .comment:hover {\n  background: rgba(0, 0, 0, 0.03);\n  color: rgba(0, 0, 0, 0.8);\n}\n.em-blog-comment .ui.comments .comment:hover .content .tools {\n  display: block;\n}\n.em-blog-comment .ui.comments .comment > .ui.divider {\n  margin-bottom: 0;\n}\n.em-blog-comment .ui.comments .comment .content .tms-blog-comment-edit-textarea {\n  width: 100%;\n}\n.em-blog-comment .ui.comments .comment .content .textcomplete-container {\n  position: relative;\n}\n.em-blog-comment .ui.comments .comment .content .textcomplete-container .append-to {\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  width: 100%;\n}\n.em-blog-comment .ui.comments .comment .content > .tools {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  display: none;\n}\n.em-blog-comment .ui.comments .comment .content > .tools > .ui.button {\n  margin: 0;\n  background-color: rgba(224, 225, 226, 0.5);\n}\n.em-blog-comment .ui.comments .comment .content > .tools > .ui.button:hover {\n  background-color: #e0e1e2;\n}\n.em-blog-comment .ui.comments .comment.active {\n  background-color: #f5f5f5;\n}\n.em-blog-comment .CodeMirror {\n  min-height: 60px;\n}\n.em-blog-comment .CodeMirror-scroll {\n  min-height: 60px;\n}\n.em-blog-comment .dropzone {\n  position: relative;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper {\n  position: relative;\n  width: 100%;\n  height: 0;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .tms-blog-comment-status-bar {\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews {\n  position: absolute;\n  left: 0;\n  bottom: -7px;\n  width: 100%;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews .dz-preview {\n  width: 100%;\n  margin: 0;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews .dz-preview .dz-progress {\n  height: 2px;\n  background-color: #aaa;\n  border: none;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews .dz-preview .dz-remove {\n  display: none;\n}\n"; });
 define('text!resources/elements/em-blog-history.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-history.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文历史记录</div>\r\n        <div slot=\"content\" class=\"em-blog-history\">\r\n            <div class=\"topbar\">\r\n                <div click.delegate=\"diffHandler()\" class=\"ui mini basic button\"><i class=\"resize horizontal icon\"></i>比较选择的版本</div>\r\n            </div>\r\n            <div class=\"content\">\r\n                <table class=\"ui very basic table\">\r\n                    <thead>\r\n                        <tr>\r\n                            <th></th>\r\n                            <th>版本</th>\r\n                            <th>日期</th>\r\n                            <th>更新人</th>\r\n                            <th>操作</th>\r\n                        </tr>\r\n                    </thead>\r\n                    <tbody>\r\n                        <tr>\r\n                            <td>\r\n                                <em-checkbox checked.bind=\"blog.checked\"></em-checkbox>\r\n                            </td>\r\n                            <td><a click.delegate=\"viewHistoryHandler(blog, histories.length + 1, true)\">当前</a>(v.${histories.length + 1})</td>\r\n                            <td title=\"${blog.updateDate | date}\">${blog.updateDate | timeago}</td>\r\n                            <td>${blog.updater.name}</td>\r\n                            <td></td>\r\n                        </tr>\r\n                        <tr repeat.for=\"item of histories\">\r\n                            <td>\r\n                                <em-checkbox checked.bind=\"item.checked\"></em-checkbox>\r\n                            </td>\r\n                            <td><a click.delegate=\"viewHistoryHandler(item, histories.length - $index)\">v.${histories.length - $index}</a></td>\r\n                            <td title=\"${item.blogUpdateDate | date}\">${item.blogUpdateDate | timeago}</td>\r\n                            <td>${item.blogUpdater.name}</td>\r\n                            <td>\r\n                                <a if.bind=\"isSuper || blog.creator.username == loginUser.username || blog.openEdit\" class=\"${!$parent.ajax1 || $parent.ajax1.readyState == 4 ? '' : 'tms-disabled'}\" click.delegate=\"restoreHandler(item)\">还原此版本</a> ·\r\n                                <a if.bind=\"isSuper || blog.creator.username == loginUser.username\" ui-dropdown-action style=\"margin-right: .75em;\" class=\"ui icon top right pointing dropdown ${!$parent.ajax2 || $parent.ajax2.readyState == 4 ? '' : 'disabled'}\" title=\"删除博文历史记录\">\r\n                                    删除\r\n                                    <div class=\"menu\">\r\n                                        <div style=\"color: red;\" class=\"item\" click.delegate=\"removeHandler(item)\"><i class=\"trash outline icon\"></i>确认删除</div>\r\n                                    </div>\r\n                                </a>\r\n                            </td>\r\n                        </tr>\r\n                    </tbody>\r\n                </table>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n    <em-blog-history-view view-model.ref=\"blogHistoryViewVm\"></em-blog-history-view>\r\n    <em-blog-history-diff view-model.ref=\"blogHistoryDiffVm\"></em-blog-history-diff>\r\n</template>\r\n"; });
-define('text!resources/elements/em-blog-content.css', ['module'], function(module) { module.exports = ".em-blog-content {\n  transition: width 0.15s ease-out 0s;\n  position: fixed;\n  top: 55px;\n  left: 300px;\n  width: calc(100vw - 300px) !important;\n  height: calc(100vh - 55px) !important;\n  padding: 16px;\n  overflow: auto;\n}\n.right-sidebar-show .em-blog-content {\n  width: calc(100vw - 600px) !important;\n}\n@media only screen and (max-width: 767px) {\n  .right-sidebar-show .em-blog-content {\n    width: 100%!important;\n  }\n}\n@media only screen and (max-width: 767px) {\n  .em-blog-content {\n    left: 0;\n    width: 100%!important;\n  }\n}\n.em-blog-content > .header {\n  margin-bottom: 24px;\n}\n.em-blog-content > .header .ui.header .sub.header {\n  color: #707070;\n  font-size: 12px;\n  margin-top: 8px;\n}\n.em-blog-content > .header .ui.header .sub.header a.author {\n  cursor: pointer;\n}\n.em-blog-content .topbar {\n  position: relative;\n  height: 30px;\n  margin-bottom: 8px;\n}\n.em-blog-content .topbar > .ui.breadcrumb {\n  line-height: 30px;\n}\n.em-blog-content .topbar:after {\n  content: '';\n  clear: both;\n}\n.em-blog-content .topbar .actions {\n  float: right;\n}\n.em-blog-content .topbar .actions > .ui.basic.button {\n  padding: 8px;\n  box-shadow: none;\n}\n.em-blog-content .topbar .actions > .ui.basic.button:hover {\n  box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.35) inset, 0 0 0 0 rgba(34, 36, 38, 0.15) inset;\n}\n.em-blog-content > .ui.message .content > span {\n  display: inline-block;\n  margin-top: 10px;\n}\n.em-blog-content > .ui.message .content .ui.button {\n  position: relative;\n  top: -5px;\n  left: 10px;\n}\n.em-blog-content .footer {\n  margin-top: 16px;\n}\n.em-blog-content .footer > span {\n  font-size: 12px;\n}\n.em-blog-content .footer .rate {\n  margin-right: 16px;\n  cursor: pointer;\n  color: #4183c4;\n}\n"; });
+define('text!resources/elements/em-blog-comment.css', ['module'], function(module) { module.exports = ".em-blog-comment {\n  margin-top: 32px;\n  margin-bottom: 32px;\n}\n.em-blog-comment .ui.comments {\n  max-width: 100%;\n}\n.em-blog-comment .ui.comments > .ui.dividing.header {\n  margin-bottom: 0;\n}\n.em-blog-comment .ui.comments .comment {\n  margin-top: 0;\n}\n.em-blog-comment .ui.comments .comment:hover {\n  background: rgba(0, 0, 0, 0.03);\n  color: rgba(0, 0, 0, 0.8);\n}\n.em-blog-comment .ui.comments .comment:hover .content .tools {\n  display: block;\n}\n.em-blog-comment .ui.comments .comment > .ui.divider {\n  margin-bottom: 0;\n}\n.em-blog-comment .ui.comments .comment .content .tms-blog-comment-edit-textarea {\n  width: 100%;\n}\n.em-blog-comment .ui.comments .comment .content .textcomplete-container {\n  position: relative;\n}\n.em-blog-comment .ui.comments .comment .content .textcomplete-container .append-to {\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  width: 100%;\n}\n.em-blog-comment .ui.comments .comment .content > .tools {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  display: none;\n}\n.em-blog-comment .ui.comments .comment .content > .tools > .ui.button {\n  margin: 0;\n  background-color: rgba(224, 225, 226, 0.5);\n}\n.em-blog-comment .ui.comments .comment .content > .tools > .ui.button:hover {\n  background-color: #e0e1e2;\n}\n.em-blog-comment .ui.comments .comment.active {\n  background-color: #f5f5f5;\n}\n.em-blog-comment .CodeMirror {\n  min-height: 60px;\n}\n.em-blog-comment .CodeMirror-scroll {\n  min-height: 60px;\n}\n.em-blog-comment .dropzone {\n  position: relative;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper {\n  position: relative;\n  width: 100%;\n  height: 0;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .tms-blog-comment-status-bar {\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews {\n  position: absolute;\n  left: 0;\n  bottom: -7px;\n  width: 100%;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews .dz-preview {\n  width: 100%;\n  margin: 0;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews .dz-preview .dz-progress {\n  height: 2px;\n  background-color: #aaa;\n  border: none;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews .dz-preview .dz-remove {\n  display: none;\n}\n"; });
 define('text!resources/elements/em-blog-left-sidebar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-left-sidebar.css\"></require>\r\n    <div class=\"ui left visible sidebar em-blog-left-sidebar ${isHide ? 'mobile-hide' : ''}\">\r\n        <div class=\"tms-body\">\r\n            <div scrollbar=\"scrollbar-macosx\">\r\n                <div class=\"ui list space\">\r\n                    <template repeat.for=\"space of spaces\">\r\n                        <div if.bind=\"!space.privated || isSuper || space.creator.username == loginUser.username\" class=\"item\">\r\n                            <i click.delegate=\"spaceToggleHandler(space)\" class=\"angle ${space.open ? 'down' : 'right'} link icon\"></i>\r\n                            <div class=\"content\">\r\n                                <!-- <span style=\"cursor: pointer;\" click.delegate=\"spaceToggleHandler(space)\"><i class=\"folder outline icon\"></i>${space.name}</span> -->\r\n                                <span style=\"cursor: pointer;\" click.delegate=\"spaceToggleHandler(space)\">\r\n                                    <i class=\"icons\">\r\n                                        <i class=\"folder outline icon\"></i>\r\n                                    <i show.bind=\"space.privated\" class=\"corner lock icon\"></i>\r\n                                    </i>\r\n                                    ${space.name}\r\n                                </span>\r\n                                <div show.bind=\"space.open\" class=\"ui bulleted list\">\r\n                                    <div repeat.for=\"item of space.blogs\" class=\"item ${item.id == blog.id ? 'active' : ''}\">\r\n                                        <!-- <a title=\"${item.title}\" href=\"#/blog/${item.id}\"><i class=\"file outline icon\"></i>${item.title}</a> -->\r\n                                        <a title=\"${item.title}\" href=\"#/blog/${item.id}\">\r\n                                            <i class=\"icons\">\r\n                                                <i class=\"file outline icon\"></i>\r\n                                            <i show.bind=\"item.privated\" class=\"corner lock icon\"></i>\r\n                                            </i>\r\n                                            ${item.title}</a>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"actions\">\r\n                                <div if.bind=\"isSuper || space.creator.username == loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                    <i class=\"large ellipsis horizontal icon\"></i>\r\n                                    <div class=\"menu\">\r\n                                        <div class=\"item\" click.delegate=\"editSpaceHandler(space)\"><i class=\"icon edit\"></i>编辑</div>\r\n                                        <!-- <div class=\"divider\"></div> -->\r\n                                        <div class=\"item\" style=\"color: red;\" click.delegate=\"delSpaceHandler(space)\"><i class=\"trash outline icon\"></i>删除</div>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </template>\r\n                </div>\r\n                <div class=\"ui bulleted list no-space\">\r\n                    <div repeat.for=\"item of noSpaceBlogs\" class=\"item ${item.id == blog.id ? 'active' : ''}\">\r\n                        <!-- <a title=\"${item.title}\" href=\"#/blog/${item.id}\"><i class=\"file outline icon\"></i>${item.title}</a> -->\r\n                        <a title=\"${item.title}\" href=\"#/blog/${item.id}\">\r\n                            <i class=\"icons\">\r\n                                <i class=\"file outline icon\"></i>\r\n                            <i show.bind=\"item.privated\" class=\"corner lock icon\"></i>\r\n                            </i>\r\n                            </i>${item.title}</a>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"tms-footer\">\r\n            <div class=\"ui icon menu\">\r\n                <em-blog-space-create></em-blog-space-create>\r\n                <div class=\"right menu\">\r\n                    <div class=\"ui dropdown icon item\" ui-dropdown>\r\n                        <i class=\"content icon\"></i>\r\n                        <div class=\"menu\">\r\n                            <div class=\"header\">\r\n                                <i class=\"linkify icon\"></i> 系统外链\r\n                            </div>\r\n                            <div if.bind=\"!sysLinks || sysLinks.length == 0\" class=\"item\">暂无系统外链</div>\r\n                            <a repeat.for=\"item of sysLinks | sort:'title'\" target=\"_blank\" href=\"${item.href}\" class=\"item\">${item.title}</a>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n    <em-blog-space-edit view-model.ref=\"spaceEditVm\"></em-blog-space-edit>\r\n</template>\r\n"; });
-define('text!resources/elements/em-blog-history-diff.css', ['module'], function(module) { module.exports = ".em-blog-history-diff > .content {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
+define('text!resources/elements/em-blog-content.css', ['module'], function(module) { module.exports = ".em-blog-content {\n  transition: width 0.15s ease-out 0s;\n  position: fixed;\n  top: 55px;\n  left: 300px;\n  width: calc(100vw - 300px) !important;\n  height: calc(100vh - 55px) !important;\n  padding: 16px;\n  overflow: auto;\n}\n.right-sidebar-show .em-blog-content {\n  width: calc(100vw - 600px) !important;\n}\n@media only screen and (max-width: 767px) {\n  .right-sidebar-show .em-blog-content {\n    width: 100%!important;\n  }\n}\n@media only screen and (max-width: 767px) {\n  .em-blog-content {\n    left: 0;\n    width: 100%!important;\n  }\n}\n.em-blog-content > .header {\n  margin-bottom: 24px;\n}\n.em-blog-content > .header .ui.header .sub.header {\n  color: #707070;\n  font-size: 12px;\n  margin-top: 8px;\n}\n.em-blog-content > .header .ui.header .sub.header a.author {\n  cursor: pointer;\n}\n.em-blog-content .topbar {\n  position: relative;\n  height: 30px;\n  margin-bottom: 8px;\n}\n.em-blog-content .topbar > .ui.breadcrumb {\n  line-height: 30px;\n}\n.em-blog-content .topbar:after {\n  content: '';\n  clear: both;\n}\n.em-blog-content .topbar .actions {\n  float: right;\n}\n.em-blog-content .topbar .actions > .ui.basic.button {\n  padding: 8px;\n  box-shadow: none;\n}\n.em-blog-content .topbar .actions > .ui.basic.button:hover {\n  box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.35) inset, 0 0 0 0 rgba(34, 36, 38, 0.15) inset;\n}\n.em-blog-content > .ui.message .content > span {\n  display: inline-block;\n  margin-top: 10px;\n}\n.em-blog-content > .ui.message .content .ui.button {\n  position: relative;\n  top: -5px;\n  left: 10px;\n}\n.em-blog-content .footer {\n  margin-top: 16px;\n}\n.em-blog-content .footer > span {\n  font-size: 12px;\n}\n.em-blog-content .footer .rate {\n  margin-right: 16px;\n  cursor: pointer;\n  color: #4183c4;\n}\n"; });
 define('text!resources/elements/em-blog-right-sidebar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-right-sidebar.css\"></require>\r\n    <div class=\"em-blog-right-sidebar\">\r\n        <div scrollbar=\"scrollbar-macosx\">\r\n            <div ref=\"dirRef\" class=\"panel-blog-dir\"></div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!resources/elements/em-blog-history-view.css', ['module'], function(module) { module.exports = ".em-blog-history-view > .topbar {\n  margin-bottom: 16px;\n}\n.em-blog-history-view > .content {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
+define('text!resources/elements/em-blog-history-diff.css', ['module'], function(module) { module.exports = ".em-blog-history-diff > .content {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
 define('text!resources/elements/em-blog-save.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-save.css\"></require>\r\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文保存</div>\r\n        <div slot=\"content\" class=\"em-blog-save\">\r\n            <form class=\"ui form\">\r\n                <div class=\"field\">\r\n                    <div ref=\"spacesRef\" class=\"ui fluid search selection dropdown\">\r\n                        <input type=\"hidden\" name=\"country\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\">选择空间(可选)</div>\r\n                        <div class=\"menu\">\r\n                            <div class=\"item\" data-value=\"\">(不指定空间)</div>\r\n                            <template repeat.for=\"item of spaces\">\r\n                                <div if.bind=\"isSuper || !item.privated || item.creator.username == loginUser.username\" task.bind=\"initSpacesHandler($last)\" class=\"item\" data-value=\"${item.id}\"><i class=\"folder outline icon\"></i>${item.name}</div>\r\n                            </template>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\r\n                        <label><i class=\"lock icon\"></i>私有博文(不公开)</label>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-blog-history.css', ['module'], function(module) { module.exports = ".em-blog-history > .topbar {\n  margin-bottom: 16px;\n}\n.em-blog-history > .content {\n  max-height: 300px;\n  overflow-y: auto;\n}\n.em-blog-history .ui.table td a {\n  cursor: pointer;\n}\n"; });
+define('text!resources/elements/em-blog-history-view.css', ['module'], function(module) { module.exports = ".em-blog-history-view > .topbar {\n  margin-bottom: 16px;\n}\n.em-blog-history-view > .content {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
 define('text!resources/elements/em-blog-share.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-blog-share.css\"></require>\n    <div ref=\"shareRef\" class=\"ui basic mini button\">\n        <i class=\"large icon share\"></i> 分享\n    </div>\n    <div class=\"ui popup bottom right transition hidden em-blog-share\">\n        <div ref=\"searchRef\" class=\"ui search\">\n            <div class=\"ui icon input\">\n                <input ref=\"inputSearchRef\" class=\"prompt\" type=\"text\" placeholder=\"用户名，频道\">\n                <i class=\"search icon\"></i>\n            </div>\n            <div class=\"results\"></div>\n        </div>\n        <div class=\"ui list\">\n            <div repeat.for=\"item of shares\" class=\"item\">\n                <div class=\"right floated content\">\n                    <i click.delegate=\"removeShareHandler(item)\" class=\"red trash link icon\"></i>\n                </div>\n                <template if.bind=\"item.username\">\n                    <i class=\"user icon\"></i>\n                    <div class=\"content\">\n                        ${item.name} (${item.username})\n                    </div>\n                </template>\n                <template if.bind=\"!item.username\">\n                    <i class=\"users icon\"></i>\n                    <div class=\"content\">\n                        ${item.title} (${item.name})\n                    </div>\n                </template>\n            </div>\n        </div>\n        <div class=\"ui form\">\n            <div class=\"field\">\n                <textarea value.bind=\"desc\" placeholder=\"添加一个可选的说明\" rows=\"3\"></textarea>\n            </div>\n        </div>\n        <div class=\"footer\">\n            <a click.delegate=\"cancelHandler()\" href=\"\" class=\"btn-cancel\">取消</a>\n            <button click.delegate=\"shareHandler()\" class=\"ui basic ${shares.length == 0 ? 'disabled' : ''} right floated mini button\">\n                分享\n            </button>\n        </div>\n    </div>\n</template>\n"; });
-define('text!resources/elements/em-blog-left-sidebar.css', ['module'], function(module) { module.exports = ".em-blog-left-sidebar.ui.left.sidebar {\n  transition: left 0.15s ease-out 0s;\n  width: 300px;\n  top: 55px;\n  left: 0;\n  height: calc(100vh - 55px) !important;\n  background-color: #f5f5f5;\n  box-shadow: none!important;\n}\n@media only screen and (max-width: 767px) {\n  .em-blog-left-sidebar.ui.left.sidebar {\n    z-index: 104;\n  }\n  .em-blog-left-sidebar.ui.left.sidebar.mobile-hide {\n    left: -300px;\n  }\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body {\n  height: calc(100vh - 95px) !important;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list {\n  padding: 16px;\n  padding-left: 15px;\n  margin-bottom: 0px;\n  padding-bottom: 8px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item {\n  position: relative;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item:hover {\n  box-shadow: 0px 0px 2px -1px #5791cb;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item:hover > .actions {\n  display: inline-block;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .icon {\n  padding-right: 0;\n  position: relative;\n  top: -1px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .content {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  max-width: 245px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .actions {\n  display: none;\n  position: absolute;\n  right: 0;\n  top: -2px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list {\n  padding-left: 16px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item {\n  max-width: 220px;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item > a {\n  display: block;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 220px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item:before {\n  color: #999;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item.active {\n  font-weight: bold;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item.active > a {\n  color: black;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item:hover {\n  background-color: rgba(232, 224, 224, 0.5);\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space {\n  padding: 20px;\n  margin-top: 0px;\n  padding-top: 0px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item {\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item > a {\n  display: block;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 242px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item:before {\n  color: #999;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item.active {\n  font-weight: bold;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item.active > a {\n  color: black;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item:hover {\n  background-color: rgba(232, 224, 224, 0.5);\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer {\n  position: absolute;\n  width: 100%;\n  height: 40px;\n  left: 0;\n  bottom: 0;\n  background-color: #efe4e4;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer .ui.menu {\n  border: none;\n  border-radius: 0;\n  background-color: #e8e0e0;\n}\n"; });
+define('text!resources/elements/em-blog-history.css', ['module'], function(module) { module.exports = ".em-blog-history > .topbar {\n  margin-bottom: 16px;\n}\n.em-blog-history > .content {\n  max-height: 300px;\n  overflow-y: auto;\n}\n.em-blog-history .ui.table td a {\n  cursor: pointer;\n}\n"; });
 define('text!resources/elements/em-blog-space-create.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-space-create.css\"></require>\r\n    <a ref=\"ppRef\" ui-popup=\"top left\" class=\"item\">\r\n        <i class=\"plus icon\"></i>\r\n    </a>\r\n    <div class=\"ui popup em-blog-space-create\">\r\n        <form class=\"ui form\">\r\n            <h3 class=\"ui dividing header\">创建空间</h3>\r\n            <div class=\"required field\">\r\n                <input type=\"text\" value.bind=\"name\" placeholder=\"空间名称\">\r\n            </div>\r\n            <div class=\"field\">\r\n                <textarea value.bind=\"desc\" placeholder=\"可选的针对空间的描述\" rows=\"2\"></textarea>\r\n            </div>\r\n            <div class=\"field\">\r\n                <div ref=\"chk\" class=\"ui checkbox\">\r\n                    <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\r\n                    <label><i class=\"lock icon\"></i>私有空间(不公开)</label>\r\n                </div>\r\n            </div>\r\n            <button click.delegate=\"createHandler()\" class=\"ui ${(!name || (ajax && ajax.readyState != 4)) ? 'disabled' : ''} blue mini button\" type=\"submit\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i>创建</button>\r\n        </form>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-blog-left-sidebar.css', ['module'], function(module) { module.exports = ".em-blog-left-sidebar.ui.left.sidebar {\n  transition: left 0.15s ease-out 0s;\n  width: 300px;\n  top: 55px;\n  left: 0;\n  height: calc(100vh - 55px) !important;\n  background-color: #f5f5f5;\n  box-shadow: none!important;\n}\n@media only screen and (max-width: 767px) {\n  .em-blog-left-sidebar.ui.left.sidebar {\n    z-index: 104;\n  }\n  .em-blog-left-sidebar.ui.left.sidebar.mobile-hide {\n    left: -300px;\n  }\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body {\n  height: calc(100vh - 95px) !important;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list {\n  padding: 16px;\n  padding-left: 15px;\n  margin-bottom: 0px;\n  padding-bottom: 8px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item {\n  position: relative;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item:hover {\n  box-shadow: 0px 0px 2px -1px #5791cb;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item:hover > .actions {\n  display: inline-block;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .icon {\n  padding-right: 0;\n  position: relative;\n  top: -1px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .content {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  max-width: 245px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .actions {\n  display: none;\n  position: absolute;\n  right: 0;\n  top: -2px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list {\n  padding-left: 16px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item {\n  max-width: 220px;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item > a {\n  display: block;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 220px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item:before {\n  color: #999;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item.active {\n  font-weight: bold;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item.active > a {\n  color: black;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item:hover {\n  background-color: rgba(232, 224, 224, 0.5);\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space {\n  padding: 20px;\n  margin-top: 0px;\n  padding-top: 0px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item {\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item > a {\n  display: block;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 242px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item:before {\n  color: #999;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item.active {\n  font-weight: bold;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item.active > a {\n  color: black;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item:hover {\n  background-color: rgba(232, 224, 224, 0.5);\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer {\n  position: absolute;\n  width: 100%;\n  height: 40px;\n  left: 0;\n  bottom: 0;\n  background-color: #efe4e4;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer .ui.menu {\n  border: none;\n  border-radius: 0;\n  background-color: #e8e0e0;\n}\n"; });
+define('text!resources/elements/em-blog-space-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-space-edit.css\"></require>\r\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">空间编辑</div>\r\n        <div slot=\"content\" class=\"em-blog-space-edit\">\r\n            <form class=\"ui form\">\r\n                <div class=\"required field\">\r\n                    <input type=\"text\" value.bind=\"space.name\" placeholder=\"空间名称\">\r\n                </div>\r\n                <div class=\"field\">\r\n                    <textarea value.bind=\"space.description\" placeholder=\"可选的针对空间的描述\" rows=\"2\"></textarea>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\r\n                        <label><i class=\"lock icon\"></i>私有空间(不公开)</label>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-right-sidebar.css', ['module'], function(module) { module.exports = ".em-blog-right-sidebar {\n  width: 300px;\n  background-color: #f5f5f5;\n  position: fixed;\n  top: 55px;\n  right: -300px;\n  height: calc(100vh - 55px);\n  transition: right 0.15s ease-out 0s;\n}\n.right-sidebar-show .em-blog-right-sidebar {\n  right: 0;\n}\n.em-blog-right-sidebar .panel-blog-dir {\n  padding: 16px;\n}\n"; });
 define('text!resources/elements/em-blog-save.css', ['module'], function(module) { module.exports = ""; });
-define('text!resources/elements/em-blog-space-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-space-edit.css\"></require>\r\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">空间编辑</div>\r\n        <div slot=\"content\" class=\"em-blog-space-edit\">\r\n            <form class=\"ui form\">\r\n                <div class=\"required field\">\r\n                    <input type=\"text\" value.bind=\"space.name\" placeholder=\"空间名称\">\r\n                </div>\r\n                <div class=\"field\">\r\n                    <textarea value.bind=\"space.description\" placeholder=\"可选的针对空间的描述\" rows=\"2\"></textarea>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\r\n                        <label><i class=\"lock icon\"></i>私有空间(不公开)</label>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-space-update.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-space-update.css\"></require>\r\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文移动</div>\r\n        <div slot=\"content\" class=\"em-blog-space-update\">\r\n            <form class=\"ui form\">\r\n                <div class=\"required field\">\r\n                    <div ref=\"spacesRef\" class=\"ui fluid search selection dropdown\">\r\n                        <input type=\"hidden\" name=\"country\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\">选择空间(可选)</div>\r\n                        <div class=\"menu\">\r\n                            <div class=\"item\" data-value=\"\">(不指定空间)</div>\r\n                            <template repeat.for=\"item of spaces\">\r\n                                <div if.bind=\"isSuper || !item.privated || item.creator.username == loginUser.username\" task.bind=\"initSpacesHandler($last)\" class=\"item\" data-value=\"${item.id}\"><i class=\"folder outline icon\"></i>${item.name}</div>\r\n                            </template>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-blog-share.css', ['module'], function(module) { module.exports = ".em-blog-share.ui.popup {\n  max-width: 100%;\n  width: 255px;\n}\n.em-blog-share.ui.popup .ui.input {\n  width: 225px;\n}\n.em-blog-share:after {\n  content: '';\n  clear: both;\n}\n.em-blog-share .footer {\n  margin-top: 16px;\n}\n.em-blog-share .footer .btn-cancel {\n  float: right;\n  margin-top: 6px;\n  margin-left: 8px;\n}\n"; });
 define('text!resources/elements/em-blog-top-menu.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-top-menu.css\"></require>\r\n    <div ref=\"topMenuRef\" class=\"ui top fixed inverted blue menu em-blog-top-menu ${isSearchFocus ? 'search-focus' : ''}\">\r\n        <div click.delegate=\"toggleHandler()\" class=\"item tms-toggle\">\r\n            <i class=\"large ${isHide ? 'indent' : 'outdent'} icon\"></i>\r\n        </div>\r\n        <div ui-dropdown-action class=\"ui dropdown item tms-links\">\r\n            <i class=\"large content icon\"></i>\r\n            <div class=\"menu\">\r\n                <div class=\"header\">系统外链</div>\r\n                <a repeat.for=\"item of sysLinks\" href=\"${item.href}\" target=\"_blank\" class=\"item\">${item.title}</a>\r\n            </div>\r\n        </div>\r\n        <div class=\"item tms-logo\">\r\n            <a href=\"#/\"><img ref=\"logoRef\" src=\"img/tms-x32.png\"></a>\r\n        </div>\r\n        <div class=\"header item\">\r\n            TMS博文\r\n        </div>\r\n        <div class=\"item tms-create\">\r\n            <a modaal=\"blog-create\" href=\"#modaal-blog-write\" class=\"ui primary button\">创建</a>\r\n        </div>\r\n        <div id=\"modaal-blog-write\" style=\"display:none;\">\r\n            <em-blog-write></em-blog-write>\r\n        </div>\r\n        <div class=\"right menu\">\r\n            <div class=\"item\">\r\n                <div ref=\"searchRef\" class=\"ui search\">\r\n                    <div class=\"ui icon input\">\r\n                        <input keyup.trigger=\"searchKeyupHandler($event)\" blur.trigger=\"searchBlurHandler()\" focus.trigger=\"searchFocusHandler()\" class=\"prompt\" type=\"text\" placeholder=\"搜索...\">\r\n                        <i class=\"search icon\"></i>\r\n                    </div>\r\n                    <div class=\"results\"></div>\r\n                </div>\r\n            </div>\r\n            <div ui-dropdown-hover class=\"ui top right dropdown item tms-login-user ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <em-user-avatar user.bind=\"loginUser\"></em-user-avatar>\r\n                <div class=\"menu\">\r\n                    <div class=\"header\">账户操作</div>\r\n                    <div class=\"divider\"></div>\r\n                    <a class=\"item\" click.delegate=\"userEditHandler()\"><i class=\"edit icon\"></i>修改</a>\r\n                    <a class=\"item\" click.delegate=\"logoutHandler()\"><i class=\"sign out icon\"></i>退出</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-user-edit user.bind=\"loginUser\" view-model.ref=\"userEditMd\"></em-user-edit>\r\n</template>\r\n"; });
+define('text!resources/elements/em-blog-share.css', ['module'], function(module) { module.exports = ".em-blog-share.ui.popup {\n  max-width: 100%;\n  width: 255px;\n}\n.em-blog-share.ui.popup .ui.input {\n  width: 225px;\n}\n.em-blog-share:after {\n  content: '';\n  clear: both;\n}\n.em-blog-share .footer {\n  margin-top: 16px;\n}\n.em-blog-share .footer .btn-cancel {\n  float: right;\n  margin-top: 6px;\n  margin-left: 8px;\n}\n"; });
+define('text!resources/elements/em-blog-write.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-write.css\"></require>\r\n    <div class=\"em-blog-write\">\r\n        <div class=\"wrapper dropzone\">\r\n            <div class=\"title\">\r\n                <div class=\"ui transparent fluid massive input\">\r\n                    <input id=\"blog-title-input\" type=\"text\" placeholder=\"标题\">\r\n                </div>\r\n                <button id=\"blog-save-btn\" title=\"ctrl+click快速保存\" class=\"ui mini positive button\"><i style=\"display: none;\" class=\"spinner loading icon\"></i><span>保存</span></button>\r\n            </div>\r\n            <div class=\"dropzone-previews\"></div>\r\n            <div id=\"txt-blog-write-wrapper\" class=\"content markdown-body\">\r\n                <textarea style=\"width: 0; height: 0; border: 0; resize:none;\" id=\"txt-blog-write\"></textarea>\r\n            </div>\r\n            <div class=\"tms-blog-write-status-bar-wrapper\">\r\n                <div class=\"tms-blog-write-status-bar\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"preview-template\" style=\"display: none;\">\r\n            <div class=\"dz-preview dz-file-preview\">\r\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-blog-save view-model.ref=\"blogSaveVm\"></em-blog-save>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-space-create.css', ['module'], function(module) { module.exports = ".em-blog-space-create.ui.popup .ui.form {\n  width: 260px;\n}\n"; });
 define('text!resources/elements/em-blog-space-edit.css', ['module'], function(module) { module.exports = ""; });
-define('text!resources/elements/em-blog-write.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-write.css\"></require>\r\n    <div class=\"em-blog-write\">\r\n        <div class=\"wrapper dropzone\">\r\n            <div class=\"title\">\r\n                <div class=\"ui transparent fluid massive input\">\r\n                    <input id=\"blog-title-input\" type=\"text\" placeholder=\"标题\">\r\n                </div>\r\n                <button id=\"blog-save-btn\" title=\"ctrl+click快速保存\" class=\"ui mini positive button\"><i style=\"display: none;\" class=\"spinner loading icon\"></i><span>保存</span></button>\r\n            </div>\r\n            <div class=\"dropzone-previews\"></div>\r\n            <div id=\"txt-blog-write-wrapper\" class=\"content markdown-body\">\r\n                <textarea style=\"width: 0; height: 0; border: 0; resize:none;\" id=\"txt-blog-write\"></textarea>\r\n            </div>\r\n            <div class=\"tms-blog-write-status-bar-wrapper\">\r\n                <div class=\"tms-blog-write-status-bar\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"preview-template\" style=\"display: none;\">\r\n            <div class=\"dz-preview dz-file-preview\">\r\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-blog-save view-model.ref=\"blogSaveVm\"></em-blog-save>\r\n</template>\r\n"; });
-define('text!resources/elements/em-blog-space-update.css', ['module'], function(module) { module.exports = ""; });
 define('text!resources/elements/em-chat-attach.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-attach.css\"></require>\r\n    <div class=\"em-chat-attach tms-attach-search-input\">\r\n        <div class=\"ui fluid left action icon input\">\r\n            <button class=\"ui basic icon button\">\r\n                <i show.bind=\"!ajax || ajax.readyState == 4\" class=\"${type == 'Image' ? 'image' : ''} file outline icon\"></i>\r\n                <i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i>\r\n            </button>\r\n            <input ref=\"searchRef\" type=\"text\" value.bind=\"search\" keyup.trigger=\"keyupHandler($event)\" placeholder=\"${type == 'Image' ? '图片' : '文件'}搜索(Enter确认, Esc取消)...\">\r\n            <i click.delegate=\"searchHandler()\" class=\"search link icon\"></i>\r\n        </div>\r\n    </div>\r\n    <div ref=\"tabRef\" class=\"ui pointing secondary menu em-chat-attach\">\r\n        <a click.delegate=\"tabClickHandler('Image')\" class=\"active item\" data-tab=\"Image\"><i show.bind=\"!ajax || ajax.readyState == 4 || type == 'Attachment'\" class=\"file image outline icon\"></i><i show.bind=\"ajax && ajax.readyState != 4 && type == 'Image'\" class=\"spinner loading icon\"></i>图片${(page && type == 'Image') ? '(' + page.totalElements + ')' : ''}</a>\r\n        <a click.delegate=\"tabClickHandler('Attachment')\" class=\"item\" data-tab=\"Attachment\"><i show.bind=\"!ajax || ajax.readyState == 4 || type == 'Image'\" class=\"file outline icon\"></i><i show.bind=\"ajax && ajax.readyState != 4 && type == 'Attachment'\" class=\"spinner loading icon\"></i>文件${(page && type == 'Attachment') ? '(' + page.totalElements + ')' : ''}</a>\r\n    </div>\r\n    <div swipebox class=\"ui active tab basic segment em-chat-attach\" data-tab=\"Image\">\r\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无图片</h1>\r\n        <div if.bind=\"type == 'Image'\" class=\"ui small bordered images\">\r\n            <img repeat.for=\"item of attachs\" if.bind=\"item.type == 'Image'\" src=\"/${item.path + item.uuidName}\" alt=\"${item.name}\" title=\"${item.username | userName}上传于${item.createDate | timeago}\">\r\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\r\n        </div>\r\n    </div>\r\n    <div class=\"ui tab basic segment em-chat-attach\" data-tab=\"Attachment\">\r\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无文件</h1>\r\n        <div if.bind=\"type == 'Attachment'\" class=\"divided list selection ui\">\r\n            <div repeat.for=\"item of attachs\" if.bind=\"item.type == 'Attachment'\" class=\"item\">\r\n                <i class=\"file outline icon\"></i>\r\n                <div class=\"content\">\r\n                    <div class=\"header\"><a href=\"/admin/file/download/${item.id}\">${item.name}</a></div>\r\n                    <div class=\"description\"><i class=\"wait icon\"></i><b>${item.username | userName}</b>上传于<span title=\"${item.createDate | date}\">${item.createDate | timeago}</span></div>\r\n                </div>\r\n            </div>\r\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-blog-space-update.css', ['module'], function(module) { module.exports = ""; });
 define('text!resources/elements/em-chat-channel-create.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-create.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" show-confirm.bind=\"activeTab == 'channel-create'\" confirm-label=\"创建\">\r\n        <div slot=\"header\">频道管理</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"tabRef\" class=\"ui pointing secondary menu\">\r\n                <a class=\"active item\" data-tab=\"channel-create\">创建频道</a>\r\n                <a class=\"item\" data-tab=\"channel-join\">加入频道</a>\r\n            </div>\r\n            <div class=\"ui active tab basic segment tms-create\" data-tab=\"channel-create\">\r\n                <div ref=\"frm\" class=\"ui form\">\r\n                    <div class=\"inline required field\">\r\n                        <label>标识</label>\r\n                        <input type=\"text\" name=\"name\" value.bind=\"name\" placeholder=\"小写字母数组-_组合\">\r\n                    </div>\r\n                    <div class=\"inline required field\">\r\n                        <label>名称</label>\r\n                        <input type=\"text\" name=\"title\" value.bind=\"title\" placeholder=\"\">\r\n                    </div>\r\n                    <div class=\"inline field\">\r\n                        <label style=\"visibility: hidden;\">公开</label>\r\n                        <div ref=\"chk\" class=\"ui checkbox\">\r\n                            <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                            <label>非公开(公开频道用户可以自由加入)</label>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"field\">\r\n                        <label>描述</label>\r\n                        <textarea name=\"desc\" value.bind=\"desc\" placeholder=\"\" rows=\"5\"></textarea>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"ui tab basic segment tms-join\" data-tab=\"channel-join\">\r\n                <em-chat-channel-join em-chat-channel-join.ref=\"channelJoinVm\" login-user.bind=\"loginUser\"></em-chat-channel-join>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-blog-top-menu.css', ['module'], function(module) { module.exports = ".em-blog-top-menu.ui.inverted.blue.menu {\n  background-color: #205081;\n  height: 55px;\n  z-index: 103;\n}\n.em-blog-top-menu.ui.inverted.blue.menu .item.tms-toggle {\n  display: none;\n}\n.em-blog-top-menu.ui.inverted.blue.menu .item.tms-toggle i.icon {\n  margin-right: 0;\n}\n.em-blog-top-menu.ui.inverted.blue.menu .item.tms-links i.icon {\n  margin-right: 0;\n}\n@media only screen and (max-width: 767px) {\n  .em-blog-top-menu.ui.inverted.blue.menu .item.tms-links {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu .item.tms-logo {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu .item.header {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu .item.tms-toggle {\n    display: flex;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu .right.menu .item .ui.search .ui.input {\n    width: 100px;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu.search-focus .tms-logo {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu.search-focus .tms-create {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu.search-focus .right.menu .item .ui.search .ui.input {\n    width: initial;\n    transition: width 0.15s ease-out 0s;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu.search-focus .right.menu .tms-login-user {\n    display: none;\n  }\n}\n"; });
 define('text!resources/elements/em-chat-channel-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\r\n        <div slot=\"header\">编辑频道</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"inline required field\">\r\n                    <label>标识</label>\r\n                    <div class=\"ui basic label\">${channel.name}</div>\r\n                </div>\r\n                <div class=\"inline required field\">\r\n                    <label>名称</label>\r\n                    <input type=\"text\" name=\"title\" value.bind=\"channel.title\" placeholder=\"\">\r\n                </div>\r\n                <div class=\"inline field\">\r\n                    <label style=\"visibility: hidden;\">公开</label>\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                        <label>非公开(公开频道用户可以自由加入)</label>\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <label>描述</label>\r\n                    <textarea name=\"desc\" value.bind=\"channel.description\" placeholder=\"\" rows=\"5\"></textarea>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-blog-write.css', ['module'], function(module) { module.exports = "@media only screen and (max-width: 827px) {\n  .modaal-wrapper .modaal-close {\n    top: initial!important;\n    bottom: 10px;\n    z-index: 2;\n  }\n}\n.em-blog-write {\n  margin-top: -30px;\n  margin-bottom: 20px;\n}\n.em-blog-write > .wrapper {\n  max-width: 768px;\n  margin: auto;\n}\n.em-blog-write > .wrapper > .title {\n  position: fixed;\n  z-index: 2;\n  margin-bottom: 8px;\n  width: calc(100vw - 60px);\n  background-color: white;\n  padding-top: 18px;\n  box-shadow: 0px 1px 0px 0px #dddddd;\n}\n@media only screen and (min-width: 828px) {\n  .em-blog-write > .wrapper > .title {\n    width: 768px;\n  }\n}\n.em-blog-write > .wrapper > .title > .ui.input {\n  padding-right: 80px;\n}\n.em-blog-write > .wrapper > .title > .ui.button {\n  position: absolute;\n  right: 0;\n  top: 15px;\n}\n.em-blog-write > .wrapper > .content {\n  padding-top: 60px;\n}\n.em-blog-write > .wrapper > .content .editor-toolbar.fullscreen {\n  z-index: 800;\n}\n.em-blog-write .dropzone {\n  position: relative;\n}\n.em-blog-write .dropzone .dropzone-previews {\n  position: absolute;\n  top: 48px;\n  width: 100%;\n}\n.em-blog-write .dropzone .dropzone-previews .dz-preview {\n  width: 100%;\n  margin: 0;\n}\n.em-blog-write .dropzone .dropzone-previews .dz-preview .dz-progress {\n  height: 2px;\n  background-color: #aaa;\n  border: none;\n}\n.em-blog-write .dropzone .dropzone-previews .dz-preview .dz-remove {\n  display: none;\n}\n.em-blog-write .tms-blog-write-status-bar-wrapper {\n  position: fixed;\n  z-index: 800;\n  height: 0;\n  top: 120px;\n  width: calc(100vw - 60px);\n}\n@media only screen and (min-width: 828px) {\n  .em-blog-write .tms-blog-write-status-bar-wrapper {\n    width: 768px;\n  }\n}\n.em-blog-write .tms-blog-write-status-bar-wrapper .tms-blog-write-status-bar {\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n}\n"; });
+define('text!resources/elements/em-blog-top-menu.css', ['module'], function(module) { module.exports = ".em-blog-top-menu.ui.inverted.blue.menu {\n  background-color: #205081;\n  height: 55px;\n  z-index: 103;\n}\n.em-blog-top-menu.ui.inverted.blue.menu .item.tms-toggle {\n  display: none;\n}\n.em-blog-top-menu.ui.inverted.blue.menu .item.tms-toggle i.icon {\n  margin-right: 0;\n}\n.em-blog-top-menu.ui.inverted.blue.menu .item.tms-links i.icon {\n  margin-right: 0;\n}\n@media only screen and (max-width: 767px) {\n  .em-blog-top-menu.ui.inverted.blue.menu .item.tms-links {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu .item.tms-logo {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu .item.header {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu .item.tms-toggle {\n    display: flex;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu .right.menu .item .ui.search .ui.input {\n    width: 100px;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu.search-focus .tms-logo {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu.search-focus .tms-create {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu.search-focus .right.menu .item .ui.search .ui.input {\n    width: initial;\n    transition: width 0.15s ease-out 0s;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu.search-focus .right.menu .tms-login-user {\n    display: none;\n  }\n}\n"; });
 define('text!resources/elements/em-chat-channel-join.html', ['module'], function(module) { module.exports = "<template>\r\n    <table class=\"ui very basic striped table\">\r\n        <thead>\r\n            <tr>\r\n                <th>标识</th>\r\n                <th>名称</th>\r\n                <th>描述</th>\r\n                <th>可见性</th>\r\n                <th>拥有者</th>\r\n                <th>操作</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n            <tr repeat.for=\"item of channels | sort:'title' | sortChannels\">\r\n                <td><i class=\"hashtag icon\"></i>${item.name}</td>\r\n                <td title=\"${item.title}\">${item.title}</td>\r\n                <td><span data-tooltip=\"${item.description}\"><i class=\"info circle icon\"></i></span></td>\r\n                <td if.bind=\"item.privated\"><span data-tooltip=\"私有频道\"><i class=\"lock icon\"></i></span></td>\r\n                <td if.bind=\"!item.privated\"><span data-tooltip=\"公开频道\"><i class=\"unlock icon\"></i></span></td>\r\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username != loginUser.username\">${item.owner.name ? item.owner.name : item.owner.username}</td>\r\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username == loginUser.username\">自己</td>\r\n                <td>\r\n                    <div if.bind=\"!item.privated && !item.joined\" class=\"ui mini green button\" click.delegate=\"joinHandler(item)\">加入</div>\r\n                    <div if.bind=\"item.joined && (item.owner.username != loginUser.username)\" class=\"ui mini orange button\" click.delegate=\"leaveHandler(item)\">离开</div>\r\n                </td>\r\n            </tr>\r\n        </tbody>\r\n    </table>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-attach.css', ['module'], function(module) { module.exports = ".em-chat-attach.ui.basic.segment {\n  margin-bottom: 0;\n  padding-top: 0;\n}\n.em-chat-attach .ui.basic.button {\n  display: block;\n  margin-right: 0;\n}\n.em-chat-attach .ui.list .description {\n  font-size: 12px;\n  margin-top: 3px;\n}\n.em-chat-attach.ui.menu {\n  margin-top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.em-chat-attach.ui.menu > .item {\n  -webkit-box-flex: 1;\n  -ms-flex: 1;\n  flex: 1;\n  display: block!important;\n  text-align: center;\n}\n.em-chat-attach.tms-attach-search-input {\n  padding: 0 10px;\n}\n"; });
+define('text!resources/elements/em-blog-write.css', ['module'], function(module) { module.exports = "@media only screen and (max-width: 827px) {\n  .modaal-wrapper .modaal-close {\n    top: initial!important;\n    bottom: 10px;\n    z-index: 2;\n  }\n}\n.em-blog-write {\n  margin-top: -30px;\n  margin-bottom: 20px;\n}\n.em-blog-write > .wrapper {\n  max-width: 768px;\n  margin: auto;\n}\n.em-blog-write > .wrapper > .title {\n  position: fixed;\n  z-index: 2;\n  margin-bottom: 8px;\n  width: calc(100vw - 60px);\n  background-color: white;\n  padding-top: 18px;\n  box-shadow: 0px 1px 0px 0px #dddddd;\n}\n@media only screen and (min-width: 828px) {\n  .em-blog-write > .wrapper > .title {\n    width: 768px;\n  }\n}\n.em-blog-write > .wrapper > .title > .ui.input {\n  padding-right: 80px;\n}\n.em-blog-write > .wrapper > .title > .ui.button {\n  position: absolute;\n  right: 0;\n  top: 15px;\n}\n.em-blog-write > .wrapper > .content {\n  padding-top: 60px;\n}\n.em-blog-write > .wrapper > .content .editor-toolbar.fullscreen {\n  z-index: 800;\n}\n.em-blog-write .dropzone {\n  position: relative;\n}\n.em-blog-write .dropzone .dropzone-previews {\n  position: absolute;\n  top: 48px;\n  width: 100%;\n}\n.em-blog-write .dropzone .dropzone-previews .dz-preview {\n  width: 100%;\n  margin: 0;\n}\n.em-blog-write .dropzone .dropzone-previews .dz-preview .dz-progress {\n  height: 2px;\n  background-color: #aaa;\n  border: none;\n}\n.em-blog-write .dropzone .dropzone-previews .dz-preview .dz-remove {\n  display: none;\n}\n.em-blog-write .tms-blog-write-status-bar-wrapper {\n  position: fixed;\n  z-index: 800;\n  height: 0;\n  top: 120px;\n  width: calc(100vw - 60px);\n}\n@media only screen and (min-width: 828px) {\n  .em-blog-write .tms-blog-write-status-bar-wrapper {\n    width: 768px;\n  }\n}\n.em-blog-write .tms-blog-write-status-bar-wrapper .tms-blog-write-status-bar {\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n}\n"; });
 define('text!resources/elements/em-chat-channel-link-mgr.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-link-mgr.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">频道外链管理</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-link-mgr\">\r\n            <div class=\"ui segment\">\r\n                <div class=\"ui form\">\r\n                    <div class=\"field required\">\r\n                        <label>添加频道外链</label>\r\n                        <div class=\"fields\">\r\n                            <div class=\"five wide field\">\r\n                                <input type=\"text\" value.bind=\"title\" name=\"title\" placeholder=\"链接标题\">\r\n                            </div>\r\n                            <div class=\"ten wide field\">\r\n                                <input type=\"text\" value.bind=\"href\" name=\"href\" placeholder=\"链接地址\">\r\n                            </div>\r\n                            <div class=\"one wide field\">\r\n                                <button title=\"添加外链\" click.delegate=\"addHandler()\" class=\"circular ui icon blue button\" type=\"button\"><i class=\"plus icon\"></i></button>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div style=\"max-height: 275px; overflow: auto;\">\r\n                <table class=\"ui very basic striped compact table\">\r\n                    <thead>\r\n                        <tr>\r\n                            <th style=\"width: 180px;\">标题</th>\r\n                            <th>链接</th>\r\n                            <th></th>\r\n                            <th style=\"width: 150px;\">操作</th>\r\n                        </tr>\r\n                    </thead>\r\n                    <tbody>\r\n                        <tr repeat.for=\"item of links | sort:'title'\">\r\n                            <td if.bind=\"!item.isEditing\">${item.title}</td>\r\n                            <td if.bind=\"item.isEditing\">\r\n                                <div class=\"ui fluid input\">\r\n                                    <input type=\"text\" value.bind=\"item.title\" placeholder=\"链接标题\">\r\n                                </div>\r\n                            </td>\r\n                            <td if.bind=\"!item.isEditing\"><a style=\"word-break: break-all;\" target=\"_blank\" href=\"${item.href}\">${item.href}</a></td>\r\n                            <td if.bind=\"item.isEditing\">\r\n                                <div class=\"ui fluid input\">\r\n                                    <input type=\"text\" value.bind=\"item.href\" placeholder=\"链接地址\">\r\n                                </div>\r\n                            </td>\r\n                            <td><span data-tooltip=\"${item.creator.name ? item.creator.name : item.creator.username} 添加于 ${item.createDate | timeago}\"><i class=\"info circle icon\"></i></span></td>\r\n                            <td>\r\n                                <button if.bind=\"item.creator.username == loginUser.username || channel.owner.username == loginUser.username\" show.bind=\"!item.isEditing\" click.delegate=\"editHandler(item)\" class=\"mini ui button\">\r\n                                    编辑\r\n                                </button>\r\n                                <button if.bind=\"item.creator.username == loginUser.username || channel.owner.username == loginUser.username\" click.delegate=\"updateHandler(item)\" show.bind=\"item.isEditing\" class=\"mini green ui button\">\r\n                                    更新\r\n                                </button>\r\n                                <button if.bind=\"item.creator.username == loginUser.username || channel.owner.username == loginUser.username\" click.delegate=\"delHandler(item)\" class=\"mini ui red button\">\r\n                                    删除\r\n                                </button>\r\n                            </td>\r\n                        </tr>\r\n                    </tbody>\r\n                </table>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-channel-create.css', ['module'], function(module) { module.exports = ".tms-em-chat-channel-create .tms-join {\n  max-height: 315px;\n  overflow-y: auto;\n}\n.tms-em-chat-channel-create .ui.form > .field > label {\n  width: 35px!important;\n}\n"; });
+define('text!resources/elements/em-chat-attach.css', ['module'], function(module) { module.exports = ".em-chat-attach.ui.basic.segment {\n  margin-bottom: 0;\n  padding-top: 0;\n}\n.em-chat-attach .ui.basic.button {\n  display: block;\n  margin-right: 0;\n}\n.em-chat-attach .ui.list .description {\n  font-size: 12px;\n  margin-top: 3px;\n}\n.em-chat-attach.ui.menu {\n  margin-top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.em-chat-attach.ui.menu > .item {\n  -webkit-box-flex: 1;\n  -ms-flex: 1;\n  flex: 1;\n  display: block!important;\n  text-align: center;\n}\n.em-chat-attach.tms-attach-search-input {\n  padding: 0 10px;\n}\n"; });
 define('text!resources/elements/em-chat-channel-members-mgr.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-members-mgr.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"确定\">\r\n        <div slot=\"header\">频道成员管理</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-members-mgr\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"field\">\r\n                    <label>频道成员(${channel.members.length})</label>\r\n                    <div ref=\"membersRef\" class=\"ui fluid multiple search selection dropdown\">\r\n                        <input type=\"hidden\" name=\"members\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\"></div>\r\n                        <div class=\"menu\">\r\n                            <div repeat.for=\"item of users | sortUsers:channel.owner.username\" task.bind=\"initMembersUI($last)\" class=\"item\" data-value=\"${item.username}\">\r\n                                <!-- <input type=\"hidden\" class=\"${!item.enabled ? 'disabled-user' : ''}\"> -->\r\n                                <span class=\"${channel.owner.username == item.username ? 'owner' : ''} ${!item.enabled ? 'disabled-user' : ''}\">${item.name ? item.name : item.username}</span>\r\n                                <!-- <input type=\"hidden\" class=\"${channel.owner.username == item.username ? 'owner' : ''}\"> -->\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"member-table\">\r\n                <table class=\"ui very basic striped compact table\">\r\n                    <thead>\r\n                        <tr>\r\n                            <th><i class=\"at icon\" style=\"margin-right: 0;\"></i>用户名</th>\r\n                            <th>姓名</th>\r\n                            <th>邮箱</th>\r\n                            <th>登录</th>\r\n                            <th>状态</th>\r\n                        </tr>\r\n                    </thead>\r\n                    <tbody>\r\n                        <tr repeat.for=\"item of channel.members | sort:'username'\">\r\n                            <td><i class=\"at icon\" style=\"margin-right: 0;\"></i>${item.username}</td>\r\n                            <td>${item.name}</td>\r\n                            <td>${item.mails}</td>\r\n                            <td title=\"${item.lastLoginDate | date}\">${item.lastLoginDate | timeago}</td>\r\n                            <td if.bind=\"item.enabled\">\r\n                                <div class=\"ui green tag label\">启用中</div>\r\n                            </td>\r\n                            <td if.bind=\"!item.enabled\">\r\n                                <div class=\"ui red tag label\">已停用</div>\r\n                            </td>\r\n                        </tr>\r\n                    </tbody>\r\n                </table>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-channel-link-mgr.css', ['module'], function(module) { module.exports = "@media only screen and (min-width: 768px) {\n  .tms-em-chat-channel-link-mgr .ui.form .one.wide.field {\n    padding: 0;\n  }\n}\n"; });
+define('text!resources/elements/em-chat-channel-create.css', ['module'], function(module) { module.exports = ".tms-em-chat-channel-create .tms-join {\n  max-height: 315px;\n  overflow-y: auto;\n}\n.tms-em-chat-channel-create .ui.form > .field > label {\n  width: 35px!important;\n}\n"; });
 define('text!resources/elements/em-chat-channel-members-show.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-members-show.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"确定\">\r\n        <div slot=\"header\">频道成员(${channel.members.length})</div>\r\n        <div slot=\"content\" class=\"em-chat-channel-members-show\">\r\n            <table class=\"ui very basic striped compact table\">\r\n                <thead>\r\n                    <tr>\r\n                        <th><i class=\"at icon\" style=\"margin-right: 0;\"></i>用户名</th>\r\n                        <th>姓名</th>\r\n                        <th>邮箱</th>\r\n                        <th>登录</th>\r\n                        <th>状态</th>\r\n                    </tr>\r\n                </thead>\r\n                <tbody>\r\n                    <tr repeat.for=\"item of channel.members | sort:'username'\">\r\n                        <td><i class=\"at icon\" style=\"margin-right: 0;\"></i>${item.username}</td>\r\n                        <td>${item.name}</td>\r\n                        <td>${item.mails}</td>\r\n                        <td title=\"${item.lastLoginDate | date}\">${item.lastLoginDate | timeago}</td>\r\n                        <td if.bind=\"item.enabled\">\r\n                            <div class=\"ui green tag label\">启用中</div>\r\n                        </td>\r\n                        <td if.bind=\"!item.enabled\">\r\n                            <div class=\"ui red tag label\">已停用</div>\r\n                        </td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-channel-link-mgr.css', ['module'], function(module) { module.exports = "@media only screen and (min-width: 768px) {\n  .tms-em-chat-channel-link-mgr .ui.form .one.wide.field {\n    padding: 0;\n  }\n}\n"; });
 define('text!resources/elements/em-chat-channel-members-mgr.css', ['module'], function(module) { module.exports = ".tms-em-chat-channel-members-mgr .ui.dropdown span.owner + i.delete.icon {\n  display: none;\n}\n.tms-em-chat-channel-members-mgr .ui.dropdown span.disabled-user {\n  text-decoration: line-through;\n  font-style: italic;\n}\n.tms-em-chat-channel-members-mgr .member-table {\n  max-height: 315px;\n  overflow-y: auto;\n}\n"; });
 define('text!resources/elements/em-chat-content-item.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-content-item.css\"></require>\r\n    <div repeat.for=\"item of chats\" swipebox class=\"em-chat-content-item comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\" task.bind=\"notifyRendered($last, item)\">\r\n        <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\r\n        <div class=\"content\">\r\n            <a class=\"author\" data-value=\"${item.creator.username}\" click.delegate=\"creatorNameHandler(item)\">${item.creator.name}</a>\r\n            <div class=\"metadata\">\r\n                <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\r\n                <div show.bind=\"!isAt\" class=\"rating\">\r\n                    <i click.delegate=\"likeHandler(item, true)\" style=\"cursor: pointer;\" title=\"赞一下\" class=\"cbutton cbutton--effect-novak thumbs ${item.isZanVoted ? '' : 'outline'} up icon\"></i> <span title=\"${item.voteZan}\">${item.voteZanCnt} 赞</span>\r\n                </div>\r\n                <div show.bind=\"!isAt\" class=\"rating\">\r\n                    <i click.delegate=\"likeHandler(item, false)\" style=\"cursor: pointer;\" title=\"踩一下\" class=\"cbutton cbutton--effect-novak thumbs ${item.isCaiVoted ? '' : 'outline'} down icon\"></i> <span title=\"${item.voteCai}\">${item.voteCaiCnt} 踩</span>\r\n                </div>\r\n            </div>\r\n            <div ref=\"mkbodyRef\" show.bind=\"!item.isEditing\" class=\"text markdown-body\" innerhtml.bind=\"item.content | parseMd | emoji:mkbodyRef\"></div>\r\n            <div class=\"textcomplete-container\" show.bind=\"item.isEditing\">\r\n                <div class=\"append-to\"></div>\r\n            </div>\r\n            <textarea ref=\"editTxtRef\" data-id=\"${item.id}\" textcomplete.bind=\"members\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content & oneWay\" class=\"tms-edit-textarea\" rows=\"1\"></textarea>\r\n            <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-edit-actions\">\r\n                <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\r\n                    <i class=\"checkmark icon\"></i>\r\n                </button>\r\n                <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\r\n                    <i class=\"remove icon\"></i>\r\n                </button>\r\n                <button dropzone=\"clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\r\n                    <i class=\"upload icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"actions\">\r\n                <a if.bind=\"!isAt && (item.creator.username != loginUser.username)\" click.delegate=\"replyHandler(item)\" class=\"tms-reply\" title=\"回复消息\">回复</a>\r\n                <a if.bind=\"!isAt\" click.delegate=\"stowHandler(item)\" class=\"tms-stow\" title=\"收藏消息\">收藏</a>\r\n                <!-- <a if.bind=\"!isAt && (item.creator.username == loginUser.username)\" click.delegate=\"openEditHandler(item)\" title=\"${item.openEdit ? '关闭协作编辑' :'开启协作编辑'}\" class=\"tms-open-edit\">${item.openEdit ? '关闭' :'协作'}</a> -->\r\n                <a if.bind=\"item.openEdit || (item.creator.username == loginUser.username)\" click.delegate=\"editHandler(item, editTxtRef)\" class=\"tms-edit\" title=\"编辑消息(ctrl+dblclick)\">编辑</a>\r\n                <!-- <a if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"deleteHandler(item)\" class=\"tms-delete\" title=\"删除消息\">删除</a> -->\r\n                <!-- <a class=\"tms-copy tms-clipboard\" data-clipboard-text=\"${item.content}\" title=\"复制消息内容\">复制</a> -->\r\n                <!-- <a class=\"tms-share tms-clipboard\" data-clipboard-text=\"${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}\" title=\"复制消息链接\">分享</a> -->\r\n                <div ui-dropdown-action=\".tms-comments-container\" class=\"ui top right pointing dropdown\">\r\n                    <a class=\"text\" title=\"更多操作\"><i class=\"ellipsis horizontal large icon\"></i></a>\r\n                    <!-- <i class=\"dropdown icon\"></i> -->\r\n                    <div class=\"menu\">\r\n                        <div class=\"item\" if.bind=\"!isAt && (item.creator.username == loginUser.username)\" click.delegate=\"openEditHandler(item)\" title=\"${item.openEdit ? '关闭协作编辑' :'开启协作编辑'}\"><i class=\"write icon\"></i> ${item.openEdit ? '关闭' :'协作'}</div>\r\n                        <div class=\"item tms-clipboard\" data-clipboard-text=\"${item.content}\" title=\"复制消息内容\"><i class=\"icon copy\"></i> 复制</div>\r\n                        <div class=\"item tms-clipboard\" data-clipboard-text=\"${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}\" title=\"复制消息链接\"><i class=\"icon share\"></i> 分享</div>\r\n                        <div class=\"divider\"></div>\r\n                        <a href=\"/admin/chat/${isAt ? 'direct' : 'channel'}/download/${item.id}?type=pdf\" style=\"display: block; color: rgba(0,0,0,.87);\" class=\"item\">\r\n                            <i class=\"file pdf outline icon\"></i> 导出为PDF\r\n                        </a>\r\n                        <a href=\"/admin/chat/${isAt ? 'direct' : 'channel'}/download/${item.id}?type=md\" style=\"display: block; color: rgba(0,0,0,.87);\" class=\"item\">\r\n                            <i class=\"file text outline icon\"></i> 导出为Markdown\r\n                        </a>\r\n                        <div if.bind=\"item.creator.username == loginUser.username\" class=\"divider\"></div>\r\n                        <div class=\"item tms-red\" if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"deleteHandler(item)\" title=\"删除消息\"><i class=\"trash outline icon\"></i> 删除</div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"tools\">\r\n                <button show.bind=\"!isAt && !item.isEditing\" click.delegate=\"refreshHandler(item)\" title=\"刷新同步\" class=\"mini circular ui icon button\">\r\n                    <i class=\"refresh icon\"></i>\r\n                </button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-channel-members-show.css', ['module'], function(module) { module.exports = ".em-chat-channel-members-show {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
