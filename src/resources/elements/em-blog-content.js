@@ -54,7 +54,7 @@ export class EmBlogContent {
                 toastr.error('复制到剪贴板失败!');
             });
 
-        $(this.mkbodyRef).on('click', 'code[data-code]', function(event) {
+        $('.em-blog-content').on('click', 'code[data-code]', function(event) {
             if (event.ctrlKey) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
@@ -65,7 +65,7 @@ export class EmBlogContent {
             }
         });
 
-        $(this.mkbodyRef).on('click', '.pre-code-wrapper', function(event) {
+        $('.em-blog-content').on('click', '.pre-code-wrapper', function(event) {
             if (event.ctrlKey) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
@@ -103,6 +103,8 @@ export class EmBlogContent {
                 this.blog = data.data;
                 ea.publish(nsCons.EVENT_BLOG_VIEW_CHANGED, this.blog);
                 _.defer(() => this._dir());
+            } else {
+                toastr.error(data.data, "获取博文失败!");
             }
         });
     }
