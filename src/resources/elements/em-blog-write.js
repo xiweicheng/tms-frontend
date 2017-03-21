@@ -102,6 +102,8 @@ export class EmBlogWrite {
                             $('#blog-title-input').val(ms[1]);
                         }
                     }
+                } else {
+                    toastr.error(data.data, '获取沟通消息失败!');
                 }
             });
         }

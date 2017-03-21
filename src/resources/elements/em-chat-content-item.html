@@ -44,6 +44,9 @@
                         <div class="item" if.bind="!isAt && (item.creator.username == loginUser.username)" click.delegate="openEditHandler(item)" title="${item.openEdit ? '关闭协作编辑' :'开启协作编辑'}"><i class="write icon"></i> ${item.openEdit ? '关闭' :'协作'}</div>
                         <div class="item tms-clipboard" data-clipboard-text="${item.content}" title="复制消息内容"><i class="icon copy"></i> 复制</div>
                         <div class="item tms-clipboard" data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}" title="复制消息链接"><i class="icon share"></i> 分享</div>
+                        <a target="_blank" href="#/blog/create?${isAt ? 'cdid' : 'ccid'}=${item.id}" style="display: block; color: rgba(0,0,0,.87);" class="item">
+                            <i class="wikipedia icon"></i> 转为博文
+                        </a>
                         <div class="divider"></div>
                         <a href="/admin/chat/${isAt ? 'direct' : 'channel'}/download/${item.id}?type=pdf" style="display: block; color: rgba(0,0,0,.87);" class="item">
                             <i class="file pdf outline icon"></i> 导出为PDF
