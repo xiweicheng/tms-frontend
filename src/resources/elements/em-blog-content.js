@@ -27,6 +27,7 @@ export class EmBlogContent {
         });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_CHANGED, (payload) => {
             if (payload.action == 'updated') {
+                // this.blog = payload.blog;
                 _.extend(this.blog, payload.blog);
                 _.defer(() => this._dir());
             }
@@ -215,5 +216,9 @@ export class EmBlogContent {
             action: 'dir',
             dir: this._dir()
         });
+    }
+
+    authHandler() {
+        this.blogSpaceAuthVm.show('blog', this.blog);
     }
 }

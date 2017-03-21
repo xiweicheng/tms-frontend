@@ -140,4 +140,8 @@ export class EmBlogLeftSidebar {
             }
         });
     }
+
+    authSpaceHandler(space) {
+        this.blogSpaceAuthVm.show('space', space);
+    }
 }

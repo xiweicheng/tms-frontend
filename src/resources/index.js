@@ -69,6 +69,7 @@ export function configure(aurelia) {
         'resources/elements/em-blog-history-view',
         'resources/elements/em-blog-history-diff',
         'resources/elements/em-blog-comment-popup',
+        'resources/elements/em-blog-space-auth',
         'resources/elements/em-user-avatar',
         'resources/elements/em-user-edit',
     ]);

@@ -33,6 +33,7 @@
                                     <i class="large ellipsis horizontal icon"></i>
                                     <div class="menu">
                                         <div class="item" click.delegate="editSpaceHandler(space)"><i class="icon edit"></i>编辑</div>
+                                        <div class="item" click.delegate="authSpaceHandler(space)"><i class="lock icon"></i>限制</div>
                                         <!-- <div class="divider"></div> -->
                                         <div class="item" style="color: red;" click.delegate="delSpaceHandler(space)"><i class="trash outline icon"></i>删除</div>
                                     </div>
@@ -74,4 +75,5 @@
     </div>
     <em-confirm-modal em-confirm-modal.ref="confirmMd"></em-confirm-modal>
     <em-blog-space-edit view-model.ref="spaceEditVm"></em-blog-space-edit>
+    <em-blog-space-auth view-model.ref="blogSpaceAuthVm"></em-blog-space-auth>
 </template>
