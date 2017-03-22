@@ -101,12 +101,9 @@ export class EmBlogLeftSidebar {
     }
 
     getBlogTree() {
-        return $.get('/admin/blog/list', {
-            page: 0,
-            size: 10000
-        }, (data) => {
+        return $.get('/admin/blog/listMy', (data) => {
             if (data.success) {
-                this.blogs = data.data.content;
+                this.blogs = data.data;
                 this.blog = _.find(this.blogs, { id: +nsCtx.blogId });
             }
         });

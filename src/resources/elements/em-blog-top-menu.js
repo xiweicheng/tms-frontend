@@ -41,7 +41,7 @@ export class EmBlogTopMenu {
                         var response = {
                             results: []
                         };
-                        $.each(resp.data.content, (index, item) => {
+                        $.each(resp.data, (index, item) => {
                             response.results.push({
                                 title: item.title,
                                 // description: utils.abbreviate(item.content, 65),
