@@ -544,6 +544,13 @@ export class CommonUtils {
         }
         return value;
     }
+
+    isMail(mail) {
+        
+        var emailRegex = /^([_a-z0-9-]+)(\.[_a-z0-9-]+)*@([a-z0-9-]+)(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/i;
+
+        return emailRegex.test(mail);
+    }
 }
 
 export default new CommonUtils();

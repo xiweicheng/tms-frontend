@@ -17,8 +17,10 @@ export class EmBlogShare {
                 minCharacters: 2,
                 cache: false,
                 selectFirstResult: true,
+                showNoResults: false,
                 onSelect: (result, response) => {
                     result.item._id = _.uniqueId('share-item-');
+                    result.item._type = result.item.username ? 'user' : 'channel';
                     this.shares.push(result.item);
                     _.defer(() => { $(this.inputSearchRef).val(''); });
                 },
@@ -28,7 +30,7 @@ export class EmBlogShare {
                             results: []
                         };
                         $.each(resp.data.users, (index, item) => {
-                            if (!_.find(this.shares, { username: item.username })) {
+                            if (!_.find(_.filter(this.shares, c => c._type == 'user'), { username: item.username })) {
                                 response.results.push({
                                     item: item,
                                     title: `<i class="user icon"></i> ${item.name} (${item.username})`,
@@ -36,7 +38,7 @@ export class EmBlogShare {
                             }
                         });
                         $.each(resp.data.channels, (index, item) => {
-                            if (!_.find(_.filter(this.shares, c => !c.username), { name: item.name })) {
+                            if (!_.find(_.filter(this.shares, c => c._type == 'channel'), { name: item.name })) {
                                 response.results.push({
                                     item: item,
                                     title: `<i class="users icon"></i> ${item.title} (${item.name})`,
@@ -62,6 +64,22 @@ export class EmBlogShare {
                 $(this.inputSearchRef).focus();
             }
         });
+    }
+
+    shareSearchKeyupHandler(event) {
+        if (event.keyCode === 13 && !$(this.searchRef).search('is visible')) {
+            let val = $(this.inputSearchRef).val();
+            if (utils.isMail(val)) {
+                if (!_.find(_.filter(this.shares, c => c._type == 'mail'), { mail: val })) {
+                    this.shares.push({
+                        _id: _.uniqueId('share-item-'),
+                        _type: 'mail',
+                        mail: val
+                    });
+                    $(this.inputSearchRef).val('');
+                }
+            }
+        }
     }
 
     show() {
@@ -90,13 +108,15 @@ export class EmBlogShare {
             return;
         }
 
-        $.post('/admin/blog/share', {
+        this.ajaxS = $.post('/admin/blog/share', {
             basePath: utils.getBasePath(),
             id: this.blog.id,
             desc: this.desc,
+            title: this.blog.title,
             html: utils.md2html(this.blog.content),
-            users: _.chain(this.shares).filter((item) => !!item.username).map('username').join().value(),
-            channels: _.chain(this.shares).filter((item) => !item.username).map('name').join().value(),
+            users: _.chain(this.shares).filter(item => item._type == 'user').map('username').join().value(),
+            channels: _.chain(this.shares).filter(item => item._type == 'channel').map('name').join().value(),
+            mails: _.chain(this.shares).filter(item => item._type == 'mail').map('mail').join().value()
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 this._reset();

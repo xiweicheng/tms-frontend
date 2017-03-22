@@ -6,7 +6,7 @@
     <div class="ui popup bottom right transition hidden em-blog-share">
         <div ref="searchRef" class="ui search">
             <div class="ui icon input">
-                <input ref="inputSearchRef" class="prompt" type="text" placeholder="用户名，频道">
+                <input keyup.trigger="shareSearchKeyupHandler($event)" ref="inputSearchRef" class="prompt" type="text" placeholder="用户名，频道，邮箱">
                 <i class="search icon"></i>
             </div>
             <div class="results"></div>
@@ -16,16 +16,22 @@
                 <div class="right floated content">
                     <i click.delegate="removeShareHandler(item)" class="red trash link icon"></i>
                 </div>
-                <template if.bind="item.username">
+                <template if.bind="item._type == 'user'">
                     <i class="user icon"></i>
                     <div class="content">
                         ${item.name} (${item.username})
                     </div>
                 </template>
-                <template if.bind="!item.username">
+                <template if.bind="item._type == 'channel'">
                     <i class="users icon"></i>
                     <div class="content">
                         ${item.title} (${item.name})
+                    </div>
+                </template>
+                <template if.bind="item._type == 'mail'">
+                    <i class="mail icon"></i>
+                    <div class="content">
+                        ${item.mail}
                     </div>
                 </template>
             </div>
@@ -37,7 +43,7 @@
         </div>
         <div class="footer">
             <a click.delegate="cancelHandler()" href="" class="btn-cancel">取消</a>
-            <button click.delegate="shareHandler()" class="ui basic ${shares.length == 0 ? 'disabled' : ''} right floated mini button">
+            <button click.delegate="shareHandler()" class="ui basic ${shares.length == 0 || (ajaxS && ajaxS.readyState != 4) ? 'disabled' : ''} right floated mini button">
                 确定
             </button>
         </div>
