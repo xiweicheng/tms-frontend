@@ -2,7 +2,7 @@
     <require from="./em-blog-top-menu.css"></require>
     <div ref="topMenuRef" class="ui top fixed inverted blue menu em-blog-top-menu ${isSearchFocus ? 'search-focus' : ''}">
         <div click.delegate="toggleHandler()" class="item tms-toggle">
-            <i class="large ${isHide ? 'indent' : 'outdent'} icon"></i>
+            <i class="large ${isHide ? 'indent' : 'outdent'} link icon"></i>
         </div>
         <div ui-dropdown-action class="ui dropdown item tms-links">
             <i class="large content icon"></i>
