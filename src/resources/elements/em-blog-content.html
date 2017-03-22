@@ -10,13 +10,13 @@
                 <span if.bind="(isSuper || blog.creator.username == loginUser.username) && blog.openEdit" data-tooltip="开放编辑中,点击可关闭" data-position="right center" style="margin-left: 8px; top: -1px;"><i click.delegate="openEditHandler()" class="link icon write"></i></span>
             </div>
             <div class="actions">
-                <a if.bind="dir" class="ui basic mini button" click.delegate="catalogHandler()">
+                <a if.bind="dir" class="ui basic mini button" title="博文目录 (d)" click.delegate="catalogHandler()">
                     <i class="unordered list icon"></i> 目录
                 </a>
-                <a if.bind="blog.openEdit || isSuper || blog.creator.username == loginUser.username" class="ui basic mini button" click.delegate="editHandler()">
+                <a if.bind="blog.openEdit || isSuper || blog.creator.username == loginUser.username" title="博文编辑 (e | ctrl+dblclick)" class="ui basic mini button" click.delegate="editHandler()">
                     <i class="large icon edit"></i> 编辑
                 </a>
-                <em-blog-share blog.bind="blog"></em-blog-share>
+                <em-blog-share view-model.ref="blogShareVm" blog.bind="blog"></em-blog-share>
                 <div ui-dropdown-action class="ui top right pointing dropdown basic mini icon button">
                     <i class="large ellipsis horizontal icon"></i>
                     <div class="menu">

@@ -86,6 +86,47 @@ export class EmBlogContent {
                 offset: 0
             });
         });
+
+        $(this.mkbodyRef).on('dblclick', (event) => {
+            if (event.ctrlKey) {
+                if (this.blog.openEdit || this.isSuper || this.blog.creator.username == this.loginUser.username) {
+                    this.editHandler();
+                }
+            }
+        });
+
+        this.initHotkeys();
+    }
+
+    initHotkeys() {
+        $(document).bind('keydown', 'e', (evt) => { // edit
+            evt.preventDefault();
+            if (this.blog.openEdit || this.isSuper || this.blog.creator.username == this.loginUser.username) {
+                this.editHandler();
+            }
+        }).bind('keydown', 'c', (evt) => { // create
+            evt.preventDefault();
+            this.createHandler();
+        }).bind('keydown', 'd', (evt) => { // dir
+            evt.preventDefault();
+            if (this.dir) {
+                this.catalogHandler();
+            }
+        }).bind('keydown', 's', (evt) => { // share
+            evt.preventDefault();
+            this.blogShareVm.show();
+        }).bind('keydown', 'alt+ctrl+up', (event) => {
+            event.preventDefault();
+            $('.em-blog-content').scrollTo(0, 200, {
+                offset: 0
+            });
+        }).bind('keydown', 'alt+ctrl+down', (event) => {
+            event.preventDefault();
+            $('.em-blog-content').scrollTo(`max`, 200, {
+                offset: 0
+            });
+        });
+
     }
 
     _dir() {

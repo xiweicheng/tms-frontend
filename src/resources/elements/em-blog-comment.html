@@ -2,7 +2,7 @@
     <require from="./em-blog-comment.css"></require>
     <div class="em-blog-comment">
         <div class="ui minimal comments">
-            <h3 class="ui dividing header">${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>
+            <h3 title="快速评论 (r)" class="ui dividing header">${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>
             <div repeat.for="item of comments" class="comment" data-id="${item.id}">
                 <a class="avatar">
                     <em-user-avatar user.bind="item.creator"></em-user-avatar>
@@ -30,7 +30,7 @@
                     </div>
                     <div class="actions">
                         <a click.delegate="replyHandler(item)" class="reply">回复</a>
-                        <a if.bind="isSuper || item.creator.username == loginUser.username" click.delegate="editHandler(item, editTxtRef)" class="reply">编辑</a>
+                        <a if.bind="isSuper || item.creator.username == loginUser.username" click.delegate="editHandler(item, editTxtRef)" title="评论编辑(ctrl+dblclick)" class="reply">编辑</a>
                         <a class="item tms-clipboard" data-clipboard-text="${item.content}" title="复制评论内容">复制</a>
                         <a class="item tms-clipboard" data-clipboard-text="${basePath + '#/blog/' + blog.id + '?cid=' + item.id}" title="复制评论链接">分享</a>
                         <div if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown" title="移除评论">

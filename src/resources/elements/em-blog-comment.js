@@ -63,6 +63,30 @@ export class EmBlogComment {
                 target: event.currentTarget
             });
         });
+
+        $('.em-blog-comment .comments').on('dblclick', '.comment', (event) => {
+            if (event.ctrlKey) {
+                let cid = $(event.currentTarget).attr('data-id');
+                let $t = $(event.currentTarget).find('.content > textarea');
+                let item = _.find(this.comments, { id: +cid });
+                if (this.isSuper || item.creator.username == this.loginUser.username) {
+                    this.editHandler(item, $t);
+                }
+            }
+        });
+
+        this.initHotkeys();
+    }
+
+    initHotkeys() {
+        $(document).bind('keydown', 'r', (evt) => { // reply
+            evt.preventDefault();
+            $('.em-blog-content').scrollTo(`max`, 200, {
+                offset: 0
+            });
+            this.simplemde.codemirror.focus();
+        });
+
     }
 
     _init() {

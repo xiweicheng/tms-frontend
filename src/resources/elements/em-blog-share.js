@@ -64,6 +64,10 @@ export class EmBlogShare {
         });
     }
 
+    show() {
+        $(this.shareRef).popup('show');
+    }
+
     removeShareHandler(item) {
         this.shares = _.reject(this.shares, { _id: item._id });
     }
@@ -87,7 +91,7 @@ export class EmBlogShare {
         }
 
         $.post('/admin/blog/share', {
-     		basePath: utils.getBasePath(),
+            basePath: utils.getBasePath(),
             id: this.blog.id,
             desc: this.desc,
             html: utils.md2html(this.blog.content),

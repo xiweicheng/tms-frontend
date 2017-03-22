@@ -42,6 +42,7 @@ export class Blog {
                 target: event.currentTarget
             });
         });
+
     }
 
     /**
