@@ -32,7 +32,7 @@
                         <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="updateSpaceHandler()" class="item">
                             <i class="exchange icon"></i> 移动
                         </div>
-                        <div if.bind="!blog.privated && (isSuper || blog.creator.username == loginUser.username)" click.delegate="openEditHandler()" class="item">
+                        <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="openEditHandler()" class="item">
                             <i class="write icon"></i> ${blog.openEdit ? '关闭协作编辑' : '开放协作编辑'}
                         </div>
                         <div class="divider"></div>

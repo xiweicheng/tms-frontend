@@ -46,7 +46,7 @@ export class EmBlogSave {
 
     showHandler() {
         $(this.chk).checkbox('set unchecked');
-        $.get('/admin/space/list', (data) => {
+        $.get('/admin/space/listMy', (data) => {
             if (data.success) {
                 this.spaces = data.data;
             }

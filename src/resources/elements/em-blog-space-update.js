@@ -19,7 +19,7 @@ export class EmBlogSpaceUpdate {
     }
 
     showHandler() {
-        $.get('/admin/space/list', (data) => {
+        $.get('/admin/space/listMy', (data) => {
             if (data.success) {
                 this.spaces = data.data;
             }

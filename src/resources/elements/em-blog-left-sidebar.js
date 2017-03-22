@@ -110,7 +110,7 @@ export class EmBlogLeftSidebar {
     }
 
     getSpaces() {
-        return $.get('/admin/space/list', {}, (data) => {
+        return $.get('/admin/space/listMy', {}, (data) => {
             if (data.success) {
                 this.spaces = data.data;
             }
