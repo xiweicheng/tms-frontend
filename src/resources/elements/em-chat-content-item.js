@@ -74,6 +74,8 @@ export class EmChatContentItem {
                 target: event.currentTarget
             });
         });
+
+        this.initHotkeys();
     }
 
     channelChanged() {
@@ -113,6 +115,16 @@ export class EmChatContentItem {
             }
         });
 
+    }
+
+    initHotkeys() {
+        $(document).bind('keydown', 'e', (evt) => {
+            evt.preventDefault();
+            let chat = _.findLast(this.chats, c => c.creator.username == this.loginUser.username);
+            if (chat) {
+                this.editHandler(chat, $(`.em-chat-content-item[data-id="${chat.id}"]`).find('> .content > textarea'));
+            }
+        });
     }
 
     editHandler(item, editTxtRef) {
