@@ -115,12 +115,12 @@ export class EmBlogContent {
         }).bind('keydown', 's', (evt) => { // share
             evt.preventDefault();
             this.blogShareVm.show();
-        }).bind('keydown', 'alt+ctrl+up', (event) => {
+        }).bind('keydown', 't', (event) => { // scroll top
             event.preventDefault();
             $('.em-blog-content').scrollTo(0, 200, {
                 offset: 0
             });
-        }).bind('keydown', 'alt+ctrl+down', (event) => {
+        }).bind('keydown', 'b', (event) => { // scroll bottom
             event.preventDefault();
             $('.em-blog-content').scrollTo(`max`, 200, {
                 offset: 0

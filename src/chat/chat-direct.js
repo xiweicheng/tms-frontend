@@ -682,10 +682,10 @@ export class ChatDirect {
         }).bind('keydown', 'alt+down', (evt) => {
             evt.preventDefault();
             this.scrollTo(this.getScrollTargetComment());
-        }).bind('keydown', 'alt+ctrl+up', (event) => {
+        }).bind('keydown', 't', (event) => {
             event.preventDefault();
             this.scrollTo($(this.commentsRef).children('.comment.item:first'));
-        }).bind('keydown', 'alt+ctrl+down', (event) => {
+        }).bind('keydown', 'b', (event) => {
             event.preventDefault();
             this.scrollTo($(this.commentsRef).children('.comment.item:last'));
         });

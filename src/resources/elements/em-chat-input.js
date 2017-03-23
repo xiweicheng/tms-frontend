@@ -49,7 +49,7 @@ export class EmChatInput {
     }
 
     initHotkeys() {
-        $(document).bind('keydown', 'ctrl+i', () => {
+        $(document).bind('keydown', 'r', () => { // reply message
             event.preventDefault();
             this.simplemde.codemirror.focus();
         });

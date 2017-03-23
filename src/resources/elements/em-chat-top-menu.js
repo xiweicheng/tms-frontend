@@ -188,7 +188,7 @@ export class EmChatTopMenu {
     }
 
     initHotkeys() {
-        $(document).bind('keydown', 'ctrl+.', (event) => {
+        $(document).bind('keydown', 's', (event) => { // sidebar
             event.preventDefault();
             this.toggleRightSidebar();
         }).bind('keydown', 'ctrl+k', (event) => {
