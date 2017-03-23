@@ -16,4 +16,5 @@ window.nsCtx = {
     isSuper: false,
     isAdmin: false,
     blogId: null,
+    isModaalOpening: false,
 }

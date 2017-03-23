@@ -21,12 +21,14 @@ export class EmBlogWrite {
 
         this.subscribe = ea.subscribe(nsCons.EVENT_MODAAL_AFTER_OPEN, (payload) => {
             if (payload.id == EmBlogWrite.NAME) {
+                nsCtx.isModaalOpening = true;
                 this.init();
             }
         });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_MODAAL_BEFORE_CLOSE, (payload) => {
             if (payload.id == EmBlogWrite.NAME) {
                 this.destroy();
+                nsCtx.isModaalOpening = false;
             }
         });
         this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_ACTION, (payload) => {

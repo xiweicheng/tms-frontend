@@ -32,6 +32,9 @@ export class EmBlogContent {
                 _.defer(() => this._dir());
             }
         });
+
+        this.throttleCreateHandler = _.throttle(() => { this.createHandler() }, 1000, { 'trailing': false });
+        this.throttleEditHandler = _.throttle(() => { this.editHandler() }, 1000, { 'trailing': false });
     }
 
     /**
@@ -99,14 +102,14 @@ export class EmBlogContent {
     }
 
     initHotkeys() {
-        $(document).bind('keydown', 'e', (evt) => { // edit
+        $(document).bind('keyup', 'e', (evt) => { // edit
             evt.preventDefault();
             if (this.blog.openEdit || this.isSuper || this.blog.creator.username == this.loginUser.username) {
-                this.editHandler();
+                this.throttleEditHandler();
             }
-        }).bind('keydown', 'c', (evt) => { // create
+        }).bind('keyup', 'c', (evt) => { // create
             evt.preventDefault();
-            this.createHandler();
+            this.throttleCreateHandler();
         }).bind('keydown', 'd', (evt) => { // dir
             evt.preventDefault();
             if (this.dir) {
@@ -152,7 +155,9 @@ export class EmBlogContent {
     }
 
     editHandler() {
-        ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'edit', id: this.blog.id });
+        if (!nsCtx.isModaalOpening) {
+            ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'edit', id: this.blog.id });
+        }
     }
 
     deleteHandler() {
@@ -176,7 +181,9 @@ export class EmBlogContent {
     }
 
     createHandler() {
-        $('a[href="#modaal-blog-write"]').click();
+        if (!nsCtx.isModaalOpening) {
+            $('a[href="#modaal-blog-write"]').click();
+        }
     }
 
     updateSpaceHandler() {
