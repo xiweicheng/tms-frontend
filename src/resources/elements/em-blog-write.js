@@ -111,6 +111,12 @@ export class EmBlogWrite {
         }
     }
 
+    _copyInit() {
+        $('#blog-title-input').val(this.blog.title + ' (副本)');
+        this.simplemde.value(this.blog.content);
+        this.blog = null;
+    }
+
     init() {
 
         this.simplemde = new SimpleMDE({
@@ -267,6 +273,8 @@ export class EmBlogWrite {
 
         if (this.action == 'edit') { // edit
             this._editInit();
+        } else if (this.action == 'copy') {
+            this._copyInit();
         } else {
             this._writeInit();
         }

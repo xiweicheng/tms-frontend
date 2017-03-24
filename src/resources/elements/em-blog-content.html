@@ -29,6 +29,9 @@
                         <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="authHandler()" class="item">
                             <i class="lock icon"></i> 限制
                         </div>
+                        <div click.delegate="copyHandler()" class="item">
+                            <i class="copy icon"></i> 复制
+                        </div>
                         <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="updateSpaceHandler()" class="item">
                             <i class="exchange icon"></i> 移动
                         </div>

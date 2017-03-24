@@ -4,7 +4,7 @@
         <div class="tms-body">
             <div scrollbar="scrollbar-macosx">
                 <div class="ui list space">
-                    <template repeat.for="space of spaces">
+                    <template repeat.for="space of spaces | sort:'name'">
                         <div class="item" show.bind="!space._hidden">
                             <i click.delegate="spaceToggleHandler(space)" class="angle ${space.open ? 'down' : 'right'} link icon"></i>
                             <div class="content">
@@ -16,7 +16,7 @@
                                     ${space.name}
                                 </span>
                                 <div show.bind="space.open" class="ui bulleted list">
-                                    <div repeat.for="item of space.blogs" show.bind="!item._hidden" class="item ${item.id == blog.id ? 'active' : ''}">
+                                    <div repeat.for="item of space.blogs | sort:'title'" show.bind="!item._hidden" class="item ${item.id == blog.id ? 'active' : ''}">
                                         <a title="${item.title}" href="#/blog/${item.id}">
                                             <i class="icons">
                                                 <i class="file outline icon"></i>
@@ -41,7 +41,7 @@
                     </template>
                 </div>
                 <div class="ui bulleted list no-space">
-                    <div repeat.for="item of noSpaceBlogs" show.bind="!item._hidden" class="item ${item.id == blog.id ? 'active' : ''}">
+                    <div repeat.for="item of noSpaceBlogs | sort:'title'" show.bind="!item._hidden" class="item ${item.id == blog.id ? 'active' : ''}">
                         <a title="${item.title}" href="#/blog/${item.id}">
                             <i class="icons">
                                 <i class="file outline icon"></i>

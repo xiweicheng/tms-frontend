@@ -269,4 +269,10 @@ export class EmBlogContent {
     authHandler() {
         this.blogSpaceAuthVm.show('blog', this.blog);
     }
+
+    copyHandler() {
+        if (!nsCtx.isModaalOpening) {
+            ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'copy', id: this.blog.id });
+        }
+    }
 }
