@@ -34,6 +34,9 @@ export class EmBlogSpaceUpdate {
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 toastr.success('博文空间更新成功!');
+                if (!data.data.space) {
+                    data.data.space = null; // 确保_.extend(oldBlog, blog)更新空间属性
+                }
                 ea.publish(nsCons.EVENT_BLOG_CHANGED, {
                     action: 'updated',
                     blog: data.data
@@ -48,7 +51,7 @@ export class EmBlogSpaceUpdate {
     initSpacesHandler(last) {
         if (last) {
             _.defer(() => {
-                $(this.spacesRef).dropdown('clear').dropdown('set selected', this.blog.space ?  this.blog.space.id + '' : '');
+                $(this.spacesRef).dropdown('clear').dropdown('set selected', this.blog.space ? this.blog.space.id + '' : '');
             });
         }
     }

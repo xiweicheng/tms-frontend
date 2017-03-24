@@ -8272,6 +8272,9 @@ define('resources/elements/em-blog-space-update',['exports', 'aurelia-framework'
             }, function (data, textStatus, xhr) {
                 if (data.success) {
                     toastr.success('博文空间更新成功!');
+                    if (!data.data.space) {
+                        data.data.space = null;
+                    }
                     ea.publish(nsCons.EVENT_BLOG_CHANGED, {
                         action: 'updated',
                         blog: data.data
