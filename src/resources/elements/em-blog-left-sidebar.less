@@ -72,6 +72,9 @@
                             // box-shadow: 0px 0px 2px -1px #5791cb;
                             background-color: rgba(232, 224, 224, 0.5);
                         }
+                        &.aurelia-hide {
+                            display: none!important;
+                        }
                     }
                 }
             }
@@ -118,6 +121,21 @@
                 border: none;
                 border-radius: 0;
                 background-color: #e8e0e0;
+                > .item {
+                    &.tms-search {
+                        position: relative;
+                        height: 40px;
+                        max-width: 207px;
+                        &:before {
+                            width: 0;
+                        }
+                        > .remove.icon {
+                            position: absolute;
+                            right: 5px;
+                            top: 13px;
+                        }
+                    }
+                }
             }
         }
     }

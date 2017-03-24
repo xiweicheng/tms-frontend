@@ -5,7 +5,7 @@
             <div scrollbar="scrollbar-macosx">
                 <div class="ui list space">
                     <template repeat.for="space of spaces">
-                        <div class="item">
+                        <div class="item" show.bind="!space._hidden">
                             <i click.delegate="spaceToggleHandler(space)" class="angle ${space.open ? 'down' : 'right'} link icon"></i>
                             <div class="content">
                                 <span style="cursor: pointer;" click.delegate="spaceToggleHandler(space)">
@@ -16,7 +16,7 @@
                                     ${space.name}
                                 </span>
                                 <div show.bind="space.open" class="ui bulleted list">
-                                    <div repeat.for="item of space.blogs" class="item ${item.id == blog.id ? 'active' : ''}">
+                                    <div repeat.for="item of space.blogs" show.bind="!item._hidden" class="item ${item.id == blog.id ? 'active' : ''}">
                                         <a title="${item.title}" href="#/blog/${item.id}">
                                             <i class="icons">
                                                 <i class="file outline icon"></i>
@@ -41,7 +41,7 @@
                     </template>
                 </div>
                 <div class="ui bulleted list no-space">
-                    <div repeat.for="item of noSpaceBlogs" class="item ${item.id == blog.id ? 'active' : ''}">
+                    <div repeat.for="item of noSpaceBlogs" show.bind="!item._hidden" class="item ${item.id == blog.id ? 'active' : ''}">
                         <a title="${item.title}" href="#/blog/${item.id}">
                             <i class="icons">
                                 <i class="file outline icon"></i>
@@ -55,6 +55,13 @@
         <div class="tms-footer">
             <div class="ui icon menu">
                 <em-blog-space-create></em-blog-space-create>
+                <div class="item tms-search">
+                    <div class="ui transparent left icon input">
+                        <input keyup.trigger="filterKeyupHandler($event)" value.bind="filter" type="text" placeholder="过滤查找...">
+                        <i class="search icon"></i>
+                    </div>
+                    <i click.delegate="clearFilterHandler()" class="remove link icon ${!filter ? 'tms-hidden' : ''}"></i>
+                </div>
                 <div class="right menu">
                     <div class="ui dropdown icon item" ui-dropdown>
                         <i class="content icon"></i>

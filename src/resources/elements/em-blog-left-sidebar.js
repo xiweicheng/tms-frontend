@@ -11,6 +11,8 @@ export class EmBlogLeftSidebar {
     loginUser = nsCtx.loginUser;
     isSuper = nsCtx.isSuper;
 
+    filter = ''; // 过滤查找条件
+
     /**
      * 构造函数
      */
@@ -39,6 +41,8 @@ export class EmBlogLeftSidebar {
         this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR, (payload) => {
             this.isHide = payload;
         });
+
+        this._doFilerDebounce = _.debounce(() => this._doFiler(), 120, { leading: true });
     }
 
     /**
@@ -140,5 +144,43 @@ export class EmBlogLeftSidebar {
 
     authSpaceHandler(space) {
         this.blogSpaceAuthVm.show('space', space);
+    }
+
+    clearFilterHandler() {
+        this.filter = '';
+        this._doFilerDebounce();
+    }
+
+    filterKeyupHandler(event) {
+        this._doFilerDebounce();
+    }
+
+    _doFiler() {
+        _.each(this.blogs, b => {
+            if (!_.includes(_.toLower(b.title), _.toLower(this.filter))) {
+                b._hidden = true;
+            } else {
+                b._hidden = false;
+            }
+        });
+
+        _.each(this.spaces, s => {
+            if (!_.some(s.blogs, b => !b._hidden)) {
+                s._hidden = true;
+            } else {
+                s._hidden = false;
+                s.open = true;
+            }
+        });
+
+        if (!this.filter) {
+            _.each(this.spaces, s => {
+                if (_.find(s.blogs, { id: +nsCtx.blogId })) {
+                    s.open = true;
+                } else {
+                    s.open = false;
+                }
+            });
+        }
     }
 }
