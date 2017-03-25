@@ -141,6 +141,10 @@ export class EmBlogContent {
         if (!nsCtx.blogId || isNaN(new Number(nsCtx.blogId))) {
             return;
         }
+
+        this.getStow();
+        this.getFollower();
+
         return $.get('/admin/blog/get', {
             id: nsCtx.blogId
         }, (data) => {
@@ -150,6 +154,30 @@ export class EmBlogContent {
                 _.defer(() => this._dir());
             } else {
                 toastr.error(data.data, "获取博文失败!");
+            }
+        });
+    }
+
+    getStow() {
+        $.get('/admin/blog/stow/get', {
+            id: nsCtx.blogId
+        }, (data) => {
+            if (data.success) {
+                this.blogStow = data.data;
+            } else {
+                toastr.error(data.data);
+            }
+        });
+    }
+
+    getFollower() {
+        $.get('/admin/blog/follower/get', {
+            id: nsCtx.blogId
+        }, (data) => {
+            if (data.success) {
+                this.blogFollower = data.data;
+            } else {
+                toastr.error(data.data);
             }
         });
     }
@@ -274,5 +302,61 @@ export class EmBlogContent {
         if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'copy', id: this.blog.id });
         }
+    }
+
+    stowHandler() {
+        if (!this.blogStow) {
+            $.post('/admin/blog/stow/add', {
+                id: this.blog.id
+            }, (data, textStatus, xhr) => {
+                if (data.success) {
+                    this.blogStow = data.data;
+                    ea.publish(nsCons.EVENT_BLOG_STOW_CHANGED, { action: 'add', data: this.blogStow });
+                    toastr.success('博文收藏成功!');
+                } else {
+                    toastr.error(data.data);
+                }
+            });
+        } else {
+            $.post('/admin/blog/stow/remove', {
+                sid: this.blogStow.id
+            }, (data, textStatus, xhr) => {
+                if (data.success) {
+                    ea.publish(nsCons.EVENT_BLOG_STOW_CHANGED, { action: 'remove', data: this.blogStow });
+                    this.blogStow = null;
+                    toastr.success('删除博文收藏成功!');
+                } else {
+                    toastr.error(data.data);
+                }
+            });
+        }
+
+    }
+
+    followerHandler() {
+        if (!this.blogFollower) {
+            $.post('/admin/blog/follower/add', {
+                id: this.blog.id
+            }, (data, textStatus, xhr) => {
+                if (data.success) {
+                    this.blogFollower = data.data;
+                    toastr.success('博文关注成功!');
+                } else {
+                    toastr.error(data.data);
+                }
+            });
+        } else {
+            $.post('/admin/blog/follower/remove', {
+                fid: this.blogFollower.id
+            }, (data, textStatus, xhr) => {
+                if (data.success) {
+                    this.blogFollower = null;
+                    toastr.success('取消博文关注成功!');
+                } else {
+                    toastr.error(data.data);
+                }
+            });
+        }
+
     }
 }

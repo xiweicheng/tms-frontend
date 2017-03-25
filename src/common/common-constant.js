@@ -41,6 +41,7 @@ window.nsCons = {
     EVENT_BLOG_DELETED: 'event_blog_deleted',
     EVENT_BLOG_TOGGLE_SIDEBAR: 'event_blog_toggle_sidebar',
     EVENT_BLOG_VIEW_CHANGED: 'event_blog_view_changed',
+    EVENT_BLOG_STOW_CHANGED: 'event_blog_stow_changed',
     EVENT_BLOG_SAVE: 'event_blog_save',
     EVENT_BLOG_HISTORY_CHANGED: 'event_blog_history_changed',
     EVENT_BLOG_COMMENT_POPUP_SHOW: 'event_blog_comment_popup_show',

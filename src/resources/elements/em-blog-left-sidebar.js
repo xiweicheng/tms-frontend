@@ -13,6 +13,11 @@ export class EmBlogLeftSidebar {
 
     filter = ''; // 过滤查找条件
 
+    spaceStow = {
+        name: '我的收藏',
+        open: false
+    };
+
     /**
      * 构造函数
      */
@@ -41,6 +46,9 @@ export class EmBlogLeftSidebar {
         this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR, (payload) => {
             this.isHide = payload;
         });
+        this.subscribe5 = ea.subscribe(nsCons.EVENT_BLOG_STOW_CHANGED, (payload) => {
+            this._refreshBlogStows();
+        });
 
         this._doFilerDebounce = _.debounce(() => this._doFiler(), 120, { leading: true });
     }
@@ -53,6 +61,7 @@ export class EmBlogLeftSidebar {
         this.subscribe2.dispose();
         this.subscribe3.dispose();
         this.subscribe4.dispose();
+        this.subscribe5.dispose();
     }
 
     /**
@@ -62,6 +71,7 @@ export class EmBlogLeftSidebar {
 
         this.refresh();
         this._refreshSysLinks();
+        this._refreshBlogStows();
     }
 
 
@@ -71,6 +81,16 @@ export class EmBlogLeftSidebar {
                 this.sysLinks = data.data;
             } else {
                 this.sysLinks = [];
+            }
+        });
+    }
+
+    _refreshBlogStows() {
+        $.get('/admin/blog/stow/listMy', (data) => {
+            if (data.success) {
+                this.blogStows = data.data;
+            } else {
+                toastr.error(data.data);
             }
         });
     }
@@ -173,6 +193,20 @@ export class EmBlogLeftSidebar {
             }
         });
 
+        _.each(this.blogStows, bs => {
+            if (!_.includes(_.toLower(bs.blog.title), _.toLower(this.filter))) {
+                bs._hidden = true;
+            } else {
+                bs._hidden = false;
+            }
+        });
+
+        if (!_.some(this.blogStows, bs => !bs._hidden)) {
+            this.spaceStow.open = false;
+        } else {
+            this.spaceStow.open = true;
+        }
+
         if (!this.filter) {
             _.each(this.spaces, s => {
                 if (_.find(s.blogs, { id: +nsCtx.blogId })) {
@@ -181,6 +215,8 @@ export class EmBlogLeftSidebar {
                     s.open = false;
                 }
             });
+            this.spaceStow.open = false;
         }
     }
+
 }

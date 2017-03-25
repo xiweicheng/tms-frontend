@@ -4,6 +4,27 @@
         <div class="tms-body">
             <div scrollbar="scrollbar-macosx">
                 <div class="ui list space">
+                    <div class="item">
+                        <i click.delegate="spaceToggleHandler(spaceStow)" class="angle ${spaceStow.open ? 'down' : 'right'} link icon"></i>
+                        <div class="content">
+                            <span style="cursor: pointer; position: relative; left: -3px;" click.delegate="spaceToggleHandler(spaceStow)">
+                                    <i class="empty star icon" style="margin-right: 0;"></i>
+                                    ${spaceStow.name}
+                                </span>
+                            <div show.bind="spaceStow.open" class="ui bulleted list">
+                                <template repeat.for="item of blogStows">
+                                    <div show.bind="!item._hidden" class="item ${item.blog.id == $parent.blog.id ? 'active' : ''}">
+                                        <a title="${item.blog.title}" href="#/blog/${item.blog.id}">
+                                            <i class="icons">
+                                                <i class="file outline icon"></i>
+                                            <i show.bind="item.blog.privated" class="corner lock icon"></i>
+                                            </i>
+                                            ${item.blog.title}</a>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
                     <template repeat.for="space of spaces | sort:'name'">
                         <div class="item" show.bind="!space._hidden">
                             <i click.delegate="spaceToggleHandler(space)" class="angle ${space.open ? 'down' : 'right'} link icon"></i>
