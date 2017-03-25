@@ -616,4 +616,29 @@ export class EmBlogComment {
         });
     }
 
+    isZanDone(comment) {
+        let voteZan = comment.voteZan;
+        if (!voteZan) {
+            return false;
+        }
+
+        return voteZan.split(',').includes(this.loginUser.username);
+    }
+
+    rateHandler(item) {
+        $.post('/admin/blog/comment/vote', {
+            cid: item.id,
+            url: utils.getBasePath(),
+            contentHtml: utils.md2html(item.content),
+            type: this.isZanDone(item) ? 'Cai' : 'Zan'
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                _.extend(item, data.data);
+            } else {
+                toastr.error(data.data, '博文投票失败!');
+            }
+        });
+
+    }
+
 }

@@ -11,6 +11,9 @@
                     <a class="author" data-value=${item.creator.username}>${item.creator.name}</a>
                     <div class="metadata">
                         <span class="date" title="${item.createDate | date}">${item.createDate | timeago}</span>
+                        <div class="rating">
+                            <i click.delegate="rateHandler(item)" style="cursor: pointer;" title="赞一下" class="cbutton cbutton--effect-novak thumbs ${item.voteZan && item.voteZan.split(',').includes(loginUser.username) ? '' : 'outline'} up icon"></i> <span title="${item.voteZan}">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>
+                        </div>
                     </div>
                     <div swipebox show.bind="!item.isEditing" ref="mkbodyRef" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
                     <div class="textcomplete-container" show.bind="item.isEditing">
