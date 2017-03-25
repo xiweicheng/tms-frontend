@@ -62,7 +62,7 @@
         <div class="header">
             <h1 class="ui header">${blog.title}
                 <div class="sub header">
-                    <i class="wait icon"></i> <a class="author" data-value="${blog.creator.username}">${blog.creator.username == loginUser.username ? '自己' : blog.creator.name}</a> 创建于 <span title="${blog.createDate | date}">${blog.createDate | timeago}</span>, <a class="author" data-value="${blog.updater.username}">${blog.updater.username == loginUser.username ? '自己' : blog.updater.name}</a> 最后修改于 <span title="${blog.updateDate | date}">${blog.updateDate | timeago}</span>
+                    <i class="wait icon"></i> <a class="author" data-value="${blog.creator.username}">${blog.creator.username == loginUser.username ? '自己' : blog.creator.name}</a> 创建于 <span data-timeago="${blog.createDate}" title="${blog.createDate | date}">${blog.createDate | timeago}</span>, <a class="author" data-value="${blog.updater.username}">${blog.updater.username == loginUser.username ? '自己' : blog.updater.name}</a> 最后修改于 <span data-timeago="${blog.updateDate}" title="${blog.updateDate | date}">${blog.updateDate | timeago}</span>
                     <span class="readCnt" show.bind="blog.readCnt"><i class="unhide icon"></i>浏览: <a>${blog.readCnt}</a> 次</span>
                 </div>
             </h1>

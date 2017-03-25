@@ -1,16 +1,16 @@
 <template>
     <require from="./em-blog-comment.css"></require>
     <div class="em-blog-comment">
-        <div class="ui minimal comments">
+        <div class="ui minimal comments" ref="blogCommentsRef">
             <h3 title="快速评论 (r)" class="ui dividing header">${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>
             <div repeat.for="item of comments" class="comment" data-id="${item.id}">
-                <a class="avatar">
-                    <em-user-avatar user.bind="item.creator"></em-user-avatar>
-                </a>
+                <!-- <a class="avatar"> -->
+                <em-user-avatar user.bind="item.creator"></em-user-avatar>
+                <!-- </a> -->
                 <div class="content">
                     <a class="author" data-value=${item.creator.username}>${item.creator.name}</a>
                     <div class="metadata">
-                        <span class="date" title="${item.createDate | date}">${item.createDate | timeago}</span>
+                        <span class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</span>
                         <div class="rating">
                             <i click.delegate="rateHandler(item)" style="cursor: pointer;" title="赞一下" class="cbutton cbutton--effect-novak thumbs ${item.voteZan && item.voteZan.split(',').includes(loginUser.username) ? '' : 'outline'} up icon"></i> <span title="${item.voteZan}">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>
                         </div>

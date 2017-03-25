@@ -75,18 +75,54 @@ export class EmBlogComment {
             }
         });
 
+        $('.em-blog-comment .comments').on('click', '.comment', (event) => {
+            this.focusedComment = $(event.currentTarget);
+        });
+
         this.initHotkeys();
     }
 
     initHotkeys() {
         $(document).bind('keydown', 'r', (evt) => { // reply
             evt.preventDefault();
-            $('.em-blog-content').scrollTo(`max`, 200, {
+            $('.em-blog-content').scrollTo(`max`, 120, {
                 offset: 0
             });
             this.simplemde.codemirror.focus();
+        }).bind('keydown', 'alt+up', (evt) => { // comment pre
+            evt.preventDefault();
+            $('.em-blog-content').scrollTo(this.getScrollTargetComment(true), 120, {
+                offset: 0
+            });
+        }).bind('keydown', 'alt+down', (evt) => { // comment next
+            evt.preventDefault();
+            $('.em-blog-content').scrollTo(this.getScrollTargetComment(), 120, {
+                offset: 0
+            });
         });
 
+    }
+
+    getScrollTargetComment(isPrev) {
+        if (isPrev) {
+            if (this.focusedComment && this.focusedComment.size() === 1) {
+                let $avatar = this.focusedComment.find('> a.em-user-avatar');
+                if (utils.isElementInViewport($avatar)) {
+                    let prev = this.focusedComment.prev('.comment');
+                    (prev.size() === 1) && (this.focusedComment = prev);
+                }
+            } else {
+                this.focusedComment = $(this.blogCommentsRef).children('.comment:first');
+            }
+        } else {
+            if (this.focusedComment && this.focusedComment.size() === 1) {
+                let next = this.focusedComment.next('.comment');
+                (next.size() === 1) && (this.focusedComment = next);
+            } else {
+                this.focusedComment = $(this.blogCommentsRef).children('.comment:last');
+            }
+        }
+        return this.focusedComment;
     }
 
     _init() {

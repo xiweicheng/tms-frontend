@@ -1,6 +1,6 @@
 <template>
     <require from="./blog.css"></require>
-    <div class="tms-blog ${rightSidebarShow ? 'right-sidebar-show' : ''}">
+    <div ref="blogContainerRef" class="tms-blog ${rightSidebarShow ? 'right-sidebar-show' : ''}">
         <em-blog-top-menu></em-blog-top-menu>
         <em-blog-left-sidebar></em-blog-left-sidebar>
         <em-blog-content></em-blog-content>

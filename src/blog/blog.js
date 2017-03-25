@@ -27,12 +27,22 @@ export class Blog {
     unbind() {
         this.subscribe.dispose();
         this.subscribe1.dispose();
+
+        clearInterval(this.timeagoTimer);
     }
 
     /**
      * 当视图被附加到DOM中时被调用
      */
     attached() {
+
+        let tg = timeago();
+        this.timeagoTimer = setInterval(() => {
+            $(this.blogContainerRef).find('[data-timeago]').each((index, el) => {
+                $(el).text(tg.format($(el).attr('data-timeago'), 'zh_CN'));
+            });
+        }, 5000);
+
         // 用户信息popup
         $('.tms-blog').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
             event.preventDefault();
