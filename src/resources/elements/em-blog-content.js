@@ -98,6 +98,17 @@ export class EmBlogContent {
             }
         });
 
+        $('.em-blog-content').scroll(_.throttle((event) => {
+            try {
+                let sHeight = $('.em-blog-content')[0].scrollHeight;
+                let sTop = $('.em-blog-content')[0].scrollTop;
+
+                let scale = sTop * 1.0 / (sHeight - $('.em-blog-content').outerHeight());
+                this.progressWidth = $('.em-blog-content').outerWidth() * scale;
+            } catch (err) { this.progressWidth = 0; }
+
+        }, 120));
+
         this.initHotkeys();
     }
 
@@ -138,6 +149,7 @@ export class EmBlogContent {
     }
 
     getBlog() {
+        this.progressWidth = 0;
         if (!nsCtx.blogId || isNaN(new Number(nsCtx.blogId))) {
             return;
         }
