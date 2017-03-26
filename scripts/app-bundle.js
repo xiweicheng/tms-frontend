@@ -8949,12 +8949,14 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
                 $('#blog-title-input').keyup(function (e) {
                     var $t = $(e.currentTarget);
 
-                    if (e.keyCode == 13) {
+                    if (!e.shiftKey && e.keyCode == 13) {
                         if (_this2.simplemde.value()) {
                             _this2.save(e, true);
                         } else {
                             _this2.simplemde.codemirror.focus();
                         }
+                    } else if (e.shiftKey && e.keyCode == 13) {
+                        _this2.simplemde.codemirror.focus();
                     } else if (e.keyCode == 27) {
                         $t.val('');
                     }

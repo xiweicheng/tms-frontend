@@ -55,13 +55,15 @@ export class EmBlogWrite {
             $('#blog-title-input').keyup((e) => {
                 let $t = $(e.currentTarget);
 
-                if (e.keyCode == 13) { // Enter
+                if (!e.shiftKey && e.keyCode == 13) { // Enter
                     if (this.simplemde.value()) {
                         this.save(e, true);
                     } else {
                         this.simplemde.codemirror.focus();
                     }
 
+                } else if (e.shiftKey && e.keyCode == 13) { // Esc
+                    this.simplemde.codemirror.focus();
                 } else if (e.keyCode == 27) { // Esc
                     $t.val('');
                 }
