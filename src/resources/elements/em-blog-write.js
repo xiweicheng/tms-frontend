@@ -50,6 +50,23 @@ export class EmBlogWrite {
             }
 
         });
+
+        this.blogTitleInputKeyupInit = _.once(() => {
+            $('#blog-title-input').keyup((e) => {
+                let $t = $(e.currentTarget);
+
+                if (e.keyCode == 13) { // Enter
+                    if (this.simplemde.value()) {
+                        this.save(e, true);
+                    } else {
+                        this.simplemde.codemirror.focus();
+                    }
+
+                } else if (e.keyCode == 27) { // Esc
+                    $t.val('');
+                }
+            });
+        });
     }
 
     /**
@@ -289,6 +306,8 @@ export class EmBlogWrite {
         this.initUploadDropzone($('.editor-toolbar .fa.fa-upload', '#txt-blog-write-wrapper'), () => {
             return this.$chatMsgInputRef
         }, true);
+
+        this.blogTitleInputKeyupInit();
 
     }
 

@@ -8942,6 +8942,22 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
                     $('#blog-save-btn').attr('title', 'ctrl+click更新后关闭窗口');
                 }
             });
+
+            this.blogTitleInputKeyupInit = _.once(function () {
+                $('#blog-title-input').keyup(function (e) {
+                    var $t = $(e.currentTarget);
+
+                    if (e.keyCode == 13) {
+                        if (_this2.simplemde.value()) {
+                            _this2.save(e, true);
+                        } else {
+                            _this2.simplemde.codemirror.focus();
+                        }
+                    } else if (e.keyCode == 27) {
+                        $t.val('');
+                    }
+                });
+            });
         }
 
         EmBlogWrite.prototype.unbind = function unbind() {
@@ -9179,6 +9195,8 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
             this.initUploadDropzone($('.editor-toolbar .fa.fa-upload', '#txt-blog-write-wrapper'), function () {
                 return _this4.$chatMsgInputRef;
             }, true);
+
+            this.blogTitleInputKeyupInit();
         };
 
         EmBlogWrite.prototype.close = function close() {
