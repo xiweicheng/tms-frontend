@@ -113,33 +113,35 @@ export class EmBlogContent {
     }
 
     initHotkeys() {
-        $(document).bind('keyup', 'e', (evt) => { // edit
-            evt.preventDefault();
-            if (this.blog.openEdit || this.isSuper || this.blog.creator.username == this.loginUser.username) {
-                this.throttleEditHandler();
-            }
-        }).bind('keyup', 'c', (evt) => { // create
-            evt.preventDefault();
-            this.throttleCreateHandler();
-        }).bind('keydown', 'd', (evt) => { // dir
-            evt.preventDefault();
-            if (this.dir) {
-                this.catalogHandler();
-            }
-        }).bind('keydown', 's', (evt) => { // share
-            evt.preventDefault();
-            this.blogShareVm.show();
-        }).bind('keydown', 't', (event) => { // scroll top
-            event.preventDefault();
-            $('.em-blog-content').scrollTo(0, 200, {
-                offset: 0
+        try {
+            $(document).bind('keyup', 'e', (evt) => { // edit
+                evt.preventDefault();
+                if (this.blog.openEdit || this.isSuper || this.blog.creator.username == this.loginUser.username) {
+                    this.throttleEditHandler();
+                }
+            }).bind('keyup', 'c', (evt) => { // create
+                evt.preventDefault();
+                this.throttleCreateHandler();
+            }).bind('keydown', 'd', (evt) => { // dir
+                evt.preventDefault();
+                if (this.dir) {
+                    this.catalogHandler();
+                }
+            }).bind('keydown', 's', (evt) => { // share
+                evt.preventDefault();
+                this.blogShareVm.show();
+            }).bind('keydown', 't', (event) => { // scroll top
+                event.preventDefault();
+                $('.em-blog-content').scrollTo(0, 200, {
+                    offset: 0
+                });
+            }).bind('keydown', 'b', (event) => { // scroll bottom
+                event.preventDefault();
+                $('.em-blog-content').scrollTo(`max`, 200, {
+                    offset: 0
+                });
             });
-        }).bind('keydown', 'b', (event) => { // scroll bottom
-            event.preventDefault();
-            $('.em-blog-content').scrollTo(`max`, 200, {
-                offset: 0
-            });
-        });
+        } catch (err) { console.log(err); }
 
     }
 

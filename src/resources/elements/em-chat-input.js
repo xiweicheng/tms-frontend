@@ -181,7 +181,7 @@ export class EmChatInput {
             status: false,
             autofocus: true,
             toolbar: false,
-            forceSync: true,
+            // forceSync: true,
             autoDownloadFontAwesome: false,
             insertTexts: {
                 table: ["", "\n\n| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n\n"],

@@ -140,9 +140,9 @@ export class EmBlogWrite {
             element: $('#txt-blog-write')[0],
             spellChecker: false,
             // status: false,
-            autofocus: true,
+            // autofocus: true,
             // toolbar: false,
-            forceSync: true,
+            // forceSync: true,
             // autoDownloadFontAwesome: false,
             toolbar: [{
                     name: "bold",
@@ -295,6 +295,8 @@ export class EmBlogWrite {
         } else {
             this._writeInit();
         }
+
+        $('#blog-title-input').focus();
 
         this.initPaste();
         this.initTextcomplete();

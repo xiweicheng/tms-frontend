@@ -132,7 +132,7 @@ export class EmBlogComment {
             status: false,
             // autofocus: true,
             // toolbar: false,
-            forceSync: true,
+            // forceSync: true,
             // autoDownloadFontAwesome: false,
             toolbar: [{
                     name: "bold",

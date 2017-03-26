@@ -6543,8 +6543,6 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
                 spellChecker: false,
                 status: false,
 
-                forceSync: true,
-
                 toolbar: [{
                     name: "bold",
                     action: _simplemde2.default.toggleBold,
@@ -7199,33 +7197,37 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
         EmBlogContent.prototype.initHotkeys = function initHotkeys() {
             var _this3 = this;
 
-            $(document).bind('keyup', 'e', function (evt) {
-                evt.preventDefault();
-                if (_this3.blog.openEdit || _this3.isSuper || _this3.blog.creator.username == _this3.loginUser.username) {
-                    _this3.throttleEditHandler();
-                }
-            }).bind('keyup', 'c', function (evt) {
-                evt.preventDefault();
-                _this3.throttleCreateHandler();
-            }).bind('keydown', 'd', function (evt) {
-                evt.preventDefault();
-                if (_this3.dir) {
-                    _this3.catalogHandler();
-                }
-            }).bind('keydown', 's', function (evt) {
-                evt.preventDefault();
-                _this3.blogShareVm.show();
-            }).bind('keydown', 't', function (event) {
-                event.preventDefault();
-                $('.em-blog-content').scrollTo(0, 200, {
-                    offset: 0
+            try {
+                $(document).bind('keyup', 'e', function (evt) {
+                    evt.preventDefault();
+                    if (_this3.blog.openEdit || _this3.isSuper || _this3.blog.creator.username == _this3.loginUser.username) {
+                        _this3.throttleEditHandler();
+                    }
+                }).bind('keyup', 'c', function (evt) {
+                    evt.preventDefault();
+                    _this3.throttleCreateHandler();
+                }).bind('keydown', 'd', function (evt) {
+                    evt.preventDefault();
+                    if (_this3.dir) {
+                        _this3.catalogHandler();
+                    }
+                }).bind('keydown', 's', function (evt) {
+                    evt.preventDefault();
+                    _this3.blogShareVm.show();
+                }).bind('keydown', 't', function (event) {
+                    event.preventDefault();
+                    $('.em-blog-content').scrollTo(0, 200, {
+                        offset: 0
+                    });
+                }).bind('keydown', 'b', function (event) {
+                    event.preventDefault();
+                    $('.em-blog-content').scrollTo('max', 200, {
+                        offset: 0
+                    });
                 });
-            }).bind('keydown', 'b', function (event) {
-                event.preventDefault();
-                $('.em-blog-content').scrollTo('max', 200, {
-                    offset: 0
-                });
-            });
+            } catch (err) {
+                console.log(err);
+            }
         };
 
         EmBlogContent.prototype._dir = function _dir() {
@@ -9031,10 +9033,6 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
                 element: $('#txt-blog-write')[0],
                 spellChecker: false,
 
-                autofocus: true,
-
-                forceSync: true,
-
                 toolbar: [{
                     name: "bold",
                     action: _simplemde2.default.toggleBold,
@@ -9184,6 +9182,8 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
             } else {
                 this._writeInit();
             }
+
+            $('#blog-title-input').focus();
 
             this.initPaste();
             this.initTextcomplete();
@@ -11001,7 +11001,7 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
                 status: false,
                 autofocus: true,
                 toolbar: false,
-                forceSync: true,
+
                 autoDownloadFontAwesome: false,
                 insertTexts: {
                     table: ["", "\n\n| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n\n"]
