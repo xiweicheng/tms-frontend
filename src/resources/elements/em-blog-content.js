@@ -130,6 +130,9 @@ export class EmBlogContent {
             }).bind('keydown', 's', (evt) => { // share
                 evt.preventDefault();
                 this.blogShareVm.show();
+            }).bind('keydown', 'f', (evt) => { // follow
+                evt.preventDefault();
+                this.followerHandler();
             }).bind('keydown', 't', (event) => { // scroll top
                 event.preventDefault();
                 $('.em-blog-content').scrollTo(0, 200, {

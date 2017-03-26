@@ -16,7 +16,7 @@
                 <a if.bind="blog.openEdit || isSuper || blog.creator.username == loginUser.username" title="博文编辑 (e | ctrl+dblclick)" class="ui basic mini button" click.delegate="editHandler()">
                     <i class="large icon edit"></i> 编辑
                 </a>
-                <a title="${!blogFollower ? '关注' : '取消关注'}博文更新" class="ui basic mini button" click.delegate="followerHandler()">
+                <a title="${!blogFollower ? '关注' : '取消关注'}博文更新 (f)" class="ui basic mini button" click.delegate="followerHandler()">
                     <i class="${!blogFollower ? 'unhide' : 'hide'} large icon"></i> ${!blogFollower ? '关注' : '取消'}
                 </a>
                 <em-blog-share view-model.ref="blogShareVm" blog.bind="blog"></em-blog-share>
