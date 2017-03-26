@@ -4,11 +4,11 @@
         <div class="tms-body">
             <div scrollbar="scrollbar-macosx">
                 <div class="ui list space">
-                    <div class="item">
+                    <div class="item" style="padding-top: 0.214286em;">
                         <i click.delegate="spaceToggleHandler(spaceStow)" class="angle ${spaceStow.open ? 'down' : 'right'} link icon"></i>
                         <div class="content">
-                            <span style="cursor: pointer; position: relative; left: -3px;" click.delegate="spaceToggleHandler(spaceStow)">
-                                    <i class="empty star icon" style="margin-right: 0;"></i>
+                            <span style="cursor: pointer;" click.delegate="spaceToggleHandler(spaceStow)">
+                                    <i class="empty star icon" style="margin-right: 0; position: relative; left: -2px;"></i>
                                     ${spaceStow.name}
                                 </span>
                             <div show.bind="spaceStow.open" class="ui bulleted list">
