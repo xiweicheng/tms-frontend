@@ -107,7 +107,7 @@ export class EmBlogContent {
                 this.progressWidth = $('.em-blog-content').outerWidth() * scale;
             } catch (err) { this.progressWidth = 0; }
 
-        }, 120));
+        }, 10));
 
         this.initHotkeys();
     }
