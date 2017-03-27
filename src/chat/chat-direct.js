@@ -240,6 +240,7 @@ export class ChatDirect {
     }
 
     _reset() {
+        this.progressWidth = 0;
         this.chats = null;
         this.first = true; // 第一页
         this.last = true; // 最后一页
@@ -593,6 +594,17 @@ export class ChatDirect {
                 );
             }
         });
+
+        $('.tms-comments-container.scroll-content').scroll(_.throttle((event) => {
+            try {
+                let sHeight = $(event.currentTarget)[0].scrollHeight;
+                let sTop = $(event.currentTarget)[0].scrollTop;
+
+                let scale = sTop * 1.0 / (sHeight - $(event.currentTarget).outerHeight());
+                this.progressWidth = $(event.currentTarget).outerWidth() * scale;
+            } catch (err) { this.progressWidth = 0; }
+
+        }, 10));
 
     }
 
