@@ -4,6 +4,7 @@ import chatService from 'chat/chat-service';
 export class Blog {
 
     rightSidebarShow = false;
+    isHide = true;
 
     /**
      * 构造函数
@@ -19,6 +20,9 @@ export class Blog {
                 this.rightSidebarShow = !this.rightSidebarShow;
             }
         });
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR, (payload) => {
+            this.isHide = payload;
+        });
     }
 
     /**
@@ -27,6 +31,7 @@ export class Blog {
     unbind() {
         this.subscribe.dispose();
         this.subscribe1.dispose();
+        this.subscribe2.dispose();
 
         clearInterval(this.timeagoTimer);
     }

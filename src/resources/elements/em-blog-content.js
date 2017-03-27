@@ -376,4 +376,8 @@ export class EmBlogContent {
         }
 
     }
+
+    dimmerHandler() {
+        ea.publish(nsCons.EVENT_BLOG_SWITCH, {});
+    }
 }
