@@ -14,8 +14,8 @@ export class Blog {
             this.routeConfig && this.routeConfig.navModel.setTitle(`${payload.title} | 博文 | TMS`);
         });
         this.subscribe1 = ea.subscribe(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, (payload) => {
-            if (payload && !_.isUndefined(payload.toggle)) {
-                this.rightSidebarShow = payload.toggle;
+            if (payload && !_.isUndefined(payload.isHide)) {
+                this.rightSidebarShow = !payload.isHide;
             } else {
                 this.rightSidebarShow = !this.rightSidebarShow;
             }

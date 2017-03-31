@@ -22,7 +22,7 @@ export class EmBlogContent {
         this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, (payload) => {
             this.getBlog();
             ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, {
-                toggle: false
+                isHide: true
             });
         });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_CHANGED, (payload) => {
@@ -83,7 +83,7 @@ export class EmBlogContent {
         $('.em-blog-right-sidebar').on('click', '.panel-blog-dir .wiki-dir-item', (event) => {
             event.preventDefault();
             if ($(window).width() <= 768) {
-                ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, { toggle: false });
+                ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, { isHide: true });
             }
             $('.em-blog-content').scrollTo(`#${$(event.currentTarget).attr('data-id')}`, 200, {
                 offset: 0
@@ -378,6 +378,7 @@ export class EmBlogContent {
     }
 
     dimmerHandler() {
-        ea.publish(nsCons.EVENT_BLOG_SWITCH, {});
+        ea.publish(nsCons.EVENT_BLOG_LEFT_SIDEBAR_TOGGLE, { isHide: true });
+        ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, { isHide: true });
     }
 }
