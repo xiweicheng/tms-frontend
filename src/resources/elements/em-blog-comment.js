@@ -373,12 +373,14 @@ export class EmBlogComment {
      * @return {[type]}         [description]
      */
     insertContent(content, mde) {
-        let cm = mde ? mde.codemirror : this.simplemde.codemirror;
-        var cursor = cm.getCursor();
-        if (cursor) {
-            cm.replaceRange(content, cursor, cursor);
-            cm.focus();
-        }
+        try {
+            let cm = mde ? mde.codemirror : this.simplemde.codemirror;
+            var cursor = cm.getCursor();
+            if (cursor) {
+                cm.replaceRange(content, cursor, cursor);
+                cm.focus();
+            }
+        } catch (err) { console.log(err); }
     }
 
     replyHandler(item) {
