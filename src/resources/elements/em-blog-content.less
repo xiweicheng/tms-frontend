@@ -1,7 +1,7 @@
 .em-blog-content {
     transition: width 0.15s ease-out 0s;
     .right-sidebar-show & {
-        width: e("calc(100vw - 600px)")!important;
+        width: e("calc(100% - 600px)")!important;
         @media only screen and (max-width: 767px) {
             width: 100%!important;
         }
@@ -14,8 +14,8 @@
     position: fixed;
     top: 55px;
     left: 300px;
-    width: e("calc(100vw - 300px)")!important;
-    height: e("calc(100vh - 55px)")!important;
+    width: e("calc(100% - 300px)")!important;
+    height: e("calc(100% - 55px)")!important;
     padding: 16px;
     overflow: auto;
     > .header {
@@ -115,7 +115,7 @@
     position: fixed;
     top: 55px;
     width: e("calc(100vw)")!important;
-    height: e("calc(100vh - 55px)")!important;
+    height: e("calc(100% - 55px)")!important;
 }
 
 @media only screen and (max-width: 767px) {
