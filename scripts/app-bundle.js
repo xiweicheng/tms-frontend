@@ -6927,7 +6927,7 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
                 if (payload.action == 'updated') {
                     _.extend(_this.blog, payload.blog);
                     _.defer(function () {
-                        return _this._dir();
+                        return _this.catalogHandler();
                     });
                 }
             });
@@ -7075,7 +7075,7 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
                     _this4.blog = data.data;
                     ea.publish(nsCons.EVENT_BLOG_VIEW_CHANGED, _this4.blog);
                     _.defer(function () {
-                        return _this4._dir();
+                        return _this4.catalogHandler();
                     });
                 } else {
                     toastr.error(data.data, "获取博文失败!");

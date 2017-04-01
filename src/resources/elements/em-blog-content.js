@@ -27,9 +27,8 @@ export class EmBlogContent {
         });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_CHANGED, (payload) => {
             if (payload.action == 'updated') {
-                // this.blog = payload.blog;
                 _.extend(this.blog, payload.blog);
-                _.defer(() => this._dir());
+                _.defer(() => this.catalogHandler());
             }
         });
 
@@ -168,7 +167,7 @@ export class EmBlogContent {
             if (data.success) {
                 this.blog = data.data;
                 ea.publish(nsCons.EVENT_BLOG_VIEW_CHANGED, this.blog);
-                _.defer(() => this._dir());
+                _.defer(() => this.catalogHandler());
             } else {
                 toastr.error(data.data, "获取博文失败!");
             }
