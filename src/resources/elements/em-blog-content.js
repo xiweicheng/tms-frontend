@@ -28,7 +28,7 @@ export class EmBlogContent {
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_CHANGED, (payload) => {
             if (payload.action == 'updated') {
                 _.extend(this.blog, payload.blog);
-                _.defer(() => this.catalogHandler());
+                _.defer(() => this.catalogHandler(true));
             }
         });
 
@@ -167,7 +167,7 @@ export class EmBlogContent {
             if (data.success) {
                 this.blog = data.data;
                 ea.publish(nsCons.EVENT_BLOG_VIEW_CHANGED, this.blog);
-                _.defer(() => this.catalogHandler());
+                _.defer(() => this.catalogHandler(true));
             } else {
                 toastr.error(data.data, "获取博文失败!");
             }
@@ -303,8 +303,9 @@ export class EmBlogContent {
         this.blogHistoryVm.show(this.blog);
     }
 
-    catalogHandler() {
+    catalogHandler(justRefresh = false) {
         ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, {
+            justRefresh: justRefresh,
             action: 'dir',
             dir: this._dir()
         });
