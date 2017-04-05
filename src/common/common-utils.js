@@ -546,10 +546,74 @@ export class CommonUtils {
     }
 
     isMail(mail) {
-        
+
         var emailRegex = /^([_a-z0-9-]+)(\.[_a-z0-9-]+)*@([a-z0-9-]+)(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/i;
 
         return emailRegex.test(mail);
+    }
+
+    // 浏览器OS判断正则表达式
+    regExpOS = {
+        ios: /(iPad|iPhone|iPod)/g,
+        mobileChrome: /(CriOS)/g,
+        mobile: /Mobile|iP(hone|od|ad)|Android|BlackBerry|IEMobile|Kindle|NetFront|Silk-Accelerated|(hpw|web)OS|Fennec|Minimo|Opera M(obi|ini)|Blazer|Dolfin|Dolphin|Skyfire|Zune/g,
+        cellphone: /iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|NetFront|Silk-Accelerated|(hpw|web)OS|Fennec|Minimo|Opera M(obi|ini)|Blazer|Dolfin|Dolphin|Skyfire|Zune/g
+    }
+
+    // 是否为IE
+    isIE() {
+        var
+            isIE11 = (!(window.ActiveXObject) && 'ActiveXObject' in window),
+            isIE = ('ActiveXObject' in window);
+        return (isIE11 || isIE);
+    }
+
+    // 是否为IE11
+    isIE11() {
+        return (!(window.ActiveXObject) && 'ActiveXObject' in window);
+    }
+
+    // 是否为IOS
+    isIOS() {
+        var
+            userAgent = navigator.userAgent,
+            isIOS = userAgent.match(this.regExpOS.ios),
+            isMobileChrome = userAgent.match(this.regExpOS.mobileChrome);
+        if (isIOS && !isMobileChrome) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // 是否为cellphone
+    isCellphone() {
+        return !!navigator.userAgent.match(this.regExpOS.cellphone);
+    }
+
+    // 是否为Mobile
+    isMobile() {
+        return !!navigator.userAgent.match(this.regExpOS.mobile)
+    }
+
+    // 是否为Chrome
+    isChrome() {
+        return /chrome\/([\d.]+)/.test(navigator.userAgent.toLowerCase());
+    }
+
+    // 是否为Safari
+    isSafari() {
+        return /version\/([\d.]+)/.test(navigator.userAgent.toLowerCase());
+    }
+
+    // 是否为Firefox
+    isFirefox() {
+        return /firefox\/([\d.]+)/.test(navigator.userAgent.toLowerCase());
+    }
+
+    // 是否为Opera
+    isOpera() {
+        return /opera.([\d.]+)/.test(navigator.userAgent.toLowerCase());
     }
 }
 

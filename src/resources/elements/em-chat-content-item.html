@@ -31,9 +31,9 @@
             </div>
             <div class="actions">
                 <a if.bind="!isAt && (item.creator.username != loginUser.username)" click.delegate="replyHandler(item)" class="tms-reply" title="回复消息">回复</a>
-                <em-chat-share chat.bind="item" channel.bind="channel" is-at.bind="isAt" login-user.bind="loginUser"></em-chat-share>
-                <a if.bind="!isAt" click.delegate="stowHandler(item)" class="tms-stow" title="收藏消息">收藏</a>
                 <a if.bind="item.openEdit || (item.creator.username == loginUser.username)" click.delegate="editHandler(item, editTxtRef)" class="tms-edit" title="编辑消息(ctrl+dblclick)">编辑</a>
+                <a if.bind="!isAt" click.delegate="stowHandler(item)" class="tms-stow" title="收藏消息">收藏</a>
+                <em-chat-share chat.bind="item" channel.bind="channel" is-at.bind="isAt" login-user.bind="loginUser"></em-chat-share>
                 <div ui-dropdown-action=".tms-comments-container" class="ui top right pointing dropdown">
                     <a class="text" title="更多操作"><i class="ellipsis horizontal large icon"></i></a>
                     <div class="menu">

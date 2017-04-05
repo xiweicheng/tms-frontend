@@ -13,6 +13,7 @@ export class EmChatInput {
     @bindable isAt;
     @bindable channel;
     members = [];
+    isMobile = utils.isMobile();
 
     channelChanged() {
 
