@@ -220,6 +220,10 @@ export class EmBlogContent {
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
                         toastr.success('删除博文成功!');
+                        ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                            action: 'deleted',
+                            blog: this.blog
+                        });
                         ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, {
                             to: '#/blog'
                         });
