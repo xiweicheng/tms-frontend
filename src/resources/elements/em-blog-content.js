@@ -161,6 +161,7 @@ export class EmBlogContent {
     getBlog() {
         this.progressWidth = 0;
         if (!nsCtx.blogId || isNaN(new Number(nsCtx.blogId))) {
+            this.blog = null;
             return;
         }
 
