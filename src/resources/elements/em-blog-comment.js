@@ -25,6 +25,23 @@ export class EmBlogComment {
         this._refresh();
     }
 
+    /**
+     * 构造函数
+     */
+    constructor() {
+        this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_COMMENT_MSG_INSERT, (payload) => {
+            this.insertContent(`${payload.content}`);
+            this._scrollTo('b');
+        });
+    }
+
+    /**
+     * 当数据绑定引擎从视图解除绑定时被调用
+     */
+    unbind() {
+        this.subscribe.dispose();
+    }
+
     _refresh() {
         if (!this.blog) {
             return;

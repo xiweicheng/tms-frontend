@@ -263,6 +263,13 @@ define('blog/blog',['exports', 'aurelia-framework', 'chat/chat-service'], functi
                     target: event.currentTarget
                 });
             });
+
+            $('.tms-blog').on('click', 'a.avatar[data-value], a.author[data-value], .at-user[data-value]', function (event) {
+                event.preventDefault();
+                ea.publish(nsCons.EVENT_BLOG_COMMENT_MSG_INSERT, {
+                    content: '{~' + $(event.currentTarget).attr('data-value') + '} '
+                });
+            });
         };
 
         Blog.prototype.detached = function detached() {};
@@ -286,935 +293,6 @@ define('blog/blog',['exports', 'aurelia-framework', 'chat/chat-service'], functi
 
         return Blog;
     }();
-});
-define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll', 'clipboard', 'clipboard-js', 'dropzone', './chat-service'], function (exports, _aureliaFramework, _commonPoll, _clipboard, _clipboardJs, _dropzone, _chatService) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.ChatDirect = undefined;
-
-    var _commonPoll2 = _interopRequireDefault(_commonPoll);
-
-    var _clipboard2 = _interopRequireDefault(_clipboard);
-
-    var _clipboardJs2 = _interopRequireDefault(_clipboardJs);
-
-    var _dropzone2 = _interopRequireDefault(_dropzone);
-
-    var _chatService2 = _interopRequireDefault(_chatService);
-
-    function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-            default: obj
-        };
-    }
-
-    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-        return typeof obj;
-    } : function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
-    };
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    var ChatDirect = exports.ChatDirect = function () {
-        function ChatDirect() {
-            _classCallCheck(this, ChatDirect);
-
-            this.offset = 0;
-            this.first = true;
-            this.last = true;
-            this.originalHref = wurl();
-            this.users = [];
-            this.channels = [];
-            this.chatTo = null;
-
-
-            _dropzone2.default.autoDiscover = false;
-            this.poll = _commonPoll2.default;
-
-            new _clipboard2.default('.tms-chat-direct .tms-clipboard').on('success', function (e) {
-                toastr.success('复制到剪贴板成功!');
-            }).on('error', function (e) {
-                toastr.error('复制到剪贴板失败!');
-            });
-
-            this.initSubscribeEvent();
-        }
-
-        ChatDirect.prototype.initSubscribeEvent = function initSubscribeEvent() {
-            var _this = this;
-
-            this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_MSG_SENDED, function (payload) {
-
-                _commonPoll2.default.reset();
-
-                if (!_this.first) {
-                    if (_this.isAt) {
-                        _this.listChatDirect(false);
-                    } else {
-                        _this.listChatChannel(false);
-                    }
-                }
-            });
-
-            this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_SIDEBAR_TOGGLE, function (payload) {
-
-                _this.isRightSidebarShow = payload.isShow;
-                if (_this.isRightSidebarShow) {
-                    var wid = $(_this.contentRef).width() - 392;
-                    $(_this.contentBodyRef).width(wid);
-                    $(_this.contentBodyRef).children('.scroll-wrapper').width(wid);
-                } else {
-                    $(_this.contentBodyRef).css('width', '100%');
-                    $(_this.contentBodyRef).children('.scroll-wrapper').css('width', '100%');
-                }
-            });
-
-            this.subscribe3 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_CREATED, function (payload) {
-                _this.channels.splice(0, 0, payload.channel);
-            });
-
-            this.subscribe4 = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, function (payload) {
-
-                _this.gotoChatItem(payload.chatItem);
-            });
-
-            this.subscribe5 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_DELETED, function (payload) {
-
-                if (!_this.isAt && payload.channel.name == _this.chatTo) {
-                    window.location = wurl('path') + ('#/chat/@' + _this.loginUser.username);
-                }
-
-                _this.channels = [].concat(_this.channels);
-            });
-
-            this.subscribe6 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_JOINED, function (payload) {
-
-                _this.channels.splice(0, 0, payload.channel);
-            });
-
-            this.subscribe7 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_LEAVED, function (payload) {
-
-                if (!_this.isAt && payload.channel.name == _this.chatTo) {
-                    window.location = wurl('path') + ('#/chat/@' + _this.loginUser.username);
-                }
-
-                _this.channels = _.reject(_this.channels, { id: payload.channel.id });
-            });
-
-            this.subscribe8 = ea.subscribe(nsCons.EVENT_CHAT_LAST_ITEM_RENDERED, function (payload) {
-
-                if (payload.item.__scroll) {
-                    _this.scrollToAfterImgLoaded(_this.markId ? _this.markId : 'b');
-                    delete payload.item.__scroll;
-                    _this.markId = null;
-                }
-            });
-
-            this.subscribe9 = ea.subscribe(nsCons.EVENT_SCROLLBAR_SCROLL_TO_BOTTOM, function (payload) {
-
-                if (_this.scrollbarRef == payload.element) {
-                    _commonPoll2.default.reset();
-                }
-            });
-
-            this.subscribe10 = ea.subscribe(nsCons.EVENT_CHAT_CONTENT_SCROLL_TO, function (payload) {
-
-                _this.scrollTo(payload.target);
-            });
-        };
-
-        ChatDirect.prototype.unbind = function unbind() {
-
-            this.subscribe.dispose();
-            this.subscribe2.dispose();
-            this.subscribe3.dispose();
-            this.subscribe4.dispose();
-            this.subscribe5.dispose();
-            this.subscribe6.dispose();
-            this.subscribe7.dispose();
-            this.subscribe8.dispose();
-            this.subscribe9.dispose();
-            this.subscribe10.dispose();
-
-            clearInterval(this.timeagoTimer);
-            _commonPoll2.default.stop();
-        };
-
-        ChatDirect.prototype.activate = function activate(params, routeConfig, navigationInstruction) {
-            var _this2 = this;
-
-            this._reset();
-
-            this.markId = params.id;
-            this.routeConfig = routeConfig;
-
-            if (this.chatId) {
-                this.preChatId = this.chatId;
-            }
-            this.chatId = nsCtx.chatId = params.username;
-
-            localStorage && localStorage.setItem(nsCons.KEY_REMEMBER_LAST_CHAT_TO, this.chatId);
-
-            this.isAt = nsCtx.isAt = _.startsWith(params.username, '@');
-            this.chatTo = nsCtx.chatTo = utils.getChatName(params.username);
-
-            if (this.markId) {
-                history.replaceState(null, '', utils.removeUrlQuery('id'));
-            }
-
-            return Promise.all([_chatService2.default.loginUser(false).then(function (user) {
-                _this2.loginUser = user;
-                nsCtx.loginUser = user;
-                nsCtx.isSuper = utils.isSuperUser(_this2.loginUser);
-                nsCtx.isAdmin = utils.isAdminUser(_this2.loginUser);
-            }), _chatService2.default.listUsers(false).then(function (users) {
-                _this2.users = users;
-                nsCtx.users = users;
-                window.tmsUsers = users;
-                if (_this2.isAt) {
-                    _this2.channel = null;
-                    _this2.user = _.find(_this2.users, {
-                        username: _this2.chatTo
-                    });
-
-                    if (_this2.user) {
-                        var name = _this2.user ? _this2.user.name : _this2.chatTo;
-                        routeConfig.navModel.setTitle(name + ' | 私聊 | TMS');
-
-                        _this2.listChatDirect(true);
-                    } else {
-                        toastr.error('聊天用户[' + _this2.chatTo + ']不存在或者没有权限访问!');
-                        if (_this2.preChatId) {
-                            window.location = wurl('path') + ('#/chat/' + _this2.preChatId);
-                        } else {
-                            window.location = wurl('path') + ('#/chat/@' + _this2.loginUser.username);
-                        }
-                    }
-                }
-            }), _chatService2.default.listChannels(false).then(function (channels) {
-                _this2.channels = channels;
-                nsCtx.channels = channels;
-                if (!_this2.isAt) {
-                    _this2.user = null;
-                    _this2.channel = _.find(_this2.channels, {
-                        name: _this2.chatTo
-                    });
-
-                    if (_this2.channel) {
-                        routeConfig.navModel.setTitle(_this2.channel.title + ' | 频道 | TMS');
-
-                        _this2.listChatChannel(true);
-                    } else {
-                        toastr.error('聊天频道[' + _this2.chatTo + ']不存在或者没有权限访问!');
-                        if (_this2.preChatId) {
-                            window.location = wurl('path') + ('#/chat/' + _this2.preChatId);
-                        } else {
-                            window.location = wurl('path') + ('#/chat/@' + _this2.loginUser.username);
-                        }
-                    }
-                }
-            })]);
-        };
-
-        ChatDirect.prototype._reset = function _reset() {
-            this.progressWidth = 0;
-            this.chats = null;
-            this.first = true;
-            this.last = true;
-        };
-
-        ChatDirect.prototype.lastMoreHandler = function lastMoreHandler() {
-            var _this3 = this;
-
-            var start = _.first(this.chats).id;
-
-            var url = void 0;
-            var data = void 0;
-            if (this.isAt) {
-                url = '/admin/chat/direct/more';
-                data = {
-                    last: true,
-                    start: start,
-                    size: 20,
-                    chatTo: this.chatTo
-                };
-            } else {
-                url = '/admin/chat/channel/more';
-                data = {
-                    last: true,
-                    start: start,
-                    size: 20,
-                    channelId: this.channel.id
-                };
-            }
-            this.lastMoreP = $.get(url, data, function (data) {
-                if (data.success) {
-                    _this3.chats = _.unionBy(_.reverse(data.data), _this3.chats);
-                    _this3.last = data.msgs[0] - data.data.length <= 0;
-                    !_this3.last && (_this3.lastCnt = data.msgs[0] - data.data.length);
-                    _this3.scrollToAfterImgLoaded(start);
-                } else {
-                    toastr.error(data.data, '获取更多消息失败!');
-                }
-            });
-        };
-
-        ChatDirect.prototype.firstMoreHandler = function firstMoreHandler() {
-            var _this4 = this;
-
-            var start = _.last(this.chats).id;
-            var url = void 0;
-            var data = void 0;
-            if (this.isAt) {
-                url = '/admin/chat/direct/more';
-                data = {
-                    last: false,
-                    start: start,
-                    size: 20,
-                    chatTo: this.chatTo
-                };
-            } else {
-                url = '/admin/chat/channel/more';
-                data = {
-                    last: false,
-                    start: start,
-                    size: 20,
-                    channelId: this.channel.id
-                };
-            }
-            this.nextMoreP = $.get(url, data, function (data) {
-                if (data.success) {
-                    _this4.chats = _.unionBy(_this4.chats, data.data);
-                    _this4.first = data.msgs[0] - data.data.length <= 0;
-                    !_this4.first && (_this4.firstCnt = data.msgs[0] - data.data.length);
-                    _this4.scrollToAfterImgLoaded(start);
-                } else {
-                    toastr.error(data.data, '获取更多消息失败!');
-                }
-            });
-        };
-
-        ChatDirect.prototype.listChatChannel = function listChatChannel(isCareMarkId) {
-            var _this5 = this;
-
-            var data = {
-                size: 20,
-                channelId: this.channel.id
-            };
-
-            if (this.markId && isCareMarkId) {
-                data.id = this.markId;
-            }
-
-            $.get('/admin/chat/channel/listBy', data, function (data) {
-                _this5.processChats(data);
-            });
-        };
-
-        ChatDirect.prototype.listChatDirect = function listChatDirect(isCareMarkId) {
-            var _this6 = this;
-
-            var data = {
-                size: 20,
-                chatTo: this.chatTo
-            };
-
-            if (this.markId && isCareMarkId) {
-                data.id = this.markId;
-            }
-            $.get('/admin/chat/direct/list', data, function (data) {
-                _this6.processChats(data);
-            });
-        };
-
-        ChatDirect.prototype.processChats = function processChats(data) {
-            if (data.success) {
-                this.chats = _.reverse(data.data.content);
-                var lastChat = _.last(this.chats);
-                lastChat && (lastChat.__scroll = true);
-                this.last = data.data.last;
-                this.first = data.data.first;
-                !this.last && (this.lastCnt = data.data.totalElements - data.data.numberOfElements);
-                !this.first && (this.firstCnt = data.data.size * data.data.number);
-            }
-        };
-
-        ChatDirect.prototype._scrollTo = function _scrollTo(to) {
-            if (to == 'b') {
-                $(this.commentsRef).parent('.scroll-content').scrollTo('max');
-            } else if (to == 't') {
-                $(this.commentsRef).parent('.scroll-content').scrollTo(0);
-            } else {
-                if (_.some(this.chats, { id: +to })) {
-                    $(this.commentsRef).parent('.scroll-content').scrollTo('.comment[data-id="' + to + '"]', {
-                        offset: this.offset
-                    });
-                    $(this.commentsRef).find('.comment[data-id]').removeClass('active');
-                    $(this.commentsRef).find('.comment[data-id=' + to + ']').addClass('active');
-                } else {
-                    $(this.commentsRef).parent('.scroll-content').scrollTo('max');
-                    toastr.warning('消息[' + to + ']不存在,可能已经被删除!');
-                }
-            }
-        };
-
-        ChatDirect.prototype.scrollToAfterImgLoaded = function scrollToAfterImgLoaded(to) {
-            var _this7 = this;
-
-            _.defer(function () {
-                new ImagesLoaded(_this7.commentsRef).always(function () {
-                    _this7._scrollTo(to);
-                });
-
-                _this7._scrollTo(to);
-            });
-        };
-
-        ChatDirect.prototype.doPoll = function doPoll() {
-            var _this8 = this;
-
-            _commonPoll2.default.start(function (resetCb, stopCb) {
-                _this8._pollChats(resetCb, stopCb);
-                _this8._poll(resetCb, stopCb);
-            });
-        };
-
-        ChatDirect.prototype._poll = function _poll(resetCb, stopCb) {
-            var _this9 = this;
-
-            var lastChat = _.last(this.chats);
-
-            if (this.pollOnGoing || this.isAt || !this.channel || !lastChat) {
-                return;
-            }
-
-            this.pollOnGoing = true;
-
-            $.get('/admin/chat/channel/poll', {
-                channelId: this.channel.id,
-                lastChatChannelId: lastChat.id,
-                isAt: true
-            }, function (data) {
-                if (data.success) {
-
-                    if (_this9.countAt && data.data.countAt > _this9.countAt) {
-                        var cnt = data.data.countAt - _this9.countAt;
-                        push.create('TMS沟通@消息通知', {
-                            body: '你有' + cnt + '条新的@消息!',
-                            icon: {
-                                x16: 'img/tms-x16.ico',
-                                x32: 'img/tms-x32.png'
-                            },
-                            timeout: 5000
-                        });
-                    }
-                    _this9.countAt = data.data.countAt;
-                    ea.publish(nsCons.EVENT_CHAT_POLL_UPDATE, {
-                        countAt: data.data.countAt,
-                        countMyRecentSchedule: data.data.countMyRecentSchedule
-                    });
-                }
-            }).always(function () {
-                _this9.pollOnGoing = false;
-            });
-        };
-
-        ChatDirect.prototype._pollChats = function _pollChats(resetCb, stopCb) {
-            var _this10 = this;
-
-            if (this.pollChatsOngoing || !this.chats || !this.first) {
-                return;
-            }
-
-            var lastChat = _.last(this.chats);
-
-            var url = void 0;
-            var data = void 0;
-
-            if (this.isAt) {
-                url = '/admin/chat/direct/latest';
-                data = {
-                    id: lastChat ? lastChat.id : 0,
-                    chatTo: this.chatTo
-                };
-            } else {
-                url = '/admin/chat/channel/latest';
-                data = {
-                    id: lastChat ? lastChat.id : 0,
-                    channelId: this.channel.id
-                };
-            }
-
-            this.pollChatsOngoing = true;
-
-            $.get(url, data, function (data) {
-                if (data.success) {
-
-                    if (!_this10._checkPollResultOk(data)) {
-                        return;
-                    }
-
-                    _this10._checkNeedNotify(data);
-
-                    _this10.chats = _.unionBy(_this10.chats, data.data, 'id');
-                    _this10.scrollToAfterImgLoaded('b');
-                } else {
-                    toastr.error(data.data, '轮询获取消息失败!');
-                }
-            }).fail(function (xhr, sts) {
-                stopCb();
-                utils.errorAutoTry(function () {
-                    resetCb();
-                });
-            }).always(function () {
-                _this10.pollChatsOngoing = false;
-            });
-        };
-
-        ChatDirect.prototype._checkNeedNotify = function _checkNeedNotify(data) {
-            var _this11 = this;
-
-            if (data.data.length == 0) {
-                return false;
-            }
-
-            var hasOwn = _.some(data.data, function (item) {
-                return item.creator.username == _this11.loginUser.username;
-            });
-
-            if (!hasOwn) {
-                push.create('TMS沟通频道消息通知', {
-                    body: '频道[' + this.channel.title + ']有新消息了!',
-                    icon: {
-                        x16: 'img/tms-x16.ico',
-                        x32: 'img/tms-x32.png'
-                    },
-                    timeout: 5000
-                });
-            }
-        };
-
-        ChatDirect.prototype._checkPollResultOk = function _checkPollResultOk(data) {
-
-            if (data.data.length == 0) {
-                return false;
-            }
-
-            var chat = _.first(data.data);
-            return this.isAt ? _.has(chat, 'chatTo') : _.has(chat, 'channel');
-        };
-
-        ChatDirect.prototype.bind = function bind(ctx) {
-
-            this.doPoll();
-        };
-
-        ChatDirect.prototype.attached = function attached() {
-            var _this12 = this;
-
-            var tg = timeago();
-            this.timeagoTimer = setInterval(function () {
-                $(_this12.chatContainerRef).find('[data-timeago]').each(function (index, el) {
-                    $(el).text(tg.format($(el).attr('data-timeago'), 'zh_CN'));
-                });
-            }, 5000);
-
-            this.initHotkeys();
-            this.initFocusedComment();
-
-            $(this.scrollbarRef).on('mouseenter', '.em-chat-content-item', function (event) {
-                event.preventDefault();
-                var $item = $(event.currentTarget);
-                _this12.$hoveredItem = $item;
-                _this12.isShowHead = !utils.isElementInViewport($item.children('.em-user-avatar'));
-                var $next = $item.next('.em-chat-content-item');
-                if ($next.size() === 1) {
-                    _this12.isShowFoot = !utils.isElementInViewport($next.children('.em-user-avatar'));
-                } else {
-                    _this12.isShowFoot = false;
-                }
-            }).on('mouseleave', function (event) {
-                event.preventDefault();
-                _this12.isShowHead = false;
-                _this12.isShowFoot = false;
-            });
-
-            $(this.commentsRef).on('click', '.cbutton', function (event) {
-                event.preventDefault();
-                var $btn = $(this);
-                $btn.addClass('cbutton--click');
-                setTimeout(function () {
-                    $btn.removeClass('cbutton--click');
-                }, 500);
-            });
-
-            $(this.chatContainerRef).on('click', 'code[data-code]', function (event) {
-                if (event.ctrlKey) {
-                    event.stopImmediatePropagation();
-                    event.preventDefault();
-                    _clipboardJs2.default.copy($(event.currentTarget).attr('data-code')).then(function () {
-                        toastr.success('复制到剪贴板成功!');
-                    }, function (err) {
-                        toastr.error('复制到剪贴板失败!');
-                    });
-                }
-            });
-
-            $(this.chatContainerRef).on('click', '.pre-code-wrapper', function (event) {
-                if (event.ctrlKey) {
-                    event.stopImmediatePropagation();
-                    event.preventDefault();
-                    _clipboardJs2.default.copy($(event.currentTarget).find('i[data-clipboard-text]').attr('data-clipboard-text')).then(function () {
-                        toastr.success('复制到剪贴板成功!');
-                    }, function (err) {
-                        toastr.error('复制到剪贴板失败!');
-                    });
-                }
-            });
-
-            $('.tms-comments-container[ref="scrollbarRef"]').scroll(_.throttle(function (event) {
-                try {
-                    var sHeight = $(event.currentTarget)[0].scrollHeight;
-                    var sTop = $(event.currentTarget)[0].scrollTop;
-
-                    var scale = sTop * 1.0 / (sHeight - $(event.currentTarget).outerHeight());
-                    _this12.progressWidth = $(event.currentTarget).outerWidth() * scale;
-                } catch (err) {
-                    _this12.progressWidth = 0;
-                }
-            }, 10));
-        };
-
-        ChatDirect.prototype.goHeadHandler = function goHeadHandler() {
-            var _this13 = this;
-
-            this.scrollTo(this.$hoveredItem, 500, function () {
-                _this13.isShowHead = false;
-            });
-        };
-
-        ChatDirect.prototype.goFootHandler = function goFootHandler() {
-            var _this14 = this;
-
-            this.scrollTo(this.$hoveredItem.next(), 500, function () {
-                _this14.isShowFoot = false;
-            });
-        };
-
-        ChatDirect.prototype.initFocusedComment = function initFocusedComment() {
-            var _this15 = this;
-
-            $(this.commentsRef).on('click', '.comment.item', function (event) {
-                _this15.focusedComment = $(event.currentTarget);
-            }).on('dblclick', '.comment.item', function (event) {
-                if (event.ctrlKey) {
-                    var _ret = function () {
-                        var chatId = $(event.currentTarget).attr('data-id');
-                        var $t = $(event.currentTarget).find('.content > textarea');
-                        var item = _.find(_this15.chats, { id: Number.parseInt(chatId) });
-
-                        if (!item.openEdit && item.creator.username != _this15.loginUser.username) {
-                            return {
-                                v: void 0
-                            };
-                        }
-
-                        $.get('/admin/chat/' + (_this15.isAt ? 'direct' : 'channel') + '/get', {
-                            id: item.id
-                        }, function (data) {
-                            if (data.success) {
-                                if (item.version != data.data.version) {
-                                    _.extend(item, data.data);
-                                }
-                                item.isEditing = true;
-                                item.contentOld = item.content;
-                                _.defer(function () {
-                                    $t.focus().select();
-                                    autosize.update($t.get(0));
-                                });
-                            } else {
-                                toastr.error(data.data);
-                            }
-                        });
-                    }();
-
-                    if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-                }
-            });
-        };
-
-        ChatDirect.prototype.getScrollTargetComment = function getScrollTargetComment(isPrev) {
-            if (isPrev) {
-                if (this.focusedComment && this.focusedComment.size() === 1) {
-                    var $avatar = this.focusedComment.find('> a.em-user-avatar');
-                    if (utils.isElementInViewport($avatar)) {
-                        var prev = this.focusedComment.prev('.comment.item');
-                        prev.size() === 1 && (this.focusedComment = prev);
-                    }
-                } else {
-                    this.focusedComment = $(this.commentsRef).children('.comment.item:first');
-                }
-            } else {
-                if (this.focusedComment && this.focusedComment.size() === 1) {
-                    var next = this.focusedComment.next('.comment.item');
-                    next.size() === 1 && (this.focusedComment = next);
-                } else {
-                    this.focusedComment = $(this.commentsRef).children('.comment.item:last');
-                }
-            }
-            return this.focusedComment;
-        };
-
-        ChatDirect.prototype.scrollTo = function scrollTo(target) {
-            var duration = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
-            var onAfter = arguments[2];
-
-            this.focusedComment = target;
-            $(this.commentsRef).parent('.scroll-content').scrollTo(target, duration, {
-                offset: this.offset,
-                onAfter: onAfter
-            });
-        };
-
-        ChatDirect.prototype.initHotkeys = function initHotkeys() {
-            var _this16 = this;
-
-            $(document).bind('keydown', 'ctrl+u', function (evt) {
-                evt.preventDefault();
-                $(_this16.emChatInputRef.btnItemUploadRef).find('.content').click();
-            }).bind('keydown', 'ctrl+/', function (evt) {
-                evt.preventDefault();
-                _this16.emChatInputRef.emHotkeysModal.show();
-            }).bind('keydown', 'alt+up', function (evt) {
-                evt.preventDefault();
-                _this16.scrollTo(_this16.getScrollTargetComment(true));
-            }).bind('keydown', 'alt+down', function (evt) {
-                evt.preventDefault();
-                _this16.scrollTo(_this16.getScrollTargetComment());
-            }).bind('keydown', 't', function (event) {
-                event.preventDefault();
-                _this16.scrollTo($(_this16.commentsRef).children('.comment.item:first'));
-            }).bind('keydown', 'b', function (event) {
-                event.preventDefault();
-                _this16.scrollTo($(_this16.commentsRef).children('.comment.item:last'));
-            });
-        };
-
-        ChatDirect.prototype.gotoChatItem = function gotoChatItem(item) {
-
-            var chat = _.find(this.chats, { id: item.id });
-            if (chat) {
-                this.scrollToAfterImgLoaded(item.id);
-            } else {
-
-                var chatTo = void 0;
-                var chatId = void 0;
-
-                if (item.chatTo) {
-                    chatTo = item.chatTo.username;
-                    chatId = '@' + chatTo;
-                } else if (item.channel) {
-                    chatTo = item.channel.name;
-                    chatId = '' + chatTo;
-                }
-
-                if (this.chatTo == chatTo) {
-                    this.activate({
-                        id: item.id,
-                        username: chatId
-                    }, this.routeConfig);
-                } else {
-                    window.location = wurl('path') + ('#/chat/' + chatId + '?id=' + item.id);
-                }
-            }
-        };
-
-        ChatDirect.prototype.refreshLatestHandler = function refreshLatestHandler(event) {
-            event.stopImmediatePropagation();
-            this.markId = null;
-            if (this.isAt) {
-                this.listChatDirect(false);
-            } else {
-                this.listChatChannel(false);
-            }
-        };
-
-        return ChatDirect;
-    }();
-});
-define('chat/chat-service',['exports'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-
-    function _asyncToGenerator(fn) {
-        return function () {
-            var gen = fn.apply(this, arguments);
-            return new Promise(function (resolve, reject) {
-                function step(key, arg) {
-                    try {
-                        var info = gen[key](arg);
-                        var value = info.value;
-                    } catch (error) {
-                        reject(error);
-                        return;
-                    }
-
-                    if (info.done) {
-                        resolve(value);
-                    } else {
-                        return Promise.resolve(value).then(function (value) {
-                            return step("next", value);
-                        }, function (err) {
-                            return step("throw", err);
-                        });
-                    }
-                }
-
-                return step("next");
-            });
-        };
-    }
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    var ChatService = function () {
-        function ChatService() {
-            _classCallCheck(this, ChatService);
-        }
-
-        ChatService.prototype.loginUser = function () {
-            var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(useCache) {
-                var _this = this;
-
-                return regeneratorRuntime.wrap(function _callee$(_context) {
-                    while (1) {
-                        switch (_context.prev = _context.next) {
-                            case 0:
-                                if (!(!useCache || !this.user)) {
-                                    _context.next = 3;
-                                    break;
-                                }
-
-                                _context.next = 3;
-                                return $.get('/admin/user/loginUser', function (data) {
-                                    if (data.success) {
-                                        _this.user = data.data;
-                                    }
-                                });
-
-                            case 3:
-                                return _context.abrupt('return', this.user);
-
-                            case 4:
-                            case 'end':
-                                return _context.stop();
-                        }
-                    }
-                }, _callee, this);
-            }));
-
-            function loginUser(_x) {
-                return _ref.apply(this, arguments);
-            }
-
-            return loginUser;
-        }();
-
-        ChatService.prototype.listUsers = function () {
-            var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(useCache) {
-                var _this2 = this;
-
-                return regeneratorRuntime.wrap(function _callee2$(_context2) {
-                    while (1) {
-                        switch (_context2.prev = _context2.next) {
-                            case 0:
-                                if (!(!useCache || !this.users)) {
-                                    _context2.next = 3;
-                                    break;
-                                }
-
-                                _context2.next = 3;
-                                return $.get('/admin/user/all', {}, function (data) {
-                                    if (data.success) {
-                                        _this2.users = data.data;
-                                    }
-                                });
-
-                            case 3:
-                                return _context2.abrupt('return', this.users);
-
-                            case 4:
-                            case 'end':
-                                return _context2.stop();
-                        }
-                    }
-                }, _callee2, this);
-            }));
-
-            function listUsers(_x2) {
-                return _ref2.apply(this, arguments);
-            }
-
-            return listUsers;
-        }();
-
-        ChatService.prototype.listChannels = function () {
-            var _ref3 = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(useCache) {
-                var _this3 = this;
-
-                return regeneratorRuntime.wrap(function _callee3$(_context3) {
-                    while (1) {
-                        switch (_context3.prev = _context3.next) {
-                            case 0:
-                                if (!(!useCache || !this.channels)) {
-                                    _context3.next = 3;
-                                    break;
-                                }
-
-                                _context3.next = 3;
-                                return $.get('/admin/channel/listMy', function (data) {
-                                    if (data.success) {
-                                        _this3.channels = data.data;
-                                    }
-                                });
-
-                            case 3:
-                                return _context3.abrupt('return', this.channels);
-
-                            case 4:
-                            case 'end':
-                                return _context3.stop();
-                        }
-                    }
-                }, _callee3, this);
-            }));
-
-            function listChannels(_x3) {
-                return _ref3.apply(this, arguments);
-            }
-
-            return listChannels;
-        }();
-
-        return ChatService;
-    }();
-
-    exports.default = new ChatService();
 });
 define('common/common-constant',[], function () {
     'use strict';
@@ -1269,6 +347,7 @@ define('common/common-constant',[], function () {
         EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE: 'event_blog_right_sidebar_toggle',
         EVENT_BLOG_LEFT_SIDEBAR_TOGGLE: 'event_blog_left_sidebar_toggle',
         EVENT_BLOG_CONTENT_DIMMER_TOGGLE: 'event_blog_content_dimmer_toggle',
+        EVENT_BLOG_COMMENT_MSG_INSERT: 'event_blog_comment_msg_insert',
         ACTION_TYPE_SEARCH: 'action_type_search',
         ACTION_TYPE_STOW: 'action_type_stow',
         ACTION_TYPE_AT: 'action_type_at',
@@ -4267,6 +3346,935 @@ define('common/common-utils',['exports', 'wurl', 'common/common-diff'], function
 
     exports.default = new CommonUtils();
 });
+define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll', 'clipboard', 'clipboard-js', 'dropzone', './chat-service'], function (exports, _aureliaFramework, _commonPoll, _clipboard, _clipboardJs, _dropzone, _chatService) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.ChatDirect = undefined;
+
+    var _commonPoll2 = _interopRequireDefault(_commonPoll);
+
+    var _clipboard2 = _interopRequireDefault(_clipboard);
+
+    var _clipboardJs2 = _interopRequireDefault(_clipboardJs);
+
+    var _dropzone2 = _interopRequireDefault(_dropzone);
+
+    var _chatService2 = _interopRequireDefault(_chatService);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+        return typeof obj;
+    } : function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+    };
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var ChatDirect = exports.ChatDirect = function () {
+        function ChatDirect() {
+            _classCallCheck(this, ChatDirect);
+
+            this.offset = 0;
+            this.first = true;
+            this.last = true;
+            this.originalHref = wurl();
+            this.users = [];
+            this.channels = [];
+            this.chatTo = null;
+
+
+            _dropzone2.default.autoDiscover = false;
+            this.poll = _commonPoll2.default;
+
+            new _clipboard2.default('.tms-chat-direct .tms-clipboard').on('success', function (e) {
+                toastr.success('复制到剪贴板成功!');
+            }).on('error', function (e) {
+                toastr.error('复制到剪贴板失败!');
+            });
+
+            this.initSubscribeEvent();
+        }
+
+        ChatDirect.prototype.initSubscribeEvent = function initSubscribeEvent() {
+            var _this = this;
+
+            this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_MSG_SENDED, function (payload) {
+
+                _commonPoll2.default.reset();
+
+                if (!_this.first) {
+                    if (_this.isAt) {
+                        _this.listChatDirect(false);
+                    } else {
+                        _this.listChatChannel(false);
+                    }
+                }
+            });
+
+            this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_SIDEBAR_TOGGLE, function (payload) {
+
+                _this.isRightSidebarShow = payload.isShow;
+                if (_this.isRightSidebarShow) {
+                    var wid = $(_this.contentRef).width() - 392;
+                    $(_this.contentBodyRef).width(wid);
+                    $(_this.contentBodyRef).children('.scroll-wrapper').width(wid);
+                } else {
+                    $(_this.contentBodyRef).css('width', '100%');
+                    $(_this.contentBodyRef).children('.scroll-wrapper').css('width', '100%');
+                }
+            });
+
+            this.subscribe3 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_CREATED, function (payload) {
+                _this.channels.splice(0, 0, payload.channel);
+            });
+
+            this.subscribe4 = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, function (payload) {
+
+                _this.gotoChatItem(payload.chatItem);
+            });
+
+            this.subscribe5 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_DELETED, function (payload) {
+
+                if (!_this.isAt && payload.channel.name == _this.chatTo) {
+                    window.location = wurl('path') + ('#/chat/@' + _this.loginUser.username);
+                }
+
+                _this.channels = [].concat(_this.channels);
+            });
+
+            this.subscribe6 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_JOINED, function (payload) {
+
+                _this.channels.splice(0, 0, payload.channel);
+            });
+
+            this.subscribe7 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_LEAVED, function (payload) {
+
+                if (!_this.isAt && payload.channel.name == _this.chatTo) {
+                    window.location = wurl('path') + ('#/chat/@' + _this.loginUser.username);
+                }
+
+                _this.channels = _.reject(_this.channels, { id: payload.channel.id });
+            });
+
+            this.subscribe8 = ea.subscribe(nsCons.EVENT_CHAT_LAST_ITEM_RENDERED, function (payload) {
+
+                if (payload.item.__scroll) {
+                    _this.scrollToAfterImgLoaded(_this.markId ? _this.markId : 'b');
+                    delete payload.item.__scroll;
+                    _this.markId = null;
+                }
+            });
+
+            this.subscribe9 = ea.subscribe(nsCons.EVENT_SCROLLBAR_SCROLL_TO_BOTTOM, function (payload) {
+
+                if (_this.scrollbarRef == payload.element) {
+                    _commonPoll2.default.reset();
+                }
+            });
+
+            this.subscribe10 = ea.subscribe(nsCons.EVENT_CHAT_CONTENT_SCROLL_TO, function (payload) {
+
+                _this.scrollTo(payload.target);
+            });
+        };
+
+        ChatDirect.prototype.unbind = function unbind() {
+
+            this.subscribe.dispose();
+            this.subscribe2.dispose();
+            this.subscribe3.dispose();
+            this.subscribe4.dispose();
+            this.subscribe5.dispose();
+            this.subscribe6.dispose();
+            this.subscribe7.dispose();
+            this.subscribe8.dispose();
+            this.subscribe9.dispose();
+            this.subscribe10.dispose();
+
+            clearInterval(this.timeagoTimer);
+            _commonPoll2.default.stop();
+        };
+
+        ChatDirect.prototype.activate = function activate(params, routeConfig, navigationInstruction) {
+            var _this2 = this;
+
+            this._reset();
+
+            this.markId = params.id;
+            this.routeConfig = routeConfig;
+
+            if (this.chatId) {
+                this.preChatId = this.chatId;
+            }
+            this.chatId = nsCtx.chatId = params.username;
+
+            localStorage && localStorage.setItem(nsCons.KEY_REMEMBER_LAST_CHAT_TO, this.chatId);
+
+            this.isAt = nsCtx.isAt = _.startsWith(params.username, '@');
+            this.chatTo = nsCtx.chatTo = utils.getChatName(params.username);
+
+            if (this.markId) {
+                history.replaceState(null, '', utils.removeUrlQuery('id'));
+            }
+
+            return Promise.all([_chatService2.default.loginUser(false).then(function (user) {
+                _this2.loginUser = user;
+                nsCtx.loginUser = user;
+                nsCtx.isSuper = utils.isSuperUser(_this2.loginUser);
+                nsCtx.isAdmin = utils.isAdminUser(_this2.loginUser);
+            }), _chatService2.default.listUsers(false).then(function (users) {
+                _this2.users = users;
+                nsCtx.users = users;
+                window.tmsUsers = users;
+                if (_this2.isAt) {
+                    _this2.channel = null;
+                    _this2.user = _.find(_this2.users, {
+                        username: _this2.chatTo
+                    });
+
+                    if (_this2.user) {
+                        var name = _this2.user ? _this2.user.name : _this2.chatTo;
+                        routeConfig.navModel.setTitle(name + ' | 私聊 | TMS');
+
+                        _this2.listChatDirect(true);
+                    } else {
+                        toastr.error('聊天用户[' + _this2.chatTo + ']不存在或者没有权限访问!');
+                        if (_this2.preChatId) {
+                            window.location = wurl('path') + ('#/chat/' + _this2.preChatId);
+                        } else {
+                            window.location = wurl('path') + ('#/chat/@' + _this2.loginUser.username);
+                        }
+                    }
+                }
+            }), _chatService2.default.listChannels(false).then(function (channels) {
+                _this2.channels = channels;
+                nsCtx.channels = channels;
+                if (!_this2.isAt) {
+                    _this2.user = null;
+                    _this2.channel = _.find(_this2.channels, {
+                        name: _this2.chatTo
+                    });
+
+                    if (_this2.channel) {
+                        routeConfig.navModel.setTitle(_this2.channel.title + ' | 频道 | TMS');
+
+                        _this2.listChatChannel(true);
+                    } else {
+                        toastr.error('聊天频道[' + _this2.chatTo + ']不存在或者没有权限访问!');
+                        if (_this2.preChatId) {
+                            window.location = wurl('path') + ('#/chat/' + _this2.preChatId);
+                        } else {
+                            window.location = wurl('path') + ('#/chat/@' + _this2.loginUser.username);
+                        }
+                    }
+                }
+            })]);
+        };
+
+        ChatDirect.prototype._reset = function _reset() {
+            this.progressWidth = 0;
+            this.chats = null;
+            this.first = true;
+            this.last = true;
+        };
+
+        ChatDirect.prototype.lastMoreHandler = function lastMoreHandler() {
+            var _this3 = this;
+
+            var start = _.first(this.chats).id;
+
+            var url = void 0;
+            var data = void 0;
+            if (this.isAt) {
+                url = '/admin/chat/direct/more';
+                data = {
+                    last: true,
+                    start: start,
+                    size: 20,
+                    chatTo: this.chatTo
+                };
+            } else {
+                url = '/admin/chat/channel/more';
+                data = {
+                    last: true,
+                    start: start,
+                    size: 20,
+                    channelId: this.channel.id
+                };
+            }
+            this.lastMoreP = $.get(url, data, function (data) {
+                if (data.success) {
+                    _this3.chats = _.unionBy(_.reverse(data.data), _this3.chats);
+                    _this3.last = data.msgs[0] - data.data.length <= 0;
+                    !_this3.last && (_this3.lastCnt = data.msgs[0] - data.data.length);
+                    _this3.scrollToAfterImgLoaded(start);
+                } else {
+                    toastr.error(data.data, '获取更多消息失败!');
+                }
+            });
+        };
+
+        ChatDirect.prototype.firstMoreHandler = function firstMoreHandler() {
+            var _this4 = this;
+
+            var start = _.last(this.chats).id;
+            var url = void 0;
+            var data = void 0;
+            if (this.isAt) {
+                url = '/admin/chat/direct/more';
+                data = {
+                    last: false,
+                    start: start,
+                    size: 20,
+                    chatTo: this.chatTo
+                };
+            } else {
+                url = '/admin/chat/channel/more';
+                data = {
+                    last: false,
+                    start: start,
+                    size: 20,
+                    channelId: this.channel.id
+                };
+            }
+            this.nextMoreP = $.get(url, data, function (data) {
+                if (data.success) {
+                    _this4.chats = _.unionBy(_this4.chats, data.data);
+                    _this4.first = data.msgs[0] - data.data.length <= 0;
+                    !_this4.first && (_this4.firstCnt = data.msgs[0] - data.data.length);
+                    _this4.scrollToAfterImgLoaded(start);
+                } else {
+                    toastr.error(data.data, '获取更多消息失败!');
+                }
+            });
+        };
+
+        ChatDirect.prototype.listChatChannel = function listChatChannel(isCareMarkId) {
+            var _this5 = this;
+
+            var data = {
+                size: 20,
+                channelId: this.channel.id
+            };
+
+            if (this.markId && isCareMarkId) {
+                data.id = this.markId;
+            }
+
+            $.get('/admin/chat/channel/listBy', data, function (data) {
+                _this5.processChats(data);
+            });
+        };
+
+        ChatDirect.prototype.listChatDirect = function listChatDirect(isCareMarkId) {
+            var _this6 = this;
+
+            var data = {
+                size: 20,
+                chatTo: this.chatTo
+            };
+
+            if (this.markId && isCareMarkId) {
+                data.id = this.markId;
+            }
+            $.get('/admin/chat/direct/list', data, function (data) {
+                _this6.processChats(data);
+            });
+        };
+
+        ChatDirect.prototype.processChats = function processChats(data) {
+            if (data.success) {
+                this.chats = _.reverse(data.data.content);
+                var lastChat = _.last(this.chats);
+                lastChat && (lastChat.__scroll = true);
+                this.last = data.data.last;
+                this.first = data.data.first;
+                !this.last && (this.lastCnt = data.data.totalElements - data.data.numberOfElements);
+                !this.first && (this.firstCnt = data.data.size * data.data.number);
+            }
+        };
+
+        ChatDirect.prototype._scrollTo = function _scrollTo(to) {
+            if (to == 'b') {
+                $(this.commentsRef).parent('.scroll-content').scrollTo('max');
+            } else if (to == 't') {
+                $(this.commentsRef).parent('.scroll-content').scrollTo(0);
+            } else {
+                if (_.some(this.chats, { id: +to })) {
+                    $(this.commentsRef).parent('.scroll-content').scrollTo('.comment[data-id="' + to + '"]', {
+                        offset: this.offset
+                    });
+                    $(this.commentsRef).find('.comment[data-id]').removeClass('active');
+                    $(this.commentsRef).find('.comment[data-id=' + to + ']').addClass('active');
+                } else {
+                    $(this.commentsRef).parent('.scroll-content').scrollTo('max');
+                    toastr.warning('消息[' + to + ']不存在,可能已经被删除!');
+                }
+            }
+        };
+
+        ChatDirect.prototype.scrollToAfterImgLoaded = function scrollToAfterImgLoaded(to) {
+            var _this7 = this;
+
+            _.defer(function () {
+                new ImagesLoaded(_this7.commentsRef).always(function () {
+                    _this7._scrollTo(to);
+                });
+
+                _this7._scrollTo(to);
+            });
+        };
+
+        ChatDirect.prototype.doPoll = function doPoll() {
+            var _this8 = this;
+
+            _commonPoll2.default.start(function (resetCb, stopCb) {
+                _this8._pollChats(resetCb, stopCb);
+                _this8._poll(resetCb, stopCb);
+            });
+        };
+
+        ChatDirect.prototype._poll = function _poll(resetCb, stopCb) {
+            var _this9 = this;
+
+            var lastChat = _.last(this.chats);
+
+            if (this.pollOnGoing || this.isAt || !this.channel || !lastChat) {
+                return;
+            }
+
+            this.pollOnGoing = true;
+
+            $.get('/admin/chat/channel/poll', {
+                channelId: this.channel.id,
+                lastChatChannelId: lastChat.id,
+                isAt: true
+            }, function (data) {
+                if (data.success) {
+
+                    if (_this9.countAt && data.data.countAt > _this9.countAt) {
+                        var cnt = data.data.countAt - _this9.countAt;
+                        push.create('TMS沟通@消息通知', {
+                            body: '你有' + cnt + '条新的@消息!',
+                            icon: {
+                                x16: 'img/tms-x16.ico',
+                                x32: 'img/tms-x32.png'
+                            },
+                            timeout: 5000
+                        });
+                    }
+                    _this9.countAt = data.data.countAt;
+                    ea.publish(nsCons.EVENT_CHAT_POLL_UPDATE, {
+                        countAt: data.data.countAt,
+                        countMyRecentSchedule: data.data.countMyRecentSchedule
+                    });
+                }
+            }).always(function () {
+                _this9.pollOnGoing = false;
+            });
+        };
+
+        ChatDirect.prototype._pollChats = function _pollChats(resetCb, stopCb) {
+            var _this10 = this;
+
+            if (this.pollChatsOngoing || !this.chats || !this.first) {
+                return;
+            }
+
+            var lastChat = _.last(this.chats);
+
+            var url = void 0;
+            var data = void 0;
+
+            if (this.isAt) {
+                url = '/admin/chat/direct/latest';
+                data = {
+                    id: lastChat ? lastChat.id : 0,
+                    chatTo: this.chatTo
+                };
+            } else {
+                url = '/admin/chat/channel/latest';
+                data = {
+                    id: lastChat ? lastChat.id : 0,
+                    channelId: this.channel.id
+                };
+            }
+
+            this.pollChatsOngoing = true;
+
+            $.get(url, data, function (data) {
+                if (data.success) {
+
+                    if (!_this10._checkPollResultOk(data)) {
+                        return;
+                    }
+
+                    _this10._checkNeedNotify(data);
+
+                    _this10.chats = _.unionBy(_this10.chats, data.data, 'id');
+                    _this10.scrollToAfterImgLoaded('b');
+                } else {
+                    toastr.error(data.data, '轮询获取消息失败!');
+                }
+            }).fail(function (xhr, sts) {
+                stopCb();
+                utils.errorAutoTry(function () {
+                    resetCb();
+                });
+            }).always(function () {
+                _this10.pollChatsOngoing = false;
+            });
+        };
+
+        ChatDirect.prototype._checkNeedNotify = function _checkNeedNotify(data) {
+            var _this11 = this;
+
+            if (data.data.length == 0) {
+                return false;
+            }
+
+            var hasOwn = _.some(data.data, function (item) {
+                return item.creator.username == _this11.loginUser.username;
+            });
+
+            if (!hasOwn) {
+                push.create('TMS沟通频道消息通知', {
+                    body: '频道[' + this.channel.title + ']有新消息了!',
+                    icon: {
+                        x16: 'img/tms-x16.ico',
+                        x32: 'img/tms-x32.png'
+                    },
+                    timeout: 5000
+                });
+            }
+        };
+
+        ChatDirect.prototype._checkPollResultOk = function _checkPollResultOk(data) {
+
+            if (data.data.length == 0) {
+                return false;
+            }
+
+            var chat = _.first(data.data);
+            return this.isAt ? _.has(chat, 'chatTo') : _.has(chat, 'channel');
+        };
+
+        ChatDirect.prototype.bind = function bind(ctx) {
+
+            this.doPoll();
+        };
+
+        ChatDirect.prototype.attached = function attached() {
+            var _this12 = this;
+
+            var tg = timeago();
+            this.timeagoTimer = setInterval(function () {
+                $(_this12.chatContainerRef).find('[data-timeago]').each(function (index, el) {
+                    $(el).text(tg.format($(el).attr('data-timeago'), 'zh_CN'));
+                });
+            }, 5000);
+
+            this.initHotkeys();
+            this.initFocusedComment();
+
+            $(this.scrollbarRef).on('mouseenter', '.em-chat-content-item', function (event) {
+                event.preventDefault();
+                var $item = $(event.currentTarget);
+                _this12.$hoveredItem = $item;
+                _this12.isShowHead = !utils.isElementInViewport($item.children('.em-user-avatar'));
+                var $next = $item.next('.em-chat-content-item');
+                if ($next.size() === 1) {
+                    _this12.isShowFoot = !utils.isElementInViewport($next.children('.em-user-avatar'));
+                } else {
+                    _this12.isShowFoot = false;
+                }
+            }).on('mouseleave', function (event) {
+                event.preventDefault();
+                _this12.isShowHead = false;
+                _this12.isShowFoot = false;
+            });
+
+            $(this.commentsRef).on('click', '.cbutton', function (event) {
+                event.preventDefault();
+                var $btn = $(this);
+                $btn.addClass('cbutton--click');
+                setTimeout(function () {
+                    $btn.removeClass('cbutton--click');
+                }, 500);
+            });
+
+            $(this.chatContainerRef).on('click', 'code[data-code]', function (event) {
+                if (event.ctrlKey) {
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    _clipboardJs2.default.copy($(event.currentTarget).attr('data-code')).then(function () {
+                        toastr.success('复制到剪贴板成功!');
+                    }, function (err) {
+                        toastr.error('复制到剪贴板失败!');
+                    });
+                }
+            });
+
+            $(this.chatContainerRef).on('click', '.pre-code-wrapper', function (event) {
+                if (event.ctrlKey) {
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                    _clipboardJs2.default.copy($(event.currentTarget).find('i[data-clipboard-text]').attr('data-clipboard-text')).then(function () {
+                        toastr.success('复制到剪贴板成功!');
+                    }, function (err) {
+                        toastr.error('复制到剪贴板失败!');
+                    });
+                }
+            });
+
+            $('.tms-comments-container[ref="scrollbarRef"]').scroll(_.throttle(function (event) {
+                try {
+                    var sHeight = $(event.currentTarget)[0].scrollHeight;
+                    var sTop = $(event.currentTarget)[0].scrollTop;
+
+                    var scale = sTop * 1.0 / (sHeight - $(event.currentTarget).outerHeight());
+                    _this12.progressWidth = $(event.currentTarget).outerWidth() * scale;
+                } catch (err) {
+                    _this12.progressWidth = 0;
+                }
+            }, 10));
+        };
+
+        ChatDirect.prototype.goHeadHandler = function goHeadHandler() {
+            var _this13 = this;
+
+            this.scrollTo(this.$hoveredItem, 500, function () {
+                _this13.isShowHead = false;
+            });
+        };
+
+        ChatDirect.prototype.goFootHandler = function goFootHandler() {
+            var _this14 = this;
+
+            this.scrollTo(this.$hoveredItem.next(), 500, function () {
+                _this14.isShowFoot = false;
+            });
+        };
+
+        ChatDirect.prototype.initFocusedComment = function initFocusedComment() {
+            var _this15 = this;
+
+            $(this.commentsRef).on('click', '.comment.item', function (event) {
+                _this15.focusedComment = $(event.currentTarget);
+            }).on('dblclick', '.comment.item', function (event) {
+                if (event.ctrlKey) {
+                    var _ret = function () {
+                        var chatId = $(event.currentTarget).attr('data-id');
+                        var $t = $(event.currentTarget).find('.content > textarea');
+                        var item = _.find(_this15.chats, { id: Number.parseInt(chatId) });
+
+                        if (!item.openEdit && item.creator.username != _this15.loginUser.username) {
+                            return {
+                                v: void 0
+                            };
+                        }
+
+                        $.get('/admin/chat/' + (_this15.isAt ? 'direct' : 'channel') + '/get', {
+                            id: item.id
+                        }, function (data) {
+                            if (data.success) {
+                                if (item.version != data.data.version) {
+                                    _.extend(item, data.data);
+                                }
+                                item.isEditing = true;
+                                item.contentOld = item.content;
+                                _.defer(function () {
+                                    $t.focus().select();
+                                    autosize.update($t.get(0));
+                                });
+                            } else {
+                                toastr.error(data.data);
+                            }
+                        });
+                    }();
+
+                    if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+                }
+            });
+        };
+
+        ChatDirect.prototype.getScrollTargetComment = function getScrollTargetComment(isPrev) {
+            if (isPrev) {
+                if (this.focusedComment && this.focusedComment.size() === 1) {
+                    var $avatar = this.focusedComment.find('> a.em-user-avatar');
+                    if (utils.isElementInViewport($avatar)) {
+                        var prev = this.focusedComment.prev('.comment.item');
+                        prev.size() === 1 && (this.focusedComment = prev);
+                    }
+                } else {
+                    this.focusedComment = $(this.commentsRef).children('.comment.item:first');
+                }
+            } else {
+                if (this.focusedComment && this.focusedComment.size() === 1) {
+                    var next = this.focusedComment.next('.comment.item');
+                    next.size() === 1 && (this.focusedComment = next);
+                } else {
+                    this.focusedComment = $(this.commentsRef).children('.comment.item:last');
+                }
+            }
+            return this.focusedComment;
+        };
+
+        ChatDirect.prototype.scrollTo = function scrollTo(target) {
+            var duration = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+            var onAfter = arguments[2];
+
+            this.focusedComment = target;
+            $(this.commentsRef).parent('.scroll-content').scrollTo(target, duration, {
+                offset: this.offset,
+                onAfter: onAfter
+            });
+        };
+
+        ChatDirect.prototype.initHotkeys = function initHotkeys() {
+            var _this16 = this;
+
+            $(document).bind('keydown', 'ctrl+u', function (evt) {
+                evt.preventDefault();
+                $(_this16.emChatInputRef.btnItemUploadRef).find('.content').click();
+            }).bind('keydown', 'ctrl+/', function (evt) {
+                evt.preventDefault();
+                _this16.emChatInputRef.emHotkeysModal.show();
+            }).bind('keydown', 'alt+up', function (evt) {
+                evt.preventDefault();
+                _this16.scrollTo(_this16.getScrollTargetComment(true));
+            }).bind('keydown', 'alt+down', function (evt) {
+                evt.preventDefault();
+                _this16.scrollTo(_this16.getScrollTargetComment());
+            }).bind('keydown', 't', function (event) {
+                event.preventDefault();
+                _this16.scrollTo($(_this16.commentsRef).children('.comment.item:first'));
+            }).bind('keydown', 'b', function (event) {
+                event.preventDefault();
+                _this16.scrollTo($(_this16.commentsRef).children('.comment.item:last'));
+            });
+        };
+
+        ChatDirect.prototype.gotoChatItem = function gotoChatItem(item) {
+
+            var chat = _.find(this.chats, { id: item.id });
+            if (chat) {
+                this.scrollToAfterImgLoaded(item.id);
+            } else {
+
+                var chatTo = void 0;
+                var chatId = void 0;
+
+                if (item.chatTo) {
+                    chatTo = item.chatTo.username;
+                    chatId = '@' + chatTo;
+                } else if (item.channel) {
+                    chatTo = item.channel.name;
+                    chatId = '' + chatTo;
+                }
+
+                if (this.chatTo == chatTo) {
+                    this.activate({
+                        id: item.id,
+                        username: chatId
+                    }, this.routeConfig);
+                } else {
+                    window.location = wurl('path') + ('#/chat/' + chatId + '?id=' + item.id);
+                }
+            }
+        };
+
+        ChatDirect.prototype.refreshLatestHandler = function refreshLatestHandler(event) {
+            event.stopImmediatePropagation();
+            this.markId = null;
+            if (this.isAt) {
+                this.listChatDirect(false);
+            } else {
+                this.listChatChannel(false);
+            }
+        };
+
+        return ChatDirect;
+    }();
+});
+define('chat/chat-service',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    function _asyncToGenerator(fn) {
+        return function () {
+            var gen = fn.apply(this, arguments);
+            return new Promise(function (resolve, reject) {
+                function step(key, arg) {
+                    try {
+                        var info = gen[key](arg);
+                        var value = info.value;
+                    } catch (error) {
+                        reject(error);
+                        return;
+                    }
+
+                    if (info.done) {
+                        resolve(value);
+                    } else {
+                        return Promise.resolve(value).then(function (value) {
+                            return step("next", value);
+                        }, function (err) {
+                            return step("throw", err);
+                        });
+                    }
+                }
+
+                return step("next");
+            });
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var ChatService = function () {
+        function ChatService() {
+            _classCallCheck(this, ChatService);
+        }
+
+        ChatService.prototype.loginUser = function () {
+            var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(useCache) {
+                var _this = this;
+
+                return regeneratorRuntime.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
+                                if (!(!useCache || !this.user)) {
+                                    _context.next = 3;
+                                    break;
+                                }
+
+                                _context.next = 3;
+                                return $.get('/admin/user/loginUser', function (data) {
+                                    if (data.success) {
+                                        _this.user = data.data;
+                                    }
+                                });
+
+                            case 3:
+                                return _context.abrupt('return', this.user);
+
+                            case 4:
+                            case 'end':
+                                return _context.stop();
+                        }
+                    }
+                }, _callee, this);
+            }));
+
+            function loginUser(_x) {
+                return _ref.apply(this, arguments);
+            }
+
+            return loginUser;
+        }();
+
+        ChatService.prototype.listUsers = function () {
+            var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(useCache) {
+                var _this2 = this;
+
+                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                    while (1) {
+                        switch (_context2.prev = _context2.next) {
+                            case 0:
+                                if (!(!useCache || !this.users)) {
+                                    _context2.next = 3;
+                                    break;
+                                }
+
+                                _context2.next = 3;
+                                return $.get('/admin/user/all', {}, function (data) {
+                                    if (data.success) {
+                                        _this2.users = data.data;
+                                    }
+                                });
+
+                            case 3:
+                                return _context2.abrupt('return', this.users);
+
+                            case 4:
+                            case 'end':
+                                return _context2.stop();
+                        }
+                    }
+                }, _callee2, this);
+            }));
+
+            function listUsers(_x2) {
+                return _ref2.apply(this, arguments);
+            }
+
+            return listUsers;
+        }();
+
+        ChatService.prototype.listChannels = function () {
+            var _ref3 = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(useCache) {
+                var _this3 = this;
+
+                return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                if (!(!useCache || !this.channels)) {
+                                    _context3.next = 3;
+                                    break;
+                                }
+
+                                _context3.next = 3;
+                                return $.get('/admin/channel/listMy', function (data) {
+                                    if (data.success) {
+                                        _this3.channels = data.data;
+                                    }
+                                });
+
+                            case 3:
+                                return _context3.abrupt('return', this.channels);
+
+                            case 4:
+                            case 'end':
+                                return _context3.stop();
+                        }
+                    }
+                }, _callee3, this);
+            }));
+
+            function listChannels(_x3) {
+                return _ref3.apply(this, arguments);
+            }
+
+            return listChannels;
+        }();
+
+        return ChatService;
+    }();
+
+    exports.default = new ChatService();
+});
 define('init/config',['exports', 'aurelia-templating-resources', 'aurelia-event-aggregator', 'aurelia-fetch-client', 'toastr', 'wurl', 'common/common-utils', 'marked', 'highlight', 'autosize', 'nprogress', 'push', 'color-hash', 'isomorphic-fetch', 'common/common-plugin', 'common/common-constant', 'common/common-ctx', 'common/common-imgs-loaded', 'modaal'], function (exports, _aureliaTemplatingResources, _aureliaEventAggregator, _aureliaFetchClient, _toastr, _wurl, _commonUtils, _marked, _highlight, _autosize, _nprogress, _push, _colorHash) {
     'use strict';
 
@@ -4552,6 +4560,120 @@ define('resources/index',['exports'], function (exports) {
 
         aurelia.globalResources(['resources/value-converters/vc-common', 'resources/binding-behaviors/bb-key', 'resources/attributes/attr-task', 'resources/attributes/attr-swipebox', 'resources/attributes/attr-pastable', 'resources/attributes/attr-autosize', 'resources/attributes/attr-dropzone', 'resources/attributes/attr-attr', 'resources/attributes/attr-c2c', 'resources/attributes/attr-dimmer', 'resources/attributes/attr-ui-dropdown', 'resources/attributes/attr-ui-dropdown-action', 'resources/attributes/attr-ui-dropdown-hover', 'resources/attributes/attr-ui-tab', 'resources/attributes/attr-ui-popup', 'resources/attributes/attr-ui-checkbox', 'resources/attributes/attr-tablesort', 'resources/attributes/attr-textcomplete', 'resources/attributes/attr-scrollbar', 'resources/attributes/attr-modaal', 'resources/elements/em-modal', 'resources/elements/em-dropdown', 'resources/elements/em-checkbox', 'resources/elements/em-confirm-modal', 'resources/elements/em-hotkeys-modal', 'resources/elements/em-chat-input', 'resources/elements/em-chat-top-menu', 'resources/elements/em-chat-sidebar-left', 'resources/elements/em-chat-content-item', 'resources/elements/em-chat-sidebar-right', 'resources/elements/em-chat-channel-create', 'resources/elements/em-chat-channel-join', 'resources/elements/em-chat-channel-edit', 'resources/elements/em-chat-channel-members-mgr', 'resources/elements/em-chat-channel-members-show', 'resources/elements/em-chat-channel-link-mgr', 'resources/elements/em-chat-system-link-mgr', 'resources/elements/em-chat-msg-popup', 'resources/elements/em-chat-member-popup', 'resources/elements/em-chat-attach', 'resources/elements/em-chat-schedule', 'resources/elements/em-chat-schedule-edit', 'resources/elements/em-chat-schedule-remind', 'resources/elements/em-chat-share', 'resources/elements/em-blog-write', 'resources/elements/em-blog-left-sidebar', 'resources/elements/em-blog-right-sidebar', 'resources/elements/em-blog-content', 'resources/elements/em-blog-top-menu', 'resources/elements/em-blog-share', 'resources/elements/em-blog-comment', 'resources/elements/em-blog-save', 'resources/elements/em-blog-space-create', 'resources/elements/em-blog-space-edit', 'resources/elements/em-blog-space-update', 'resources/elements/em-blog-history', 'resources/elements/em-blog-history-view', 'resources/elements/em-blog-history-diff', 'resources/elements/em-blog-comment-popup', 'resources/elements/em-blog-space-auth', 'resources/elements/em-user-avatar', 'resources/elements/em-user-edit']);
     }
+});
+define('test/test-lifecycle',['exports', 'aurelia-framework', 'aurelia-event-aggregator'], function (exports, _aureliaFramework, _aureliaEventAggregator) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.TestLifeCycle = undefined;
+
+    function _initDefineProp(target, property, descriptor, context) {
+        if (!descriptor) return;
+        Object.defineProperty(target, property, {
+            enumerable: descriptor.enumerable,
+            configurable: descriptor.configurable,
+            writable: descriptor.writable,
+            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
+        });
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
+        var desc = {};
+        Object['ke' + 'ys'](descriptor).forEach(function (key) {
+            desc[key] = descriptor[key];
+        });
+        desc.enumerable = !!desc.enumerable;
+        desc.configurable = !!desc.configurable;
+
+        if ('value' in desc || desc.initializer) {
+            desc.writable = true;
+        }
+
+        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+            return decorator(target, property, desc) || desc;
+        }, desc);
+
+        if (context && desc.initializer !== void 0) {
+            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
+            desc.initializer = undefined;
+        }
+
+        if (desc.initializer === void 0) {
+            Object['define' + 'Property'](target, property, desc);
+            desc = null;
+        }
+
+        return desc;
+    }
+
+    function _initializerWarningHelper(descriptor, context) {
+        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
+    }
+
+    var _desc, _value, _class, _descriptor, _class2, _temp;
+
+    var TestLifeCycle = exports.TestLifeCycle = (_class = (_temp = _class2 = function () {
+        function TestLifeCycle(eventAggregator) {
+            _classCallCheck(this, TestLifeCycle);
+
+            _initDefineProp(this, 'prop', _descriptor, this);
+
+            this.eventAggregator = eventAggregator;
+
+            console.log('constructor');
+        }
+
+        TestLifeCycle.prototype.created = function created(view) {
+            console.log('created');
+        };
+
+        TestLifeCycle.prototype.bind = function bind(ctx) {
+            console.log('bind');
+        };
+
+        TestLifeCycle.prototype.unbind = function unbind() {
+            console.log('unbind');
+        };
+
+        TestLifeCycle.prototype.attached = function attached() {
+            console.log('attached');
+        };
+
+        TestLifeCycle.prototype.detached = function detached() {
+            console.log('detached');
+        };
+
+        TestLifeCycle.prototype.canActivate = function canActivate(params, routeConfig, navigationInstruction) {
+            console.log('canActivate');
+        };
+
+        TestLifeCycle.prototype.activate = function activate(params, routeConfig, navigationInstruction) {
+            console.log('activate');
+        };
+
+        TestLifeCycle.prototype.canDeactivate = function canDeactivate() {
+            console.log('canDeactivate');
+        };
+
+        TestLifeCycle.prototype.deactivate = function deactivate() {
+            console.log('deactivate');
+        };
+
+        return TestLifeCycle;
+    }(), _class2.inject = [_aureliaEventAggregator.EventAggregator], _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'prop', [_aureliaFramework.bindable], {
+        enumerable: true,
+        initializer: function initializer() {
+            return null;
+        }
+    })), _class);
 });
 define('user/user-login',['exports'], function (exports) {
     'use strict';
@@ -4871,120 +4993,6 @@ define('user/user-register',['exports'], function (exports) {
 
         return ViewModel;
     }();
-});
-define('test/test-lifecycle',['exports', 'aurelia-framework', 'aurelia-event-aggregator'], function (exports, _aureliaFramework, _aureliaEventAggregator) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.TestLifeCycle = undefined;
-
-    function _initDefineProp(target, property, descriptor, context) {
-        if (!descriptor) return;
-        Object.defineProperty(target, property, {
-            enumerable: descriptor.enumerable,
-            configurable: descriptor.configurable,
-            writable: descriptor.writable,
-            value: descriptor.initializer ? descriptor.initializer.call(context) : void 0
-        });
-    }
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
-        var desc = {};
-        Object['ke' + 'ys'](descriptor).forEach(function (key) {
-            desc[key] = descriptor[key];
-        });
-        desc.enumerable = !!desc.enumerable;
-        desc.configurable = !!desc.configurable;
-
-        if ('value' in desc || desc.initializer) {
-            desc.writable = true;
-        }
-
-        desc = decorators.slice().reverse().reduce(function (desc, decorator) {
-            return decorator(target, property, desc) || desc;
-        }, desc);
-
-        if (context && desc.initializer !== void 0) {
-            desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
-            desc.initializer = undefined;
-        }
-
-        if (desc.initializer === void 0) {
-            Object['define' + 'Property'](target, property, desc);
-            desc = null;
-        }
-
-        return desc;
-    }
-
-    function _initializerWarningHelper(descriptor, context) {
-        throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
-    }
-
-    var _desc, _value, _class, _descriptor, _class2, _temp;
-
-    var TestLifeCycle = exports.TestLifeCycle = (_class = (_temp = _class2 = function () {
-        function TestLifeCycle(eventAggregator) {
-            _classCallCheck(this, TestLifeCycle);
-
-            _initDefineProp(this, 'prop', _descriptor, this);
-
-            this.eventAggregator = eventAggregator;
-
-            console.log('constructor');
-        }
-
-        TestLifeCycle.prototype.created = function created(view) {
-            console.log('created');
-        };
-
-        TestLifeCycle.prototype.bind = function bind(ctx) {
-            console.log('bind');
-        };
-
-        TestLifeCycle.prototype.unbind = function unbind() {
-            console.log('unbind');
-        };
-
-        TestLifeCycle.prototype.attached = function attached() {
-            console.log('attached');
-        };
-
-        TestLifeCycle.prototype.detached = function detached() {
-            console.log('detached');
-        };
-
-        TestLifeCycle.prototype.canActivate = function canActivate(params, routeConfig, navigationInstruction) {
-            console.log('canActivate');
-        };
-
-        TestLifeCycle.prototype.activate = function activate(params, routeConfig, navigationInstruction) {
-            console.log('activate');
-        };
-
-        TestLifeCycle.prototype.canDeactivate = function canDeactivate() {
-            console.log('canDeactivate');
-        };
-
-        TestLifeCycle.prototype.deactivate = function deactivate() {
-            console.log('deactivate');
-        };
-
-        return TestLifeCycle;
-    }(), _class2.inject = [_aureliaEventAggregator.EventAggregator], _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'prop', [_aureliaFramework.bindable], {
-        enumerable: true,
-        initializer: function initializer() {
-            return null;
-        }
-    })), _class);
 });
 define('resources/attributes/attr-attr',['exports', 'aurelia-framework', 'aurelia-dependency-injection'], function (exports, _aureliaFramework, _aureliaDependencyInjection) {
     'use strict';
@@ -6493,7 +6501,13 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
     var _class, _desc, _value, _class2, _descriptor;
 
     var EmBlogComment = exports.EmBlogComment = (0, _aureliaFramework.containerless)(_class = (_class2 = function () {
+        EmBlogComment.prototype.blogChanged = function blogChanged(newValue, oldValue) {
+            this._refresh();
+        };
+
         function EmBlogComment() {
+            var _this2 = this;
+
             _classCallCheck(this, EmBlogComment);
 
             this.comments = [];
@@ -6505,14 +6519,19 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
             this.users = nsCtx.users;
 
             _initDefineProp(this, 'blog', _descriptor, this);
+
+            this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_COMMENT_MSG_INSERT, function (payload) {
+                _this2.insertContent('' + payload.content);
+                _this2._scrollTo('b');
+            });
         }
 
-        EmBlogComment.prototype.blogChanged = function blogChanged(newValue, oldValue) {
-            this._refresh();
+        EmBlogComment.prototype.unbind = function unbind() {
+            this.subscribe.dispose();
         };
 
         EmBlogComment.prototype._refresh = function _refresh() {
-            var _this2 = this;
+            var _this3 = this;
 
             if (!this.blog) {
                 return;
@@ -6524,11 +6543,11 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
             }, function (data) {
                 if (data.success) {
                     (function () {
-                        _this2.comments = data.data.content;
+                        _this3.comments = data.data.content;
                         var cid = utils.urlQuery('cid');
                         if (cid) {
                             _.defer(function () {
-                                _this2.scrollToAfterImgLoaded(cid);
+                                _this3.scrollToAfterImgLoaded(cid);
                             });
                         }
                     })();
@@ -6539,7 +6558,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
         };
 
         EmBlogComment.prototype.attached = function attached() {
-            var _this3 = this;
+            var _this4 = this;
 
             this._init();
 
@@ -6556,37 +6575,37 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
                 if (event.ctrlKey) {
                     var cid = $(event.currentTarget).attr('data-id');
                     var $t = $(event.currentTarget).find('.content > textarea');
-                    var item = _.find(_this3.comments, { id: +cid });
-                    if (_this3.isSuper || item.creator.username == _this3.loginUser.username) {
-                        _this3.editHandler(item, $t);
+                    var item = _.find(_this4.comments, { id: +cid });
+                    if (_this4.isSuper || item.creator.username == _this4.loginUser.username) {
+                        _this4.editHandler(item, $t);
                     }
                 }
             });
 
             $('.em-blog-comment .comments').on('click', '.comment', function (event) {
-                _this3.focusedComment = $(event.currentTarget);
+                _this4.focusedComment = $(event.currentTarget);
             });
 
             this.initHotkeys();
         };
 
         EmBlogComment.prototype.initHotkeys = function initHotkeys() {
-            var _this4 = this;
+            var _this5 = this;
 
             $(document).bind('keydown', 'r', function (evt) {
                 evt.preventDefault();
                 $('.em-blog-content').scrollTo('max', 120, {
                     offset: 0
                 });
-                _this4.simplemde.codemirror.focus();
+                _this5.simplemde.codemirror.focus();
             }).bind('keydown', 'alt+up', function (evt) {
                 evt.preventDefault();
-                $('.em-blog-content').scrollTo(_this4.getScrollTargetComment(true), 120, {
+                $('.em-blog-content').scrollTo(_this5.getScrollTargetComment(true), 120, {
                     offset: 0
                 });
             }).bind('keydown', 'alt+down', function (evt) {
                 evt.preventDefault();
-                $('.em-blog-content').scrollTo(_this4.getScrollTargetComment(), 120, {
+                $('.em-blog-content').scrollTo(_this5.getScrollTargetComment(), 120, {
                     offset: 0
                 });
             });
@@ -6615,7 +6634,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
         };
 
         EmBlogComment.prototype._init = function _init() {
-            var _this5 = this;
+            var _this6 = this;
 
             this.simplemde = new _simplemde2.default({
                 element: this.commentRef,
@@ -6675,14 +6694,14 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
                 }, {
                     name: "tasks",
                     action: function action(editor) {
-                        _this5.insertContent('- [ ] 未完成任务\n- [x] 已完成任务');
+                        _this6.insertContent('- [ ] 未完成任务\n- [x] 已完成任务');
                     },
                     className: "fa fa-check-square-o ",
                     title: "任务列表"
                 }, {
                     name: "details",
                     action: function action(editor) {
-                        _this5.insertContent('<details>\n<summary>标题</summary>\n<p>详情内容</p>\n</details>');
+                        _this6.insertContent('<details>\n<summary>标题</summary>\n<p>详情内容</p>\n</details>');
                     },
                     className: "fa fa-play ",
                     title: "折叠详情"
@@ -6735,9 +6754,9 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
 
             this.simplemde.codemirror.on('keyup', function (cm, e) {
                 if (e.ctrlKey && e.keyCode == 13) {
-                    _this5.addHandler();
+                    _this6.addHandler();
                 } else if (e.keyCode == 27) {
-                    _this5.simplemde.value('');
+                    _this6.simplemde.value('');
                 }
             });
 
@@ -6751,16 +6770,16 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
             this.initTextcomplete();
 
             this.initUploadDropzone($('.CodeMirror-wrap', this.markdownRef), function () {
-                return _this5.$chatMsgInputRef;
+                return _this6.$chatMsgInputRef;
             }, false);
 
             this.initUploadDropzone($('.editor-toolbar .fa.fa-upload', this.markdownRef), function () {
-                return _this5.$chatMsgInputRef;
+                return _this6.$chatMsgInputRef;
             }, true);
         };
 
         EmBlogComment.prototype.initTextcomplete = function initTextcomplete() {
-            var _this6 = this;
+            var _this7 = this;
 
             $(this.$chatMsgInputRef).textcomplete([{
                 match: /(^|\s)@(\w*)$/,
@@ -6793,7 +6812,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
                     return emojify.replace(emojiKey) + ' - ' + emojiKey;
                 },
                 replace: function replace(value) {
-                    if (_this6.tipsActionHandler(value)) {
+                    if (_this7.tipsActionHandler(value)) {
                         return '$1:' + value + ': ';
                     } else {
                         return '';
@@ -6804,7 +6823,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
             });
 
             this.simplemde.codemirror.on('keydown', function (cm, e) {
-                if (_.includes([13, 38, 40], e.keyCode) && _this6.isTipsShow()) {
+                if (_.includes([13, 38, 40], e.keyCode) && _this7.isTipsShow()) {
                     e.preventDefault();
                 }
             });
@@ -6857,13 +6876,13 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
         };
 
         EmBlogComment.prototype.removeHandler = function removeHandler(item) {
-            var _this7 = this;
+            var _this8 = this;
 
             $.post('/admin/blog/comment/remove', {
                 cid: item.id
             }, function (data, textStatus, xhr) {
                 if (data.success) {
-                    _this7.comments = _.reject(_this7.comments, { id: item.id });
+                    _this8.comments = _.reject(_this8.comments, { id: item.id });
                     toastr.success('博文评论移除成功!');
                 } else {
                     toastr.error(data.data, '博文评论移除失败!');
@@ -6872,7 +6891,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
         };
 
         EmBlogComment.prototype.addHandler = function addHandler() {
-            var _this8 = this;
+            var _this9 = this;
 
             var content = this.simplemde.value();
 
@@ -6899,20 +6918,20 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
                 contentHtml: html
             }, function (data, textStatus, xhr) {
                 if (data.success) {
-                    _this8.comments = [].concat(_this8.comments, [data.data]);
-                    _this8.simplemde.value('');
+                    _this9.comments = [].concat(_this9.comments, [data.data]);
+                    _this9.simplemde.value('');
                     toastr.success('博文评论提交成功!');
-                    _this8.scrollToAfterImgLoaded('b');
+                    _this9.scrollToAfterImgLoaded('b');
                 } else {
                     toastr.error(data.data, '博文评论提交失败!');
                 }
             }).always(function () {
-                _this8.sending = false;
+                _this9.sending = false;
             });
         };
 
         EmBlogComment.prototype.initPaste = function initPaste() {
-            var _this9 = this;
+            var _this10 = this;
 
             var $paste = void 0;
             if (this.$chatMsgInputRef.is('textarea')) {
@@ -6929,7 +6948,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
                     toType: 'Blog'
                 }, function (data, textStatus, xhr) {
                     if (data.success) {
-                        _this9.insertContent('![{name}]({baseURL}{path}{uuidName})'.replace(/\{name\}/g, data.data.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, data.data.path).replace(/\{uuidName\}/g, data.data.uuidName));
+                        _this10.insertContent('![{name}]({baseURL}{path}{uuidName})'.replace(/\{name\}/g, data.data.name).replace(/\{baseURL\}/g, utils.getBaseUrl() + '/').replace(/\{path\}/g, data.data.path).replace(/\{uuidName\}/g, data.data.uuidName));
                     }
                 });
             }).on('pasteImageError', function (ev, data) {
@@ -6987,14 +7006,14 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
         };
 
         EmBlogComment.prototype.scrollToAfterImgLoaded = function scrollToAfterImgLoaded(to) {
-            var _this10 = this;
+            var _this11 = this;
 
             _.defer(function () {
                 new ImagesLoaded($('.em-blog-content')[0]).always(function () {
-                    _this10._scrollTo(to);
+                    _this11._scrollTo(to);
                 });
 
-                _this10._scrollTo(to);
+                _this11._scrollTo(to);
             });
         };
 
@@ -7083,7 +7102,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
         };
 
         EmBlogComment.prototype.editSave = function editSave(item, txtRef) {
-            var _this11 = this;
+            var _this12 = this;
 
             this.sending = true;
 
@@ -7111,7 +7130,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
                     toastr.error(data.data, '博文评论更新失败!');
                 }
             }).always(function () {
-                _this11.sending = false;
+                _this12.sending = false;
             });
         };
 
@@ -32299,44 +32318,44 @@ define('highlight/lib/languages/zephir',['require','exports','module'],function 
 });
 
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./app.css\"></require>\r\n    <require from=\"./common.css\"></require>\r\n    <require from=\"./override.css\"></require>\r\n    <require from=\"./chat/md-github.css\"></require>\r\n    <require from=\"common/common-scrollbar.css\"></require>\r\n    <require from=\"nprogress/nprogress.css\"></require>\r\n    <require from=\"toastr/build/toastr.css\"></require>\r\n    <require from=\"tms-semantic-ui/semantic.min.css\"></require>\r\n    <require from=\"semantic-ui-calendar/dist/calendar.min.css\"></require>\r\n    <require from=\"modaal/dist/css/modaal.min.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <router-view></router-view>\r\n</template>\r\n"; });
-define('text!blog/blog.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./blog.css\"></require>\r\n    <div ref=\"blogContainerRef\" class=\"tms-blog ${!isHide ? 'left-sidebar-show' : ''} ${rightSidebarShow ? 'right-sidebar-show' : ''}\">\r\n        <em-blog-top-menu></em-blog-top-menu>\r\n        <em-blog-left-sidebar></em-blog-left-sidebar>\r\n        <em-blog-content></em-blog-content>\r\n        <em-blog-right-sidebar></em-blog-right-sidebar>\r\n        <em-chat-member-popup></em-chat-member-popup>\r\n    </div>\r\n    <em-blog-comment-popup></em-blog-comment-popup>\r\n</template>\r\n"; });
 define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n  overflow: hidden;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n.tms-dropzone-preview-hidden .dz-preview {\n  display: none!important;\n}\n"; });
 define('text!chat/chat-direct.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./chat-direct.css\"></require>\r\n    <div ref=\"chatContainerRef\" class=\"tms-chat-direct\">\r\n        <em-chat-top-menu users.bind=\"users\" chat-user.bind=\"user\" login-user.bind=\"loginUser\" channels.bind=\"channels\" channel.bind=\"channel\" login-user.bind=\"loginUser\" chat-id.bind=\"chatId\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-top-menu>\r\n        <em-chat-sidebar-left users.bind=\"users\" login-user.bind=\"loginUser\" channels.bind=\"channels\" chat-to.bind=\"chatTo\" is-at.bind=\"isAt\"></em-chat-sidebar-left>\r\n        <div ref=\"contentRef\" class=\"tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}\">\r\n            <div ref=\"contentBodyRef\" class=\"tms-content-body\">\r\n                <div ref=\"scrollbarRef\" class=\"tms-comments-container\" scrollbar>\r\n                    <div ref=\"commentsRef\" class=\"ui basic segment minimal selection list segment comments\">\r\n                        <div if.bind=\"!last\" click.delegate=\"lastMoreHandler()\" class=\"basic ui button tms-pre-more\"><i show.bind=\"lastMoreP && lastMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${lastCnt})</div>\r\n                        <em-chat-content-item chat-to.bind=\"chatTo\" mark-id.bind=\"markId\" channel.bind=\"channel\" is-at.bind=\"isAt\" chats.bind=\"chats\" login-user.bind=\"loginUser\"></em-chat-content-item>\r\n                        <div if.bind=\"!first\" click.delegate=\"firstMoreHandler()\" class=\"basic ui button tms-next-more\"><i show.bind=\"nextMoreP && nextMoreP.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${firstCnt})\r\n                            <div click.trigger=\"refreshLatestHandler($event)\" title=\"刷新最新消息\" class=\"ui basic circular mini icon button\">\r\n                                <i class=\"refresh icon\"></i>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <div show.bind=\"isShowHead\" title=\"滚至头部(alt+↑)\" class=\"tms-go tms-go-head\"><div click.delegate=\"goHeadHandler()\" class=\"circular ui icon button\"><i class=\"chevron up icon\"></i></div></div>\r\n                    <div show.bind=\"isShowFoot\" title=\"滚至尾部(alt+↓)\" class=\"tms-go tms-go-foot\"><div click.delegate=\"goFootHandler()\" class=\"circular ui icon button\"><i class=\"chevron down icon\"></i></div></div>\r\n                </div>\r\n                <em-chat-input channel.bind=\"channel\" is-at.bind=\"isAt\" chat-to.bind=\"chatTo\" em-chat-input.ref=\"emChatInputRef\"></em-chat-input>\r\n            </div>\r\n            <em-chat-sidebar-right login-user.bind=\"loginUser\" channel.bind=\"channel\" login-user.bind=\"loginUser\" is-at.bind=\"isAt\"></em-chat-sidebar-right>\r\n        </div>\r\n    </div>\r\n    <div css=\"width: ${progressWidth}px;\" class=\"tms-chat-progress\"></div>\r\n    <em-chat-msg-popup></em-chat-msg-popup>\r\n    <em-chat-member-popup></em-chat-member-popup>\r\n</template>\r\n"; });
+define('text!blog/blog.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./blog.css\"></require>\r\n    <div ref=\"blogContainerRef\" class=\"tms-blog ${!isHide ? 'left-sidebar-show' : ''} ${rightSidebarShow ? 'right-sidebar-show' : ''}\">\r\n        <em-blog-top-menu></em-blog-top-menu>\r\n        <em-blog-left-sidebar></em-blog-left-sidebar>\r\n        <em-blog-content></em-blog-content>\r\n        <em-blog-right-sidebar></em-blog-right-sidebar>\r\n        <em-chat-member-popup></em-chat-member-popup>\r\n    </div>\r\n    <em-blog-comment-popup></em-blog-comment-popup>\r\n</template>\r\n"; });
 define('text!common.css', ['module'], function(module) { module.exports = "code.nx {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  white-space: nowrap;\n}\n.markdown-body .pre-code-wrapper {\n  position: relative;\n}\n.markdown-body .pre-code-wrapper > i.copy.icon {\n  display: none;\n  position: absolute;\n  top: 0;\n  right: 0;\n  cursor: pointer;\n}\n.markdown-body .pre-code-wrapper:hover > i.copy.icon {\n  display: block;\n}\n.tms-disabled {\n  cursor: default;\n  opacity: .45!important;\n  background-image: none!important;\n  box-shadow: none!important;\n  pointer-events: none!important;\n}\n.tms-hidden {\n  display: none!important;\n}\n.animated {\n  -webkit-animation-duration: 1s;\n  animation-duration: 1s;\n  -webkit-animation-fill-mode: both;\n  animation-fill-mode: both;\n}\n@keyframes flip {\n  from {\n    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -360deg);\n    transform: perspective(400px) rotate3d(0, 1, 0, -360deg);\n    -webkit-animation-timing-function: ease-out;\n    animation-timing-function: ease-out;\n  }\n  40% {\n    -webkit-transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -190deg);\n    transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -190deg);\n    -webkit-animation-timing-function: ease-out;\n    animation-timing-function: ease-out;\n  }\n  50% {\n    -webkit-transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -170deg);\n    transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -170deg);\n    -webkit-animation-timing-function: ease-in;\n    animation-timing-function: ease-in;\n  }\n  80% {\n    -webkit-transform: perspective(400px) scale3d(0.95, 0.95, 0.95);\n    transform: perspective(400px) scale3d(0.95, 0.95, 0.95);\n    -webkit-animation-timing-function: ease-in;\n    animation-timing-function: ease-in;\n  }\n  to {\n    -webkit-transform: perspective(400px);\n    transform: perspective(400px);\n    -webkit-animation-timing-function: ease-in;\n    animation-timing-function: ease-in;\n  }\n}\n.animated.flip {\n  -webkit-backface-visibility: visible;\n  backface-visibility: visible;\n  -webkit-animation-name: flip;\n  animation-name: flip;\n}\n.cbutton {\n  position: relative;\n}\n.cbutton::after {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  margin: -7px 0 0 -7px;\n  width: 14px;\n  height: 14px;\n  border-radius: 50%;\n  content: '';\n  opacity: 0;\n  pointer-events: none;\n}\n/* Novak */\n.cbutton--effect-novak::after {\n  background: rgba(111, 148, 182, 0.25);\n}\n.cbutton--effect-novak.cbutton--click::after {\n  -webkit-animation: anim-effect-novak 0.5s forwards;\n  animation: anim-effect-novak 0.5s forwards;\n}\n@-webkit-keyframes anim-effect-novak {\n  0% {\n    opacity: 1;\n    -webkit-transform: scale3d(0.1, 0.1, 1);\n    transform: scale3d(0.1, 0.1, 1);\n  }\n  100% {\n    opacity: 0;\n    -webkit-transform: scale3d(8, 8, 1);\n    transform: scale3d(30, 30, 1);\n  }\n}\n@keyframes anim-effect-novak {\n  0% {\n    opacity: 1;\n    -webkit-transform: scale3d(0.1, 0.1, 1);\n    transform: scale3d(0.1, 0.1, 1);\n  }\n  100% {\n    opacity: 0;\n    -webkit-transform: scale3d(8, 8, 1);\n    transform: scale3d(30, 30, 1);\n  }\n}\n.emoji {\n  width: 1.5em;\n  height: 1.5em;\n  display: inline-block;\n  margin-bottom: -0.25em;\n  background-size: contain;\n}\n"; });
 define('text!test/test-lifecycle.html', ['module'], function(module) { module.exports = "<template>\r\n    <!-- <require from=\"\"></require> -->\r\n    <div class=\"ui container\">\r\n        <h1 class=\"ui header\">Aurelia框架模块生命周期钩子函数调用顺序测试(看console输出)</h1>\r\n    </div>\r\n</template>\r\n"; });
-define('text!override.css', ['module'], function(module) { module.exports = ".ui.dimmer {\n  background-color: rgba(0, 0, 0, 0.5) !important;\n}\n.ui.dimmer.page.modals {\n  z-index: 10000;\n}\n.ui.modal > .actions > .ui.left.floated.button {\n  margin-left: 3.5px;\n}\n.ui.list .list .item {\n  display: list-item !important;\n  table-layout: fixed;\n  height: auto!important;\n  visibility: visible!important;\n}\n.ui.list .list .item:after {\n  content: '';\n  display: block;\n  height: 0;\n  clear: both;\n  visibility: hidden;\n}\n#swipebox-bottom-bar,\n#swipebox-top-bar {\n  background: rgba(0, 0, 0, 0.3) !important;\n}\n"; });
-define('text!blog/blog.css', ['module'], function(module) { module.exports = ""; });
 define('text!user/user-login.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-login.css\"></require>\r\n    <div class=\"tms-user-login\">\r\n        <div class=\"container\">\r\n            <h2 class=\"ui center aligned icon header\">\r\n            <i class=\"circular users icon\"></i> 用户登录\r\n            </h2>\r\n            <div class=\"ui form segment\">\r\n                <div class=\"field\">\r\n                    <div class=\"ui left icon input\">\r\n                        <i class=\"user icon\"></i>\r\n                        <input type=\"text\" name=\"username\" value.bind=\"username\" placeholder=\"用户名\" />\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div class=\"ui left icon input\">\r\n                        <i class=\"lock icon\"></i>\r\n                        <input type=\"password\" name=\"password\" keydown.trigger=\"kdHandler($event)\" value.bind=\"password\" placeholder=\"密码\" />\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"rememberMeRef\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" name=\"remember-me\" />\r\n                        <label>记住我在此计算机的登录(2周)</label>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui center aligned header\">\r\n                    <button click.delegate=\"loginHandler()\" class=\"ui submit fluid button ${isReq ? 'disabled' : ''}\">登录</button>\r\n                </div>\r\n                <div style=\"text-align: center; font-size:12px;\">\r\n                    <a href=\"#/pwd-reset\">忘记密码</a> &nbsp;&nbsp;\r\n                    <a href=\"#/register\">注册用户</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!override.css', ['module'], function(module) { module.exports = ".ui.dimmer {\n  background-color: rgba(0, 0, 0, 0.5) !important;\n}\n.ui.dimmer.page.modals {\n  z-index: 10000;\n}\n.ui.modal > .actions > .ui.left.floated.button {\n  margin-left: 3.5px;\n}\n.ui.list .list .item {\n  display: list-item !important;\n  table-layout: fixed;\n  height: auto!important;\n  visibility: visible!important;\n}\n.ui.list .list .item:after {\n  content: '';\n  display: block;\n  height: 0;\n  clear: both;\n  visibility: hidden;\n}\n#swipebox-bottom-bar,\n#swipebox-top-bar {\n  background: rgba(0, 0, 0, 0.3) !important;\n}\n"; });
 define('text!user/user-pwd-reset.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-pwd-reset.css\"></require>\r\n    <div class=\"ui container tms-user-pwd-reset\">\r\n        <div class=\"tms-flex\">\r\n            <div if.bind=\"!token\" ref=\"fm\" class=\"ui form segment\" style=\"width: 260px;\">\r\n                <div class=\"ui message\">输入您的邮箱地址,我们会发送密码重置链接到您的邮箱!</div>\r\n                <div class=\"field\">\r\n                    <label style=\"display:none;\">邮件地址</label>\r\n                    <input type=\"text\" name=\"mail\" autofocus=\"\" value.bind=\"mail\" placeholder=\"输入您的邮件地址\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"resetPwdHandler()\">发送密码重置邮件</div>\r\n            </div>\r\n            <div if.bind=\"token\" ref=\"fm2\" class=\"ui form segment\" style=\"width: 260px;\">\r\n                <div class=\"ui message\">设置您的新密码,密码长度要求至少8位字符!</div>\r\n                <div class=\"field\">\r\n                    <label style=\"display:none;\">新密码</label>\r\n                    <input type=\"password\" name=\"mail\" autofocus=\"\" value.bind=\"pwd\" placeholder=\"设置您的新密码\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"newPwdHandler()\">确认</div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!chat/chat-direct.css', ['module'], function(module) { module.exports = ".tms-chat-direct {\n  height: 100%;\n}\n.tms-chat-direct .ui.comments {\n  min-height: calc(100% - 170px);\n}\n.tms-chat-direct .ui.comments > .comment > .content {\n  display: block!important;\n}\n.tms-chat-direct .tms-edit-textarea {\n  width: 100%;\n}\n.tms-chat-direct .ui.selection.list > .item {\n  cursor: default;\n}\n.tms-chat-direct .ui.search .prompt {\n  border-radius: .28571429rem;\n}\n.tms-chat-direct .tms-content {\n  position: relative;\n  margin-left: 220px;\n  top: 60px;\n  height: calc(100% - 60px);\n}\n.tms-chat-direct .tms-content.tms-sidebar-show .tms-right-sidebar {\n  width: 388px;\n  border-left: 1px #e9e9e9 solid;\n  -webkit-transition: width 0.15s ease-out 0s;\n  transition: width 0.15s ease-out 0s;\n  margin: 4px;\n  margin-right: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content {\n    margin-left: 0;\n  }\n}\n.tms-chat-direct .tms-content .tms-content-body {\n  width: 100%;\n  height: 100%;\n  max-width: 100%;\n  padding-bottom: 73px;\n}\n.tms-chat-direct .tms-content .tms-content-body .tms-comments-container {\n  width: 100%;\n  height: 100%;\n  overflow: auto;\n}\n.tms-chat-direct .tms-content .tms-content-body .ui.comments {\n  overflow: hidden;\n  max-width: none;\n  margin-bottom: 12px;\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-content .tms-content-body .ui.comments > .ui.basic.button {\n  display: block;\n  margin-right: 0;\n}\n.tms-chat-direct .tms-content .tms-content-body .ui.comments .tms-pre-more {\n  margin-bottom: 10px;\n}\n.tms-chat-direct .tms-content .tms-content-body .ui.comments .tms-next-more {\n  margin-top: 10px;\n  position: relative;\n}\n.tms-chat-direct .tms-content .tms-content-body .ui.comments .tms-next-more .ui.icon.button {\n  position: absolute;\n  top: 2px;\n  right: -1px;\n}\n.tms-chat-direct .tms-content .tms-content-body .tms-go {\n  position: fixed;\n  left: 240px;\n}\n.tms-chat-direct .tms-content .tms-content-body .tms-go .ui.button {\n  margin: 0;\n  background-color: rgba(224, 225, 226, 0.5);\n}\n.tms-chat-direct .tms-content .tms-content-body .tms-go .ui.button:hover {\n  background-color: #CACBCD;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content .tms-content-body .tms-go {\n    left: 20px;\n  }\n}\n.tms-chat-direct .tms-content .tms-content-body .tms-go-head {\n  top: 80px;\n}\n.tms-chat-direct .tms-content .tms-content-body .tms-go-foot {\n  bottom: 90px;\n}\n.tms-chat-direct .tms-right-sidebar {\n  position: absolute;\n  top: 0;\n  right: 0;\n  width: 0;\n  bottom: 0;\n  overflow: hidden;\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .ui.button.tms-search-more {\n  display: block;\n  margin: 0;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body {\n  max-height: 65px;\n  overflow-y: hidden;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body.tms-open {\n  max-height: none;\n  overflow-y: auto;\n  padding-bottom: 20px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .tms-btn-open-search-item {\n  display: none;\n  height: 25px;\n  background-color: rgba(0, 0, 0, 0.1);\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  text-align: center;\n  padding-top: 2px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment:hover .tms-btn-open-search-item {\n  display: block;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-left-sidebar {\n    display: none;\n  }\n  .tms-chat-direct .tms-right-sidebar {\n    position: fixed;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 59px;\n    background-color: white;\n    margin-left: 0!important;\n  }\n  .tms-chat-direct .tms-right-sidebar .panel-chat-msg .ui.basic.segment.minimal.selection.list.segment.comments {\n    padding-left: 0;\n    padding-right: 0;\n  }\n  .tms-chat-direct .tms-sidebar-show .tms-right-sidebar {\n    width: 100%!important;\n  }\n}\n.tms-chat-direct .tms-edit-actions .left.button {\n  border-top-left-radius: 0;\n}\n.tms-chat-direct .tms-edit-actions .right.button {\n  border-top-right-radius: 0;\n}\n.tms-chat-progress {\n  position: absolute;\n  display: inline-block;\n  top: 60px;\n  left: 0;\n  width: 0;\n  height: 2px;\n  margin-left: 220px;\n  background-color: #c6c6c6;\n  box-shadow: 0px 0px 8px 0px #c6c6c6;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-progress {\n    margin-left: 0;\n  }\n}\n"; });
 define('text!user/user-register.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-register.css\"></require>\r\n    <div class=\"ui container tms-user-register\">\r\n        <div class=\"tms-flex\">\r\n            <div if.bind=\"!token\" ref=\"fm\" class=\"ui form segment\" style=\"width: 280px;\">\r\n                <div class=\"ui message\">提交账户注册信息成功后,我们会向您的注册邮箱发送一封账户激活邮件,激活账户后即可登录!</div>\r\n                <div class=\"required field\">\r\n                    <label>用户名</label>\r\n                    <input type=\"text\" name=\"username\" autofocus=\"\" value.bind=\"username\" placeholder=\"输入您的登录用户名\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>密码</label>\r\n                    <input type=\"password\" name=\"pwd\" autofocus=\"\" value.bind=\"pwd\" placeholder=\"输入您的登录密码\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>姓名</label>\r\n                    <input type=\"text\" name=\"name\" autofocus=\"\" value.bind=\"name\" placeholder=\"输入您的显示名称\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>邮箱</label>\r\n                    <input type=\"text\" name=\"mail\" autofocus=\"\" value.bind=\"mail\" placeholder=\"输入您的账户激活邮箱\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"okHandler()\">确认</div>\r\n            </div>\r\n            <div if.bind=\"token\" class=\"ui center aligned very padded segment\" style=\"width: 320px;\">\r\n            \t<h1 class=\"ui header\">${header}</h1>\r\n            \t<a href=\"/admin/login\" class=\"ui green button\">返回登录页面</a>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!chat/md-github.css', ['module'], function(module) { module.exports = ".markdown-body {\n  font-size: 14px;\n  line-height: 1.6;\n}\n.markdown-body > br,\n.markdown-body ul br .markdown-body ol br {\n  display: none;\n}\n.markdown-body > *:first-child {\n  margin-top: 0 !important;\n}\n.markdown-body > *:last-child {\n  margin-bottom: 0 !important;\n}\n.markdown-body a {\n  word-break: break-all;\n}\n.markdown-body a.absent {\n  color: #CC0000;\n}\n.markdown-body a.anchor {\n  bottom: 0;\n  cursor: pointer;\n  display: block;\n  left: 0;\n  margin-left: -30px;\n  padding-left: 30px;\n  position: absolute;\n  top: 0;\n}\n.markdown-body h1,\n.markdown-body h2,\n.markdown-body h3,\n.markdown-body h4,\n.markdown-body h5,\n.markdown-body h6 {\n  cursor: text;\n  font-weight: bold;\n  margin: 20px 0 10px;\n  padding: 0;\n  position: relative;\n  word-break: break-all;\n}\n.markdown-body h1 .mini-icon-link,\n.markdown-body h2 .mini-icon-link,\n.markdown-body h3 .mini-icon-link,\n.markdown-body h4 .mini-icon-link,\n.markdown-body h5 .mini-icon-link,\n.markdown-body h6 .mini-icon-link {\n  color: #000000;\n  display: none;\n}\n.markdown-body h1:hover a.anchor,\n.markdown-body h2:hover a.anchor,\n.markdown-body h3:hover a.anchor,\n.markdown-body h4:hover a.anchor,\n.markdown-body h5:hover a.anchor,\n.markdown-body h6:hover a.anchor {\n  line-height: 1;\n  margin-left: -22px;\n  padding-left: 0;\n  text-decoration: none;\n  top: 15%;\n}\n.markdown-body h1:hover a.anchor .mini-icon-link,\n.markdown-body h2:hover a.anchor .mini-icon-link,\n.markdown-body h3:hover a.anchor .mini-icon-link,\n.markdown-body h4:hover a.anchor .mini-icon-link,\n.markdown-body h5:hover a.anchor .mini-icon-link,\n.markdown-body h6:hover a.anchor .mini-icon-link {\n  display: inline-block;\n}\n.markdown-body h1 tt,\n.markdown-body h1 code,\n.markdown-body h2 tt,\n.markdown-body h2 code,\n.markdown-body h3 tt,\n.markdown-body h3 code,\n.markdown-body h4 tt,\n.markdown-body h4 code,\n.markdown-body h5 tt,\n.markdown-body h5 code,\n.markdown-body h6 tt,\n.markdown-body h6 code {\n  font-size: inherit;\n}\n.markdown-body h1 {\n  color: #000000;\n  font-size: 28px;\n}\n.markdown-body h2 {\n  border-bottom: 1px solid #CCCCCC;\n  color: #000000;\n  font-size: 24px;\n}\n.markdown-body h3 {\n  font-size: 18px;\n}\n.markdown-body h4 {\n  font-size: 16px;\n}\n.markdown-body h5 {\n  font-size: 14px;\n}\n.markdown-body h6 {\n  color: #777777;\n  font-size: 14px;\n}\n.markdown-body p,\n.markdown-body blockquote,\n.markdown-body ul,\n.markdown-body ol,\n.markdown-body dl,\n.markdown-body table,\n.markdown-body pre {\n  margin: 15px 0;\n}\n.markdown-body hr {\n  overflow: hidden;\n  background: 0 0;\n}\n.markdown-body hr:before {\n  display: table;\n  content: \"\";\n}\n.markdown-body hr:after {\n  display: table;\n  clear: both;\n  content: \"\";\n}\n.markdown-body hr {\n  height: 4px;\n  padding: 0;\n  margin: 16px 0;\n  background-color: #e7e7e7;\n  border: 0;\n}\n.markdown-body hr {\n  -moz-box-sizing: content-box;\n  box-sizing: content-box;\n}\n.markdown-body > h2:first-child,\n.markdown-body > h1:first-child,\n.markdown-body > h1:first-child + h2,\n.markdown-body > h3:first-child,\n.markdown-body > h4:first-child,\n.markdown-body > h5:first-child,\n.markdown-body > h6:first-child {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body a:first-child h1,\n.markdown-body a:first-child h2,\n.markdown-body a:first-child h3,\n.markdown-body a:first-child h4,\n.markdown-body a:first-child h5,\n.markdown-body a:first-child h6 {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body h1 + p,\n.markdown-body h2 + p,\n.markdown-body h3 + p,\n.markdown-body h4 + p,\n.markdown-body h5 + p,\n.markdown-body h6 + p {\n  margin-top: 0;\n}\n.markdown-body li p.first {\n  display: inline-block;\n}\n.markdown-body ul,\n.markdown-body ol {\n  padding-left: 30px;\n}\n.markdown-body ul.no-list,\n.markdown-body ol.no-list {\n  list-style-type: none;\n  padding: 0;\n}\n.markdown-body ul li > *:first-child,\n.markdown-body ol li > *:first-child {\n  margin-top: 0;\n}\n.markdown-body ul ul,\n.markdown-body ul ol,\n.markdown-body ol ol,\n.markdown-body ol ul {\n  margin-bottom: 0;\n}\n.markdown-body dl {\n  padding: 0;\n}\n.markdown-body dl dt {\n  font-size: 14px;\n  font-style: italic;\n  font-weight: bold;\n  margin: 15px 0 5px;\n  padding: 0;\n}\n.markdown-body dl dt:first-child {\n  padding: 0;\n}\n.markdown-body dl dt > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dt > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body dl dd {\n  margin: 0 0 15px;\n  padding: 0 15px;\n}\n.markdown-body dl dd > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dd > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body blockquote {\n  border-left: 4px solid #DDDDDD;\n  color: #777777;\n  padding: 0 15px;\n}\n.markdown-body blockquote > *:first-child {\n  margin-top: 0;\n}\n.markdown-body blockquote > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body table th {\n  font-weight: bold;\n}\n.markdown-body table th,\n.markdown-body table td {\n  border: 1px solid #CCCCCC;\n  padding: 6px 13px;\n}\n.markdown-body table tr {\n  background-color: #FFFFFF;\n  border-top: 1px solid #CCCCCC;\n}\n.markdown-body table tr:nth-child(2n) {\n  background-color: #F8F8F8;\n}\n.markdown-body img {\n  max-width: 100%;\n}\n.markdown-body span.frame {\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.frame > span {\n  border: 1px solid #DDDDDD;\n  display: block;\n  float: left;\n  margin: 13px 0 0;\n  overflow: hidden;\n  padding: 7px;\n  width: auto;\n}\n.markdown-body span.frame span img {\n  display: block;\n  float: left;\n}\n.markdown-body span.frame span span {\n  clear: both;\n  color: #333333;\n  display: block;\n  padding: 5px 0 0;\n}\n.markdown-body span.align-center {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-center > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: center;\n}\n.markdown-body span.align-center span img {\n  margin: 0 auto;\n  text-align: center;\n}\n.markdown-body span.align-right {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-right > span {\n  display: block;\n  margin: 13px 0 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body span.align-right span img {\n  margin: 0;\n  text-align: right;\n}\n.markdown-body span.float-left {\n  display: block;\n  float: left;\n  margin-right: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-left span {\n  margin: 13px 0 0;\n}\n.markdown-body span.float-right {\n  display: block;\n  float: right;\n  margin-left: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-right > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body code,\n.markdown-body tt {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  /* white-space: nowrap; */\n  white-space: normal;\n  word-break: break-all;\n}\n.markdown-body pre > code {\n  background: none repeat scroll 0 0 transparent;\n  border: medium none;\n  margin: 0;\n  padding: 0;\n  white-space: pre;\n}\n.markdown-body .highlight pre,\n.markdown-body pre {\n  background-color: #F8F8F8;\n  border: 1px solid #CCCCCC;\n  border-radius: 3px 3px 3px 3px;\n  font-size: 13px;\n  line-height: 19px;\n  overflow: auto;\n  padding: 6px 10px;\n}\n.markdown-body pre code,\n.markdown-body pre tt {\n  background-color: transparent;\n  border: medium none;\n}\n"; });
 define('text!resources/elements/em-blog-comment-popup.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-comment-popup.css\"></require>\r\n    <div ref=\"popup\" class=\"ui flowing popup transition hidden em-blog-comment-popup\">\r\n        <div class=\"ui items\">\r\n            <div class=\"item\">\r\n                <div class=\"content\" style=\"width:300px; word-break: break-all;\">\r\n                    <a class=\"header pp-not\" href=\"javascript:void(0);\">评论#${comment.id}</a>\r\n                    <div class=\"meta\" style=\"width:300px; word-break: break-all; font-size: 12px;\">\r\n                        <i class=\"wait icon\"></i>\r\n                        <span>\r\n                            ${comment.creator ? (comment.creator.name ? comment.creator.name : comment.creator.username) : ''}\r\n                        </span>\r\n                        <span>发表于</span>\r\n                        <span class=\"cinema timeago\" style=\"font-style: italic;\" title=\"${comment.createDate | date}\">${comment.createDate | timeago}</span>\r\n                    </div>\r\n                    <div class=\"ui divider\"></div>\r\n                    <div class=\"description markdown-body\" style=\"width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;\" innerhtml.bind=\"comment.content | parseMd\"></div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!common/common-scrollbar.css', ['module'], function(module) { module.exports = "/*************** SCROLLBAR BASE CSS ***************/\n.scroll-wrapper {\n  overflow: hidden !important;\n  padding: 0 !important;\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.scroll-wrapper > .scroll-content {\n  border: none !important;\n  box-sizing: content-box !important;\n  height: auto;\n  left: 0;\n  margin: 0;\n  max-height: none;\n  max-width: none !important;\n  overflow: scroll !important;\n  padding: 0;\n  position: relative !important;\n  top: 0;\n  width: auto !important;\n}\n.scroll-wrapper > .scroll-content::-webkit-scrollbar {\n  height: 0;\n  width: 0;\n}\n.scroll-element {\n  display: none;\n}\n.scroll-element,\n.scroll-element div {\n  box-sizing: content-box;\n}\n.scroll-element.scroll-x.scroll-scrollx_visible,\n.scroll-element.scroll-y.scroll-scrolly_visible {\n  display: block;\n}\n.scroll-element .scroll-bar,\n.scroll-element .scroll-arrow {\n  cursor: default;\n}\n.scroll-textarea {\n  border: 1px solid #cccccc;\n  border-top-color: #999999;\n}\n.scroll-textarea > .scroll-content {\n  overflow: hidden !important;\n}\n.scroll-textarea > .scroll-content > textarea {\n  border: none !important;\n  box-sizing: border-box;\n  height: 100% !important;\n  margin: 0;\n  max-height: none !important;\n  max-width: none !important;\n  overflow: scroll !important;\n  outline: none;\n  padding: 2px;\n  position: relative !important;\n  top: 0;\n  width: 100% !important;\n}\n.scroll-textarea > .scroll-content > textarea::-webkit-scrollbar {\n  height: 0;\n  width: 0;\n}\n/*************** SIMPLE OUTER SCROLLBAR ***************/\n.scrollbar-outer > .scroll-element,\n.scrollbar-outer > .scroll-element div {\n  border: none;\n  margin: 0;\n  padding: 0;\n  position: absolute;\n  z-index: 10;\n}\n.scrollbar-outer > .scroll-element {\n  background-color: #ffffff;\n}\n.scrollbar-outer > .scroll-element div {\n  display: block;\n  height: 100%;\n  left: 0;\n  top: 0;\n  width: 100%;\n}\n.scrollbar-outer > .scroll-element.scroll-x {\n  bottom: 0;\n  height: 12px;\n  left: 0;\n  width: 100%;\n}\n.scrollbar-outer > .scroll-element.scroll-y {\n  height: 100%;\n  right: 0;\n  top: 0;\n  width: 12px;\n}\n.scrollbar-outer > .scroll-element.scroll-x .scroll-element_outer {\n  height: 8px;\n  top: 2px;\n}\n.scrollbar-outer > .scroll-element.scroll-y .scroll-element_outer {\n  left: 2px;\n  width: 8px;\n}\n.scrollbar-outer > .scroll-element .scroll-element_outer {\n  overflow: hidden;\n}\n.scrollbar-outer > .scroll-element .scroll-element_track {\n  background-color: #eeeeee;\n}\n.scrollbar-outer > .scroll-element .scroll-element_outer,\n.scrollbar-outer > .scroll-element .scroll-element_track,\n.scrollbar-outer > .scroll-element .scroll-bar {\n  -webkit-border-radius: 8px;\n  -moz-border-radius: 8px;\n  border-radius: 8px;\n}\n.scrollbar-outer > .scroll-element .scroll-bar {\n  background-color: #d9d9d9;\n}\n.scrollbar-outer > .scroll-element .scroll-bar:hover {\n  background-color: #c2c2c2;\n}\n.scrollbar-outer > .scroll-element.scroll-draggable .scroll-bar {\n  background-color: #919191;\n}\n/* scrollbar height/width & offset from container borders */\n.scrollbar-outer > .scroll-content.scroll-scrolly_visible {\n  left: -12px;\n  margin-left: 12px;\n}\n.scrollbar-outer > .scroll-content.scroll-scrollx_visible {\n  top: -12px;\n  margin-top: 12px;\n}\n.scrollbar-outer > .scroll-element.scroll-x .scroll-bar {\n  min-width: 10px;\n}\n.scrollbar-outer > .scroll-element.scroll-y .scroll-bar {\n  min-height: 10px;\n}\n/* update scrollbar offset if both scrolls are visible */\n.scrollbar-outer > .scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_track {\n  left: -14px;\n}\n.scrollbar-outer > .scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_track {\n  top: -14px;\n}\n.scrollbar-outer > .scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_size {\n  left: -14px;\n}\n.scrollbar-outer > .scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_size {\n  top: -14px;\n}\n/*************** SCROLLBAR MAC OS X ***************/\n.scrollbar-macosx > .scroll-element,\n.scrollbar-macosx > .scroll-element div {\n  background: none;\n  border: none;\n  margin: 0;\n  padding: 0;\n  position: absolute;\n  z-index: 10;\n}\n.scrollbar-macosx > .scroll-element div {\n  display: block;\n  height: 100%;\n  left: 0;\n  top: 0;\n  width: 100%;\n}\n.scrollbar-macosx > .scroll-element .scroll-element_track {\n  display: none;\n}\n.scrollbar-macosx > .scroll-element .scroll-bar {\n  background-color: #6C6E71;\n  display: block;\n  -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)\";\n  filter: alpha(opacity=0);\n  opacity: 0;\n  -webkit-border-radius: 7px;\n  -moz-border-radius: 7px;\n  border-radius: 7px;\n  -webkit-transition: opacity 0.2s linear;\n  -moz-transition: opacity 0.2s linear;\n  -o-transition: opacity 0.2s linear;\n  -ms-transition: opacity 0.2s linear;\n  transition: opacity 0.2s linear;\n}\n.scrollbar-macosx:hover > .scroll-element .scroll-bar,\n.scrollbar-macosx > .scroll-element.scroll-draggable .scroll-bar {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=70)\";\n  filter: alpha(opacity=70);\n  opacity: 0.7;\n}\n.scrollbar-macosx > .scroll-element.scroll-x {\n  bottom: 0px;\n  height: 0px;\n  left: 0;\n  min-width: 100%;\n  overflow: visible;\n  width: 100%;\n}\n.scrollbar-macosx > .scroll-element.scroll-y {\n  height: 100%;\n  min-height: 100%;\n  right: 0px;\n  top: 0;\n  width: 0px;\n}\n/* scrollbar height/width & offset from container borders */\n.scrollbar-macosx > .scroll-element.scroll-x .scroll-bar {\n  height: 7px;\n  min-width: 10px;\n  top: -9px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y .scroll-bar {\n  left: -9px;\n  min-height: 10px;\n  width: 7px;\n}\n.scrollbar-macosx > .scroll-element.scroll-x .scroll-element_outer {\n  left: 2px;\n}\n.scrollbar-macosx > .scroll-element.scroll-x .scroll-element_size {\n  left: -4px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y .scroll-element_outer {\n  top: 2px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y .scroll-element_size {\n  top: -4px;\n}\n/* update scrollbar offset if both scrolls are visible */\n.scrollbar-macosx > .scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_size {\n  left: -11px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_size {\n  top: -11px;\n}\n"; });
-define('text!resources/elements/em-blog-comment.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-comment.css\"></require>\r\n    <div class=\"em-blog-comment\">\r\n        <div class=\"ui minimal comments\" ref=\"blogCommentsRef\">\r\n            <h3 title=\"快速评论 (r)\" class=\"ui dividing header\">${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>\r\n            <div repeat.for=\"item of comments\" class=\"comment\" data-id=\"${item.id}\">\r\n                <!-- <a class=\"avatar\"> -->\r\n                <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\r\n                <!-- </a> -->\r\n                <div class=\"content\">\r\n                    <a class=\"author\" data-value=${item.creator.username}>${item.creator.name}</a>\r\n                    <div class=\"metadata\">\r\n                        <span class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</span>\r\n                        <div class=\"rating\">\r\n                            <i click.delegate=\"rateHandler(item)\" style=\"cursor: pointer;\" title=\"赞一下\" class=\"cbutton cbutton--effect-novak thumbs ${item.voteZan && item.voteZan.split(',').includes(loginUser.username) ? '' : 'outline'} up icon\"></i> <span title=\"${item.voteZan}\">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>\r\n                        </div>\r\n                    </div>\r\n                    <div swipebox show.bind=\"!item.isEditing\" ref=\"mkbodyRef\" class=\"text markdown-body\" innerhtml.bind=\"item.content | parseMd | emoji:mkbodyRef\"></div>\r\n                    <div class=\"textcomplete-container\" show.bind=\"item.isEditing\">\r\n                        <div class=\"append-to\"></div>\r\n                    </div>\r\n                    <textarea ref=\"editTxtRef\" data-id=\"${item.id}\" textcomplete.bind=\"users\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content & oneWay\" class=\"tms-blog-comment-edit-textarea\" rows=\"1\"></textarea>\r\n                    <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-blog-comment-edit-actions\">\r\n                        <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\r\n                            <i class=\"checkmark icon\"></i>\r\n                        </button>\r\n                        <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\r\n                            <i class=\"remove icon\"></i>\r\n                        </button>\r\n                        <button dropzone=\"type:Blog; clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\r\n                            <i class=\"upload icon\"></i>\r\n                        </button>\r\n                    </div>\r\n                    <div class=\"actions\">\r\n                        <a click.delegate=\"replyHandler(item)\" class=\"reply\">回复</a>\r\n                        <a if.bind=\"isSuper || item.creator.username == loginUser.username\" click.delegate=\"editHandler(item, editTxtRef)\" title=\"评论编辑(ctrl+dblclick)\" class=\"reply\">编辑</a>\r\n                        <a class=\"item tms-clipboard\" data-clipboard-text=\"${item.content}\" title=\"复制评论内容\">复制</a>\r\n                        <a class=\"item tms-clipboard\" data-clipboard-text=\"${basePath + '#/blog/' + blog.id + '?cid=' + item.id}\" title=\"复制评论链接\">分享</a>\r\n                        <div if.bind=\"isSuper || item.creator.username == loginUser.username\" ui-dropdown-action style=\"margin-right: .75em;\" class=\"ui icon top right pointing dropdown\" title=\"移除评论\">\r\n                            移除\r\n                            <div class=\"menu\">\r\n                                <div style=\"color: red;\" class=\"item\" click.delegate=\"removeHandler(item)\"><i class=\"trash outline icon\"></i>确认移除</div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"tools\">\r\n                        <button show.bind=\"!item.isEditing\" click.delegate=\"refreshHandler(item)\" title=\"刷新同步\" class=\"mini circular ui icon button\">\r\n                            <i class=\"refresh icon\"></i>\r\n                        </button>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui divider\"></div>\r\n            </div>\r\n            <form class=\"ui reply form dropzone\">\r\n                <div class=\"tms-blog-comment-status-bar-wrapper\">\r\n                    <div class=\"tms-blog-comment-status-bar\"></div>\r\n                    <div class=\"dropzone-previews\"></div>\r\n                </div>\r\n                <div ref=\"markdownRef\" class=\"field markdown-body\">\r\n                    <textarea ref=\"commentRef\"></textarea>\r\n                </div>\r\n                <div click.delegate=\"addHandler()\" title=\"提交评论(ctrl+enter)\" class=\"ui blue labeled submit icon button\">\r\n                    <i class=\"icon edit\"></i> 添加评论\r\n                </div>\r\n            </form>\r\n        </div>\r\n        <div class=\"preview-template\" style=\"display: none;\">\r\n            <div class=\"dz-preview dz-file-preview\">\r\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!blog/blog.css', ['module'], function(module) { module.exports = ""; });
 define('text!user/user-login.css', ['module'], function(module) { module.exports = ".tms-user-login {\n  width: 100%;\n  min-height: 100%;\n  background-color: #5a3636;\n  overflow: hidden;\n}\n.tms-user-login .container {\n  width: 300px;\n  top: 50px;\n  margin-left: auto;\n  margin-right: auto;\n  position: relative;\n}\n.tms-user-login h2 {\n  color: rgba(197, 164, 164, 0.8) !important;\n}\n.tms-user-login .ui.form {\n  background-color: #353131;\n}\n.tms-user-login .ui.error.message {\n  background-color: #5a3636;\n}\n.tms-user-login .ui.error.message .header {\n  color: #e0b4b4;\n}\n.tms-user-login .ui.checkbox label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox input:focus ~ label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox label:hover {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.button {\n  background-color: #5a3636;\n  color: #ad8b75;\n}\n"; });
 define('text!user/user-pwd-reset.css', ['module'], function(module) { module.exports = ".tms-user-pwd-reset {\n  height: 100%;\n}\n.tms-user-pwd-reset .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
 define('text!user/user-register.css', ['module'], function(module) { module.exports = ".tms-user-register {\n  height: 100%;\n}\n.tms-user-register .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
 define('text!resources/elements/em-blog-comment-popup.css', ['module'], function(module) { module.exports = ""; });
+define('text!resources/elements/em-blog-comment.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-comment.css\"></require>\r\n    <div class=\"em-blog-comment\">\r\n        <div class=\"ui minimal comments\" ref=\"blogCommentsRef\">\r\n            <h3 title=\"快速评论 (r)\" class=\"ui dividing header\">${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>\r\n            <div repeat.for=\"item of comments\" class=\"comment\" data-id=\"${item.id}\">\r\n                <!-- <a class=\"avatar\"> -->\r\n                <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\r\n                <!-- </a> -->\r\n                <div class=\"content\">\r\n                    <a class=\"author\" data-value=${item.creator.username}>${item.creator.name}</a>\r\n                    <div class=\"metadata\">\r\n                        <span class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</span>\r\n                        <div class=\"rating\">\r\n                            <i click.delegate=\"rateHandler(item)\" style=\"cursor: pointer;\" title=\"赞一下\" class=\"cbutton cbutton--effect-novak thumbs ${item.voteZan && item.voteZan.split(',').includes(loginUser.username) ? '' : 'outline'} up icon\"></i> <span title=\"${item.voteZan}\">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>\r\n                        </div>\r\n                    </div>\r\n                    <div swipebox show.bind=\"!item.isEditing\" ref=\"mkbodyRef\" class=\"text markdown-body\" innerhtml.bind=\"item.content | parseMd | emoji:mkbodyRef\"></div>\r\n                    <div class=\"textcomplete-container\" show.bind=\"item.isEditing\">\r\n                        <div class=\"append-to\"></div>\r\n                    </div>\r\n                    <textarea ref=\"editTxtRef\" data-id=\"${item.id}\" textcomplete.bind=\"users\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content & oneWay\" class=\"tms-blog-comment-edit-textarea\" rows=\"1\"></textarea>\r\n                    <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-blog-comment-edit-actions\">\r\n                        <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\r\n                            <i class=\"checkmark icon\"></i>\r\n                        </button>\r\n                        <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\r\n                            <i class=\"remove icon\"></i>\r\n                        </button>\r\n                        <button dropzone=\"type:Blog; clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\r\n                            <i class=\"upload icon\"></i>\r\n                        </button>\r\n                    </div>\r\n                    <div class=\"actions\">\r\n                        <a click.delegate=\"replyHandler(item)\" class=\"reply\">回复</a>\r\n                        <a if.bind=\"isSuper || item.creator.username == loginUser.username\" click.delegate=\"editHandler(item, editTxtRef)\" title=\"评论编辑(ctrl+dblclick)\" class=\"reply\">编辑</a>\r\n                        <a class=\"item tms-clipboard\" data-clipboard-text=\"${item.content}\" title=\"复制评论内容\">复制</a>\r\n                        <a class=\"item tms-clipboard\" data-clipboard-text=\"${basePath + '#/blog/' + blog.id + '?cid=' + item.id}\" title=\"复制评论链接\">分享</a>\r\n                        <div if.bind=\"isSuper || item.creator.username == loginUser.username\" ui-dropdown-action style=\"margin-right: .75em;\" class=\"ui icon top right pointing dropdown\" title=\"移除评论\">\r\n                            移除\r\n                            <div class=\"menu\">\r\n                                <div style=\"color: red;\" class=\"item\" click.delegate=\"removeHandler(item)\"><i class=\"trash outline icon\"></i>确认移除</div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"tools\">\r\n                        <button show.bind=\"!item.isEditing\" click.delegate=\"refreshHandler(item)\" title=\"刷新同步\" class=\"mini circular ui icon button\">\r\n                            <i class=\"refresh icon\"></i>\r\n                        </button>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui divider\"></div>\r\n            </div>\r\n            <form class=\"ui reply form dropzone\">\r\n                <div class=\"tms-blog-comment-status-bar-wrapper\">\r\n                    <div class=\"tms-blog-comment-status-bar\"></div>\r\n                    <div class=\"dropzone-previews\"></div>\r\n                </div>\r\n                <div ref=\"markdownRef\" class=\"field markdown-body\">\r\n                    <textarea ref=\"commentRef\"></textarea>\r\n                </div>\r\n                <div click.delegate=\"addHandler()\" title=\"提交评论(ctrl+enter)\" class=\"ui blue labeled submit icon button\">\r\n                    <i class=\"icon edit\"></i> 添加评论\r\n                </div>\r\n            </form>\r\n        </div>\r\n        <div class=\"preview-template\" style=\"display: none;\">\r\n            <div class=\"dz-preview dz-file-preview\">\r\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-content.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-content.css\"></require>\r\n    <div class=\"em-blog-content-wrapper\">\r\n        <div click.delegate=\"dimmerHandler()\" class=\"ui inverted dimmer\"></div>\r\n        <div show.bind=\"blog\" class=\"em-blog-content\">\r\n            <div class=\"topbar\">\r\n                <div class=\"ui breadcrumb\">\r\n                    <a class=\"section\">TMS博文</a>\r\n                    <div show.bind=\"blog.space\" class=\"divider\"> / </div>\r\n                    <a show.bind=\"blog.space\" class=\"section active\">${blog.space.name}</a>\r\n                    <span if.bind=\"isSuper || blog.creator.username == loginUser.username\" data-tooltip=\"${blog.privated ? '私有博文,点击可公开' : '公开博文,点击可关闭'}\" data-position=\"right center\" style=\"margin-left: 16px;\"><i click.delegate=\"updatePrivatedHandler()\" class=\"link icon ${blog.privated ? 'lock' : 'unlock alternate'}\"></i></span>\r\n                    <span if.bind=\"(isSuper || blog.creator.username == loginUser.username) && blog.openEdit\" data-tooltip=\"开放编辑中,点击可关闭\" data-position=\"right center\" style=\"margin-left: 8px; top: -1px;\"><i click.delegate=\"openEditHandler()\" class=\"link icon write\"></i></span>\r\n                </div>\r\n                <div class=\"actions\">\r\n                    <a if.bind=\"dir\" class=\"ui basic mini button\" title=\"博文目录 (d)\" click.delegate=\"catalogHandler()\">\r\n                        <i class=\"unordered list icon\"></i> 目录\r\n                    </a>\r\n                    <a if.bind=\"blog.openEdit || isSuper || blog.creator.username == loginUser.username\" title=\"博文编辑 (e | ctrl+dblclick)\" class=\"ui basic mini button\" click.delegate=\"editHandler()\">\r\n                        <i class=\"large icon edit\"></i> 编辑\r\n                    </a>\r\n                    <a title=\"${!blogFollower ? '关注' : '取消关注'}博文更新 (f)\" class=\"ui basic mini button\" click.delegate=\"followerHandler()\">\r\n                        <i class=\"${!blogFollower ? 'unhide' : 'hide'} large icon\"></i> ${!blogFollower ? '关注' : '取消'}\r\n                    </a>\r\n                    <em-blog-share view-model.ref=\"blogShareVm\" blog.bind=\"blog\"></em-blog-share>\r\n                    <div ui-dropdown-action class=\"ui top right pointing dropdown basic mini icon button\">\r\n                        <i class=\"large ellipsis horizontal icon\"></i>\r\n                        <div class=\"menu\">\r\n                            <div click.delegate=\"refreshHandler()\" class=\"item\">\r\n                                <i class=\"refresh icon\"></i> 刷新\r\n                            </div>\r\n                            <div click.delegate=\"historyHandler()\" class=\"item\">\r\n                                <i class=\"history icon\"></i> 历史\r\n                            </div>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"authHandler()\" class=\"item\">\r\n                                <i class=\"lock icon\"></i> 限制\r\n                            </div>\r\n                            <div click.delegate=\"stowHandler()\" class=\"item\">\r\n                                <i class=\"${!blogStow ? 'empty' : ''} star icon\"></i> ${!blogStow ? '收藏' : '删除收藏'}\r\n                            </div>\r\n                            <div click.delegate=\"copyHandler()\" class=\"item\">\r\n                                <i class=\"copy icon\"></i> 复制\r\n                            </div>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"updateSpaceHandler()\" class=\"item\">\r\n                                <i class=\"exchange icon\"></i> 移动\r\n                            </div>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"openEditHandler()\" class=\"item\">\r\n                                <i class=\"write icon\"></i> ${blog.openEdit ? '关闭协作编辑' : '开放协作编辑'}\r\n                            </div>\r\n                            <div class=\"divider\"></div>\r\n                            <a href=\"/admin/blog/download/${blog.id}?type=pdf\" class=\"item\">\r\n                                <i class=\"file pdf outline icon\"></i> 导出为PDF\r\n                            </a>\r\n                            <a href=\"/admin/blog/download/${blog.id}?type=md\" class=\"item\">\r\n                                <i class=\"file text outline icon\"></i> 导出为Markdown\r\n                            </a>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" class=\"divider\"></div>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"deleteHandler()\" class=\"item\" style=\"color: red;\">\r\n                                <i class=\"trash outline icon\"></i> 删除\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"header\">\r\n                <h1 class=\"ui header\">${blog.title}\r\n                <div class=\"sub header\">\r\n                    <i class=\"wait icon\"></i> <a class=\"author\" data-value=\"${blog.creator.username}\">${blog.creator.username == loginUser.username ? '自己' : blog.creator.name}</a> 创建于 <span data-timeago=\"${blog.createDate}\" title=\"${blog.createDate | date}\">${blog.createDate | timeago}</span>, <a class=\"author\" data-value=\"${blog.updater.username}\">${blog.updater.username == loginUser.username ? '自己' : blog.updater.name}</a> 最后修改于 <span data-timeago=\"${blog.updateDate}\" title=\"${blog.updateDate | date}\">${blog.updateDate | timeago}</span>\r\n                    <span class=\"readCnt\" show.bind=\"blog.readCnt\"><i class=\"unhide icon\"></i>浏览: <a>${blog.readCnt}</a> 次</span>\r\n                </div>\r\n            </h1>\r\n            </div>\r\n            <div swipebox ref=\"mkbodyRef\" class=\"markdown-body\" innerhtml.bind=\"blog.content | parseMd | emoji:mkbodyRef\"></div>\r\n            <div class=\"footer\">\r\n                <span click.delegate=\"rateHandler()\" class=\"rate\"><i class=\"link icon thumbs outline up\"></i>${blog.voteZan && blog.voteZan.split(',').includes(loginUser.username) ? '踩' : '赞'}</span> <span show.bind=\"!blog.voteZanCnt\">成为第一个赞同者</span> <span show.bind=\"blog.voteZan && blog.voteZan.split(',').includes(loginUser.username)\">你赞了它</span> <span show.bind=\"blog.voteZan && !blog.voteZan.split(',').includes(loginUser.username)\" title=\"${blog.voteZan}\"><a href=\"javascript:void(0);\">${blog.voteZanCnt}</a>人赞了它</span>\r\n            </div>\r\n            <em-blog-comment blog.bind=\"blog\"></em-blog-comment>\r\n        </div>\r\n        <div show.bind=\"!blog\" class=\"em-blog-content\">\r\n            <div class=\"ui positive icon huge message transition\">\r\n                <i class=\"info circle icon\"></i>\r\n                <div class=\"content\">\r\n                    <div class=\"header\">\r\n                        欢迎使用TMS博文进行知识的分享总结!\r\n                    </div>\r\n                    <span>现在就去创建自己的博文吧!</span> <a click.delegate=\"createHandler()\" class=\"ui mini blue button\">创建</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div css=\"width: ${progressWidth}px;\" class=\"tms-blog-progress\"></div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\r\n    <em-blog-space-update view-model.ref=\"blogSpaceUpdateVm\"></em-blog-space-update>\r\n    <em-blog-history view-model.ref=\"blogHistoryVm\"></em-blog-history>\r\n    <em-blog-space-auth view-model.ref=\"blogSpaceAuthVm\"></em-blog-space-auth>\r\n</template>\r\n"; });
-define('text!resources/elements/em-blog-history-diff.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-history-diff.css\"></require>\r\n    <em-modal classes=\"\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文历史版本比较(v.${sIndex + 1} <i class=\"resize horizontal icon\"></i> v.${fIndex + 1})</div>\r\n        <div slot=\"content\" class=\"em-blog-history-diff\">\r\n            <div class=\"content markdown-body\" innerhtml.bind=\"diffHtml\"></div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-comment.css', ['module'], function(module) { module.exports = ".em-blog-comment {\n  margin-top: 32px;\n  margin-bottom: 32px;\n}\n.em-blog-comment .ui.comments {\n  max-width: 100%;\n}\n.em-blog-comment .ui.comments > .ui.dividing.header {\n  margin-bottom: 0;\n}\n.em-blog-comment .ui.comments .comment {\n  margin-top: 0;\n}\n.em-blog-comment .ui.comments .comment:hover {\n  background: rgba(0, 0, 0, 0.03);\n  color: rgba(0, 0, 0, 0.8);\n}\n.em-blog-comment .ui.comments .comment:hover .content .tools {\n  display: block;\n}\n.em-blog-comment .ui.comments .comment:hover:before {\n  width: 4px;\n}\n.em-blog-comment .ui.comments .comment > .ui.divider {\n  margin-bottom: 0;\n}\n.em-blog-comment .ui.comments .comment .content .tms-blog-comment-edit-textarea {\n  width: 100%;\n}\n.em-blog-comment .ui.comments .comment .content .textcomplete-container {\n  position: relative;\n}\n.em-blog-comment .ui.comments .comment .content .textcomplete-container .append-to {\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  width: 100%;\n}\n.em-blog-comment .ui.comments .comment .content > .tools {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  display: none;\n}\n.em-blog-comment .ui.comments .comment .content > .tools > .ui.button {\n  margin: 0;\n  background-color: rgba(224, 225, 226, 0.5);\n}\n.em-blog-comment .ui.comments .comment .content > .tools > .ui.button:hover {\n  background-color: #e0e1e2;\n}\n.em-blog-comment .ui.comments .comment.active {\n  background-color: #f5f5f5;\n}\n.em-blog-comment .ui.comments .comment.active:before {\n  width: 4px;\n}\n.em-blog-comment .ui.comments .comment:before {\n  content: \"\";\n  position: absolute;\n  z-index: -1;\n  top: -2px;\n  left: -4px;\n  bottom: 1px;\n  background: #2098D1;\n  width: 0;\n  -webkit-transition-property: width;\n  transition-property: width;\n  -webkit-transition-duration: 0.3s;\n  transition-duration: 0.3s;\n  -webkit-transition-timing-function: ease-out;\n  transition-timing-function: ease-out;\n}\n.em-blog-comment .ui.comments .comment:nth-child(2):before {\n  top: -1px;\n}\n.em-blog-comment .CodeMirror {\n  min-height: 60px;\n}\n.em-blog-comment .CodeMirror-scroll {\n  min-height: 60px;\n}\n.em-blog-comment .dropzone {\n  position: relative;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper {\n  position: relative;\n  width: 100%;\n  height: 0;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .tms-blog-comment-status-bar {\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews {\n  position: absolute;\n  left: 0;\n  bottom: -7px;\n  width: 100%;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews .dz-preview {\n  width: 100%;\n  margin: 0;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews .dz-preview .dz-progress {\n  height: 2px;\n  background-color: #aaa;\n  border: none;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews .dz-preview .dz-remove {\n  display: none;\n}\n"; });
+define('text!resources/elements/em-blog-history-diff.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-history-diff.css\"></require>\r\n    <em-modal classes=\"\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文历史版本比较(v.${sIndex + 1} <i class=\"resize horizontal icon\"></i> v.${fIndex + 1})</div>\r\n        <div slot=\"content\" class=\"em-blog-history-diff\">\r\n            <div class=\"content markdown-body\" innerhtml.bind=\"diffHtml\"></div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-content.css', ['module'], function(module) { module.exports = ".em-blog-content {\n  transition: width 0.15s ease-out 0s;\n  position: fixed;\n  top: 55px;\n  left: 300px;\n  width: calc(100% - 300px) !important;\n  height: calc(100% - 55px) !important;\n  padding: 16px;\n  overflow: auto;\n}\n.right-sidebar-show .em-blog-content {\n  width: calc(100% - 600px) !important;\n}\n@media only screen and (max-width: 767px) {\n  .right-sidebar-show .em-blog-content {\n    width: 100%!important;\n  }\n}\n@media only screen and (max-width: 767px) {\n  .em-blog-content {\n    left: 0;\n    width: 100%!important;\n  }\n}\n.em-blog-content > .header {\n  margin-bottom: 24px;\n}\n.em-blog-content > .header .ui.header .sub.header {\n  color: #707070;\n  font-size: 12px;\n  margin-top: 8px;\n}\n.em-blog-content > .header .ui.header .sub.header a.author {\n  cursor: pointer;\n}\n.em-blog-content > .header .ui.header .sub.header .readCnt {\n  margin-left: 16px;\n}\n.em-blog-content > .header .ui.header .sub.header .readCnt a {\n  cursor: pointer;\n}\n.em-blog-content .topbar {\n  position: relative;\n  height: 30px;\n  margin-bottom: 8px;\n}\n.em-blog-content .topbar > .ui.breadcrumb {\n  line-height: 30px;\n}\n.em-blog-content .topbar:after {\n  content: '';\n  clear: both;\n}\n.em-blog-content .topbar .actions {\n  float: right;\n}\n.em-blog-content .topbar .actions > .ui.basic.button {\n  padding: 8px;\n  box-shadow: none;\n}\n.em-blog-content .topbar .actions > .ui.basic.button:hover {\n  box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.35) inset, 0 0 0 0 rgba(34, 36, 38, 0.15) inset;\n}\n.em-blog-content .topbar .actions > .ui.basic.button > i.icon {\n  margin-right: 2px;\n}\n.em-blog-content .topbar .actions > .ui.basic.button > i.icon.hide {\n  position: relative;\n  top: -1px;\n}\n.em-blog-content .topbar .actions > .ui.basic.button > i.icon.unhide {\n  position: relative;\n  top: -1px;\n}\n.em-blog-content > .ui.message .content > span {\n  display: inline-block;\n  margin-top: 10px;\n}\n.em-blog-content > .ui.message .content .ui.button {\n  position: relative;\n  top: -5px;\n  left: 10px;\n}\n.em-blog-content .footer {\n  margin-top: 16px;\n}\n.em-blog-content .footer > span {\n  font-size: 12px;\n}\n.em-blog-content .footer .rate {\n  margin-right: 16px;\n  cursor: pointer;\n  color: #4183c4;\n}\n.tms-blog-progress {\n  position: absolute;\n  display: inline-block;\n  top: 55px;\n  left: 0;\n  width: 0;\n  height: 2px;\n  margin-left: 300px;\n  background-color: #2185d0;\n  box-shadow: 0px 0px 8px 0px #205081;\n}\n@media only screen and (max-width: 767px) {\n  .tms-blog-progress {\n    margin-left: 0;\n  }\n}\n.em-blog-content-wrapper {\n  position: fixed;\n  top: 55px;\n  width: calc(100vw) !important;\n  height: calc(100% - 55px) !important;\n}\n@media only screen and (max-width: 767px) {\n  .tms-blog.left-sidebar-show .em-blog-content-wrapper > .ui.dimmer {\n    display: block;\n    opacity: 1;\n  }\n  .tms-blog.right-sidebar-show .em-blog-content-wrapper > .ui.dimmer {\n    display: block;\n    opacity: 1;\n  }\n  .tms-blog .em-blog-content-wrapper > .ui.dimmer {\n    display: none;\n  }\n}\n"; });
+define('text!resources/elements/em-blog-history-view.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-history-view.css\"></require>\r\n    <em-modal classes=\"\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文历史版本查看(${isCurrentVer ? '当前 ' : ''}v.${ver})</div>\r\n        <div slot=\"content\" class=\"em-blog-history-view\">\r\n            <div class=\"topbar\">\r\n                <div click.delegate=\"restoreHandler()\" class=\"ui ${!ajax1 || ajax1.readyState == 4 ? '' : 'tms-disabled'} ${!isCurrentVer || (isSuper || blog.creator.username == loginUser.username || blog.openEdit) ? '' : 'disabled'} mini basic button\"><i class=\"undo icon\"></i>还原此历史版本</div>\r\n            </div>\r\n            <div ref=\"mkbodyRef\" class=\"content markdown-body\" innerhtml.bind=\"blogHistory.content | parseMd | emoji:mkbodyRef\"></div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-history-diff.css', ['module'], function(module) { module.exports = ".em-blog-history-diff > .content {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
 define('text!resources/elements/em-blog-history-view.css', ['module'], function(module) { module.exports = ".em-blog-history-view > .topbar {\n  margin-bottom: 16px;\n}\n.em-blog-history-view > .content {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
-define('text!resources/elements/em-blog-history-view.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-history-view.css\"></require>\r\n    <em-modal classes=\"\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文历史版本查看(${isCurrentVer ? '当前 ' : ''}v.${ver})</div>\r\n        <div slot=\"content\" class=\"em-blog-history-view\">\r\n            <div class=\"topbar\">\r\n                <div click.delegate=\"restoreHandler()\" class=\"ui ${!ajax1 || ajax1.readyState == 4 ? '' : 'tms-disabled'} ${!isCurrentVer || (isSuper || blog.creator.username == loginUser.username || blog.openEdit) ? '' : 'disabled'} mini basic button\"><i class=\"undo icon\"></i>还原此历史版本</div>\r\n            </div>\r\n            <div ref=\"mkbodyRef\" class=\"content markdown-body\" innerhtml.bind=\"blogHistory.content | parseMd | emoji:mkbodyRef\"></div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-history.css', ['module'], function(module) { module.exports = ".em-blog-history > .topbar {\n  margin-bottom: 16px;\n}\n.em-blog-history > .content {\n  max-height: 300px;\n  overflow-y: auto;\n}\n.em-blog-history .ui.table td a {\n  cursor: pointer;\n}\n"; });
 define('text!resources/elements/em-blog-history.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-history.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文历史记录</div>\r\n        <div slot=\"content\" class=\"em-blog-history\">\r\n            <div class=\"topbar\">\r\n                <div click.delegate=\"diffHandler()\" class=\"ui mini basic button\"><i class=\"resize horizontal icon\"></i>比较选择的版本</div>\r\n            </div>\r\n            <div class=\"content\">\r\n                <table class=\"ui very basic table\">\r\n                    <thead>\r\n                        <tr>\r\n                            <th></th>\r\n                            <th>版本</th>\r\n                            <th>日期</th>\r\n                            <th>更新人</th>\r\n                            <th>操作</th>\r\n                        </tr>\r\n                    </thead>\r\n                    <tbody>\r\n                        <tr>\r\n                            <td>\r\n                                <em-checkbox checked.bind=\"blog.checked\"></em-checkbox>\r\n                            </td>\r\n                            <td><a click.delegate=\"viewHistoryHandler(blog, histories.length + 1, true)\">当前</a>(v.${histories.length + 1})</td>\r\n                            <td title=\"${blog.updateDate | date}\">${blog.updateDate | timeago}</td>\r\n                            <td>${blog.updater.name}</td>\r\n                            <td></td>\r\n                        </tr>\r\n                        <tr repeat.for=\"item of histories\">\r\n                            <td>\r\n                                <em-checkbox checked.bind=\"item.checked\"></em-checkbox>\r\n                            </td>\r\n                            <td><a click.delegate=\"viewHistoryHandler(item, histories.length - $index)\">v.${histories.length - $index}</a></td>\r\n                            <td title=\"${item.blogUpdateDate | date}\">${item.blogUpdateDate | timeago}</td>\r\n                            <td>${item.blogUpdater.name}</td>\r\n                            <td>\r\n                                <a if.bind=\"isSuper || blog.creator.username == loginUser.username || blog.openEdit\" class=\"${!$parent.ajax1 || $parent.ajax1.readyState == 4 ? '' : 'tms-disabled'}\" click.delegate=\"restoreHandler(item)\">还原此版本</a> ·\r\n                                <a if.bind=\"isSuper || blog.creator.username == loginUser.username\" ui-dropdown-action style=\"margin-right: .75em;\" class=\"ui icon top right pointing dropdown ${!$parent.ajax2 || $parent.ajax2.readyState == 4 ? '' : 'disabled'}\" title=\"删除博文历史记录\">\r\n                                    删除\r\n                                    <div class=\"menu\">\r\n                                        <div style=\"color: red;\" class=\"item\" click.delegate=\"removeHandler(item)\"><i class=\"trash outline icon\"></i>确认删除</div>\r\n                                    </div>\r\n                                </a>\r\n                            </td>\r\n                        </tr>\r\n                    </tbody>\r\n                </table>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n    <em-blog-history-view view-model.ref=\"blogHistoryViewVm\"></em-blog-history-view>\r\n    <em-blog-history-diff view-model.ref=\"blogHistoryDiffVm\"></em-blog-history-diff>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-left-sidebar.css', ['module'], function(module) { module.exports = ".em-blog-left-sidebar.ui.left.sidebar {\n  transition: left 0.15s ease-out 0s;\n  width: 300px;\n  top: 55px;\n  left: 0;\n  height: calc(100% - 55px) !important;\n  background-color: #f5f5f5;\n  box-shadow: none!important;\n}\n@media only screen and (max-width: 767px) {\n  .em-blog-left-sidebar.ui.left.sidebar {\n    z-index: 104;\n  }\n  .em-blog-left-sidebar.ui.left.sidebar.mobile-hide {\n    left: -300px;\n  }\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body {\n  height: calc(100% - 40px) !important;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list {\n  padding: 16px;\n  padding-left: 15px;\n  margin-bottom: 0px;\n  padding-bottom: 8px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item {\n  position: relative;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item:hover {\n  box-shadow: 0px 0px 2px -1px #5791cb;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item:hover > .actions {\n  display: inline-block;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .icon {\n  padding-right: 0;\n  position: relative;\n  top: -1px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .content {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  max-width: 245px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .actions {\n  display: none;\n  position: absolute;\n  right: 0;\n  top: -2px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list {\n  padding-left: 16px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item {\n  max-width: 220px;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item > a {\n  display: block;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 220px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item:before {\n  color: #999;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item.active {\n  font-weight: bold;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item.active > a {\n  color: black;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item:hover {\n  background-color: rgba(232, 224, 224, 0.5);\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item.aurelia-hide {\n  display: none!important;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space {\n  padding: 20px;\n  margin-top: 0px;\n  padding-top: 0px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item {\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item > a {\n  display: block;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 242px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item:before {\n  color: #999;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item.active {\n  font-weight: bold;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item.active > a {\n  color: black;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item:hover {\n  background-color: rgba(232, 224, 224, 0.5);\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer {\n  position: absolute;\n  width: 100%;\n  height: 40px;\n  left: 0;\n  bottom: 0;\n  background-color: #efe4e4;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer .ui.menu {\n  border: none;\n  border-radius: 0;\n  background-color: #e8e0e0;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer .ui.menu > .item.tms-search {\n  position: relative;\n  height: 40px;\n  max-width: 207px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer .ui.menu > .item.tms-search:before {\n  width: 0;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer .ui.menu > .item.tms-search > .remove.icon {\n  position: absolute;\n  right: 5px;\n  top: 13px;\n}\n"; });
 define('text!resources/elements/em-blog-right-sidebar.css', ['module'], function(module) { module.exports = ".em-blog-right-sidebar {\n  width: 300px;\n  background-color: #f5f5f5;\n  position: fixed;\n  top: 55px;\n  right: -300px;\n  height: calc(100% - 55px);\n  transition: right 0.15s ease-out 0s;\n}\n.right-sidebar-show .em-blog-right-sidebar {\n  right: 0;\n}\n.em-blog-right-sidebar .panel-blog-dir {\n  padding: 16px;\n}\n"; });
 define('text!resources/elements/em-blog-save.css', ['module'], function(module) { module.exports = ""; });
 define('text!resources/elements/em-blog-left-sidebar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-left-sidebar.css\"></require>\r\n    <div class=\"ui left visible sidebar em-blog-left-sidebar ${isHide ? 'mobile-hide' : ''}\">\r\n        <div class=\"tms-body\">\r\n            <div scrollbar=\"scrollbar-macosx\">\r\n                <div class=\"ui list space\">\r\n                    <div class=\"item\" style=\"padding-top: 0.214286em;\">\r\n                        <i click.delegate=\"spaceToggleHandler(spaceStow)\" class=\"angle ${spaceStow.open ? 'down' : 'right'} link icon\"></i>\r\n                        <div class=\"content\">\r\n                            <span style=\"cursor: pointer;\" click.delegate=\"spaceToggleHandler(spaceStow)\">\r\n                                    <i class=\"empty star icon\" style=\"margin-right: 0; position: relative; left: -2px;\"></i>\r\n                                    ${spaceStow.name}\r\n                                </span>\r\n                            <div show.bind=\"spaceStow.open\" class=\"ui bulleted list\">\r\n                                <template repeat.for=\"item of blogStows\">\r\n                                    <div show.bind=\"!item._hidden\" class=\"item ${item.blog.id == $parent.blog.id ? 'active' : ''}\">\r\n                                        <a title=\"${item.blog.title}\" href=\"#/blog/${item.blog.id}\">\r\n                                            <i class=\"icons\">\r\n                                                <i class=\"file outline icon\"></i>\r\n                                            <i show.bind=\"item.blog.privated\" class=\"corner lock icon\"></i>\r\n                                            </i>\r\n                                            ${item.blog.title}</a>\r\n                                    </div>\r\n                                </template>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <template repeat.for=\"space of spaces | sort:'name'\">\r\n                        <div class=\"item\" show.bind=\"!space._hidden\">\r\n                            <i click.delegate=\"spaceToggleHandler(space)\" class=\"angle ${space.open ? 'down' : 'right'} link icon\"></i>\r\n                            <div class=\"content\">\r\n                                <span style=\"cursor: pointer;\" click.delegate=\"spaceToggleHandler(space)\">\r\n                                    <i class=\"icons\">\r\n                                        <i class=\"folder outline icon\"></i>\r\n                                    <i show.bind=\"space.privated\" class=\"corner lock icon\"></i>\r\n                                    </i>\r\n                                    ${space.name}\r\n                                </span>\r\n                                <div show.bind=\"space.open\" class=\"ui bulleted list\">\r\n                                    <div repeat.for=\"item of space.blogs | sort:'title'\" show.bind=\"!item._hidden\" class=\"item ${item.id == blog.id ? 'active' : ''}\">\r\n                                        <a title=\"${item.title}\" href=\"#/blog/${item.id}\">\r\n                                            <i class=\"icons\">\r\n                                                <i class=\"file outline icon\"></i>\r\n                                            <i show.bind=\"item.privated\" class=\"corner lock icon\"></i>\r\n                                            </i>\r\n                                            ${item.title}</a>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"actions\">\r\n                                <div if.bind=\"isSuper || space.creator.username == loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                    <i class=\"large ellipsis horizontal icon\"></i>\r\n                                    <div class=\"menu\">\r\n                                        <div class=\"item\" click.delegate=\"editSpaceHandler(space)\"><i class=\"icon edit\"></i>编辑</div>\r\n                                        <div class=\"item\" click.delegate=\"authSpaceHandler(space)\"><i class=\"lock icon\"></i>限制</div>\r\n                                        <!-- <div class=\"divider\"></div> -->\r\n                                        <div class=\"item\" style=\"color: red;\" click.delegate=\"delSpaceHandler(space)\"><i class=\"trash outline icon\"></i>删除</div>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </template>\r\n                </div>\r\n                <div class=\"ui bulleted list no-space\">\r\n                    <div repeat.for=\"item of noSpaceBlogs | sort:'title'\" show.bind=\"!item._hidden\" class=\"item ${item.id == blog.id ? 'active' : ''}\">\r\n                        <a title=\"${item.title}\" href=\"#/blog/${item.id}\">\r\n                            <i class=\"icons\">\r\n                                <i class=\"file outline icon\"></i>\r\n                            <i show.bind=\"item.privated\" class=\"corner lock icon\"></i>\r\n                            </i>\r\n                            </i>${item.title}</a>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"tms-footer\">\r\n            <div class=\"ui icon menu\">\r\n                <em-blog-space-create></em-blog-space-create>\r\n                <div class=\"item tms-search\">\r\n                    <div class=\"ui transparent left icon input\">\r\n                        <input keyup.trigger=\"filterKeyupHandler($event)\" value.bind=\"filter\" type=\"text\" placeholder=\"过滤查找...\">\r\n                        <i class=\"search icon\"></i>\r\n                    </div>\r\n                    <i click.delegate=\"clearFilterHandler()\" class=\"remove link icon ${!filter ? 'tms-hidden' : ''}\"></i>\r\n                </div>\r\n                <div class=\"right menu\">\r\n                    <div class=\"ui dropdown icon item\" ui-dropdown>\r\n                        <i class=\"content icon\"></i>\r\n                        <div class=\"menu\">\r\n                            <div class=\"header\">\r\n                                <i class=\"linkify icon\"></i> 系统外链\r\n                            </div>\r\n                            <div if.bind=\"!sysLinks || sysLinks.length == 0\" class=\"item\">暂无系统外链</div>\r\n                            <a repeat.for=\"item of sysLinks | sort:'title'\" target=\"_blank\" href=\"${item.href}\" class=\"item\">${item.title}</a>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n    <em-blog-space-edit view-model.ref=\"spaceEditVm\"></em-blog-space-edit>\r\n    <em-blog-space-auth view-model.ref=\"blogSpaceAuthVm\"></em-blog-space-auth>\r\n</template>\r\n"; });
-define('text!resources/elements/em-blog-share.css', ['module'], function(module) { module.exports = ".em-blog-share.ui.popup {\n  max-width: 100%;\n  width: 255px;\n}\n.em-blog-share.ui.popup .ui.input {\n  width: 225px;\n}\n.em-blog-share:after {\n  content: '';\n  clear: both;\n}\n.em-blog-share .footer {\n  margin-top: 16px;\n}\n.em-blog-share .footer .btn-cancel {\n  float: right;\n  margin-top: 6px;\n  margin-left: 8px;\n}\n"; });
 define('text!resources/elements/em-blog-right-sidebar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-right-sidebar.css\"></require>\r\n    <div class=\"em-blog-right-sidebar\">\r\n        <div scrollbar=\"scrollbar-macosx\">\r\n            <div ref=\"dirRef\" class=\"panel-blog-dir\"></div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-blog-share.css', ['module'], function(module) { module.exports = ".em-blog-share.ui.popup {\n  max-width: 100%;\n  width: 255px;\n}\n.em-blog-share.ui.popup .ui.input {\n  width: 225px;\n}\n.em-blog-share:after {\n  content: '';\n  clear: both;\n}\n.em-blog-share .footer {\n  margin-top: 16px;\n}\n.em-blog-share .footer .btn-cancel {\n  float: right;\n  margin-top: 6px;\n  margin-left: 8px;\n}\n"; });
+define('text!resources/elements/em-blog-save.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-save.css\"></require>\r\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文保存</div>\r\n        <div slot=\"content\" class=\"em-blog-save\">\r\n            <form class=\"ui form\">\r\n                <div class=\"field\">\r\n                    <div ref=\"spacesRef\" class=\"ui fluid search selection dropdown\">\r\n                        <input type=\"hidden\" name=\"country\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\">选择空间(可选)</div>\r\n                        <div class=\"menu\">\r\n                            <div class=\"item\" data-value=\"\">(不指定空间)</div>\r\n                            <template repeat.for=\"item of spaces\">\r\n                                <div task.bind=\"initSpacesHandler($last)\" class=\"item\" data-value=\"${item.id}\"><i class=\"folder outline icon\"></i>${item.name}</div>\r\n                            </template>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\r\n                        <label><i class=\"lock icon\"></i>私有博文(不公开)</label>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-space-auth.css', ['module'], function(module) { module.exports = ".em-blog-space-auth > .ui.form {\n  margin-bottom: 16px;\n}\n.em-blog-space-auth .tms-header {\n  margin-bottom: 8px;\n}\n.em-blog-space-auth .ui.search .prompt {\n  border-radius: .28571429rem;\n}\n"; });
 define('text!resources/elements/em-blog-space-create.css', ['module'], function(module) { module.exports = ".em-blog-space-create.ui.popup .ui.form {\n  width: 260px;\n}\n"; });
 define('text!resources/elements/em-blog-space-edit.css', ['module'], function(module) { module.exports = ""; });
-define('text!resources/elements/em-blog-save.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-save.css\"></require>\r\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文保存</div>\r\n        <div slot=\"content\" class=\"em-blog-save\">\r\n            <form class=\"ui form\">\r\n                <div class=\"field\">\r\n                    <div ref=\"spacesRef\" class=\"ui fluid search selection dropdown\">\r\n                        <input type=\"hidden\" name=\"country\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\">选择空间(可选)</div>\r\n                        <div class=\"menu\">\r\n                            <div class=\"item\" data-value=\"\">(不指定空间)</div>\r\n                            <template repeat.for=\"item of spaces\">\r\n                                <div task.bind=\"initSpacesHandler($last)\" class=\"item\" data-value=\"${item.id}\"><i class=\"folder outline icon\"></i>${item.name}</div>\r\n                            </template>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\r\n                        <label><i class=\"lock icon\"></i>私有博文(不公开)</label>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-space-update.css', ['module'], function(module) { module.exports = ""; });
 define('text!resources/elements/em-blog-share.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-share.css\"></require>\r\n    <div ref=\"shareRef\" class=\"ui basic mini button\">\r\n        <i title=\"博文分享 (s)\" class=\"large icon share\"></i> <span title=\"博文分享 (s)\">分享</span>\r\n    </div>\r\n    <div class=\"ui popup bottom right transition hidden em-blog-share\">\r\n        <div ref=\"searchRef\" class=\"ui search\">\r\n            <div class=\"ui icon input\">\r\n                <input keyup.trigger=\"shareSearchKeyupHandler($event)\" ref=\"inputSearchRef\" class=\"prompt\" type=\"text\" placeholder=\"用户名，频道，邮箱\">\r\n                <i class=\"search icon\"></i>\r\n            </div>\r\n            <div class=\"results\"></div>\r\n        </div>\r\n        <div class=\"ui list\">\r\n            <div repeat.for=\"item of shares\" class=\"item\">\r\n                <div class=\"right floated content\">\r\n                    <i click.delegate=\"removeShareHandler(item)\" class=\"red trash link icon\"></i>\r\n                </div>\r\n                <template if.bind=\"item._type == 'user'\">\r\n                    <i class=\"user icon\"></i>\r\n                    <div class=\"content\">\r\n                        ${item.name} (${item.username})\r\n                    </div>\r\n                </template>\r\n                <template if.bind=\"item._type == 'channel'\">\r\n                    <i class=\"users icon\"></i>\r\n                    <div class=\"content\">\r\n                        ${item.title} (${item.name})\r\n                    </div>\r\n                </template>\r\n                <template if.bind=\"item._type == 'mail'\">\r\n                    <i class=\"mail icon\"></i>\r\n                    <div class=\"content\">\r\n                        ${item.mail}\r\n                    </div>\r\n                </template>\r\n            </div>\r\n        </div>\r\n        <div class=\"ui form\">\r\n            <div class=\"field\">\r\n                <textarea value.bind=\"desc\" placeholder=\"添加一个可选的说明\" rows=\"3\"></textarea>\r\n            </div>\r\n        </div>\r\n        <div class=\"footer\">\r\n            <button class=\"ui basic icon mini button tms-clipboard\" data-tooltip=\"复制博文分享链接\" data-clipboard-text=\"${basePath}#/blog/${blog.id}\">\r\n                <i class=\"copy icon\"></i>\r\n            </button>\r\n            <a click.delegate=\"cancelHandler()\" href=\"\" class=\"btn-cancel\">取消</a>\r\n            <button click.delegate=\"shareHandler()\" class=\"ui basic ${shares.length == 0 || (ajaxS && ajaxS.readyState != 4) ? 'disabled' : ''} right floated mini button\">\r\n                确定\r\n            </button>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-space-auth.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-space-auth.css\"></require>\r\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">${type == 'blog' ? '博文' : '空间'}可见性限制</div>\r\n        <div slot=\"content\" class=\"em-blog-space-auth\">\r\n            <div show.bind=\"!authO.privated\" class=\"ui warning message\">\r\n                <i class=\"warning icon\"></i> 设置为私有${type == 'blog' ? '博文' : '空间'}后,可见性限制才会有效!\r\n            </div>\r\n            <form class=\"ui form\">\r\n                <div class=\"field\">\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\r\n                        <label><i class=\"lock icon\"></i>私有${type == 'blog' ? '博文' : '空间'}(不公开)</label>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n            <div class=\"ui divider\"></div>\r\n            <div class=\"${!authO.privated? 'tms-disabled' : ''}\">\r\n                <div class=\"tms-header\"><i class=\"lock icon\"></i>限制为仅下面用户或者频道成员可见:</div>\r\n                <div ref=\"searchRef\" class=\"ui fluid search\">\r\n                    <div class=\"ui icon fluid input\">\r\n                        <input ref=\"inputSearchRef\" class=\"prompt\" type=\"text\" placeholder=\"用户名，频道\">\r\n                        <i class=\"search icon\"></i>\r\n                    </div>\r\n                    <div class=\"results\"></div>\r\n                </div>\r\n                <div class=\"ui list\">\r\n                    <div repeat.for=\"item of shares\" class=\"item\">\r\n                        <div class=\"right floated content\">\r\n                            <i click.delegate=\"removeShareHandler(item)\" class=\"red trash link icon\"></i>\r\n                        </div>\r\n                        <template if.bind=\"item.username\">\r\n                            <i class=\"user icon\"></i>\r\n                            <div class=\"content\">\r\n                                ${item.name} (${item.username})\r\n                            </div>\r\n                        </template>\r\n                        <template if.bind=\"!item.username\">\r\n                            <i class=\"users icon\"></i>\r\n                            <div class=\"content\">\r\n                                ${item.title} (${item.name})\r\n                            </div>\r\n                        </template>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
@@ -32346,39 +32365,39 @@ define('text!resources/elements/em-blog-write.css', ['module'], function(module)
 define('text!resources/elements/em-blog-space-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-space-edit.css\"></require>\r\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">空间编辑</div>\r\n        <div slot=\"content\" class=\"em-blog-space-edit\">\r\n            <form class=\"ui form\">\r\n                <div class=\"required field\">\r\n                    <input type=\"text\" value.bind=\"space.name\" placeholder=\"空间名称\">\r\n                </div>\r\n                <div class=\"field\">\r\n                    <textarea value.bind=\"space.description\" placeholder=\"可选的针对空间的描述\" rows=\"2\"></textarea>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\r\n                        <label><i class=\"lock icon\"></i>私有空间(不公开)</label>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-attach.css', ['module'], function(module) { module.exports = ".em-chat-attach.ui.basic.segment {\n  margin-bottom: 0;\n  padding-top: 0;\n}\n.em-chat-attach .ui.basic.button {\n  display: block;\n  margin-right: 0;\n}\n.em-chat-attach .ui.list .description {\n  font-size: 12px;\n  margin-top: 3px;\n}\n.em-chat-attach.ui.menu {\n  margin-top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n.em-chat-attach.ui.menu > .item {\n  -webkit-box-flex: 1;\n  -ms-flex: 1;\n  flex: 1;\n  display: block!important;\n  text-align: center;\n}\n.em-chat-attach.tms-attach-search-input {\n  padding: 0 10px;\n}\n"; });
 define('text!resources/elements/em-chat-channel-create.css', ['module'], function(module) { module.exports = ".tms-em-chat-channel-create .tms-join {\n  max-height: 315px;\n  overflow-y: auto;\n}\n.tms-em-chat-channel-create .ui.form > .field > label {\n  width: 35px!important;\n}\n"; });
-define('text!resources/elements/em-chat-channel-link-mgr.css', ['module'], function(module) { module.exports = "@media only screen and (min-width: 768px) {\n  .tms-em-chat-channel-link-mgr .ui.form .one.wide.field {\n    padding: 0;\n  }\n}\n"; });
-define('text!resources/elements/em-chat-channel-members-mgr.css', ['module'], function(module) { module.exports = ".tms-em-chat-channel-members-mgr .ui.dropdown span.owner + i.delete.icon {\n  display: none;\n}\n.tms-em-chat-channel-members-mgr .ui.dropdown span.disabled-user {\n  text-decoration: line-through;\n  font-style: italic;\n}\n.tms-em-chat-channel-members-mgr .member-table {\n  max-height: 315px;\n  overflow-y: auto;\n}\n"; });
-define('text!resources/elements/em-chat-channel-members-show.css', ['module'], function(module) { module.exports = ".em-chat-channel-members-show {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
 define('text!resources/elements/em-blog-space-update.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-space-update.css\"></require>\r\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文移动</div>\r\n        <div slot=\"content\" class=\"em-blog-space-update\">\r\n            <form class=\"ui form\">\r\n                <div class=\"required field\">\r\n                    <div ref=\"spacesRef\" class=\"ui fluid search selection dropdown\">\r\n                        <input type=\"hidden\" name=\"country\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\">选择空间(可选)</div>\r\n                        <div class=\"menu\">\r\n                            <div class=\"item\" data-value=\"\">(不指定空间)</div>\r\n                            <template repeat.for=\"item of spaces\">\r\n                                <div task.bind=\"initSpacesHandler($last)\" class=\"item\" data-value=\"${item.id}\"><i class=\"folder outline icon\"></i>${item.name}</div>\r\n                            </template>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-content-item.css', ['module'], function(module) { module.exports = ".em-chat-content-item .textcomplete-container {\n  position: relative;\n}\n.em-chat-content-item .textcomplete-container .append-to {\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  width: 100%;\n}\n.ui.comments .em-chat-content-item.comment > .avatar ~ .content {\n  margin-left: 3em;\n}\n.ui.comments .em-chat-content-item.comment .actions > a {\n  margin-right: 5px;\n}\n.ui.comments .em-chat-content-item.comment .actions .dropdown > a .ellipsis.icon {\n  margin-right: 0;\n}\n.ui.comments .em-chat-content-item.comment .actions .dropdown .item.tms-red {\n  color: red;\n}\n.ui.comments .em-chat-content-item.comment:hover .tools {\n  display: block;\n}\n.ui.comments .em-chat-content-item.comment:hover:before {\n  width: 4px;\n}\n.ui.comments .em-chat-content-item.comment.active:before {\n  width: 4px;\n}\n.ui.comments .em-chat-content-item.comment:before {\n  content: \"\";\n  position: absolute;\n  z-index: -1;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  background: #2098D1;\n  width: 0;\n  -webkit-transition-property: width;\n  transition-property: width;\n  -webkit-transition-duration: 0.3s;\n  transition-duration: 0.3s;\n  -webkit-transition-timing-function: ease-out;\n  transition-timing-function: ease-out;\n}\n@media only screen and (max-width: 767px) {\n  .em-chat-content-item > .content > .metadata > .rating {\n    display: none!important;\n  }\n}\n.em-chat-content-item > .content > .markdown-body span.at-user {\n  cursor: pointer;\n}\n.em-chat-content-item > .content > .tools {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  display: none;\n}\n.em-chat-content-item > .content > .tools > .ui.button {\n  margin: 0;\n  background-color: rgba(224, 225, 226, 0.5);\n}\n.em-chat-content-item > .content > .tools > .ui.button:hover {\n  background-color: #e0e1e2;\n}\n"; });
+define('text!resources/elements/em-chat-channel-link-mgr.css', ['module'], function(module) { module.exports = "@media only screen and (min-width: 768px) {\n  .tms-em-chat-channel-link-mgr .ui.form .one.wide.field {\n    padding: 0;\n  }\n}\n"; });
 define('text!resources/elements/em-blog-top-menu.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-top-menu.css\"></require>\r\n    <div ref=\"topMenuRef\" class=\"ui top fixed inverted blue menu em-blog-top-menu ${isSearchFocus ? 'search-focus' : ''}\">\r\n        <div click.delegate=\"toggleHandler()\" class=\"item tms-toggle\">\r\n            <i class=\"large ${isHide ? 'indent' : 'outdent'} link icon\"></i>\r\n        </div>\r\n        <div ui-dropdown-action class=\"ui dropdown item tms-links\">\r\n            <i class=\"large content icon\"></i>\r\n            <div class=\"menu\">\r\n                <div class=\"header\">系统外链</div>\r\n                <a repeat.for=\"item of sysLinks\" href=\"${item.href}\" target=\"_blank\" class=\"item\">${item.title}</a>\r\n            </div>\r\n        </div>\r\n        <div class=\"item tms-logo\">\r\n            <a href=\"#/\"><img ref=\"logoRef\" src=\"img/tms-x32.png\"></a>\r\n        </div>\r\n        <div class=\"header item\">\r\n            TMS博文\r\n        </div>\r\n        <div class=\"item tms-create\">\r\n            <a modaal=\"blog-create\" href=\"#modaal-blog-write\" title=\"博文创建 (c)\" class=\"ui primary button\">创建</a>\r\n        </div>\r\n        <div id=\"modaal-blog-write\" style=\"display:none;\">\r\n            <em-blog-write></em-blog-write>\r\n        </div>\r\n        <div class=\"right menu\">\r\n            <div class=\"item\">\r\n                <div ref=\"searchRef\" class=\"ui search\">\r\n                    <div class=\"ui icon input\">\r\n                        <input keyup.trigger=\"searchKeyupHandler($event)\" blur.trigger=\"searchBlurHandler()\" focus.trigger=\"searchFocusHandler()\" class=\"prompt\" type=\"text\" placeholder=\"搜索...\">\r\n                        <i class=\"search icon\"></i>\r\n                    </div>\r\n                    <div class=\"results\"></div>\r\n                </div>\r\n            </div>\r\n            <div ui-dropdown-hover class=\"ui top right dropdown item tms-login-user ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <em-user-avatar user.bind=\"loginUser\"></em-user-avatar>\r\n                <div class=\"menu\">\r\n                    <div class=\"header\">账户操作</div>\r\n                    <div class=\"divider\"></div>\r\n                    <a class=\"item\" click.delegate=\"userEditHandler()\"><i class=\"edit icon\"></i>修改</a>\r\n                    <a class=\"item\" click.delegate=\"logoutHandler()\"><i class=\"sign out icon\"></i>退出</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-user-edit user.bind=\"loginUser\" view-model.ref=\"userEditMd\"></em-user-edit>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-channel-members-mgr.css', ['module'], function(module) { module.exports = ".tms-em-chat-channel-members-mgr .ui.dropdown span.owner + i.delete.icon {\n  display: none;\n}\n.tms-em-chat-channel-members-mgr .ui.dropdown span.disabled-user {\n  text-decoration: line-through;\n  font-style: italic;\n}\n.tms-em-chat-channel-members-mgr .member-table {\n  max-height: 315px;\n  overflow-y: auto;\n}\n"; });
+define('text!resources/elements/em-blog-write.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-write.css\"></require>\r\n    <div class=\"em-blog-write\">\r\n        <div class=\"wrapper dropzone\">\r\n            <div class=\"title\">\r\n                <div class=\"ui transparent fluid massive input\">\r\n                    <input id=\"blog-title-input\" type=\"text\" placeholder=\"标题\">\r\n                </div>\r\n                <button id=\"blog-save-btn\" title=\"ctrl+click快速保存\" class=\"ui mini positive button\"><i style=\"display: none;\" class=\"spinner loading icon\"></i><span>保存</span></button>\r\n            </div>\r\n            <div class=\"dropzone-previews\"></div>\r\n            <div id=\"txt-blog-write-wrapper\" class=\"content markdown-body\">\r\n                <textarea style=\"width: 0; height: 0; border: 0; resize:none;\" id=\"txt-blog-write\"></textarea>\r\n            </div>\r\n            <div class=\"tms-blog-write-status-bar-wrapper\">\r\n                <div class=\"tms-blog-write-status-bar\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"preview-template\" style=\"display: none;\">\r\n            <div class=\"dz-preview dz-file-preview\">\r\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-blog-save view-model.ref=\"blogSaveVm\"></em-blog-save>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-channel-members-show.css', ['module'], function(module) { module.exports = ".em-chat-channel-members-show {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
+define('text!resources/elements/em-chat-attach.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-attach.css\"></require>\r\n    <div class=\"em-chat-attach tms-attach-search-input\">\r\n        <div class=\"ui fluid left action icon input\">\r\n            <button class=\"ui basic icon button\">\r\n                <i show.bind=\"!ajax || ajax.readyState == 4\" class=\"${type == 'Image' ? 'image' : ''} file outline icon\"></i>\r\n                <i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i>\r\n            </button>\r\n            <input ref=\"searchRef\" type=\"text\" value.bind=\"search\" keyup.trigger=\"keyupHandler($event)\" placeholder=\"${type == 'Image' ? '图片' : '文件'}搜索(Enter确认, Esc取消)...\">\r\n            <i click.delegate=\"searchHandler()\" class=\"search link icon\"></i>\r\n        </div>\r\n    </div>\r\n    <div ref=\"tabRef\" class=\"ui pointing secondary menu em-chat-attach\">\r\n        <a click.delegate=\"tabClickHandler('Image')\" class=\"active item\" data-tab=\"Image\"><i show.bind=\"!ajax || ajax.readyState == 4 || type == 'Attachment'\" class=\"file image outline icon\"></i><i show.bind=\"ajax && ajax.readyState != 4 && type == 'Image'\" class=\"spinner loading icon\"></i>图片${(page && type == 'Image') ? '(' + page.totalElements + ')' : ''}</a>\r\n        <a click.delegate=\"tabClickHandler('Attachment')\" class=\"item\" data-tab=\"Attachment\"><i show.bind=\"!ajax || ajax.readyState == 4 || type == 'Image'\" class=\"file outline icon\"></i><i show.bind=\"ajax && ajax.readyState != 4 && type == 'Attachment'\" class=\"spinner loading icon\"></i>文件${(page && type == 'Attachment') ? '(' + page.totalElements + ')' : ''}</a>\r\n    </div>\r\n    <div swipebox class=\"ui active tab basic segment em-chat-attach\" data-tab=\"Image\">\r\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无图片</h1>\r\n        <div if.bind=\"type == 'Image'\" class=\"ui small bordered images\">\r\n            <img repeat.for=\"item of attachs\" if.bind=\"item.type == 'Image'\" src=\"/${item.path + item.uuidName}\" alt=\"${item.name}\" title=\"${item.username | userName}上传于${item.createDate | timeago}\">\r\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\r\n        </div>\r\n    </div>\r\n    <div class=\"ui tab basic segment em-chat-attach\" data-tab=\"Attachment\">\r\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无文件</h1>\r\n        <div if.bind=\"type == 'Attachment'\" class=\"divided list selection ui\">\r\n            <div repeat.for=\"item of attachs\" if.bind=\"item.type == 'Attachment'\" class=\"item\">\r\n                <i class=\"file outline icon\"></i>\r\n                <div class=\"content\">\r\n                    <div class=\"header\"><a href=\"/admin/file/download/${item.id}\">${item.name}</a></div>\r\n                    <div class=\"description\"><i class=\"wait icon\"></i><b>${item.username | userName}</b>上传于<span title=\"${item.createDate | date}\">${item.createDate | timeago}</span></div>\r\n                </div>\r\n            </div>\r\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-content-item.css', ['module'], function(module) { module.exports = ".em-chat-content-item .textcomplete-container {\n  position: relative;\n}\n.em-chat-content-item .textcomplete-container .append-to {\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  width: 100%;\n}\n.ui.comments .em-chat-content-item.comment > .avatar ~ .content {\n  margin-left: 3em;\n}\n.ui.comments .em-chat-content-item.comment .actions > a {\n  margin-right: 5px;\n}\n.ui.comments .em-chat-content-item.comment .actions .dropdown > a .ellipsis.icon {\n  margin-right: 0;\n}\n.ui.comments .em-chat-content-item.comment .actions .dropdown .item.tms-red {\n  color: red;\n}\n.ui.comments .em-chat-content-item.comment:hover .tools {\n  display: block;\n}\n.ui.comments .em-chat-content-item.comment:hover:before {\n  width: 4px;\n}\n.ui.comments .em-chat-content-item.comment.active:before {\n  width: 4px;\n}\n.ui.comments .em-chat-content-item.comment:before {\n  content: \"\";\n  position: absolute;\n  z-index: -1;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  background: #2098D1;\n  width: 0;\n  -webkit-transition-property: width;\n  transition-property: width;\n  -webkit-transition-duration: 0.3s;\n  transition-duration: 0.3s;\n  -webkit-transition-timing-function: ease-out;\n  transition-timing-function: ease-out;\n}\n@media only screen and (max-width: 767px) {\n  .em-chat-content-item > .content > .metadata > .rating {\n    display: none!important;\n  }\n}\n.em-chat-content-item > .content > .markdown-body span.at-user {\n  cursor: pointer;\n}\n.em-chat-content-item > .content > .tools {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  display: none;\n}\n.em-chat-content-item > .content > .tools > .ui.button {\n  margin: 0;\n  background-color: rgba(224, 225, 226, 0.5);\n}\n.em-chat-content-item > .content > .tools > .ui.button:hover {\n  background-color: #e0e1e2;\n}\n"; });
+define('text!resources/elements/em-chat-channel-create.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-create.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" show-confirm.bind=\"activeTab == 'channel-create'\" confirm-label=\"创建\">\r\n        <div slot=\"header\">频道管理</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"tabRef\" class=\"ui pointing secondary menu\">\r\n                <a class=\"active item\" data-tab=\"channel-create\">创建频道</a>\r\n                <a class=\"item\" data-tab=\"channel-join\">加入频道</a>\r\n            </div>\r\n            <div class=\"ui active tab basic segment tms-create\" data-tab=\"channel-create\">\r\n                <div ref=\"frm\" class=\"ui form\">\r\n                    <div class=\"inline required field\">\r\n                        <label>标识</label>\r\n                        <input type=\"text\" name=\"name\" value.bind=\"name\" placeholder=\"小写字母数组-_组合\">\r\n                    </div>\r\n                    <div class=\"inline required field\">\r\n                        <label>名称</label>\r\n                        <input type=\"text\" name=\"title\" value.bind=\"title\" placeholder=\"\">\r\n                    </div>\r\n                    <div class=\"inline field\">\r\n                        <label style=\"visibility: hidden;\">公开</label>\r\n                        <div ref=\"chk\" class=\"ui checkbox\">\r\n                            <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                            <label>非公开(公开频道用户可以自由加入)</label>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"field\">\r\n                        <label>描述</label>\r\n                        <textarea name=\"desc\" value.bind=\"desc\" placeholder=\"\" rows=\"5\"></textarea>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"ui tab basic segment tms-join\" data-tab=\"channel-join\">\r\n                <em-chat-channel-join em-chat-channel-join.ref=\"channelJoinVm\" login-user.bind=\"loginUser\"></em-chat-channel-join>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-input.css', ['module'], function(module) { module.exports = ".tms-em-chat-input.ui.segment {\n  margin: 0;\n  position: fixed;\n  bottom: 0;\n  left: 220px;\n  right: 0;\n  background-color: white;\n  padding-bottom: 22px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-input.ui.segment {\n    left: 0;\n  }\n}\n.tms-em-chat-input.ui.segment .tms-chat-status-bar .dz-preview {\n  display: block!important;\n  width: auto!important;\n  background: #e0e1e2;\n  margin: 0;\n  padding: 7px;\n}\n.tms-em-chat-input.ui.segment .ui[class*=\"left action\"].input > textarea {\n  border-top-left-radius: 0!important;\n  border-bottom-left-radius: 0!important;\n  border-left-color: transparent!important;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper {\n  width: calc(100% - 35px);\n  border: 1px solid rgba(34, 36, 38, 0.15);\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror,\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  min-height: 0;\n  border: none;\n  border-top-right-radius: .28571429rem;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  max-height: 300px;\n}\n.tms-em-chat-input.ui.segment .ui.input {\n  margin-right: 5px;\n}\n.tms-em-chat-input.ui.segment .ui.input i.send.icon {\n  z-index: 1;\n  right: 7px!important;\n}\n.tms-em-chat-input.ui.segment .ui.input textarea {\n  resize: none;\n  width: 100%;\n  padding-right: 2.67142857em!important;\n  margin: 0;\n  max-width: 100%;\n  outline: 0;\n  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);\n  text-align: left;\n  display: block;\n  padding: .67861429em 1em;\n  background: #FFF;\n  border: none;\n  color: rgba(0, 0, 0, 0.87);\n  box-shadow: none;\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n.tms-em-chat-input .CodeMirror-lines {\n  margin-right: 30px;\n}\n.tms-em-chat-input .ui.vertical.menu.popup {\n  width: 145px;\n}\n.tms-em-chat-input .ui.vertical.menu.popup a.item > i.icon {\n  float: left;\n  margin: 0 .35714286em 0 0;\n}\n@media only screen and (min-width: 768px) {\n  .tms-chat-direct .tms-content.tms-sidebar-show .tms-em-chat-input {\n    right: 392px;\n  }\n}\n.textcomplete-dropdown {\n  position: static!important;\n  border: 1px solid #ddd;\n  background-color: white;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  border-radius: 5px;\n}\n.textcomplete-dropdown li {\n  /* border-top: 1px solid #ddd; */\n  padding: 2px 5px;\n}\n.textcomplete-dropdown li:first-child {\n  border-top: none;\n  border-top-left-radius: 5px;\n  border-top-right-radius: 5px;\n}\n.textcomplete-dropdown li:last-child {\n  border-bottom-left-radius: 5px;\n  border-bottom-right-radius: 5px;\n}\n.textcomplete-dropdown li:hover,\n.textcomplete-dropdown .active {\n  background-color: #439fe0;\n}\n.textcomplete-dropdown a:hover {\n  cursor: pointer;\n}\n.textcomplete-dropdown li.textcomplete-item a {\n  color: black;\n}\n.textcomplete-dropdown li.textcomplete-item:hover a,\n.textcomplete-dropdown li.textcomplete-item.active a {\n  color: white;\n}\n"; });
 define('text!resources/elements/em-chat-member-popup.css', ['module'], function(module) { module.exports = ".tms-chat-member-popup .ui.cards {\n  margin-top: 0!important;\n}\n.tms-chat-member-popup .ui.cards .card {\n  margin-top: 0!important;\n}\n.tms-chat-member-popup .ui.cards .card .ui.list > .item {\n  border-radius: 0!important;\n}\n"; });
-define('text!resources/elements/em-blog-write.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-write.css\"></require>\r\n    <div class=\"em-blog-write\">\r\n        <div class=\"wrapper dropzone\">\r\n            <div class=\"title\">\r\n                <div class=\"ui transparent fluid massive input\">\r\n                    <input id=\"blog-title-input\" type=\"text\" placeholder=\"标题\">\r\n                </div>\r\n                <button id=\"blog-save-btn\" title=\"ctrl+click快速保存\" class=\"ui mini positive button\"><i style=\"display: none;\" class=\"spinner loading icon\"></i><span>保存</span></button>\r\n            </div>\r\n            <div class=\"dropzone-previews\"></div>\r\n            <div id=\"txt-blog-write-wrapper\" class=\"content markdown-body\">\r\n                <textarea style=\"width: 0; height: 0; border: 0; resize:none;\" id=\"txt-blog-write\"></textarea>\r\n            </div>\r\n            <div class=\"tms-blog-write-status-bar-wrapper\">\r\n                <div class=\"tms-blog-write-status-bar\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"preview-template\" style=\"display: none;\">\r\n            <div class=\"dz-preview dz-file-preview\">\r\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-blog-save view-model.ref=\"blogSaveVm\"></em-blog-save>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-channel-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\r\n        <div slot=\"header\">编辑频道</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"inline required field\">\r\n                    <label>标识</label>\r\n                    <div class=\"ui basic label\">${channel.name}</div>\r\n                </div>\r\n                <div class=\"inline required field\">\r\n                    <label>名称</label>\r\n                    <input type=\"text\" name=\"title\" value.bind=\"channel.title\" placeholder=\"\">\r\n                </div>\r\n                <div class=\"inline field\">\r\n                    <label style=\"visibility: hidden;\">公开</label>\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                        <label>非公开(公开频道用户可以自由加入)</label>\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <label>描述</label>\r\n                    <textarea name=\"desc\" value.bind=\"channel.description\" placeholder=\"\" rows=\"5\"></textarea>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-channel-join.html', ['module'], function(module) { module.exports = "<template>\r\n    <table class=\"ui very basic striped table\">\r\n        <thead>\r\n            <tr>\r\n                <th>标识</th>\r\n                <th>名称</th>\r\n                <th>描述</th>\r\n                <th>可见性</th>\r\n                <th>拥有者</th>\r\n                <th>操作</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n            <tr repeat.for=\"item of channels | sort:'title' | sortChannels\">\r\n                <td><i class=\"hashtag icon\"></i>${item.name}</td>\r\n                <td title=\"${item.title}\">${item.title}</td>\r\n                <td><span data-tooltip=\"${item.description}\"><i class=\"info circle icon\"></i></span></td>\r\n                <td if.bind=\"item.privated\"><span data-tooltip=\"私有频道\"><i class=\"lock icon\"></i></span></td>\r\n                <td if.bind=\"!item.privated\"><span data-tooltip=\"公开频道\"><i class=\"unlock icon\"></i></span></td>\r\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username != loginUser.username\">${item.owner.name ? item.owner.name : item.owner.username}</td>\r\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username == loginUser.username\">自己</td>\r\n                <td>\r\n                    <div if.bind=\"!item.privated && !item.joined\" class=\"ui mini green button\" click.delegate=\"joinHandler(item)\">加入</div>\r\n                    <div if.bind=\"item.joined && (item.owner.username != loginUser.username)\" class=\"ui mini orange button\" click.delegate=\"leaveHandler(item)\">离开</div>\r\n                </td>\r\n            </tr>\r\n        </tbody>\r\n    </table>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-schedule-edit.css', ['module'], function(module) { module.exports = ".em-chat-schedule-edit .ui.form {\n  width: 300px;\n}\n.em-chat-schedule-edit .ui.form .ui.calendar {\n  width: 200px;\n}\n.em-chat-schedule-edit .ui.form .tms-date-field {\n  position: relative;\n}\n.em-chat-schedule-edit .ui.form .tms-date-field .ui.button {\n  position: absolute;\n  top: 0;\n  right: 0;\n}\n.em-chat-schedule-edit .ui.form .ui.dropdown {\n  width: 265px!important;\n  min-height: 30px;\n}\n.em-chat-schedule-edit .ui.form .ui.dropdown > a.ui.label > input.owner + i.delete.icon {\n  display: none;\n}\n.tms-schedule-edit-target {\n  display: inline-block;\n  width: 1px;\n  height: 1px;\n  position: absolute;\n  right: 188px;\n  top: 30px;\n}\n"; });
 define('text!resources/elements/em-chat-schedule-remind.css', ['module'], function(module) { module.exports = ".em-chat-schedule-remind .ui.table tr > td:first-child {\n  font-weight: bold;\n}\n"; });
-define('text!resources/elements/em-chat-attach.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-attach.css\"></require>\r\n    <div class=\"em-chat-attach tms-attach-search-input\">\r\n        <div class=\"ui fluid left action icon input\">\r\n            <button class=\"ui basic icon button\">\r\n                <i show.bind=\"!ajax || ajax.readyState == 4\" class=\"${type == 'Image' ? 'image' : ''} file outline icon\"></i>\r\n                <i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i>\r\n            </button>\r\n            <input ref=\"searchRef\" type=\"text\" value.bind=\"search\" keyup.trigger=\"keyupHandler($event)\" placeholder=\"${type == 'Image' ? '图片' : '文件'}搜索(Enter确认, Esc取消)...\">\r\n            <i click.delegate=\"searchHandler()\" class=\"search link icon\"></i>\r\n        </div>\r\n    </div>\r\n    <div ref=\"tabRef\" class=\"ui pointing secondary menu em-chat-attach\">\r\n        <a click.delegate=\"tabClickHandler('Image')\" class=\"active item\" data-tab=\"Image\"><i show.bind=\"!ajax || ajax.readyState == 4 || type == 'Attachment'\" class=\"file image outline icon\"></i><i show.bind=\"ajax && ajax.readyState != 4 && type == 'Image'\" class=\"spinner loading icon\"></i>图片${(page && type == 'Image') ? '(' + page.totalElements + ')' : ''}</a>\r\n        <a click.delegate=\"tabClickHandler('Attachment')\" class=\"item\" data-tab=\"Attachment\"><i show.bind=\"!ajax || ajax.readyState == 4 || type == 'Image'\" class=\"file outline icon\"></i><i show.bind=\"ajax && ajax.readyState != 4 && type == 'Attachment'\" class=\"spinner loading icon\"></i>文件${(page && type == 'Attachment') ? '(' + page.totalElements + ')' : ''}</a>\r\n    </div>\r\n    <div swipebox class=\"ui active tab basic segment em-chat-attach\" data-tab=\"Image\">\r\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无图片</h1>\r\n        <div if.bind=\"type == 'Image'\" class=\"ui small bordered images\">\r\n            <img repeat.for=\"item of attachs\" if.bind=\"item.type == 'Image'\" src=\"/${item.path + item.uuidName}\" alt=\"${item.name}\" title=\"${item.username | userName}上传于${item.createDate | timeago}\">\r\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\r\n        </div>\r\n    </div>\r\n    <div class=\"ui tab basic segment em-chat-attach\" data-tab=\"Attachment\">\r\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无文件</h1>\r\n        <div if.bind=\"type == 'Attachment'\" class=\"divided list selection ui\">\r\n            <div repeat.for=\"item of attachs\" if.bind=\"item.type == 'Attachment'\" class=\"item\">\r\n                <i class=\"file outline icon\"></i>\r\n                <div class=\"content\">\r\n                    <div class=\"header\"><a href=\"/admin/file/download/${item.id}\">${item.name}</a></div>\r\n                    <div class=\"description\"><i class=\"wait icon\"></i><b>${item.username | userName}</b>上传于<span title=\"${item.createDate | date}\">${item.createDate | timeago}</span></div>\r\n                </div>\r\n            </div>\r\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-channel-link-mgr.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-link-mgr.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">频道外链管理</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-link-mgr\">\r\n            <div class=\"ui segment\">\r\n                <div class=\"ui form\">\r\n                    <div class=\"field required\">\r\n                        <label>添加频道外链</label>\r\n                        <div class=\"fields\">\r\n                            <div class=\"five wide field\">\r\n                                <input type=\"text\" value.bind=\"title\" name=\"title\" placeholder=\"链接标题\">\r\n                            </div>\r\n                            <div class=\"ten wide field\">\r\n                                <input type=\"text\" value.bind=\"href\" name=\"href\" placeholder=\"链接地址\">\r\n                            </div>\r\n                            <div class=\"one wide field\">\r\n                                <button title=\"添加外链\" click.delegate=\"addHandler()\" class=\"circular ui icon blue button\" type=\"button\"><i class=\"plus icon\"></i></button>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div style=\"max-height: 275px; overflow: auto;\">\r\n                <table class=\"ui very basic striped compact table\">\r\n                    <thead>\r\n                        <tr>\r\n                            <th style=\"width: 180px;\">标题</th>\r\n                            <th>链接</th>\r\n                            <th></th>\r\n                            <th style=\"width: 150px;\">操作</th>\r\n                        </tr>\r\n                    </thead>\r\n                    <tbody>\r\n                        <tr repeat.for=\"item of links | sort:'title'\">\r\n                            <td if.bind=\"!item.isEditing\">${item.title}</td>\r\n                            <td if.bind=\"item.isEditing\">\r\n                                <div class=\"ui fluid input\">\r\n                                    <input type=\"text\" value.bind=\"item.title\" placeholder=\"链接标题\">\r\n                                </div>\r\n                            </td>\r\n                            <td if.bind=\"!item.isEditing\"><a style=\"word-break: break-all;\" target=\"_blank\" href=\"${item.href}\">${item.href}</a></td>\r\n                            <td if.bind=\"item.isEditing\">\r\n                                <div class=\"ui fluid input\">\r\n                                    <input type=\"text\" value.bind=\"item.href\" placeholder=\"链接地址\">\r\n                                </div>\r\n                            </td>\r\n                            <td><span data-tooltip=\"${item.creator.name ? item.creator.name : item.creator.username} 添加于 ${item.createDate | timeago}\"><i class=\"info circle icon\"></i></span></td>\r\n                            <td>\r\n                                <button if.bind=\"item.creator.username == loginUser.username || channel.owner.username == loginUser.username\" show.bind=\"!item.isEditing\" click.delegate=\"editHandler(item)\" class=\"mini ui button\">\r\n                                    编辑\r\n                                </button>\r\n                                <button if.bind=\"item.creator.username == loginUser.username || channel.owner.username == loginUser.username\" click.delegate=\"updateHandler(item)\" show.bind=\"item.isEditing\" class=\"mini green ui button\">\r\n                                    更新\r\n                                </button>\r\n                                <button if.bind=\"item.creator.username == loginUser.username || channel.owner.username == loginUser.username\" click.delegate=\"delHandler(item)\" class=\"mini ui red button\">\r\n                                    删除\r\n                                </button>\r\n                            </td>\r\n                        </tr>\r\n                    </tbody>\r\n                </table>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-schedule.css', ['module'], function(module) { module.exports = ".em-chat-schedule {\n  position: relative;\n  height: 100%;\n}\n.em-chat-schedule .tms-add {\n  position: absolute;\n  right: 170px;\n  top: 0;\n}\n.em-chat-schedule .ui.form {\n  width: 300px;\n}\n.em-chat-schedule .ui.form .ui.calendar {\n  width: 200px;\n}\n.em-chat-schedule .ui.form .tms-date-field {\n  position: relative;\n}\n.em-chat-schedule .ui.form .tms-date-field .ui.button {\n  position: absolute;\n  top: 0;\n  right: 0;\n}\n.em-chat-schedule .ui.form .ui.dropdown {\n  width: 265px!important;\n  min-height: auto;\n}\n.em-chat-schedule .ui.form .ui.dropdown > a.ui.label > input.owner + i.delete.icon {\n  display: none;\n}\n"; });
+define('text!resources/elements/em-chat-channel-members-mgr.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-members-mgr.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"确定\">\r\n        <div slot=\"header\">频道成员管理</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-members-mgr\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"field\">\r\n                    <label>频道成员(${channel.members.length})</label>\r\n                    <div ref=\"membersRef\" class=\"ui fluid multiple search selection dropdown\">\r\n                        <input type=\"hidden\" name=\"members\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\"></div>\r\n                        <div class=\"menu\">\r\n                            <div repeat.for=\"item of users | sortUsers:channel.owner.username\" task.bind=\"initMembersUI($last)\" class=\"item\" data-value=\"${item.username}\">\r\n                                <!-- <input type=\"hidden\" class=\"${!item.enabled ? 'disabled-user' : ''}\"> -->\r\n                                <span class=\"${channel.owner.username == item.username ? 'owner' : ''} ${!item.enabled ? 'disabled-user' : ''}\">${item.name ? item.name : item.username}</span>\r\n                                <!-- <input type=\"hidden\" class=\"${channel.owner.username == item.username ? 'owner' : ''}\"> -->\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"member-table\">\r\n                <table class=\"ui very basic striped compact table\">\r\n                    <thead>\r\n                        <tr>\r\n                            <th><i class=\"at icon\" style=\"margin-right: 0;\"></i>用户名</th>\r\n                            <th>姓名</th>\r\n                            <th>邮箱</th>\r\n                            <th>登录</th>\r\n                            <th>状态</th>\r\n                        </tr>\r\n                    </thead>\r\n                    <tbody>\r\n                        <tr repeat.for=\"item of channel.members | sort:'username'\">\r\n                            <td><i class=\"at icon\" style=\"margin-right: 0;\"></i>${item.username}</td>\r\n                            <td>${item.name}</td>\r\n                            <td>${item.mails}</td>\r\n                            <td title=\"${item.lastLoginDate | date}\">${item.lastLoginDate | timeago}</td>\r\n                            <td if.bind=\"item.enabled\">\r\n                                <div class=\"ui green tag label\">启用中</div>\r\n                            </td>\r\n                            <td if.bind=\"!item.enabled\">\r\n                                <div class=\"ui red tag label\">已停用</div>\r\n                            </td>\r\n                        </tr>\r\n                    </tbody>\r\n                </table>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-share.css', ['module'], function(module) { module.exports = ".em-chat-share.ui.popup {\n  max-width: 100%;\n  width: 255px;\n}\n.em-chat-share.ui.popup .ui.input {\n  width: 225px;\n}\n.em-chat-share.ui.popup textarea {\n  width: 195px!important;\n}\n.em-chat-share.ui.popup .ui.search > .results .result {\n  cursor: pointer!important;\n  display: block!important;\n  color: rgba(0, 0, 0, 0.87) !important;\n  border-bottom: 1px solid rgba(34, 36, 38, 0.1) !important;\n  margin: 0!important;\n}\n.em-chat-share.ui.popup .ui.list > .item {\n  color: rgba(0, 0, 0, 0.87);\n}\n.em-chat-share:after {\n  content: '';\n  clear: both;\n}\n.em-chat-share .footer {\n  margin-top: 16px;\n}\n.em-chat-share .footer .btn-cancel {\n  float: right;\n  margin: 6px 0 0 8px!important;\n}\n"; });
-define('text!resources/elements/em-chat-channel-create.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-create.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" show-confirm.bind=\"activeTab == 'channel-create'\" confirm-label=\"创建\">\r\n        <div slot=\"header\">频道管理</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"tabRef\" class=\"ui pointing secondary menu\">\r\n                <a class=\"active item\" data-tab=\"channel-create\">创建频道</a>\r\n                <a class=\"item\" data-tab=\"channel-join\">加入频道</a>\r\n            </div>\r\n            <div class=\"ui active tab basic segment tms-create\" data-tab=\"channel-create\">\r\n                <div ref=\"frm\" class=\"ui form\">\r\n                    <div class=\"inline required field\">\r\n                        <label>标识</label>\r\n                        <input type=\"text\" name=\"name\" value.bind=\"name\" placeholder=\"小写字母数组-_组合\">\r\n                    </div>\r\n                    <div class=\"inline required field\">\r\n                        <label>名称</label>\r\n                        <input type=\"text\" name=\"title\" value.bind=\"title\" placeholder=\"\">\r\n                    </div>\r\n                    <div class=\"inline field\">\r\n                        <label style=\"visibility: hidden;\">公开</label>\r\n                        <div ref=\"chk\" class=\"ui checkbox\">\r\n                            <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                            <label>非公开(公开频道用户可以自由加入)</label>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"field\">\r\n                        <label>描述</label>\r\n                        <textarea name=\"desc\" value.bind=\"desc\" placeholder=\"\" rows=\"5\"></textarea>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"ui tab basic segment tms-join\" data-tab=\"channel-join\">\r\n                <em-chat-channel-join em-chat-channel-join.ref=\"channelJoinVm\" login-user.bind=\"loginUser\"></em-chat-channel-join>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-channel-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\r\n        <div slot=\"header\">编辑频道</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"inline required field\">\r\n                    <label>标识</label>\r\n                    <div class=\"ui basic label\">${channel.name}</div>\r\n                </div>\r\n                <div class=\"inline required field\">\r\n                    <label>名称</label>\r\n                    <input type=\"text\" name=\"title\" value.bind=\"channel.title\" placeholder=\"\">\r\n                </div>\r\n                <div class=\"inline field\">\r\n                    <label style=\"visibility: hidden;\">公开</label>\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                        <label>非公开(公开频道用户可以自由加入)</label>\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <label>描述</label>\r\n                    <textarea name=\"desc\" value.bind=\"channel.description\" placeholder=\"\" rows=\"5\"></textarea>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-channel-members-show.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-members-show.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"确定\">\r\n        <div slot=\"header\">频道成员(${channel.members.length})</div>\r\n        <div slot=\"content\" class=\"em-chat-channel-members-show\">\r\n            <table class=\"ui very basic striped compact table\">\r\n                <thead>\r\n                    <tr>\r\n                        <th><i class=\"at icon\" style=\"margin-right: 0;\"></i>用户名</th>\r\n                        <th>姓名</th>\r\n                        <th>邮箱</th>\r\n                        <th>登录</th>\r\n                        <th>状态</th>\r\n                    </tr>\r\n                </thead>\r\n                <tbody>\r\n                    <tr repeat.for=\"item of channel.members | sort:'username'\">\r\n                        <td><i class=\"at icon\" style=\"margin-right: 0;\"></i>${item.username}</td>\r\n                        <td>${item.name}</td>\r\n                        <td>${item.mails}</td>\r\n                        <td title=\"${item.lastLoginDate | date}\">${item.lastLoginDate | timeago}</td>\r\n                        <td if.bind=\"item.enabled\">\r\n                            <div class=\"ui green tag label\">启用中</div>\r\n                        </td>\r\n                        <td if.bind=\"!item.enabled\">\r\n                            <div class=\"ui red tag label\">已停用</div>\r\n                        </td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-sidebar-left.css', ['module'], function(module) { module.exports = ".tms-left-sidebar {\n  overflow: hidden;\n}\n.tms-left-sidebar .tms-body {\n  position: absolute;\n  top: 98px;\n  width: 220px;\n  height: calc(100% - 150px);\n  overflow: hidden;\n  padding-right: 2px;\n}\n.tms-left-sidebar .tms-body i.circular.icon {\n  box-shadow: 0 0 0 0.1em #4183c4 inset;\n}\n.tms-left-sidebar .tms-body .title {\n  position: relative;\n  margin-left: 10px;\n}\n.tms-left-sidebar .tms-body .title .ui.header {\n  display: inline-block;\n  margin-top: 2px;\n  margin-bottom: 0;\n}\n.tms-left-sidebar .tms-body .title i.plus.icon {\n  position: absolute;\n  right: 10px;\n  font-size: 12px;\n  width: 12px!important;\n  height: 12px!important;\n}\n.tms-left-sidebar .tms-body .ui.list {\n  margin-top: 10px;\n  padding-top: 5px;\n  box-shadow: 0px -1px 1px -1px rgba(65, 131, 196, 0.5);\n}\n.tms-left-sidebar .tms-body .ui.list > .item {\n  padding-left: 16px;\n  border-radius: 0;\n}\n.tms-left-sidebar .tms-body .ui.list > .item > .icon + .content {\n  padding: 0;\n}\n.tms-left-sidebar .tms-body .ui.list > .item.active {\n  background: rgba(0, 0, 0, 0.2);\n}\n.tms-left-sidebar .tms-body .ui.list > .item:hover {\n  background: rgba(0, 0, 0, 0.1) !important;\n}\n.tms-left-sidebar .tms-body .ui.list > .item.disabled-user {\n  text-decoration: line-through;\n  font-style: italic;\n}\n.tms-left-sidebar .tms-body .tms-name {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  max-width: 160px;\n}\n.tms-left-sidebar .tms-body .tms-channels .ui.list a.item {\n  position: relative;\n}\n.tms-left-sidebar .tms-body .tms-channels .ui.list a.item:hover .actions {\n  display: inline-block;\n}\n.tms-left-sidebar .tms-body .tms-channels .actions {\n  display: none;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n}\n.tms-left-sidebar .tms-body .scroll-element.scroll-y {\n  background-color: #4d394b;\n}\n.tms-left-sidebar.ui.left.sidebar {\n  background-color: #4d394b;\n  width: 220px;\n}\n.tms-left-sidebar.ui.left.sidebar * {\n  color: #4183c4!important;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header {\n  padding: 9px 16px;\n  box-shadow: 0 1px 1px -1px #4183c4;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header > input {\n  background-color: transparent;\n  border: 1px rgba(103, 104, 104, 0.5) solid;\n  font-size: 12px;\n  padding: 4px;\n  width: 188px;\n  outline: none;\n  margin-top: 10px;\n  border-radius: 2px;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header > input::-webkit-input-placeholder {\n  color: rgba(103, 104, 104, 0.5) !important;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header > input::-moz-placeholder {\n  color: rgba(103, 104, 104, 0.5) !important;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header > input:-ms-input-placeholder {\n  color: rgba(103, 104, 104, 0.5) !important;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header > input:focus::-webkit-input-placeholder {\n  color: #676868 !important;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header > input:focus::-moz-placeholder {\n  color: #676868 !important;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header > input:focus:-ms-input-placeholder {\n  color: #676868 !important;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header h1.ui.header {\n  margin: 0;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header h1.ui.header img {\n  width: 30px;\n  height: 30px;\n  margin: 0;\n}\n.tms-left-sidebar.ui.left.sidebar .tms-header i.close.icon {\n  position: absolute;\n  right: 16px;\n  top: 57px;\n}\n.tms-left-sidebar .tms-footer {\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  right: 0;\n}\n.tms-left-sidebar .tms-footer .ui.menu {\n  border-radius: 0;\n  background-color: rgba(27, 28, 29, 0.2) !important;\n}\n.tms-left-sidebar .tms-footer .ui.menu .dropdown.item .menu {\n  border-radius: 0;\n}\n.tms-left-sidebar .tms-footer .ui.menu .item {\n  font-size: 12px!important;\n}\n.tms-left-sidebar .tms-footer .ui.menu .item:before {\n  width: 0;\n}\n.tms-left-sidebar .tms-footer .ui.menu .ui.button.item {\n  width: 140px;\n  margin-right: 0;\n  padding-left: 0;\n}\n.tms-left-sidebar .tms-footer .ui.menu .ui.button.item .visible.content {\n  margin-right: 0;\n  width: 100%;\n}\n.tms-left-sidebar .tms-footer .ui.menu .right.menu .ui.dropdown .menu .header {\n  min-width: 150px;\n  position: relative;\n}\n.tms-left-sidebar .tms-footer .ui.menu .right.menu .ui.dropdown .menu .header .plus.icon {\n  position: absolute;\n  right: 0;\n  top: -7px;\n}\n"; });
+define('text!resources/elements/em-chat-content-item.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-content-item.css\"></require>\r\n    <div repeat.for=\"item of chats\" swipebox class=\"em-chat-content-item comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\" task.bind=\"notifyRendered($last, item)\">\r\n        <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\r\n        <div class=\"content\">\r\n            <a class=\"author\" data-value=\"${item.creator.username}\" click.delegate=\"creatorNameHandler(item)\">${item.creator.name}</a>\r\n            <div class=\"metadata\">\r\n                <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\r\n                <div show.bind=\"!isAt\" class=\"rating\">\r\n                    <i click.delegate=\"likeHandler(item, true)\" style=\"cursor: pointer;\" title=\"赞一下\" class=\"cbutton cbutton--effect-novak thumbs ${item.isZanVoted ? '' : 'outline'} up icon\"></i> <span title=\"${item.voteZan}\">${item.voteZanCnt} 赞</span>\r\n                </div>\r\n                <div show.bind=\"!isAt\" class=\"rating\">\r\n                    <i click.delegate=\"likeHandler(item, false)\" style=\"cursor: pointer;\" title=\"踩一下\" class=\"cbutton cbutton--effect-novak thumbs ${item.isCaiVoted ? '' : 'outline'} down icon\"></i> <span title=\"${item.voteCai}\">${item.voteCaiCnt} 踩</span>\r\n                </div>\r\n            </div>\r\n            <div ref=\"mkbodyRef\" show.bind=\"!item.isEditing\" class=\"text markdown-body\" innerhtml.bind=\"item.content | parseMd | emoji:mkbodyRef\"></div>\r\n            <div class=\"textcomplete-container\" show.bind=\"item.isEditing\">\r\n                <div class=\"append-to\"></div>\r\n            </div>\r\n            <textarea ref=\"editTxtRef\" data-id=\"${item.id}\" textcomplete.bind=\"members\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content & oneWay\" class=\"tms-edit-textarea\" rows=\"1\"></textarea>\r\n            <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-edit-actions\">\r\n                <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\r\n                    <i class=\"checkmark icon\"></i>\r\n                </button>\r\n                <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\r\n                    <i class=\"remove icon\"></i>\r\n                </button>\r\n                <button dropzone=\"clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\r\n                    <i class=\"upload icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"actions\">\r\n                <a if.bind=\"!isAt && (item.creator.username != loginUser.username)\" click.delegate=\"replyHandler(item)\" class=\"tms-reply\" title=\"回复消息\">回复</a>\r\n                <a if.bind=\"item.openEdit || (item.creator.username == loginUser.username)\" click.delegate=\"editHandler(item, editTxtRef)\" class=\"tms-edit\" title=\"编辑消息(ctrl+dblclick)\">编辑</a>\r\n                <a if.bind=\"!isAt\" click.delegate=\"stowHandler(item)\" class=\"tms-stow\" title=\"收藏消息\">收藏</a>\r\n                <em-chat-share chat.bind=\"item\" channel.bind=\"channel\" is-at.bind=\"isAt\" login-user.bind=\"loginUser\"></em-chat-share>\r\n                <div ui-dropdown-action=\".tms-comments-container\" class=\"ui top right pointing dropdown\">\r\n                    <a class=\"text\" title=\"更多操作\"><i class=\"ellipsis horizontal large icon\"></i></a>\r\n                    <div class=\"menu\">\r\n                        <div class=\"item\" if.bind=\"!isAt && (item.creator.username == loginUser.username)\" click.delegate=\"openEditHandler(item)\" title=\"${item.openEdit ? '关闭协作编辑' :'开启协作编辑'}\"><i class=\"write icon\"></i> ${item.openEdit ? '关闭' :'协作'}</div>\r\n                        <div class=\"item tms-clipboard\" data-clipboard-text=\"${item.content}\" title=\"复制消息内容\"><i class=\"icon copy\"></i> 复制</div>\r\n                        <!-- <div class=\"item tms-clipboard\" data-clipboard-text=\"${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}\" title=\"复制消息链接\"><i class=\"icon share\"></i> 分享</div> -->\r\n                        <a target=\"_blank\" href=\"#/blog/create?${isAt ? 'cdid' : 'ccid'}=${item.id}\" style=\"display: block; color: rgba(0,0,0,.87);\" class=\"item\">\r\n                            <i class=\"wikipedia icon\"></i> 转为博文\r\n                        </a>\r\n                        <div class=\"divider\"></div>\r\n                        <a href=\"/admin/chat/${isAt ? 'direct' : 'channel'}/download/${item.id}?type=pdf\" style=\"display: block; color: rgba(0,0,0,.87);\" class=\"item\">\r\n                            <i class=\"file pdf outline icon\"></i> 导出为PDF\r\n                        </a>\r\n                        <a href=\"/admin/chat/${isAt ? 'direct' : 'channel'}/download/${item.id}?type=md\" style=\"display: block; color: rgba(0,0,0,.87);\" class=\"item\">\r\n                            <i class=\"file text outline icon\"></i> 导出为Markdown\r\n                        </a>\r\n                        <div if.bind=\"item.creator.username == loginUser.username\" class=\"divider\"></div>\r\n                        <div class=\"item tms-red\" if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"deleteHandler(item)\" title=\"删除消息\"><i class=\"trash outline icon\"></i> 删除</div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"tools\">\r\n                <button show.bind=\"!isAt && !item.isEditing\" click.delegate=\"refreshHandler(item)\" title=\"刷新同步\" class=\"mini circular ui icon button\">\r\n                    <i class=\"refresh icon\"></i>\r\n                </button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-sidebar-right.css', ['module'], function(module) { module.exports = ".em-chat-sidebar-right .panel-wiki-dir {\n  height: 100%;\n  padding-left: 15px;\n  overflow-y: auto;\n}\n.em-chat-sidebar-right .panel-chat-schedule {\n  height: calc(100% - 10px);\n  overflow: hidden;\n}\n"; });
 define('text!resources/elements/em-chat-system-link-mgr.css', ['module'], function(module) { module.exports = "@media only screen and (min-width: 768px) {\n  .tms-em-chat-system-link-mgr .ui.form .one.wide.field {\n    padding: 0;\n  }\n}\n"; });
-define('text!resources/elements/em-chat-channel-join.html', ['module'], function(module) { module.exports = "<template>\r\n    <table class=\"ui very basic striped table\">\r\n        <thead>\r\n            <tr>\r\n                <th>标识</th>\r\n                <th>名称</th>\r\n                <th>描述</th>\r\n                <th>可见性</th>\r\n                <th>拥有者</th>\r\n                <th>操作</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n            <tr repeat.for=\"item of channels | sort:'title' | sortChannels\">\r\n                <td><i class=\"hashtag icon\"></i>${item.name}</td>\r\n                <td title=\"${item.title}\">${item.title}</td>\r\n                <td><span data-tooltip=\"${item.description}\"><i class=\"info circle icon\"></i></span></td>\r\n                <td if.bind=\"item.privated\"><span data-tooltip=\"私有频道\"><i class=\"lock icon\"></i></span></td>\r\n                <td if.bind=\"!item.privated\"><span data-tooltip=\"公开频道\"><i class=\"unlock icon\"></i></span></td>\r\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username != loginUser.username\">${item.owner.name ? item.owner.name : item.owner.username}</td>\r\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username == loginUser.username\">自己</td>\r\n                <td>\r\n                    <div if.bind=\"!item.privated && !item.joined\" class=\"ui mini green button\" click.delegate=\"joinHandler(item)\">加入</div>\r\n                    <div if.bind=\"item.joined && (item.owner.username != loginUser.username)\" class=\"ui mini orange button\" click.delegate=\"leaveHandler(item)\">离开</div>\r\n                </td>\r\n            </tr>\r\n        </tbody>\r\n    </table>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-channel-link-mgr.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-link-mgr.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">频道外链管理</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-link-mgr\">\r\n            <div class=\"ui segment\">\r\n                <div class=\"ui form\">\r\n                    <div class=\"field required\">\r\n                        <label>添加频道外链</label>\r\n                        <div class=\"fields\">\r\n                            <div class=\"five wide field\">\r\n                                <input type=\"text\" value.bind=\"title\" name=\"title\" placeholder=\"链接标题\">\r\n                            </div>\r\n                            <div class=\"ten wide field\">\r\n                                <input type=\"text\" value.bind=\"href\" name=\"href\" placeholder=\"链接地址\">\r\n                            </div>\r\n                            <div class=\"one wide field\">\r\n                                <button title=\"添加外链\" click.delegate=\"addHandler()\" class=\"circular ui icon blue button\" type=\"button\"><i class=\"plus icon\"></i></button>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div style=\"max-height: 275px; overflow: auto;\">\r\n                <table class=\"ui very basic striped compact table\">\r\n                    <thead>\r\n                        <tr>\r\n                            <th style=\"width: 180px;\">标题</th>\r\n                            <th>链接</th>\r\n                            <th></th>\r\n                            <th style=\"width: 150px;\">操作</th>\r\n                        </tr>\r\n                    </thead>\r\n                    <tbody>\r\n                        <tr repeat.for=\"item of links | sort:'title'\">\r\n                            <td if.bind=\"!item.isEditing\">${item.title}</td>\r\n                            <td if.bind=\"item.isEditing\">\r\n                                <div class=\"ui fluid input\">\r\n                                    <input type=\"text\" value.bind=\"item.title\" placeholder=\"链接标题\">\r\n                                </div>\r\n                            </td>\r\n                            <td if.bind=\"!item.isEditing\"><a style=\"word-break: break-all;\" target=\"_blank\" href=\"${item.href}\">${item.href}</a></td>\r\n                            <td if.bind=\"item.isEditing\">\r\n                                <div class=\"ui fluid input\">\r\n                                    <input type=\"text\" value.bind=\"item.href\" placeholder=\"链接地址\">\r\n                                </div>\r\n                            </td>\r\n                            <td><span data-tooltip=\"${item.creator.name ? item.creator.name : item.creator.username} 添加于 ${item.createDate | timeago}\"><i class=\"info circle icon\"></i></span></td>\r\n                            <td>\r\n                                <button if.bind=\"item.creator.username == loginUser.username || channel.owner.username == loginUser.username\" show.bind=\"!item.isEditing\" click.delegate=\"editHandler(item)\" class=\"mini ui button\">\r\n                                    编辑\r\n                                </button>\r\n                                <button if.bind=\"item.creator.username == loginUser.username || channel.owner.username == loginUser.username\" click.delegate=\"updateHandler(item)\" show.bind=\"item.isEditing\" class=\"mini green ui button\">\r\n                                    更新\r\n                                </button>\r\n                                <button if.bind=\"item.creator.username == loginUser.username || channel.owner.username == loginUser.username\" click.delegate=\"delHandler(item)\" class=\"mini ui red button\">\r\n                                    删除\r\n                                </button>\r\n                            </td>\r\n                        </tr>\r\n                    </tbody>\r\n                </table>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
+define('text!resources/elements/em-chat-input.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-input.css\"></require>\r\n    <require from=\"./em-hotkeys-modal\"></require>\r\n    <div class=\"ui basic segment tms-msg-input tms-em-chat-input dropzone\">\r\n        <div ref=\"chatStatusBarRef\" class=\"tms-chat-status-bar dropzone-previews\"></div>\r\n        <div ref=\"inputRef\" class=\"ui left action fluid icon input dropzone\">\r\n            <div ref=\"chatBtnRef\" class=\"ui icon button\">\r\n                <i class=\"plus icon\"></i>\r\n            </div>\r\n            <div class=\"ui flowing popup bottom left transition hidden vertical menu\">\r\n                <a ref=\"btnItemUploadRef\" class=\"item\">\r\n                    <i class=\"upload icon\"></i>\r\n                    <div class=\"content\">\r\n                        上传文件\r\n                    </div>\r\n                </a>\r\n                <a target=\"_blank\" href=\"#/blog/create\" class=\"item\">\r\n                    <i class=\"write icon\"></i>\r\n                    <div class=\"content\">\r\n                        博文写作\r\n                    </div>\r\n                </a>\r\n            </div>\r\n            <div class=\"textareaWrapper\">\r\n                <textarea ref=\"chatInputRef\" placeholder=\"/ : @ 提示${isMobile ? '' : ',ctrl+enter发送,esc清空'}\"></textarea>\r\n            </div>\r\n            <i click.delegate=\"sendChatMsgHandler()\" title=\"发送消息(Ctrl+Enter)\" class=\"send link icon\"></i>\r\n        </div>\r\n    </div>\r\n    <div ref=\"previewTemplateRef\" style=\"display: none;\">\r\n        <div class=\"dz-preview dz-file-preview\">\r\n            <div class=\"dz-details\">\r\n                <div class=\"dz-filename\"><span data-dz-name></span></div>\r\n                <div class=\"dz-size\" data-dz-size></div>\r\n                <img data-dz-thumbnail />\r\n            </div>\r\n            <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            <div class=\"dz-success-mark\"><span>✔</span></div>\r\n            <div class=\"dz-error-mark\"><span>✘</span></div>\r\n            <div class=\"dz-error-message\"><span data-dz-errormessage></span></div>\r\n        </div>\r\n    </div>\r\n    <em-hotkeys-modal em-hotkeys-modal.ref=\"emHotkeysModal\"></em-hotkeys-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-top-menu.css', ['module'], function(module) { module.exports = ".tms-em-chat-top-menu.ui.top.menu {\n  padding-left: 220px;\n  height: 60px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .tms-chat-at.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .item.tms-item:before {\n  display: none;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-login-user.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item {\n  padding-left: 0;\n  padding-right: 5px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.tms-hide {\n    display: none;\n  }\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.tms-mobile-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item button .ui.floating.label {\n  top: 0;\n  right: 0;\n  left: auto;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown {\n  display: none;\n  padding-left: 5px;\n  margin-right: 5px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown {\n    display: flex;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown > i.icon {\n  margin-left: 5px;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown .menu > .item .ui.button {\n  margin: 0;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown .menu > .item .ui.button i.icon {\n  margin: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-search {\n    padding-left: 10px;\n    padding-right: 10px;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search input {\n  width: 95px;\n  transition: width 0.15s ease-out 0s;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search i.remove.icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu {\n    padding-left: 0;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .ui.basic.button {\n  box-shadow: none;\n}\n@media only screen and (min-width: 768px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown {\n    min-width: 175px;\n    padding-top: 0;\n    padding-left: 13px;\n    padding-bottom: 20px;\n  }\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown.item:before {\n    width: 0;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .text > .actions {\n  display: none;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata {\n  position: absolute;\n  display: flex;\n  top: 35px;\n  font-size: 12px;\n  left: 0;\n  height: 15px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item:before {\n  top: 5px;\n  height: 50%;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item.tms-channel-info:before {\n  width: 0;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item.tms-user-info:before {\n  width: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .tms-channel-links .menu .header {\n  min-width: 200px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .text {\n    display: none;\n  }\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .dropdown.icon {\n    margin-left: 6px;\n    margin-right: 6px;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .header i.plus.icon {\n  position: absolute;\n  right: 5px;\n  top: 7px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item:hover .actions {\n  display: inline-block;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item .icon {\n  margin-right: 4px!important;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item > .actions {\n  display: none;\n  position: absolute;\n  right: 5px;\n  top: 10px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item > .actions .large.ellipsis.horizontal.icon {\n  font-size: 1.3em!important;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item.disabled-user {\n  text-decoration: line-through;\n  font-style: italic;\n}\n"; });
 define('text!resources/elements/em-checkbox.css', ['module'], function(module) { module.exports = ""; });
-define('text!resources/elements/em-chat-channel-members-mgr.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-members-mgr.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"确定\">\r\n        <div slot=\"header\">频道成员管理</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-members-mgr\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"field\">\r\n                    <label>频道成员(${channel.members.length})</label>\r\n                    <div ref=\"membersRef\" class=\"ui fluid multiple search selection dropdown\">\r\n                        <input type=\"hidden\" name=\"members\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\"></div>\r\n                        <div class=\"menu\">\r\n                            <div repeat.for=\"item of users | sortUsers:channel.owner.username\" task.bind=\"initMembersUI($last)\" class=\"item\" data-value=\"${item.username}\">\r\n                                <!-- <input type=\"hidden\" class=\"${!item.enabled ? 'disabled-user' : ''}\"> -->\r\n                                <span class=\"${channel.owner.username == item.username ? 'owner' : ''} ${!item.enabled ? 'disabled-user' : ''}\">${item.name ? item.name : item.username}</span>\r\n                                <!-- <input type=\"hidden\" class=\"${channel.owner.username == item.username ? 'owner' : ''}\"> -->\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"member-table\">\r\n                <table class=\"ui very basic striped compact table\">\r\n                    <thead>\r\n                        <tr>\r\n                            <th><i class=\"at icon\" style=\"margin-right: 0;\"></i>用户名</th>\r\n                            <th>姓名</th>\r\n                            <th>邮箱</th>\r\n                            <th>登录</th>\r\n                            <th>状态</th>\r\n                        </tr>\r\n                    </thead>\r\n                    <tbody>\r\n                        <tr repeat.for=\"item of channel.members | sort:'username'\">\r\n                            <td><i class=\"at icon\" style=\"margin-right: 0;\"></i>${item.username}</td>\r\n                            <td>${item.name}</td>\r\n                            <td>${item.mails}</td>\r\n                            <td title=\"${item.lastLoginDate | date}\">${item.lastLoginDate | timeago}</td>\r\n                            <td if.bind=\"item.enabled\">\r\n                                <div class=\"ui green tag label\">启用中</div>\r\n                            </td>\r\n                            <td if.bind=\"!item.enabled\">\r\n                                <div class=\"ui red tag label\">已停用</div>\r\n                            </td>\r\n                        </tr>\r\n                    </tbody>\r\n                </table>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(module) { module.exports = ".tms-em-hotkeys-modal ul {\n  padding-left: 30px;\n}\n.tms-em-hotkeys-modal ul.no_bullets {\n  margin: 0 0 2rem;\n}\n.tms-em-hotkeys-modal ul.no_bullets li {\n  line-height: 2rem;\n  list-style-type: none;\n  padding: 0;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.tms-em-hotkeys-modal > .content {\n  background-color: rgba(11, 7, 11, 0.78) !important;\n}\n.tms-em-hotkeys-modal .keyboard i.icon {\n  margin-right: 0px!important;\n}\n.tms-em-hotkeys-modal .subtle_silver {\n  color: #9e9ea6!important;\n}\n.tms-em-hotkeys-modal .ui.grid .column {\n  padding: 0!important;\n}\n"; });
-define('text!resources/elements/em-chat-channel-members-show.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-members-show.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"确定\">\r\n        <div slot=\"header\">频道成员(${channel.members.length})</div>\r\n        <div slot=\"content\" class=\"em-chat-channel-members-show\">\r\n            <table class=\"ui very basic striped compact table\">\r\n                <thead>\r\n                    <tr>\r\n                        <th><i class=\"at icon\" style=\"margin-right: 0;\"></i>用户名</th>\r\n                        <th>姓名</th>\r\n                        <th>邮箱</th>\r\n                        <th>登录</th>\r\n                        <th>状态</th>\r\n                    </tr>\r\n                </thead>\r\n                <tbody>\r\n                    <tr repeat.for=\"item of channel.members | sort:'username'\">\r\n                        <td><i class=\"at icon\" style=\"margin-right: 0;\"></i>${item.username}</td>\r\n                        <td>${item.name}</td>\r\n                        <td>${item.mails}</td>\r\n                        <td title=\"${item.lastLoginDate | date}\">${item.lastLoginDate | timeago}</td>\r\n                        <td if.bind=\"item.enabled\">\r\n                            <div class=\"ui green tag label\">启用中</div>\r\n                        </td>\r\n                        <td if.bind=\"!item.enabled\">\r\n                            <div class=\"ui red tag label\">已停用</div>\r\n                        </td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-user-avatar.css', ['module'], function(module) { module.exports = ".em-user-avatar.avatar.ui.mini.circular.image {\n  width: 35px;\n  height: 35px;\n  font-size: 35px;\n  background-color: rgba(150, 178, 183, 0.4);\n  text-align: center;\n  margin: 0;\n  padding-right: 0;\n}\n.em-user-avatar .text-char {\n  display: inline-block;\n  height: 35px;\n  line-height: 35px;\n  vertical-align: top;\n}\n"; });
-define('text!resources/elements/em-user-edit.css', ['module'], function(module) { module.exports = ".tms-em-user-edit .ui.form .field > label {\n  width: 45px!important;\n}\n.tms-em-user-edit .ui.form .field .user-username {\n  margin-left: 0;\n}\n.em-user-edit-modal {\n  /* Tablet & PC */\n}\n@media only screen and (min-width: 768px) {\n  .em-user-edit-modal {\n    width: 500px!important;\n    margin-left: -250px !important;\n  }\n}\n"; });
-define('text!resources/elements/em-chat-content-item.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-content-item.css\"></require>\r\n    <div repeat.for=\"item of chats\" swipebox class=\"em-chat-content-item comment item ${item.id == markId ? 'active' : ''}\" data-id=\"${item.id}\" task.bind=\"notifyRendered($last, item)\">\r\n        <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\r\n        <div class=\"content\">\r\n            <a class=\"author\" data-value=\"${item.creator.username}\" click.delegate=\"creatorNameHandler(item)\">${item.creator.name}</a>\r\n            <div class=\"metadata\">\r\n                <div class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</div>\r\n                <div show.bind=\"!isAt\" class=\"rating\">\r\n                    <i click.delegate=\"likeHandler(item, true)\" style=\"cursor: pointer;\" title=\"赞一下\" class=\"cbutton cbutton--effect-novak thumbs ${item.isZanVoted ? '' : 'outline'} up icon\"></i> <span title=\"${item.voteZan}\">${item.voteZanCnt} 赞</span>\r\n                </div>\r\n                <div show.bind=\"!isAt\" class=\"rating\">\r\n                    <i click.delegate=\"likeHandler(item, false)\" style=\"cursor: pointer;\" title=\"踩一下\" class=\"cbutton cbutton--effect-novak thumbs ${item.isCaiVoted ? '' : 'outline'} down icon\"></i> <span title=\"${item.voteCai}\">${item.voteCaiCnt} 踩</span>\r\n                </div>\r\n            </div>\r\n            <div ref=\"mkbodyRef\" show.bind=\"!item.isEditing\" class=\"text markdown-body\" innerhtml.bind=\"item.content | parseMd | emoji:mkbodyRef\"></div>\r\n            <div class=\"textcomplete-container\" show.bind=\"item.isEditing\">\r\n                <div class=\"append-to\"></div>\r\n            </div>\r\n            <textarea ref=\"editTxtRef\" data-id=\"${item.id}\" textcomplete.bind=\"members\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content & oneWay\" class=\"tms-edit-textarea\" rows=\"1\"></textarea>\r\n            <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-edit-actions\">\r\n                <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\r\n                    <i class=\"checkmark icon\"></i>\r\n                </button>\r\n                <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\r\n                    <i class=\"remove icon\"></i>\r\n                </button>\r\n                <button dropzone=\"clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\r\n                    <i class=\"upload icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"actions\">\r\n                <a if.bind=\"!isAt && (item.creator.username != loginUser.username)\" click.delegate=\"replyHandler(item)\" class=\"tms-reply\" title=\"回复消息\">回复</a>\r\n                <a if.bind=\"item.openEdit || (item.creator.username == loginUser.username)\" click.delegate=\"editHandler(item, editTxtRef)\" class=\"tms-edit\" title=\"编辑消息(ctrl+dblclick)\">编辑</a>\r\n                <a if.bind=\"!isAt\" click.delegate=\"stowHandler(item)\" class=\"tms-stow\" title=\"收藏消息\">收藏</a>\r\n                <em-chat-share chat.bind=\"item\" channel.bind=\"channel\" is-at.bind=\"isAt\" login-user.bind=\"loginUser\"></em-chat-share>\r\n                <div ui-dropdown-action=\".tms-comments-container\" class=\"ui top right pointing dropdown\">\r\n                    <a class=\"text\" title=\"更多操作\"><i class=\"ellipsis horizontal large icon\"></i></a>\r\n                    <div class=\"menu\">\r\n                        <div class=\"item\" if.bind=\"!isAt && (item.creator.username == loginUser.username)\" click.delegate=\"openEditHandler(item)\" title=\"${item.openEdit ? '关闭协作编辑' :'开启协作编辑'}\"><i class=\"write icon\"></i> ${item.openEdit ? '关闭' :'协作'}</div>\r\n                        <div class=\"item tms-clipboard\" data-clipboard-text=\"${item.content}\" title=\"复制消息内容\"><i class=\"icon copy\"></i> 复制</div>\r\n                        <!-- <div class=\"item tms-clipboard\" data-clipboard-text=\"${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}\" title=\"复制消息链接\"><i class=\"icon share\"></i> 分享</div> -->\r\n                        <a target=\"_blank\" href=\"#/blog/create?${isAt ? 'cdid' : 'ccid'}=${item.id}\" style=\"display: block; color: rgba(0,0,0,.87);\" class=\"item\">\r\n                            <i class=\"wikipedia icon\"></i> 转为博文\r\n                        </a>\r\n                        <div class=\"divider\"></div>\r\n                        <a href=\"/admin/chat/${isAt ? 'direct' : 'channel'}/download/${item.id}?type=pdf\" style=\"display: block; color: rgba(0,0,0,.87);\" class=\"item\">\r\n                            <i class=\"file pdf outline icon\"></i> 导出为PDF\r\n                        </a>\r\n                        <a href=\"/admin/chat/${isAt ? 'direct' : 'channel'}/download/${item.id}?type=md\" style=\"display: block; color: rgba(0,0,0,.87);\" class=\"item\">\r\n                            <i class=\"file text outline icon\"></i> 导出为Markdown\r\n                        </a>\r\n                        <div if.bind=\"item.creator.username == loginUser.username\" class=\"divider\"></div>\r\n                        <div class=\"item tms-red\" if.bind=\"item.creator.username == loginUser.username\" click.delegate=\"deleteHandler(item)\" title=\"删除消息\"><i class=\"trash outline icon\"></i> 删除</div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"tools\">\r\n                <button show.bind=\"!isAt && !item.isEditing\" click.delegate=\"refreshHandler(item)\" title=\"刷新同步\" class=\"mini circular ui icon button\">\r\n                    <i class=\"refresh icon\"></i>\r\n                </button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-input.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-input.css\"></require>\r\n    <require from=\"./em-hotkeys-modal\"></require>\r\n    <div class=\"ui basic segment tms-msg-input tms-em-chat-input dropzone\">\r\n        <div ref=\"chatStatusBarRef\" class=\"tms-chat-status-bar dropzone-previews\"></div>\r\n        <div ref=\"inputRef\" class=\"ui left action fluid icon input dropzone\">\r\n            <div ref=\"chatBtnRef\" class=\"ui icon button\">\r\n                <i class=\"plus icon\"></i>\r\n            </div>\r\n            <div class=\"ui flowing popup bottom left transition hidden vertical menu\">\r\n                <a ref=\"btnItemUploadRef\" class=\"item\">\r\n                    <i class=\"upload icon\"></i>\r\n                    <div class=\"content\">\r\n                        上传文件\r\n                    </div>\r\n                </a>\r\n                <a target=\"_blank\" href=\"#/blog/create\" class=\"item\">\r\n                    <i class=\"write icon\"></i>\r\n                    <div class=\"content\">\r\n                        博文写作\r\n                    </div>\r\n                </a>\r\n            </div>\r\n            <div class=\"textareaWrapper\">\r\n                <textarea ref=\"chatInputRef\" placeholder=\"/ : @ 提示${isMobile ? '' : ',ctrl+enter发送,esc清空'}\"></textarea>\r\n            </div>\r\n            <i click.delegate=\"sendChatMsgHandler()\" title=\"发送消息(Ctrl+Enter)\" class=\"send link icon\"></i>\r\n        </div>\r\n    </div>\r\n    <div ref=\"previewTemplateRef\" style=\"display: none;\">\r\n        <div class=\"dz-preview dz-file-preview\">\r\n            <div class=\"dz-details\">\r\n                <div class=\"dz-filename\"><span data-dz-name></span></div>\r\n                <div class=\"dz-size\" data-dz-size></div>\r\n                <img data-dz-thumbnail />\r\n            </div>\r\n            <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            <div class=\"dz-success-mark\"><span>✔</span></div>\r\n            <div class=\"dz-error-mark\"><span>✘</span></div>\r\n            <div class=\"dz-error-message\"><span data-dz-errormessage></span></div>\r\n        </div>\r\n    </div>\r\n    <em-hotkeys-modal em-hotkeys-modal.ref=\"emHotkeysModal\"></em-hotkeys-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-member-popup.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-member-popup.css\"></require>\r\n    <div ref=\"popup\" class=\"ui flowing popup transition hidden tms-chat-member-popup\">\r\n        <div class=\"ui cards\" show.bind=\"(username == 'all')\">\r\n            <div class=\"card\">\r\n                <div class=\"content\">\r\n                    <div class=\"header\" style=\"border-bottom: 1px lightgray solid;\">\r\n                        全部用户 (${members.length}人)\r\n                    </div>\r\n                    <div class=\"description\" style=\"max-height: 200px; overflow-y: auto;\">\r\n                        <div class=\"ui middle aligned divided list\" style=\"padding-left: 0px;\">\r\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important; padding-left: 0; padding-right: 0;\">\r\n                                <div class=\"content\">\r\n                                    <div repeat.for=\"item of members\" class=\"ui basic label mapping-user group-user\" data-value=\"${item.username}\" style=\"margin-top: 3px; margin-left: 0;\" title=\"${item.username}\">${item.name ? item.name : item.username}</div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"ui cards\" show.bind=\"(username != 'all')\">\r\n            <div class=\"card\">\r\n                <div class=\"content\">\r\n                    <div class=\"header\">\r\n                        ${member.name ? member.name : member.username} <a style=\"float: right;\" href=\"#/chat/@${member.username}\"><i class=\"at icon\" style=\"margin-right: 0;\"></i>${member.username}(私聊)</a>\r\n                    </div>\r\n                    <div class=\"ui divider\"></div>\r\n                    <div class=\"meta\">\r\n                        <i class=\"wait icon\"></i>\r\n                        <span class=\"mapping-user\">${member.creatorName}</span> 创建于 <span style=\"font-style: italic;\" class=\"timeago\" title=\"${member.createDate | date}\">${member.createDate | timeago}</span>\r\n                    </div>\r\n                    <div class=\"description\">\r\n                        <div class=\"ui middle aligned divided list\">\r\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\r\n                                <div class=\"content\">\r\n                                    <a class=\"header\" style=\"display: inline;\">姓名</a> ${member.name}\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\r\n                                <div class=\"content\">\r\n                                    <a class=\"header\" style=\"display: inline;\">邮箱</a> <a href=\"mailto:${member.mails}\">${member.mails}</a>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\r\n                                <div class=\"content\">\r\n                                    <a class=\"header\" style=\"display: inline;\">状态</a> ${member.enabled ? '启用中' : '已禁用'}\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\r\n                                <div class=\"content\">\r\n                                    <a class=\"header\" style=\"display: inline;\">登录</a> 从IP ${member.loginRemoteAddress} (<span style=\"font-style: italic; color:gray;\" class=\"timeago\" title=\"${member.lastLoginDate | date}\">${member.lastLoginDate | timeago}</span>)\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\r\n                                <div class=\"content\">\r\n                                    <div repeat.for=\"item of member.joinChannels\" class=\"ui basic label user-channel\" data-value=\"${item.name}\" style=\"margin-top: 3px; margin-left: 0;\" title=\"${item.title}\">${item.name}</div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-msg-popup.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"popup\" class=\"ui flowing popup transition hidden tms-chat-msg-popup\">\r\n        <div class=\"ui items\">\r\n            <div class=\"item\">\r\n                <div class=\"content\" style=\"width:300px; word-break: break-all;\">\r\n                    <a class=\"header pp-not\" href=\"javascript:void(0);\">消息#${chatMsg.id}</a>\r\n                    <div class=\"meta\" style=\"width:300px; word-break: break-all; font-size: 12px;\">\r\n                        <i class=\"wait icon\"></i>\r\n                        <span>\r\n                            ${chatMsg.creator ? (chatMsg.creator.name ? chatMsg.creator.name : chatMsg.creator.username) : ''}\r\n                        </span>\r\n                        <span>发表于</span>\r\n                        <span class=\"cinema timeago\" style=\"font-style: italic;\" title=\"${chatMsg.createDate | date}\">${chatMsg.createDate | timeago}</span>\r\n                    </div>\r\n                    <div class=\"ui divider\"></div>\r\n                    <div class=\"description markdown-body\" style=\"width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;\" innerhtml.bind=\"chatMsg.content | parseMd\"></div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
+define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(module) { module.exports = ".tms-em-hotkeys-modal ul {\n  padding-left: 30px;\n}\n.tms-em-hotkeys-modal ul.no_bullets {\n  margin: 0 0 2rem;\n}\n.tms-em-hotkeys-modal ul.no_bullets li {\n  line-height: 2rem;\n  list-style-type: none;\n  padding: 0;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.tms-em-hotkeys-modal > .content {\n  background-color: rgba(11, 7, 11, 0.78) !important;\n}\n.tms-em-hotkeys-modal .keyboard i.icon {\n  margin-right: 0px!important;\n}\n.tms-em-hotkeys-modal .subtle_silver {\n  color: #9e9ea6!important;\n}\n.tms-em-hotkeys-modal .ui.grid .column {\n  padding: 0!important;\n}\n"; });
 define('text!resources/elements/em-chat-schedule-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-schedule-edit.css\"></require>\r\n    <div ref=\"scheduleEditRef\" class=\"tms-schedule-edit-target\"></div>\r\n    <div ref=\"popopRef\" class=\"ui popup bottom center transition hidden em-chat-schedule-edit\">\r\n        <div class=\"ui form ${event.creator.username == loginUser.username ? '' : 'tms-disabled'}\">\r\n            <div class=\"field\">\r\n                <textarea ref=\"titleRef\" keyup.trigger=\"titleKeyupHandler($event)\" autosize value.bind=\"event.title\" rows=\"1\" placeholder=\"日程内容(ctrl+enter更新)\" style=\"width: 270px; padding-top: 5px; padding-bottom: 0;\"></textarea>\r\n            </div>\r\n            <div class=\"field tms-date-field\">\r\n                <div class=\"ui calendar\" ref=\"startRef\">\r\n                    <div class=\"ui input left icon\">\r\n                        <i class=\"calendar icon\"></i>\r\n                        <input type=\"text\" value.bind=\"startDate\" placeholder=\"开始时间\">\r\n                    </div>\r\n                </div>\r\n                <div click.delegate=\"clearStartDateHandler()\" class=\"ui button ${event.creator.username == loginUser.username ? '' : 'disabled'}\">清空</div>\r\n            </div>\r\n            <div class=\"field tms-date-field\">\r\n                <div class=\"ui calendar\" ref=\"endRef\">\r\n                    <div class=\"ui input left icon\">\r\n                        <i class=\"calendar icon\"></i>\r\n                        <input type=\"text\" value.bind=\"endDate\" placeholder=\"结束时间\">\r\n                    </div>\r\n                </div>\r\n                <div click.delegate=\"clearEndDateHandler()\" class=\"ui button ${event.creator.username == loginUser.username ? '' : 'disabled'}\">清空</div>\r\n            </div>\r\n            <div class=\"field\">\r\n                <div ref=\"actorsRef\" class=\"ui multiple search selection dropdown\">\r\n                    <input type=\"hidden\" value=\"${loginUser.username}\" name=\"actors\">\r\n                    <i class=\"dropdown icon\"></i>\r\n                    <div class=\"default text\">日程参与者</div>\r\n                    <div class=\"menu\">\r\n                        <div repeat.for=\"item of users | sortUsers:loginUser.username\" task.bind=\"initMembersUI($last)\" class=\"item\" data-value=\"${item.username}\">\r\n                            ${item.name ? item.name : item.username}\r\n                            <input type=\"hidden\" class=\"${(event.creator.username == item.username) ? 'owner' : ''}\">\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <button if.bind=\"event.creator.username == loginUser.username\" click.delegate=\"updateHandler()\" class=\"ui blue button\" type=\"button\" style=\"width: 260px;\">更新</button>\r\n            <button if.bind=\"event.creator.username == loginUser.username\" click.delegate=\"delHandler()\" class=\"ui red button\" type=\"button\" style=\"width: 260px; margin-top: 10px;\">删除</button>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\r\n</template>\r\n"; });
+define('text!resources/elements/em-user-avatar.css', ['module'], function(module) { module.exports = ".em-user-avatar.avatar.ui.mini.circular.image {\n  width: 35px;\n  height: 35px;\n  font-size: 35px;\n  background-color: rgba(150, 178, 183, 0.4);\n  text-align: center;\n  margin: 0;\n  padding-right: 0;\n}\n.em-user-avatar .text-char {\n  display: inline-block;\n  height: 35px;\n  line-height: 35px;\n  vertical-align: top;\n}\n"; });
+define('text!resources/elements/em-user-edit.css', ['module'], function(module) { module.exports = ".tms-em-user-edit .ui.form .field > label {\n  width: 45px!important;\n}\n.tms-em-user-edit .ui.form .field .user-username {\n  margin-left: 0;\n}\n.em-user-edit-modal {\n  /* Tablet & PC */\n}\n@media only screen and (min-width: 768px) {\n  .em-user-edit-modal {\n    width: 500px!important;\n    margin-left: -250px !important;\n  }\n}\n"; });
 define('text!resources/elements/em-chat-schedule-remind.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-schedule-remind.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">日程提醒</div>\r\n        <div slot=\"content\" class=\"em-chat-schedule-remind\">\r\n            <table class=\"ui unstackable table\">\r\n                <tbody>\r\n                    <tr>\r\n                        <td>发起人:</td>\r\n                        <td>${event.creator.name}</td>\r\n                    </tr>\r\n                    <tr>\r\n                        <td>起止时间:</td>\r\n                        <td>${event.start | date} - ${event.end | date}</td>\r\n                    </tr>\r\n                    <tr>\r\n                        <td>参与成员:</td>\r\n                        <td>\r\n                            <div repeat.for=\"item of event.actors\" class=\"ui basic label\">${item.name}</div>\r\n                        </td>\r\n                    </tr>\r\n                    <tr>\r\n                        <td>日程内容:</td>\r\n                        <td innerhtml.bind=\"event.title | nl2br\"></td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-schedule.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-schedule.css\"></require>\r\n    <div class=\"em-chat-schedule\">\r\n        <div ref=\"scheduleRef\"></div>\r\n        <div ref=\"addRef\" class=\"button blue circular icon mini tms-add ui\">\r\n            <i class=\"plus icon\"></i>\r\n        </div>\r\n        <div class=\"ui popup bottom center transition hidden tms-schedule-add\">\r\n            <div class=\"ui form\">\r\n                <div class=\"field\">\r\n                    <textarea ref=\"titleRef\" keyup.trigger=\"titleKeyupHandler($event)\" autosize value.bind=\"title\" rows=\"1\" placeholder=\"日程内容(ctrl+enter添加)\" style=\"width: 270px;\"></textarea>\r\n                </div>\r\n                <div class=\"field tms-date-field\">\r\n                    <div class=\"ui calendar\" ref=\"startRef\">\r\n                        <div class=\"ui input left icon\">\r\n                            <i class=\"calendar icon\"></i>\r\n                            <input type=\"text\" value.bind=\"startDate\" placeholder=\"开始时间\">\r\n                        </div>\r\n                    </div>\r\n                    <div click.delegate=\"clearStartDateHandler()\" class=\"ui button\">清空</div>\r\n                </div>\r\n                <div class=\"field tms-date-field\">\r\n                    <div class=\"ui calendar\" ref=\"endRef\">\r\n                        <div class=\"ui input left icon\">\r\n                            <i class=\"calendar icon\"></i>\r\n                            <input type=\"text\" value.bind=\"endDate\" placeholder=\"结束时间\">\r\n                        </div>\r\n                    </div>\r\n                    <div click.delegate=\"clearEndDateHandler()\" class=\"ui button\">清空</div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"actorsRef\" class=\"ui multiple search selection dropdown\">\r\n                        <input type=\"hidden\" value=\"${loginUser.username}\" name=\"actors\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\">日程参与者</div>\r\n                        <div class=\"menu\">\r\n                            <div repeat.for=\"item of users | sortUsers:loginUser.username\" task.bind=\"initMembersUI($last)\" class=\"item\" data-value=\"${item.username}\">\r\n                                ${item.name ? item.name : item.username}\r\n                                <input type=\"hidden\" class=\"${loginUser.username == item.username ? 'owner' : ''}\">\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <button click.delegate=\"addHandler()\" class=\"ui blue button\" type=\"button\" style=\"width: 260px;\">添加</button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-chat-schedule-edit login-user.bind=\"loginUser\" view-model.ref=\"scheduleEditVm\"></em-chat-schedule-edit>\r\n    <em-chat-schedule-remind events.bind=\"events\"></em-chat-schedule-remind>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-share.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-share.css\"></require>\r\n    <a ref=\"shareRef\" class=\"item\">\r\n        <span title=\"沟通消息分享\">分享</span>\r\n    </a>\r\n    <div class=\"ui popup bottom right transition hidden em-chat-share\">\r\n        <div ref=\"searchRef\" class=\"ui search\">\r\n            <div class=\"ui icon input\">\r\n                <input keyup.trigger=\"shareSearchKeyupHandler($event)\" ref=\"inputSearchRef\" style=\"width: 172px;\" class=\"prompt\" type=\"text\" placeholder=\"用户名，频道，邮箱\">\r\n                <i class=\"search icon\"></i>\r\n            </div>\r\n            <div class=\"results\"></div>\r\n        </div>\r\n        <div class=\"ui list\">\r\n            <div repeat.for=\"item of shares\" class=\"item\">\r\n                <div class=\"right floated content\">\r\n                    <i click.delegate=\"removeShareHandler(item)\" class=\"red trash link icon\"></i>\r\n                </div>\r\n                <template if.bind=\"item._type == 'user'\">\r\n                    <i class=\"user icon\"></i>\r\n                    <div class=\"content\">\r\n                        ${item.name} (${item.username})\r\n                    </div>\r\n                </template>\r\n                <template if.bind=\"item._type == 'channel'\">\r\n                    <i class=\"users icon\"></i>\r\n                    <div class=\"content\">\r\n                        ${item.title} (${item.name})\r\n                    </div>\r\n                </template>\r\n                <template if.bind=\"item._type == 'mail'\">\r\n                    <i class=\"mail icon\"></i>\r\n                    <div class=\"content\">\r\n                        ${item.mail}\r\n                    </div>\r\n                </template>\r\n            </div>\r\n        </div>\r\n        <div class=\"ui form\">\r\n            <div class=\"field\">\r\n                <textarea value.bind=\"desc\" placeholder=\"添加一个可选的说明\" rows=\"3\"></textarea>\r\n            </div>\r\n        </div>\r\n        <div class=\"footer\">\r\n            <button class=\"ui basic icon mini button tms-clipboard\" data-tooltip=\"复制沟通消息分享链接\" data-clipboard-text=\"${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + chat.id}\">\r\n                <i class=\"copy icon\"></i>\r\n            </button>\r\n            <a click.delegate=\"cancelHandler()\" href=\"\" class=\"btn-cancel\">取消</a>\r\n            <button click.delegate=\"shareHandler()\" class=\"ui basic ${shares.length == 0 || (ajaxS && ajaxS.readyState != 4) ? 'disabled' : ''} right floated mini button\">\r\n                确定\r\n            </button>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });

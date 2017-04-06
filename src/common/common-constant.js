@@ -48,6 +48,7 @@ window.nsCons = {
     EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE: 'event_blog_right_sidebar_toggle',
     EVENT_BLOG_LEFT_SIDEBAR_TOGGLE: 'event_blog_left_sidebar_toggle',
     EVENT_BLOG_CONTENT_DIMMER_TOGGLE: 'event_blog_content_dimmer_toggle',
+    EVENT_BLOG_COMMENT_MSG_INSERT: 'event_blog_comment_msg_insert',
     ACTION_TYPE_SEARCH: 'action_type_search',
     ACTION_TYPE_STOW: 'action_type_stow',
     ACTION_TYPE_AT: 'action_type_at',
