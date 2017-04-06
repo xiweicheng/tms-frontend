@@ -7651,6 +7651,7 @@ define('resources/elements/em-blog-left-sidebar',['exports', 'aurelia-framework'
                 if (payload.action == 'created') {
                     _this.blogs = [payload.blog].concat(_this.blogs);
                     _this.calcTree();
+                    ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, { to: '#/blog/' + payload.blog.id });
                 } else if (payload.action == 'updated') {
                     _.extend(_.find(_this.blogs, { id: payload.blog.id }), payload.blog);
                     _this.calcTree();
