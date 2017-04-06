@@ -14,11 +14,21 @@ define('app',['exports', 'tms-semantic-ui', 'semantic-ui-calendar', 'jquery-form
 
     var App = exports.App = function () {
         function App() {
+            var _this = this;
+
             _classCallCheck(this, App);
 
             this.init();
             this.initCalendar();
+
+            this.subscribe = ea.subscribe(nsCons.EVENT_APP_ROUTER_NAVIGATE, function (payload) {
+                _this.router && _this.router.navigate('' + payload.to);
+            });
         }
+
+        App.prototype.unbind = function unbind() {
+            this.subscribe.dispose();
+        };
 
         App.prototype.init = function init() {
 
@@ -298,6 +308,7 @@ define('common/common-constant',[], function () {
     'use strict';
 
     window.nsCons = {
+        EVENT_APP_ROUTER_NAVIGATE: 'event_app_router_navigate',
         EVENT_CHAT_MSG_SENDED: 'event_chat_msg_sended',
         EVENT_CHAT_MSG_EDIT_UPLOAD: 'event_chat_msg_edit_upload',
         EVENT_CHAT_SIDEBAR_TOGGLE: 'event_chat_sidebar_toggle',
@@ -7419,8 +7430,9 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
                     }, function (data, textStatus, xhr) {
                         if (data.success) {
                             toastr.success('删除博文成功!');
-                            window.location.href = "#/blog";
-                            window.location.reload();
+                            ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, {
+                                to: '#/blog'
+                            });
                         } else {
                             toastr.error(data.data, '删除博文失败!');
                         }

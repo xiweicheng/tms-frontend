@@ -220,8 +220,9 @@ export class EmBlogContent {
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
                         toastr.success('删除博文成功!');
-                        window.location.href = "#/blog";
-                        window.location.reload();
+                        ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, {
+                            to: '#/blog'
+                        });
                     } else {
                         toastr.error(data.data, '删除博文失败!');
                     }
