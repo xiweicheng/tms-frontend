@@ -348,6 +348,7 @@ define('common/common-constant',[], function () {
         EVENT_BLOG_LEFT_SIDEBAR_TOGGLE: 'event_blog_left_sidebar_toggle',
         EVENT_BLOG_CONTENT_DIMMER_TOGGLE: 'event_blog_content_dimmer_toggle',
         EVENT_BLOG_COMMENT_MSG_INSERT: 'event_blog_comment_msg_insert',
+        EVENT_BLOG_COMMENT_ADDED: 'event_blog_comment_added',
         ACTION_TYPE_SEARCH: 'action_type_search',
         ACTION_TYPE_STOW: 'action_type_stow',
         ACTION_TYPE_AT: 'action_type_at',
@@ -6922,6 +6923,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
                     _this9.simplemde.value('');
                     toastr.success('博文评论提交成功!');
                     _this9.scrollToAfterImgLoaded('b');
+                    ea.publish(nsCons.EVENT_BLOG_COMMENT_ADDED, {});
                 } else {
                     toastr.error(data.data, '博文评论提交失败!');
                 }
@@ -7214,6 +7216,11 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
                     });
                 }
             });
+            this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_COMMENT_ADDED, function (payload) {
+                if (!_this.blogFollower) {
+                    _this.getFollower();
+                }
+            });
 
             this.throttleCreateHandler = _.throttle(function () {
                 _this.createHandler();
@@ -7226,6 +7233,7 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
         EmBlogContent.prototype.unbind = function unbind() {
             this.subscribe.dispose();
             this.subscribe2.dispose();
+            this.subscribe3.dispose();
         };
 
         EmBlogContent.prototype.attached = function attached() {

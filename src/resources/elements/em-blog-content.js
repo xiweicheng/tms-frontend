@@ -31,6 +31,11 @@ export class EmBlogContent {
                 _.defer(() => this.catalogHandler(true));
             }
         });
+        this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_COMMENT_ADDED, (payload) => {
+            if (!this.blogFollower) {
+                this.getFollower();
+            }
+        });
 
         this.throttleCreateHandler = _.throttle(() => { this.createHandler() }, 1000, { 'trailing': false });
         this.throttleEditHandler = _.throttle(() => { this.editHandler() }, 1000, { 'trailing': false });
@@ -42,6 +47,7 @@ export class EmBlogContent {
     unbind() {
         this.subscribe.dispose();
         this.subscribe2.dispose();
+        this.subscribe3.dispose();
     }
 
     /**

@@ -448,6 +448,7 @@ export class EmBlogComment {
                 this.simplemde.value('');
                 toastr.success('博文评论提交成功!');
                 this.scrollToAfterImgLoaded('b');
+                ea.publish(nsCons.EVENT_BLOG_COMMENT_ADDED, {});
             } else {
                 toastr.error(data.data, '博文评论提交失败!');
             }
