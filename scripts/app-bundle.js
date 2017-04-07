@@ -7260,6 +7260,9 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
             this.throttleEditHandler = _.throttle(function () {
                 _this.editHandler();
             }, 1000, { 'trailing': false });
+            this.throttleCopyHandler = _.throttle(function () {
+                _this.copyHandler();
+            }, 1000, { 'trailing': false });
         }
 
         EmBlogContent.prototype.unbind = function unbind() {
@@ -7384,7 +7387,7 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
                     _this3.stowHandler();
                 }).bind('keydown', 'alt+c', function (event) {
                     event.preventDefault();
-                    _this3.copyHandler();
+                    _this3.throttleCopyHandler();
                 }).bind('keydown', 'alt+m', function (event) {
                     event.preventDefault();
                     _this3.updateSpaceHandler();

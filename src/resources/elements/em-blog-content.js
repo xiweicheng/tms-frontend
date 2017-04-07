@@ -42,6 +42,7 @@ export class EmBlogContent {
 
         this.throttleCreateHandler = _.throttle(() => { this.createHandler() }, 1000, { 'trailing': false });
         this.throttleEditHandler = _.throttle(() => { this.editHandler() }, 1000, { 'trailing': false });
+        this.throttleCopyHandler = _.throttle(() => { this.copyHandler() }, 1000, { 'trailing': false });
     }
 
     /**
@@ -166,7 +167,7 @@ export class EmBlogContent {
                 this.stowHandler();
             }).bind('keydown', 'alt+c', (event) => { // copy
                 event.preventDefault();
-                this.copyHandler();
+                this.throttleCopyHandler();
             }).bind('keydown', 'alt+m', (event) => { // move space
                 event.preventDefault();
                 this.updateSpaceHandler();
