@@ -187,10 +187,21 @@ export class EmBlogContent {
         return this.dir;
     }
 
+    getMyLog() {
+        $.get('/admin/blog/log/my', (data) => {
+            if (data.success) {
+                this.logs = _.reverse(data.data);
+            } else {
+                toastr.error(data.data);
+            }
+        });
+    }
+
     getBlog() {
         this.progressWidth = 0;
         if (!nsCtx.blogId || isNaN(new Number(nsCtx.blogId))) {
             this.blog = null;
+            this.getMyLog();
             return;
         }
 

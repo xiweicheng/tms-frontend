@@ -61,7 +61,7 @@ export class Blog {
             });
         });
 
-        $('.tms-blog').on('click', 'a.avatar[data-value], a.author[data-value], .at-user[data-value]', (event) => {
+        $('.tms-blog .em-blog-content').on('click', 'a.avatar[data-value], a.author[data-value], .at-user[data-value]', (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_BLOG_COMMENT_MSG_INSERT, {
                 content: `{~${$(event.currentTarget).attr('data-value')}} `

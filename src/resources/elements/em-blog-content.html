@@ -94,11 +94,90 @@
                     <span>现在就去创建自己的博文吧!</span> <a click.delegate="createHandler()" class="ui mini blue button">创建</a>
                 </div>
             </div>
+            <div class="ui segment feed">
+                <h3 class="ui dividing header">
+                <i class="icon feed"></i>
+                <div class="content">博文更新</div>
+                </h3>
+                <div repeat.for="item of logs" class="event">
+                    <div class="label">
+                        <em-user-avatar user.bind="item.creator"></em-user-avatar>
+                    </div>
+                    <div class="content">
+                        <div class="summary">
+                            <a class="user">${item.creator.name}</a>
+                            <template if.bind="item.target == 'Blog'">
+                                <span if.bind="item.action == 'Create'">创建了博文 <a href="#/blog/${item.targetId}">${item.newValue}</a></span>
+                                <span if.bind="item.action == 'Delete'">删除了博文 <a href="javascript:void(0);">${item.newValue}</a></span>
+                                <template if.bind="item.action == 'Update' && item.properties == 'content'">
+                                    <span>更新了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的内容</span>
+                                </template>
+                                <template if.bind="item.action == 'Update' && item.properties == 'title'">
+                                    <span>更新了博文 <a href="#/blog/${item.targetId}">${item.newValue}</a> 的标题</span>
+                                </template>
+                                <template if.bind="item.action == 'Update' && item.properties == 'privated'">
+                                    <span>更新了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的可见性</span>
+                                </template>
+                                <template if.bind="item.action == 'Update' && item.properties == 'space'">
+                                    <span>更新了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的所属空间</span>
+                                </template>
+                                <template if.bind="item.action == 'Update' && item.properties == 'openEdit'">
+                                    <span>${item.newValue == 'true' ? '开放' : '关闭'}了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的协作编辑权限</span>
+                                </template>
+                                <template if.bind="item.action == 'Update' && item.properties == 'voteZan'">
+                                    <span>投票赞了博文 <a href="#/blog/${item.targetId}">${item.newValue}</a> </span>
+                                </template>
+                            </template>
+                            <template if.bind="item.target == 'Comment'">
+                                <span if.bind="item.action == 'Create'">添加了评论 <a href="#/blog/${item.oldValue}?cid=${item.targetId}">#${item.targetId}</a></span>
+                                <span if.bind="item.action == 'Delete'">删除了评论 <a href="javascript:void(0);">#${item.targetId}</a></span>
+                                <template if.bind="item.action == 'Update' && item.properties == 'content'">
+                                    <span>更新了评论 <a href="#/blog/${item.oldValue}?cid=${item.targetId}">#${item.targetId}</a> 的内容</span>
+                                </template>
+                                <template if.bind="item.action == 'Update' && item.properties == 'voteZan'">
+                                    <span>投票赞了评论 <a href="#/blog/${item.newValue}?cid=${item.targetId}">#${item.targetId}</a> </span>
+                                </template>
+                            </template>
+                            <div class="date" title="${item.createDate | date}">
+                                ${item.createDate | timeago}
+                            </div>
+                        </div>
+                        <template if.bind="item.target == 'Blog'">
+                            <template if.bind="item.action == 'Update' && item.properties == 'content'">
+                                <div class="extra text" innerhtml.bind="item.newValue"></div>
+                            </template>
+                            <template if.bind="item.action == 'Update' && item.properties == 'title'">
+                                <div class="extra text">原标题: ${item.oldValue}</div>
+                            </template>
+                            <template if.bind="item.action == 'Update' && item.properties == 'privated'">
+                                <div class="extra text">可见性修改为: ${item.newValue == 'true' ? '私有' : '公开'}</div>
+                            </template>
+                            <template if.bind="item.action == 'Update' && item.properties == 'space'">
+                                <div class="extra text">所属空间修改为: ${item.newValue}</div>
+                            </template>
+                        </template>
+                        <template if.bind="item.target == 'Comment'">
+                            <template if.bind="item.action == 'Create'">
+                                <div ref="mkbodyRef" class="extra text markdown-body" innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef"></div>
+                            </template>
+                            <template if.bind="item.action == 'Delete'">
+                                <div ref="mkbodyRef" class="extra text" innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef" "></div>
+                            </template>
+                            <template if.bind="item.action=='Update' && item.properties=='content' ">
+                                <div class="extra text " innerhtml.bind="item.newValue "></div>
+                            </template>
+                            <template if.bind="item.action=='Update' && item.properties=='voteZan' ">
+                                <div ref="mkbodyRef " class="extra text markdown-body " innerhtml.bind="item.oldValue | parseMd | emoji:mkbodyRef "></div>
+                            </template>
+                        </template>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div css="width: ${progressWidth}px;" class="tms-blog-progress"></div>
-    <em-confirm-modal em-confirm-modal.ref="emConfirmModal"></em-confirm-modal>
-    <em-blog-space-update view-model.ref="blogSpaceUpdateVm"></em-blog-space-update>
-    <em-blog-history view-model.ref="blogHistoryVm"></em-blog-history>
-    <em-blog-space-auth view-model.ref="blogSpaceAuthVm"></em-blog-space-auth>
+    <div css="width: ${progressWidth}px; " class="tms-blog-progress "></div>
+    <em-confirm-modal em-confirm-modal.ref="emConfirmModal "></em-confirm-modal>
+    <em-blog-space-update view-model.ref="blogSpaceUpdateVm "></em-blog-space-update>
+    <em-blog-history view-model.ref="blogHistoryVm "></em-blog-history>
+    <em-blog-space-auth view-model.ref="blogSpaceAuthVm "></em-blog-space-auth>
 </template>
