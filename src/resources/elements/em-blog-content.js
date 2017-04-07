@@ -164,7 +164,7 @@ export class EmBlogContent {
             }).bind('keydown', 'alt+s', (event) => { // stow
                 event.preventDefault();
                 this.stowHandler();
-            }).bind('keydown', 'ctrl+c', (event) => { // copy
+            }).bind('keydown', 'alt+c', (event) => { // copy
                 event.preventDefault();
                 this.copyHandler();
             }).bind('keydown', 'alt+m', (event) => { // move space

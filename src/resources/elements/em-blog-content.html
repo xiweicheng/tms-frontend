@@ -42,7 +42,7 @@
                                 <i class="${!blogStow ? 'empty' : ''} star icon"></i> ${!blogStow ? '收藏' : '删除收藏'}
                             </div>
                             <div click.delegate="copyHandler()" class="item">
-                                <span class="description">ctrl + c</span>
+                                <span class="description">alt + c</span>
                                 <i class="copy icon"></i> 复制
                             </div>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="updateSpaceHandler()" class="item">
