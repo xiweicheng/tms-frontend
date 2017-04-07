@@ -51,6 +51,7 @@ window.nsCons = {
     EVENT_BLOG_CONTENT_DIMMER_TOGGLE: 'event_blog_content_dimmer_toggle',
     EVENT_BLOG_COMMENT_MSG_INSERT: 'event_blog_comment_msg_insert',
     EVENT_BLOG_COMMENT_ADDED: 'event_blog_comment_added',
+    EVENT_BLOG_COMMENT_CHANGED: 'event_blog_comment_changed',
     ACTION_TYPE_SEARCH: 'action_type_search',
     ACTION_TYPE_STOW: 'action_type_stow',
     ACTION_TYPE_AT: 'action_type_at',

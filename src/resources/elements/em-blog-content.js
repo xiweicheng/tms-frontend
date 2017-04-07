@@ -36,6 +36,9 @@ export class EmBlogContent {
                 this.getFollower();
             }
         });
+        this.subscribe4 = ea.subscribe(nsCons.EVENT_BLOG_COMMENT_CHANGED, (payload) => {
+            this.comments = payload.comments;
+        });
 
         this.throttleCreateHandler = _.throttle(() => { this.createHandler() }, 1000, { 'trailing': false });
         this.throttleEditHandler = _.throttle(() => { this.editHandler() }, 1000, { 'trailing': false });
@@ -48,6 +51,7 @@ export class EmBlogContent {
         this.subscribe.dispose();
         this.subscribe2.dispose();
         this.subscribe3.dispose();
+        this.subscribe4.dispose();
     }
 
     /**
@@ -148,6 +152,30 @@ export class EmBlogContent {
                 $('.em-blog-content').scrollTo(`max`, 200, {
                     offset: 0
                 });
+            }).bind('keydown', 'alt+r', (event) => { // refresh
+                event.preventDefault();
+                this.refreshHandler();
+            }).bind('keydown', 'alt+h', (event) => { // history
+                event.preventDefault();
+                this.historyHandler();
+            }).bind('keydown', 'alt+l', (event) => { // history
+                event.preventDefault();
+                this.authHandler();
+            }).bind('keydown', 'alt+s', (event) => { // stow
+                event.preventDefault();
+                this.stowHandler();
+            }).bind('keydown', 'ctrl+c', (event) => { // copy
+                event.preventDefault();
+                this.copyHandler();
+            }).bind('keydown', 'alt+m', (event) => { // move space
+                event.preventDefault();
+                this.updateSpaceHandler();
+            }).bind('keydown', 'alt+o', (event) => { // open edit
+                event.preventDefault();
+                this.openEditHandler();
+            }).bind('keydown', 'alt+ctrl+d', (event) => { // delete
+                event.preventDefault();
+                this.deleteHandler();
             });
         } catch (err) { console.log(err); }
 
@@ -212,28 +240,30 @@ export class EmBlogContent {
     }
 
     deleteHandler() {
-
-        this.emConfirmModal.show({
-            onapprove: () => {
-                $.post("/admin/blog/delete", {
-                    id: this.blog.id
-                }, (data, textStatus, xhr) => {
-                    if (data.success) {
-                        toastr.success('删除博文成功!');
-                        ea.publish(nsCons.EVENT_BLOG_CHANGED, {
-                            action: 'deleted',
-                            blog: this.blog
-                        });
-                        ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, {
-                            to: '#/blog'
-                        });
-                    } else {
-                        toastr.error(data.data, '删除博文失败!');
-                    }
-                });
-            }
-        });
-
+        if (this.isSuper || this.blog.creator.username == this.loginUser.username) {
+            this.emConfirmModal.show({
+                title: '删除确认',
+                content: '确认要删除该博文吗?',
+                onapprove: () => {
+                    $.post("/admin/blog/delete", {
+                        id: this.blog.id
+                    }, (data, textStatus, xhr) => {
+                        if (data.success) {
+                            toastr.success('删除博文成功!');
+                            ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                                action: 'deleted',
+                                blog: this.blog
+                            });
+                            ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, {
+                                to: '#/blog'
+                            });
+                        } else {
+                            toastr.error(data.data, '删除博文失败!');
+                        }
+                    });
+                }
+            });
+        }
     }
 
     createHandler() {
@@ -243,7 +273,9 @@ export class EmBlogContent {
     }
 
     updateSpaceHandler() {
-        this.blogSpaceUpdateVm.show(this.blog);
+        if (this.isSuper || this.blog.creator.username == this.loginUser.username) {
+            this.blogSpaceUpdateVm.show(this.blog);
+        }
     }
 
     updatePrivatedHandler() {
@@ -289,21 +321,23 @@ export class EmBlogContent {
     }
 
     openEditHandler() {
-        $.post('/admin/blog/openEdit', {
-            id: this.blog.id,
-            open: !this.blog.openEdit
-        }, (data, textStatus, xhr) => {
-            if (data.success) {
-                this.blog.openEdit = !this.blog.openEdit;
-                ea.publish(nsCons.EVENT_BLOG_CHANGED, {
-                    action: 'updated',
-                    blog: this.blog
-                });
-                toastr.success(this.blog.openEdit ? '开放协作编辑成功!' : '关闭协作编辑成功!');
-            } else {
-                toastr.error(data.data, '协作编辑操作失败!');
-            }
-        });
+        if (this.isSuper || this.blog.creator.username == this.loginUser.username) {
+            $.post('/admin/blog/openEdit', {
+                id: this.blog.id,
+                open: !this.blog.openEdit
+            }, (data, textStatus, xhr) => {
+                if (data.success) {
+                    this.blog.openEdit = !this.blog.openEdit;
+                    ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                        action: 'updated',
+                        blog: this.blog
+                    });
+                    toastr.success(this.blog.openEdit ? '开放协作编辑成功!' : '关闭协作编辑成功!');
+                } else {
+                    toastr.error(data.data, '协作编辑操作失败!');
+                }
+            });
+        }
     }
 
     refreshHandler() {
@@ -324,7 +358,9 @@ export class EmBlogContent {
     }
 
     authHandler() {
-        this.blogSpaceAuthVm.show('blog', this.blog);
+        if (this.isSuper || this.blog.creator.username == this.loginUser.username) {
+            this.blogSpaceAuthVm.show('blog', this.blog);
+        }
     }
 
     copyHandler() {
@@ -392,5 +428,11 @@ export class EmBlogContent {
     dimmerHandler() {
         ea.publish(nsCons.EVENT_BLOG_LEFT_SIDEBAR_TOGGLE, { isHide: true });
         ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, { isHide: true });
+    }
+
+    commentsHandler() {
+        $('.em-blog-content').scrollTo(`.em-blog-comment `, 120, {
+            offset: -16
+        });
     }
 }

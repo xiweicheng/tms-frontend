@@ -59,6 +59,10 @@ export class EmBlogComment {
                         this.scrollToAfterImgLoaded(cid);
                     });
                 }
+                ea.publish(nsCons.EVENT_BLOG_COMMENT_CHANGED, {
+                    action: 'query',
+                    comments: this.comments
+                });
             } else {
                 toastr.error(data.data);
             }
@@ -412,6 +416,10 @@ export class EmBlogComment {
             if (data.success) {
                 this.comments = _.reject(this.comments, { id: item.id });
                 toastr.success('博文评论移除成功!');
+                ea.publish(nsCons.EVENT_BLOG_COMMENT_CHANGED, {
+                    action: 'removed',
+                    comments: this.comments
+                });
             } else {
                 toastr.error(data.data, '博文评论移除失败!');
             }
@@ -449,6 +457,10 @@ export class EmBlogComment {
                 toastr.success('博文评论提交成功!');
                 this.scrollToAfterImgLoaded('b');
                 ea.publish(nsCons.EVENT_BLOG_COMMENT_ADDED, {});
+                ea.publish(nsCons.EVENT_BLOG_COMMENT_CHANGED, {
+                    action: 'created',
+                    comments: this.comments
+                });
             } else {
                 toastr.error(data.data, '博文评论提交失败!');
             }
@@ -695,6 +707,10 @@ export class EmBlogComment {
             }
         });
 
+    }
+
+    gotoTopHandler() {
+        $('.em-blog-content').scrollTo(0, 120);
     }
 
 }

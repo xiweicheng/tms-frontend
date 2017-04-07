@@ -2,11 +2,9 @@
     <require from="./em-blog-comment.css"></require>
     <div class="em-blog-comment">
         <div class="ui minimal comments" ref="blogCommentsRef">
-            <h3 title="快速评论 (r)" class="ui dividing header">${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>
+            <h3 title="快速评论 (r)" class="ui dividing header"><i class="blue comments outline icon"></i> ${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>
             <div repeat.for="item of comments" class="comment" data-id="${item.id}">
-                <!-- <a class="avatar"> -->
                 <em-user-avatar user.bind="item.creator"></em-user-avatar>
-                <!-- </a> -->
                 <div class="content">
                     <a class="author" data-value=${item.creator.username}>${item.creator.name}</a>
                     <div class="metadata">
@@ -62,6 +60,9 @@
                 <div click.delegate="addHandler()" title="提交评论(ctrl+enter)" class="ui blue labeled submit icon button">
                     <i class="icon edit"></i> 添加评论
                 </div>
+                <button style="float: right;" click.delegate="gotoTopHandler()" title="滚至顶部(t), 滚至底部(b)" class="circular ui icon button">
+                    <i class="arrow up icon"></i>
+                </button>
             </form>
         </div>
         <div class="preview-template" style="display: none;">
