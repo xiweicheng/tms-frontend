@@ -94,12 +94,12 @@
                     <span>现在就去创建自己的博文吧!</span> <a click.delegate="createHandler()" class="ui mini blue button">创建</a>
                 </div>
             </div>
-            <div class="ui segment feed">
+            <div ref="feedRef" class="ui segment feed">
                 <h3 class="ui dividing header">
                 <i class="icon feed"></i>
                 <div class="content">博文更新</div>
                 </h3>
-                <div repeat.for="item of logs" class="event">
+                <div repeat.for="item of logs" mouseleave.trigger="feedEventItemMouseleaveHandler(item)" class="event ${item.isOpen ? 'opened' : ''}">
                     <div class="label">
                         <em-user-avatar user.bind="item.creator"></em-user-avatar>
                     </div>
@@ -144,7 +144,12 @@
                         </div>
                         <template if.bind="item.target == 'Blog'">
                             <template if.bind="item.action == 'Update' && item.properties == 'content'">
-                                <div class="extra text" innerhtml.bind="item.newValue"></div>
+                                <div class="extra text">
+                                    <div innerhtml.bind="item.newValue"></div>
+                                    <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                    </div>
+                                </div>
                             </template>
                             <template if.bind="item.action == 'Update' && item.properties == 'title'">
                                 <div class="extra text">原标题: ${item.oldValue}</div>
@@ -158,16 +163,36 @@
                         </template>
                         <template if.bind="item.target == 'Comment'">
                             <template if.bind="item.action == 'Create'">
-                                <div ref="mkbodyRef" class="extra text markdown-body" innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef"></div>
+                                <div ref="mkbodyRef" class="extra text markdown-body">
+                                    <div innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef"></div>
+                                    <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                    </div>
+                                </div>
                             </template>
                             <template if.bind="item.action == 'Delete'">
-                                <div ref="mkbodyRef" class="extra text" innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef" "></div>
+                                <div ref="mkbodyRef" class="extra text markdown-body">
+                                    <div innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef"></div>
+                                    <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                    </div>
+                                </div>
                             </template>
                             <template if.bind="item.action=='Update' && item.properties=='content' ">
-                                <div class="extra text " innerhtml.bind="item.newValue "></div>
+                                <div class="extra text">
+                                    <div innerhtml.bind="item.newValue"></div>
+                                    <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                    </div>
+                                </div>
                             </template>
                             <template if.bind="item.action=='Update' && item.properties=='voteZan' ">
-                                <div ref="mkbodyRef " class="extra text markdown-body " innerhtml.bind="item.oldValue | parseMd | emoji:mkbodyRef "></div>
+                                <div ref="mkbodyRef " class="extra text markdown-body">
+                                    <div innerhtml.bind="item.oldValue | parseMd | emoji:mkbodyRef"></div>
+                                    <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                    </div>
+                                </div>
                             </template>
                         </template>
                     </div>

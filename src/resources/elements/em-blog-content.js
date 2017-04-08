@@ -447,4 +447,12 @@ export class EmBlogContent {
             offset: -16
         });
     }
+
+    openFeedEventItemHandler(item) {
+        item.isOpen = !item.isOpen;
+    }
+
+    feedEventItemMouseleaveHandler(item) {
+        item.isOpen = false;
+    }
 }
