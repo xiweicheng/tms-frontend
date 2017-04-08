@@ -5,7 +5,7 @@
         <div show.bind="blog" class="em-blog-content">
             <div class="topbar">
                 <div class="ui breadcrumb">
-                    <a class="section">TMS博文</a>
+                    <a class="section" href="#/blog">TMS博文</a>
                     <div show.bind="blog.space" class="divider"> / </div>
                     <a show.bind="blog.space" class="section active">${blog.space.name}</a>
                     <span if.bind="isSuper || blog.creator.username == loginUser.username" data-tooltip="${blog.privated ? '私有博文,点击可公开' : '公开博文,点击可关闭'}" data-position="right center" style="margin-left: 16px;"><i click.delegate="updatePrivatedHandler()" class="link icon ${blog.privated ? 'lock' : 'unlock alternate'}"></i></span>
