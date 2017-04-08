@@ -100,37 +100,47 @@
             color: #4183c4;
         }
     }
-    > .ui.feed > .event {
-        &.opened {
+    > .ui.feed {
+        margin-bottom: 25px!important;
+        > .event {
+            &.opened {
+                > .content .extra.text {
+                    &:hover {
+                        max-height: none;
+                        overflow-y: auto;
+                        padding-bottom: 25px;
+                    }
+                }
+            }
             > .content .extra.text {
+                position: relative;
+                max-width: none;
+                min-height: 25px;
+                max-height: 60px;
+                overflow-y: hidden;
                 &:hover {
-                    max-height: none;
-                    overflow-y: auto;
-                    padding-bottom: 25px;
+                    > .btn-open {
+                        display: block;
+                    }
                 }
-            }
-        }
-        > .content .extra.text {
-            position: relative;
-            max-width: none;
-            min-height: 25px;
-            max-height: 60px;
-            overflow-y: hidden;
-            &:hover {
                 > .btn-open {
-                    display: block;
+                    display: none;
+                    height: 25px;
+                    background-color: rgba(0, 0, 0, 0.1);
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    left: 0;
+                    text-align: center;
+                    padding-top: 2px;
                 }
-            }
-            > .btn-open {
-                display: none;
-                height: 25px;
-                background-color: rgba(0, 0, 0, 0.1);
-                position: absolute;
-                bottom: 0;
-                right: 0;
-                left: 0;
-                text-align: center;
-                padding-top: 2px;
+                pre {
+                    white-space: pre-wrap;
+                    white-space: -moz-pre-wrap;
+                    white-space: -pre-wrap;
+                    white-space: -o-pre-wrap;
+                    word-wrap: break-word;
+                }
             }
         }
     }

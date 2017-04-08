@@ -99,6 +99,9 @@
                 <i class="icon feed"></i>
                 <div class="content">博文更新</div>
                 </h3>
+                <div if.bind="!logs || logs.length == 0" class="ui info massive message">
+                    暂无博文更新!
+                </div>
                 <div repeat.for="item of logs" mouseleave.trigger="feedEventItemMouseleaveHandler(item)" class="event ${item.isOpen ? 'opened' : ''}">
                     <div class="label">
                         <em-user-avatar user.bind="item.creator"></em-user-avatar>
@@ -147,7 +150,7 @@
                                 <div class="extra text">
                                     <div innerhtml.bind="item.newValue"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
-                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                        <i title="${item.isOpen ? '点击收起' : '点击展开'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>
                                 </div>
                             </template>
