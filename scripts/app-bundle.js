@@ -6583,8 +6583,9 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
             $('.em-blog-comment .comments').on('mouseenter', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', function (event) {
                 event.preventDefault();
                 var $a = $(event.currentTarget);
-                ea.publish(nsCons.EVENT_BLOG_COMMENT_POPUP_SHOW, {
-                    id: utils.urlQuery('cid', $a.attr('href')),
+                var cid = utils.urlQuery('cid', $a.attr('href'));
+                cid && ea.publish(nsCons.EVENT_BLOG_COMMENT_POPUP_SHOW, {
+                    id: cid,
                     target: event.currentTarget
                 });
             });
@@ -7336,6 +7337,16 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
                     _this2.progressWidth = 0;
                 }
             }, 10));
+
+            $(this.feedRef).on('mouseenter', '.event a[href*="#/blog/"]:not(.pp-not)', function (event) {
+                event.preventDefault();
+                var $a = $(event.currentTarget);
+                var cid = utils.urlQuery('cid', $a.attr('href'));
+                cid && ea.publish(nsCons.EVENT_BLOG_COMMENT_POPUP_SHOW, {
+                    id: cid,
+                    target: event.currentTarget
+                });
+            });
 
             this.initHotkeys();
         };

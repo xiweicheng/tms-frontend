@@ -79,8 +79,9 @@ export class EmBlogComment {
         $('.em-blog-comment .comments').on('mouseenter', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', (event) => {
             event.preventDefault();
             var $a = $(event.currentTarget);
-            ea.publish(nsCons.EVENT_BLOG_COMMENT_POPUP_SHOW, {
-                id: utils.urlQuery('cid', $a.attr('href')),
+            let cid = utils.urlQuery('cid', $a.attr('href'));
+            cid && ea.publish(nsCons.EVENT_BLOG_COMMENT_POPUP_SHOW, {
+                id: cid,
                 target: event.currentTarget
             });
         });
