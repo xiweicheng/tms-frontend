@@ -108,7 +108,7 @@
                     </div>
                     <div class="content">
                         <div class="summary">
-                            <a class="user">${item.creator.name}</a>
+                            <a class="user author" data-value="${item.creator.username}">${item.creator.name}</a>
                             <template if.bind="item.target == 'Blog'">
                                 <span if.bind="item.action == 'Create'">创建了博文 <a href="#/blog/${item.targetId}">${item.newValue}</a></span>
                                 <span if.bind="item.action == 'Delete'">删除了博文 <a href="javascript:void(0);">${item.newValue}</a></span>
