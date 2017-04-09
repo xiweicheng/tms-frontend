@@ -73,8 +73,8 @@
                 <h1 class="ui header">${blog.title}
                 <div class="sub header">
                     <i class="wait icon"></i> <a class="author" data-value="${blog.creator.username}">${blog.creator.username == loginUser.username ? '自己' : blog.creator.name}</a> 创建于 <span data-timeago="${blog.createDate}" title="${blog.createDate | date}">${blog.createDate | timeago}</span>, <a class="author" data-value="${blog.updater.username}">${blog.updater.username == loginUser.username ? '自己' : blog.updater.name}</a> 最后修改于 <span data-timeago="${blog.updateDate}" title="${blog.updateDate | date}">${blog.updateDate | timeago}</span>
-                    <span class="readCnt" show.bind="blog.readCnt"><i class="unhide icon"></i>浏览: <a>${blog.readCnt}</a> 次</span>
-                    <span class="commentCnt" show.bind="comments" title="按下 r 键快速去评论"><i class="comments outline icon"></i>评论: <a click.delegate="commentsHandler()">${comments.length}</a></span>
+                    <span click.delegate="refreshHandler()" class="readCnt" show.bind="blog.readCnt" title="点击刷新博文 (alt+r)"><i class="unhide icon"></i>浏览: <a>${blog.readCnt}</a> 次</span>
+                    <span click.delegate="commentsHandler()" class="commentCnt" show.bind="comments" title="点击快速去评论 (r)"><i class="comments outline icon"></i>评论: <a>${comments.length}</a></span>
                 </div>
             </h1>
             </div>
@@ -99,6 +99,9 @@
                 <i class="icon feed"></i>
                 <div class="content">博文更新</div>
                 </h3>
+                <button click.delegate="refreshFeedHandler()" style="position: absolute; right: 0; top: 2px;" class="circular ui icon button" data-tooltip="刷新博文更新" data-position="top right">
+                  <i class="icon refresh"></i>
+                </button>
                 <div if.bind="!logs || logs.length == 0" class="ui info massive message">
                     暂无博文更新!
                 </div>

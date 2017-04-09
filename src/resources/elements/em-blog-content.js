@@ -466,4 +466,8 @@ export class EmBlogContent {
     feedEventItemMouseleaveHandler(item) {
         item.isOpen = false;
     }
+
+    refreshFeedHandler() {
+        this.getMyLog();
+    }
 }
