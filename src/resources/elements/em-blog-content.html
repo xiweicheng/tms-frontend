@@ -130,6 +130,12 @@
                                 <template if.bind="item.action == 'Update' && item.properties == 'voteZan'">
                                     <span>投票赞了博文 <a href="#/blog/${item.targetId}">${item.newValue}</a> </span>
                                 </template>
+                                <template if.bind="item.action == 'Update' && item.properties == 'stow'">
+                                    <span>收藏了博文 <a href="#/blog/${item.targetId}">${item.newValue}</a> </span>
+                                </template>
+                                <template if.bind="item.action == 'Update' && item.properties == 'follower'">
+                                    <span>关注了博文 <a href="#/blog/${item.targetId}">${item.newValue}</a> </span>
+                                </template>
                             </template>
                             <template if.bind="item.target == 'Comment'">
                                 <span if.bind="item.action == 'Create'">添加了评论 <a href="#/blog/${item.oldValue}?cid=${item.targetId}">#${item.targetId}</a></span>
