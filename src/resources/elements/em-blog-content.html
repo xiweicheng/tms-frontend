@@ -157,7 +157,8 @@
                         <template if.bind="item.target == 'Blog'">
                             <template if.bind="item.action == 'Update' && item.properties == 'content'">
                                 <div class="extra text">
-                                    <div innerhtml.bind="item.newValue"></div>
+                                    <!-- <div textcontent.bind="item.newValue"></div> -->
+                                    <div innerhtml.bind="item.newValue | diffHtml"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
                                         <i title="${item.isOpen ? '点击收起' : '点击展开'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>
@@ -192,7 +193,7 @@
                             </template>
                             <template if.bind="item.action=='Update' && item.properties=='content' ">
                                 <div class="extra text">
-                                    <div innerhtml.bind="item.newValue"></div>
+                                    <div innerhtml.bind="item.newValue | diffHtml "></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
                                         <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>

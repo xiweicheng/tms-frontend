@@ -230,7 +230,7 @@ define('blog/blog',['exports', 'aurelia-framework', 'chat/chat-service'], functi
             this.isHide = true;
 
             this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_VIEW_CHANGED, function (payload) {
-                _this.routeConfig && _this.routeConfig.navModel.setTitle(payload.title + ' | \u535A\u6587 | TMS');
+                _this.routeConfig && _this.routeConfig.navModel.setTitle(payload.title + ' | 博文 | TMS');
             });
             this.subscribe1 = ea.subscribe(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, function (payload) {
                 if (payload.justRefresh) {
@@ -331,7 +331,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
     var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
         return typeof obj;
     } : function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
     };
 
     function _classCallCheck(instance, Constructor) {
@@ -504,11 +504,11 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
 
                     if (_this2.user) {
                         var name = _this2.user ? _this2.user.name : _this2.chatTo;
-                        routeConfig.navModel.setTitle(name + ' | \u79C1\u804A | TMS');
+                        routeConfig.navModel.setTitle(name + ' | 私聊 | TMS');
 
                         _this2.listChatDirect(true);
                     } else {
-                        toastr.error('\u804A\u5929\u7528\u6237[' + _this2.chatTo + ']\u4E0D\u5B58\u5728\u6216\u8005\u6CA1\u6709\u6743\u9650\u8BBF\u95EE!');
+                        toastr.error('聊天用户[' + _this2.chatTo + ']不存在或者没有权限访问!');
                         if (_this2.preChatId) {
                             window.location = wurl('path') + ('#/chat/' + _this2.preChatId);
                         } else {
@@ -526,11 +526,11 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                     });
 
                     if (_this2.channel) {
-                        routeConfig.navModel.setTitle(_this2.channel.title + ' | \u9891\u9053 | TMS');
+                        routeConfig.navModel.setTitle(_this2.channel.title + ' | 频道 | TMS');
 
                         _this2.listChatChannel(true);
                     } else {
-                        toastr.error('\u804A\u5929\u9891\u9053[' + _this2.chatTo + ']\u4E0D\u5B58\u5728\u6216\u8005\u6CA1\u6709\u6743\u9650\u8BBF\u95EE!');
+                        toastr.error('聊天频道[' + _this2.chatTo + ']不存在或者没有权限访问!');
                         if (_this2.preChatId) {
                             window.location = wurl('path') + ('#/chat/' + _this2.preChatId);
                         } else {
@@ -678,7 +678,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                     $(this.commentsRef).find('.comment[data-id=' + to + ']').addClass('active');
                 } else {
                     $(this.commentsRef).parent('.scroll-content').scrollTo('max');
-                    toastr.warning('\u6D88\u606F[' + to + ']\u4E0D\u5B58\u5728,\u53EF\u80FD\u5DF2\u7ECF\u88AB\u5220\u9664!');
+                    toastr.warning('消息[' + to + ']不存在,可能已经被删除!');
                 }
             }
         };
@@ -725,7 +725,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
                     if (_this9.countAt && data.data.countAt > _this9.countAt) {
                         var cnt = data.data.countAt - _this9.countAt;
                         push.create('TMS沟通@消息通知', {
-                            body: '\u4F60\u6709' + cnt + '\u6761\u65B0\u7684@\u6D88\u606F!',
+                            body: '你有' + cnt + '条新的@消息!',
                             icon: {
                                 x16: 'img/tms-x16.ico',
                                 x32: 'img/tms-x32.png'
@@ -809,7 +809,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
 
             if (!hasOwn) {
                 push.create('TMS沟通频道消息通知', {
-                    body: '\u9891\u9053[' + this.channel.title + ']\u6709\u65B0\u6D88\u606F\u4E86!',
+                    body: '频道[' + this.channel.title + ']有新消息了!',
                     icon: {
                         x16: 'img/tms-x16.ico',
                         x32: 'img/tms-x32.png'
@@ -991,7 +991,7 @@ define('chat/chat-direct',['exports', 'aurelia-framework', 'common/common-poll',
         };
 
         ChatDirect.prototype.scrollTo = function scrollTo(target) {
-            var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+            var duration = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
             var onAfter = arguments[2];
 
             this.focusedComment = target;
@@ -1091,9 +1091,9 @@ define('chat/chat-service',['exports'], function (exports) {
                         resolve(value);
                     } else {
                         return Promise.resolve(value).then(function (value) {
-                            step("next", value);
+                            return step("next", value);
                         }, function (err) {
-                            step("throw", err);
+                            return step("throw", err);
                         });
                     }
                 }
@@ -1330,7 +1330,7 @@ define('common/common-diff',[], function () {
   var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
     return typeof obj;
   } : function (obj) {
-    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
   };
 
   (function webpackUniversalModuleDefinition(root, factory) {
@@ -2220,7 +2220,7 @@ define('common/common-imgs-loaded',[], function () {
     var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
         return typeof obj;
     } : function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
     };
 
     ;(function (w, undefined) {
@@ -3905,7 +3905,7 @@ define('common/common-utils',['exports', 'wurl', 'common/common-diff'], function
 
             var cnt = time ? time : 10;
             var timer = null;
-            var $t = toastr.error('\u7F51\u7EDC\u8FDE\u63A5\u9519\u8BEF,' + cnt + '\u79D2\u540E\u81EA\u52A8\u91CD\u8BD5!', null, {
+            var $t = toastr.error('网络连接错误,' + cnt + '秒后自动重试!', null, {
                 "closeButton": false,
                 "timeOut": "0",
                 "preventDuplicates": false,
@@ -3924,7 +3924,7 @@ define('common/common-utils',['exports', 'wurl', 'common/common-diff'], function
                     callback && callback();
                     return;
                 }
-                $t && $t.find('.toast-message').text('\u7F51\u7EDC\u8FDE\u63A5\u9519\u8BEF,' + cnt + '\u79D2\u540E\u81EA\u52A8\u91CD\u8BD5!');
+                $t && $t.find('.toast-message').text('网络连接错误,' + cnt + '秒后自动重试!');
                 cnt--;
             }, 1000);
         };
@@ -4284,6 +4284,47 @@ define('common/common-utils',['exports', 'wurl', 'common/common-diff'], function
             );
         };
 
+        CommonUtils.prototype.diffHtml = function diffHtml(html) {
+
+            var tags = ['html', 'head', 'meta', 'title', 'base', 'link', 'script', 'body', 'div', 'span'];
+
+            var s = '';
+            if (html) {
+                s = html;
+                _.each(tags, function (tag) {
+                    s = s.replace(new RegExp('<(' + tag + ')', "gi"), '&lt;$1');
+                });
+            }
+
+            return s;
+        };
+
+        CommonUtils.prototype.encodeHtml = function encodeHtml(str) {
+            var s = "";
+            if (str.length == 0) return "";
+            s = str.replace(/&/g, "&gt;");
+            s = s.replace(/</g, "&lt;");
+            s = s.replace(/>/g, "&gt;");
+            s = s.replace(/ /g, "&nbsp;");
+            s = s.replace(/\'/g, "&#39;");
+            s = s.replace(/\"/g, "&quot;");
+            s = s.replace(/\n/g, "<br>");
+            return s;
+        };
+
+        CommonUtils.prototype.decodeHtml = function decodeHtml(str) {
+            var s = "";
+            if (str.length == 0) return "";
+            s = str.replace(/&gt;/g, "&");
+            s = s.replace(/&lt;/g, "<");
+            s = s.replace(/&gt;/g, ">");
+            s = s.replace(/&nbsp;/g, " ");
+            s = s.replace(/&#39;/g, "\'");
+            s = s.replace(/&quot;/g, "\"");
+            s = s.replace(/<br>/g, "\n");
+            return s;
+        };
+
         return CommonUtils;
     }();
 
@@ -4439,10 +4480,10 @@ define('init/config',['exports', 'aurelia-templating-resources', 'aurelia-event-
                 }
 
                 if (!lang) {
-                    return '<div class="pre-code-wrapper"><i data-clipboard-text="' + _commonUtils2.default.escape(codeBk, true) + '" title="\u590D\u5236(ctrl+click)" class="tms-clipboard copy icon"></i><pre><code>' + (escaped ? code : _commonUtils2.default.escape(code, true)) + '\n</code></pre></div>';
+                    return '<div class="pre-code-wrapper"><i data-clipboard-text="' + _commonUtils2.default.escape(codeBk, true) + '" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre><code>' + (escaped ? code : _commonUtils2.default.escape(code, true)) + '\n</code></pre></div>';
                 }
 
-                return '<div class="pre-code-wrapper"><i data-clipboard-text="' + _commonUtils2.default.escape(codeBk, true) + '" title="\u590D\u5236(ctrl+click)" class="tms-clipboard copy icon"></i><pre><code class="' + (this.options.langPrefix + _commonUtils2.default.escape(lang, true)) + '">' + (escaped ? code : _commonUtils2.default.escape(code, true)) + '\n</code></pre><div>\n';
+                return '<div class="pre-code-wrapper"><i data-clipboard-text="' + _commonUtils2.default.escape(codeBk, true) + '" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre><code class="' + (this.options.langPrefix + _commonUtils2.default.escape(lang, true)) + '">' + (escaped ? code : _commonUtils2.default.escape(code, true)) + '\n</code></pre><div>\n';
             };
 
             _marked2.default.setOptions({
@@ -5179,7 +5220,7 @@ define('resources/attributes/attr-c2c',['exports', 'aurelia-framework', 'clipboa
         AttrC2cCustomAttribute.prototype._init = function _init() {
             var _this = this;
 
-            $(this.element).append('<span style="margin-left: 5px; display: none;" data-tooltip="\u590D\u5236\u5230\u526A\u8D34\u677F" data-position="right center" data-inverted=""><i class="copy link icon"></i></span>');
+            $(this.element).append('<span style="margin-left: 5px; display: none;" data-tooltip="复制到剪贴板" data-position="right center" data-inverted=""><i class="copy link icon"></i></span>');
             this.clipboard = new _clipboard2.default($(this.element).find('i.copy.icon')[0], {
                 text: function text(trigger) {
                     return _this.value ? _this.value : $(_this.element).text();
@@ -5800,7 +5841,7 @@ define('resources/attributes/attr-textcomplete',['exports', 'aurelia-framework',
                     },
                     template: function template(value, term) {
                         if (value == 'search') {
-                            return '\u8868\u60C5\u67E5\u627E - :search';
+                            return '表情查找 - :search';
                         }
                         var emojiKey = ':' + value + ':';
                         return emojify.replace(emojiKey) + ' - ' + emojiKey;
@@ -6142,7 +6183,7 @@ define('resources/binding-behaviors/bb-key',['exports'], function (exports) {
         }
 
         KeyBindingBehavior.prototype.bind = function bind(binding, source) {
-            var key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 13;
+            var key = arguments.length <= 2 || arguments[2] === undefined ? 13 : arguments[2];
             var metaKeys = arguments[3];
 
             var methodName = 'updateTarget';
@@ -6174,211 +6215,6 @@ define('resources/binding-behaviors/bb-key',['exports'], function (exports) {
         };
 
         return KeyBindingBehavior;
-    }();
-});
-define('resources/value-converters/vc-common',['exports', 'jquery-format', 'timeago'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.Nl2brValueConverter = exports.EmojiValueConverter = exports.UserNameValueConverter = exports.SortChannelsValueConverter = exports.SortUsernamesValueConverter = exports.SortUsersValueConverter = exports.SortValueConverter = exports.ParseMdValueConverter = exports.TimeagoValueConverter = exports.NumberValueConverter = exports.DateValueConverter = exports.LowerValueConverter = exports.UpperValueConverter = undefined;
-
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
-        }
-    }
-
-    var tg = timeago();
-
-    var UpperValueConverter = exports.UpperValueConverter = function () {
-        function UpperValueConverter() {
-            _classCallCheck(this, UpperValueConverter);
-        }
-
-        UpperValueConverter.prototype.toView = function toView(value) {
-            return value && value.toUpperCase();
-        };
-
-        return UpperValueConverter;
-    }();
-
-    var LowerValueConverter = exports.LowerValueConverter = function () {
-        function LowerValueConverter() {
-            _classCallCheck(this, LowerValueConverter);
-        }
-
-        LowerValueConverter.prototype.toView = function toView(value) {
-            return value && value.toLowerCase();
-        };
-
-        return LowerValueConverter;
-    }();
-
-    var DateValueConverter = exports.DateValueConverter = function () {
-        function DateValueConverter() {
-            _classCallCheck(this, DateValueConverter);
-        }
-
-        DateValueConverter.prototype.toView = function toView(value) {
-            var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'yyyy-MM-dd hh:mm:ss';
-
-            return _.isInteger(_.toNumber(value)) ? $.format.date(new Date(value), format) : value ? value : '';
-        };
-
-        return DateValueConverter;
-    }();
-
-    var NumberValueConverter = exports.NumberValueConverter = function () {
-        function NumberValueConverter() {
-            _classCallCheck(this, NumberValueConverter);
-        }
-
-        NumberValueConverter.prototype.toView = function toView(value) {
-            var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '#,##0.00';
-
-            return _.isNumber(_.toNumber(value)) ? $.format.number(value, format) : value ? value : '';
-        };
-
-        return NumberValueConverter;
-    }();
-
-    var TimeagoValueConverter = exports.TimeagoValueConverter = function () {
-        function TimeagoValueConverter() {
-            _classCallCheck(this, TimeagoValueConverter);
-        }
-
-        TimeagoValueConverter.prototype.toView = function toView(value) {
-            return value ? tg.format(value, 'zh_CN') : '';
-        };
-
-        return TimeagoValueConverter;
-    }();
-
-    var ParseMdValueConverter = exports.ParseMdValueConverter = function () {
-        function ParseMdValueConverter() {
-            _classCallCheck(this, ParseMdValueConverter);
-        }
-
-        ParseMdValueConverter.prototype.toView = function toView(value) {
-            return value ? marked(utils.preParse(value)) : '';
-        };
-
-        return ParseMdValueConverter;
-    }();
-
-    var SortValueConverter = exports.SortValueConverter = function () {
-        function SortValueConverter() {
-            _classCallCheck(this, SortValueConverter);
-        }
-
-        SortValueConverter.prototype.toView = function toView(value, prop) {
-            return _.isArray(value) ? _.sortBy(value, prop) : value;
-        };
-
-        return SortValueConverter;
-    }();
-
-    var SortUsersValueConverter = exports.SortUsersValueConverter = function () {
-        function SortUsersValueConverter() {
-            _classCallCheck(this, SortUsersValueConverter);
-        }
-
-        SortUsersValueConverter.prototype.toView = function toView(value, username) {
-            if (_.isArray(value) && username) {
-                var user = _.find(value, { username: username });
-                if (user) {
-                    return [user].concat(_.reject(value, { username: username }));
-                }
-            }
-            return value;
-        };
-
-        return SortUsersValueConverter;
-    }();
-
-    var SortUsernamesValueConverter = exports.SortUsernamesValueConverter = function () {
-        function SortUsernamesValueConverter() {
-            _classCallCheck(this, SortUsernamesValueConverter);
-        }
-
-        SortUsernamesValueConverter.prototype.toView = function toView(value, username) {
-            if (_.isArray(value) && username) {
-                if (_.includes(value, username)) {
-                    return [username].concat(_.without(value, username));
-                }
-            }
-            return value;
-        };
-
-        return SortUsernamesValueConverter;
-    }();
-
-    var SortChannelsValueConverter = exports.SortChannelsValueConverter = function () {
-        function SortChannelsValueConverter() {
-            _classCallCheck(this, SortChannelsValueConverter);
-        }
-
-        SortChannelsValueConverter.prototype.toView = function toView(value) {
-            if (_.isArray(value)) {
-                var channelAll = _.find(value, { name: 'all' });
-                if (channelAll) {
-                    return [channelAll].concat(_.reject(value, { name: 'all' }));
-                }
-            }
-            return value;
-        };
-
-        return SortChannelsValueConverter;
-    }();
-
-    var UserNameValueConverter = exports.UserNameValueConverter = function () {
-        function UserNameValueConverter() {
-            _classCallCheck(this, UserNameValueConverter);
-        }
-
-        UserNameValueConverter.prototype.toView = function toView(value) {
-            var user = _.find(window.tmsUsers, { username: value });
-            if (user) {
-                return user.name;
-            }
-            return value;
-        };
-
-        return UserNameValueConverter;
-    }();
-
-    var EmojiValueConverter = exports.EmojiValueConverter = function () {
-        function EmojiValueConverter() {
-            _classCallCheck(this, EmojiValueConverter);
-        }
-
-        EmojiValueConverter.prototype.toView = function toView(value, mkbodyDom) {
-            if (emojify) {
-                _.defer(function () {
-                    emojify.run(mkbodyDom);
-                });
-            }
-            return value;
-        };
-
-        return EmojiValueConverter;
-    }();
-
-    var Nl2brValueConverter = exports.Nl2brValueConverter = function () {
-        function Nl2brValueConverter() {
-            _classCallCheck(this, Nl2brValueConverter);
-        }
-
-        Nl2brValueConverter.prototype.toView = function toView(value) {
-            if (value) {
-                return _.replace(value, /\n/g, '<br/>');
-            }
-            return value;
-        };
-
-        return Nl2brValueConverter;
     }();
 });
 define('resources/elements/em-blog-comment-popup',['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
@@ -6825,7 +6661,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
                 },
                 template: function template(value, term) {
                     if (value == 'search') {
-                        return '\u8868\u60C5\u67E5\u627E - :search';
+                        return '表情查找 - :search';
                     }
                     var emojiKey = ':' + value + ':';
                     return emojify.replace(emojiKey) + ' - ' + emojiKey;
@@ -6890,7 +6726,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
         };
 
         EmBlogComment.prototype.replyHandler = function replyHandler(item) {
-            this.insertContent('[[\u56DE\u590D\u8BC4\u8BBA#' + item.id + '](' + this.baseUrl + '?cid=' + item.id + '){~' + item.creator.username + '}]\n\n');
+            this.insertContent('[[回复评论#' + item.id + '](' + this.baseUrl + '?cid=' + item.id + '){~' + item.creator.username + '}]\n\n');
             this._scrollTo('b');
         };
 
@@ -7059,7 +6895,7 @@ define('resources/elements/em-blog-comment',['exports', 'aurelia-framework', 'si
                     $('.em-blog-content').find('.comment[data-id=' + to + ']').addClass('active');
                 } else {
                     $('.em-blog-content').scrollTo('max');
-                    toastr.warning('\u535A\u6587\u8BC4\u8BBA[' + to + ']\u4E0D\u5B58\u5728,\u53EF\u80FD\u5DF2\u7ECF\u88AB\u5220\u9664!');
+                    toastr.warning('博文评论[' + to + ']不存在,可能已经被删除!');
                 }
             }
         };
@@ -7614,7 +7450,7 @@ define('resources/elements/em-blog-content',['exports', 'aurelia-framework', 'cl
         };
 
         EmBlogContent.prototype.catalogHandler = function catalogHandler() {
-            var justRefresh = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+            var justRefresh = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
 
             ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, {
                 justRefresh: justRefresh,
@@ -9032,7 +8868,7 @@ define('resources/elements/em-blog-top-menu',['exports', 'aurelia-framework', 't
                             response.results.push({
                                 title: item.title,
 
-                                description: '<i class="wait icon"></i>' + item.creator.name + ' \u521B\u5EFA\u4E8E ' + tg.format(item.createDate, 'zh_CN'),
+                                description: '<i class="wait icon"></i>' + item.creator.name + ' 创建于 ' + tg.format(item.createDate, 'zh_CN'),
                                 url: '#/blog/' + item.id
                             });
                         });
@@ -9495,7 +9331,7 @@ define('resources/elements/em-blog-write',['exports', 'aurelia-framework', 'simp
                 },
                 template: function template(value, term) {
                     if (value == 'search') {
-                        return '\u8868\u60C5\u67E5\u627E - :search';
+                        return '表情查找 - :search';
                     }
                     var emojiKey = ':' + value + ':';
                     return emojify.replace(emojiKey) + ' - ' + emojiKey;
@@ -9769,7 +9605,7 @@ define('resources/elements/em-chat-attach',['exports', 'aurelia-framework'], fun
         EmChatAttach.prototype._listByPage = function _listByPage() {
             var _this = this;
 
-            var nextPage = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+            var nextPage = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
 
             var url = nsCtx.isAt ? '/admin/file/listByUser' : '/admin/file/listByChannel';
             this.ajax = $.get(url, {
@@ -10175,7 +10011,7 @@ define('resources/elements/em-chat-channel-join',['exports', 'aurelia-framework'
 
         EmChatChannelJoin.prototype.joinHandler = function joinHandler(item) {
             this.confirmMd.show({
-                content: '\u786E\u5B9A\u8981\u52A0\u5165\u9891\u9053<code class="nx">' + item.title + '</code>\u5417?',
+                content: '确定要加入频道<code class="nx">' + item.title + '</code>吗?',
                 onapprove: function onapprove() {
                     $.post('/admin/channel/join', {
                         id: item.id
@@ -10194,7 +10030,7 @@ define('resources/elements/em-chat-channel-join',['exports', 'aurelia-framework'
 
         EmChatChannelJoin.prototype.leaveHandler = function leaveHandler(item) {
             this.confirmMd.show({
-                content: '\u786E\u5B9A\u8981\u79BB\u5F00\u9891\u9053<code class="nx">' + item.title + '</code>\u5417?',
+                content: '确定要离开频道<code class="nx">' + item.title + '</code>吗?',
                 onapprove: function onapprove() {
                     $.post('/admin/channel/leave', {
                         id: item.id
@@ -10953,16 +10789,16 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
             }, function (data, textStatus, xhr) {
                 if (data.success) {
                     item.openEdit = !item.openEdit;
-                    toastr.success((item.openEdit ? '开启' : '关闭') + '\u534F\u4F5C\u7F16\u8F91\u6210\u529F!');
+                    toastr.success((item.openEdit ? '开启' : '关闭') + '协作编辑成功!');
                 } else {
-                    toastr.success((!item.openEdit ? '开启' : '关闭') + '\u534F\u4F5C\u7F16\u8F91\u5931\u8D25!');
+                    toastr.success((!item.openEdit ? '开启' : '关闭') + '协作编辑失败!');
                 }
             });
         };
 
         EmChatContentItem.prototype.replyHandler = function replyHandler(item) {
             ea.publish(nsCons.EVENT_CHAT_MSG_INSERT, {
-                content: '[[\u56DE\u590D#' + item.id + '](' + utils.getUrl() + '?id=' + item.id + '){~' + item.creator.username + '}]\n\n'
+                content: '[[回复#' + item.id + '](' + utils.getUrl() + '?id=' + item.id + '){~' + item.creator.username + '}]\n\n'
             });
 
             $.post('/admin/chat/channel/markAsReadedByChat', {
@@ -11335,7 +11171,7 @@ define('resources/elements/em-chat-input',['exports', 'aurelia-framework', 'comm
                 },
                 template: function template(value, term) {
                     if (value == 'search') {
-                        return '\u8868\u60C5\u67E5\u627E - :search';
+                        return '表情查找 - :search';
                     }
                     var emojiKey = ':' + value + ':';
                     return emojify.replace(emojiKey) + ' - ' + emojiKey;
@@ -11969,7 +11805,7 @@ define('resources/elements/em-chat-schedule-remind',['exports', 'aurelia-framewo
 
         EmChatScheduleRemind.prototype._desktopPuh = function _desktopPuh() {
             push.create('TMS日程提醒通知', {
-                body: '\u5185\u5BB9: ' + this.event.title,
+                body: '内容: ' + this.event.title,
                 icon: {
                     x16: 'img/tms-x16.ico',
                     x32: 'img/tms-x32.png'
@@ -12777,7 +12613,7 @@ define('resources/elements/em-chat-sidebar-left',['exports', 'aurelia-framework'
 
         EmChatSidebarLeft.prototype.leaveHandler = function leaveHandler(item) {
             this.confirmMd.show({
-                content: '\u786E\u5B9A\u8981\u79BB\u5F00\u9891\u9053<code class="nx">' + item.title + '</code>\u5417?',
+                content: '确定要离开频道<code class="nx">' + item.title + '</code>吗?',
                 onapprove: function onapprove() {
                     $.post('/admin/channel/leave', {
                         id: item.id
@@ -14398,7 +14234,7 @@ define('resources/elements/em-user-avatar',['exports', 'aurelia-framework', 'col
         };
 
         EmUserAvatar.prototype._calcNameChar = function _calcNameChar() {
-            var lastChar = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+            var lastChar = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
 
             if (this.user.name) {
                 this.nameChar = lastChar ? _.last(this.user.name) : _.first(this.user.name);
@@ -14547,6 +14383,226 @@ define('resources/elements/em-user-edit',['exports', 'aurelia-framework'], funct
         enumerable: true,
         initializer: null
     })), _class2)) || _class;
+});
+define('resources/value-converters/vc-common',['exports', 'jquery-format', 'timeago'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.DiffHtmlValueConverter = exports.Nl2brValueConverter = exports.EmojiValueConverter = exports.UserNameValueConverter = exports.SortChannelsValueConverter = exports.SortUsernamesValueConverter = exports.SortUsersValueConverter = exports.SortValueConverter = exports.ParseMdValueConverter = exports.TimeagoValueConverter = exports.NumberValueConverter = exports.DateValueConverter = exports.LowerValueConverter = exports.UpperValueConverter = undefined;
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var tg = timeago();
+
+    var UpperValueConverter = exports.UpperValueConverter = function () {
+        function UpperValueConverter() {
+            _classCallCheck(this, UpperValueConverter);
+        }
+
+        UpperValueConverter.prototype.toView = function toView(value) {
+            return value && value.toUpperCase();
+        };
+
+        return UpperValueConverter;
+    }();
+
+    var LowerValueConverter = exports.LowerValueConverter = function () {
+        function LowerValueConverter() {
+            _classCallCheck(this, LowerValueConverter);
+        }
+
+        LowerValueConverter.prototype.toView = function toView(value) {
+            return value && value.toLowerCase();
+        };
+
+        return LowerValueConverter;
+    }();
+
+    var DateValueConverter = exports.DateValueConverter = function () {
+        function DateValueConverter() {
+            _classCallCheck(this, DateValueConverter);
+        }
+
+        DateValueConverter.prototype.toView = function toView(value) {
+            var format = arguments.length <= 1 || arguments[1] === undefined ? 'yyyy-MM-dd hh:mm:ss' : arguments[1];
+
+            return _.isInteger(_.toNumber(value)) ? $.format.date(new Date(value), format) : value ? value : '';
+        };
+
+        return DateValueConverter;
+    }();
+
+    var NumberValueConverter = exports.NumberValueConverter = function () {
+        function NumberValueConverter() {
+            _classCallCheck(this, NumberValueConverter);
+        }
+
+        NumberValueConverter.prototype.toView = function toView(value) {
+            var format = arguments.length <= 1 || arguments[1] === undefined ? '#,##0.00' : arguments[1];
+
+            return _.isNumber(_.toNumber(value)) ? $.format.number(value, format) : value ? value : '';
+        };
+
+        return NumberValueConverter;
+    }();
+
+    var TimeagoValueConverter = exports.TimeagoValueConverter = function () {
+        function TimeagoValueConverter() {
+            _classCallCheck(this, TimeagoValueConverter);
+        }
+
+        TimeagoValueConverter.prototype.toView = function toView(value) {
+            return value ? tg.format(value, 'zh_CN') : '';
+        };
+
+        return TimeagoValueConverter;
+    }();
+
+    var ParseMdValueConverter = exports.ParseMdValueConverter = function () {
+        function ParseMdValueConverter() {
+            _classCallCheck(this, ParseMdValueConverter);
+        }
+
+        ParseMdValueConverter.prototype.toView = function toView(value) {
+            return value ? marked(utils.preParse(value)) : '';
+        };
+
+        return ParseMdValueConverter;
+    }();
+
+    var SortValueConverter = exports.SortValueConverter = function () {
+        function SortValueConverter() {
+            _classCallCheck(this, SortValueConverter);
+        }
+
+        SortValueConverter.prototype.toView = function toView(value, prop) {
+            return _.isArray(value) ? _.sortBy(value, prop) : value;
+        };
+
+        return SortValueConverter;
+    }();
+
+    var SortUsersValueConverter = exports.SortUsersValueConverter = function () {
+        function SortUsersValueConverter() {
+            _classCallCheck(this, SortUsersValueConverter);
+        }
+
+        SortUsersValueConverter.prototype.toView = function toView(value, username) {
+            if (_.isArray(value) && username) {
+                var user = _.find(value, { username: username });
+                if (user) {
+                    return [user].concat(_.reject(value, { username: username }));
+                }
+            }
+            return value;
+        };
+
+        return SortUsersValueConverter;
+    }();
+
+    var SortUsernamesValueConverter = exports.SortUsernamesValueConverter = function () {
+        function SortUsernamesValueConverter() {
+            _classCallCheck(this, SortUsernamesValueConverter);
+        }
+
+        SortUsernamesValueConverter.prototype.toView = function toView(value, username) {
+            if (_.isArray(value) && username) {
+                if (_.includes(value, username)) {
+                    return [username].concat(_.without(value, username));
+                }
+            }
+            return value;
+        };
+
+        return SortUsernamesValueConverter;
+    }();
+
+    var SortChannelsValueConverter = exports.SortChannelsValueConverter = function () {
+        function SortChannelsValueConverter() {
+            _classCallCheck(this, SortChannelsValueConverter);
+        }
+
+        SortChannelsValueConverter.prototype.toView = function toView(value) {
+            if (_.isArray(value)) {
+                var channelAll = _.find(value, { name: 'all' });
+                if (channelAll) {
+                    return [channelAll].concat(_.reject(value, { name: 'all' }));
+                }
+            }
+            return value;
+        };
+
+        return SortChannelsValueConverter;
+    }();
+
+    var UserNameValueConverter = exports.UserNameValueConverter = function () {
+        function UserNameValueConverter() {
+            _classCallCheck(this, UserNameValueConverter);
+        }
+
+        UserNameValueConverter.prototype.toView = function toView(value) {
+            var user = _.find(window.tmsUsers, { username: value });
+            if (user) {
+                return user.name;
+            }
+            return value;
+        };
+
+        return UserNameValueConverter;
+    }();
+
+    var EmojiValueConverter = exports.EmojiValueConverter = function () {
+        function EmojiValueConverter() {
+            _classCallCheck(this, EmojiValueConverter);
+        }
+
+        EmojiValueConverter.prototype.toView = function toView(value, mkbodyDom) {
+            if (emojify) {
+                _.defer(function () {
+                    emojify.run(mkbodyDom);
+                });
+            }
+            return value;
+        };
+
+        return EmojiValueConverter;
+    }();
+
+    var Nl2brValueConverter = exports.Nl2brValueConverter = function () {
+        function Nl2brValueConverter() {
+            _classCallCheck(this, Nl2brValueConverter);
+        }
+
+        Nl2brValueConverter.prototype.toView = function toView(value) {
+            if (value) {
+                return _.replace(value, /\n/g, '<br/>');
+            }
+            return value;
+        };
+
+        return Nl2brValueConverter;
+    }();
+
+    var DiffHtmlValueConverter = exports.DiffHtmlValueConverter = function () {
+        function DiffHtmlValueConverter() {
+            _classCallCheck(this, DiffHtmlValueConverter);
+        }
+
+        DiffHtmlValueConverter.prototype.toView = function toView(value, allowedTags, allowedAttributes) {
+            if (value) {
+                return utils.diffHtml(value);
+            }
+            return value;
+        };
+
+        return DiffHtmlValueConverter;
+    }();
 });
 define('aurelia-templating-resources/compose',['exports', 'aurelia-dependency-injection', 'aurelia-task-queue', 'aurelia-templating', 'aurelia-pal'], function (exports, _aureliaDependencyInjection, _aureliaTaskQueue, _aureliaTemplating, _aureliaPal) {
   'use strict';
@@ -16450,30 +16506,6 @@ define('aurelia-templating-resources/css-resource',['exports', 'aurelia-templati
 
     return ViewCSS;
   }
-});
-define('aurelia-templating-resources/attr-binding-behavior',['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.AttrBindingBehavior = undefined;
-
-  
-
-  var AttrBindingBehavior = exports.AttrBindingBehavior = function () {
-    function AttrBindingBehavior() {
-      
-    }
-
-    AttrBindingBehavior.prototype.bind = function bind(binding, source) {
-      binding.targetObserver = new _aureliaBinding.DataAttributeObserver(binding.target, binding.targetProperty);
-    };
-
-    AttrBindingBehavior.prototype.unbind = function unbind(binding, source) {};
-
-    return AttrBindingBehavior;
-  }();
 });
 define('aurelia-templating-resources/binding-mode-behaviors',['exports', 'aurelia-binding', 'aurelia-metadata'], function (exports, _aureliaBinding, _aureliaMetadata) {
   'use strict';
@@ -19788,32 +19820,6 @@ define('highlight/lib/languages/ceylon',['require','exports','module'],function 
 };
 });
 
-define('highlight/lib/languages/clean',['require','exports','module'],function (require, exports, module) {module.exports = function(hljs) {
-  return {
-    aliases: ['clean','icl','dcl'],
-    keywords: {
-      keyword:
-        'if let in with where case of class instance otherwise ' +
-        'implementation definition system module from import qualified as ' +
-        'special code inline foreign export ccall stdcall generic derive ' +
-        'infix infixl infixr',
-      literal:
-        'True False'
-    },
-    contains: [
-
-      hljs.C_LINE_COMMENT_MODE,
-      hljs.C_BLOCK_COMMENT_MODE,
-      hljs.APOS_STRING_MODE,
-      hljs.QUOTE_STRING_MODE,
-      hljs.C_NUMBER_MODE,
-
-      {begin: '->|<-[|:]?|::|#!?|>>=|\\{\\||\\|\\}|:==|=:|\\.\\.|<>|`'} // relevance booster
-    ]
-  };
-};
-});
-
 define('highlight/lib/languages/clojure',['require','exports','module'],function (require, exports, module) {module.exports = function(hljs) {
   var keywords = {
     'builtin-name':
@@ -22511,52 +22517,6 @@ define('highlight/lib/languages/fix',['require','exports','module'],function (re
 };
 });
 
-define('highlight/lib/languages/flix',['require','exports','module'],function (require, exports, module) {module.exports = function (hljs) {
-
-    var CHAR = {
-        className: 'string',
-        begin: /'(.|\\[xXuU][a-zA-Z0-9]+)'/
-    };
-
-    var STRING = {
-        className: 'string',
-        variants: [
-            {
-                begin: '"', end: '"'
-            }
-        ]
-    };
-
-    var NAME = {
-        className: 'title',
-        begin: /[^0-9\n\t "'(),.`{}\[\]:;][^\n\t "'(),.`{}\[\]:;]+|[^0-9\n\t "'(),.`{}\[\]:;=]/
-    };
-
-    var METHOD = {
-        className: 'function',
-        beginKeywords: 'def',
-        end: /[:={\[(\n;]/,
-        excludeEnd: true,
-        contains: [NAME]
-    };
-
-    return {
-        keywords: {
-            literal: 'true false',
-            keyword: 'case class def else enum if impl import in lat rel index let match namespace switch type yield with'
-        },
-        contains: [
-            hljs.C_LINE_COMMENT_MODE,
-            hljs.C_BLOCK_COMMENT_MODE,
-            CHAR,
-            STRING,
-            METHOD,
-            hljs.C_NUMBER_MODE
-        ]
-    };
-};
-});
-
 define('highlight/lib/languages/fortran',['require','exports','module'],function (require, exports, module) {module.exports = function(hljs) {
   var PARAMS = {
     className: 'params',
@@ -23178,7 +23138,7 @@ define('highlight/lib/languages/glsl',['require','exports','module'],function (r
     keywords: {
       keyword:
         // Statements
-        'break continue discard do else for if return while switch case default ' +
+        'break continue discard do else for if return while' +
         // Qualifiers
         'attribute binding buffer ccw centroid centroid varying coherent column_major const cw ' +
         'depth_any depth_greater depth_less depth_unchanged early_fragment_tests equal_spacing ' +
@@ -23771,111 +23731,57 @@ define('highlight/lib/languages/haxe',['require','exports','module'],function (r
   var IDENT_RE = '[a-zA-Z_$][a-zA-Z0-9_$]*';
   var IDENT_FUNC_RETURN_TYPE_RE = '([*]|[a-zA-Z_$][a-zA-Z0-9_$]*)';
 
-  var HAXE_BASIC_TYPES = 'Int Float String Bool Dynamic Void Array ';
-
   return {
     aliases: ['hx'],
     keywords: {
-      keyword: 'break callback case cast catch continue default do dynamic else enum extern ' +
-               'for function here if import in inline never new override package private get set ' +
-               'public return static super switch this throw trace try typedef untyped using var while ' +
-               HAXE_BASIC_TYPES,
-      built_in:
-        'trace this',
-      literal:
-        'true false null _'
+      keyword: 'break callback case cast catch class continue default do dynamic else enum extends extern ' +
+    'for function here if implements import in inline interface never new override package private ' +
+    'public return static super switch this throw trace try typedef untyped using var while',
+      literal: 'true false null'
     },
     contains: [
-      { className: 'string', // interpolate-able strings
-        begin: '\'', end: '\'',
-        contains: [
-          hljs.BACKSLASH_ESCAPE,
-          { className: 'subst', // interpolation
-            begin: '\\$\\{', end: '\\}'
-          },
-          { className: 'subst', // interpolation
-            begin: '\\$', end: '\\W}'
-          }
-        ]
-      },
+      hljs.APOS_STRING_MODE,
       hljs.QUOTE_STRING_MODE,
       hljs.C_LINE_COMMENT_MODE,
       hljs.C_BLOCK_COMMENT_MODE,
       hljs.C_NUMBER_MODE,
-      { className: 'meta', // compiler meta
-        begin: '@:', end: '$'
+      {
+        className: 'class',
+        beginKeywords: 'class interface', end: '{', excludeEnd: true,
+        contains: [
+          {
+            beginKeywords: 'extends implements'
+          },
+          hljs.TITLE_MODE
+        ]
       },
-      { className: 'meta', // compiler conditionals
+      {
+        className: 'meta',
         begin: '#', end: '$',
         keywords: {'meta-keyword': 'if else elseif end error'}
       },
-      { className: 'type', // function types
-        begin: ':[ \t]*', end: '[^A-Za-z0-9_ \t\\->]',
-        excludeBegin: true, excludeEnd: true,
-        relevance: 0
-      },
-      { className: 'type', // types
-        begin: ':[ \t]*', end: '\\W',
-        excludeBegin: true, excludeEnd: true
-      },
-      { className: 'type', // instantiation
-        begin: 'new *', end: '\\W',
-        excludeBegin: true, excludeEnd: true
-      },
-      { className: 'class', // enums
-        beginKeywords: 'enum', end: '\\{',
-        contains: [
-          hljs.TITLE_MODE
-        ]
-      },
-      { className: 'class', // abstracts
-        beginKeywords: 'abstract', end: '[\\{$]',
-        contains: [
-          { className: 'type',
-            begin: '\\(', end: '\\)',
-            excludeBegin: true, excludeEnd: true
-          },
-          { className: 'type',
-            begin: 'from +', end: '\\W',
-            excludeBegin: true, excludeEnd: true
-          },
-          { className: 'type',
-            begin: 'to +', end: '\\W',
-            excludeBegin: true, excludeEnd: true
-          },
-          hljs.TITLE_MODE
-        ],
-        keywords: {
-          keyword: 'abstract from to'
-        }
-      },
-      { className: 'class', // classes
-        begin: '\\b(class|interface) +', end: '[\\{$]',  excludeEnd: true,
-        keywords: 'class interface',
-        contains: [
-          { className: 'keyword',
-            begin: '\\b(extends|implements) +',
-            keywords: 'extends implements',
-            contains: [
-              {
-                className: 'type',
-                begin: hljs.IDENT_RE,
-                relevance: 0
-              }
-            ]
-          },
-          hljs.TITLE_MODE
-        ]
-      },
-      { className: 'function',
-        beginKeywords: 'function', end: '\\(', excludeEnd: true,
+      {
+        className: 'function',
+        beginKeywords: 'function', end: '[{;]', excludeEnd: true,
         illegal: '\\S',
         contains: [
-          hljs.TITLE_MODE
+          hljs.TITLE_MODE,
+          {
+            className: 'params',
+            begin: '\\(', end: '\\)',
+            contains: [
+              hljs.APOS_STRING_MODE,
+              hljs.QUOTE_STRING_MODE,
+              hljs.C_LINE_COMMENT_MODE,
+              hljs.C_BLOCK_COMMENT_MODE
+            ]
+          },
+          {
+            begin: ':\\s*' + IDENT_FUNC_RETURN_TYPE_RE
+          }
         ]
       }
-    ],
-    illegal: /<\//
+    ]
   };
 };
 });
@@ -24244,14 +24150,13 @@ define('highlight/lib/languages/irpf90',['require','exports','module'],function 
 });
 
 define('highlight/lib/languages/java',['require','exports','module'],function (require, exports, module) {module.exports = function(hljs) {
-  var JAVA_IDENT_RE = '[\u00C0-\u02B8a-zA-Z_$][\u00C0-\u02B8a-zA-Z_$0-9]*';
-  var GENERIC_IDENT_RE = JAVA_IDENT_RE + '(<' + JAVA_IDENT_RE + '(\\s*,\\s*' + JAVA_IDENT_RE + ')*>)?';
+  var GENERIC_IDENT_RE = hljs.UNDERSCORE_IDENT_RE + '(<' + hljs.UNDERSCORE_IDENT_RE + '(\\s*,\\s*' + hljs.UNDERSCORE_IDENT_RE + ')*>)?';
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
     'for true while long strictfp finally protected import native final void ' +
     'enum else break transient catch instanceof byte super volatile case assert short ' +
     'package default double public try this switch continue throws protected public private ' +
-    'module requires exports do';
+    'module requires exports';
 
   // https://docs.oracle.com/javase/7/docs/technotes/guides/language/underscores-literals.html
   var JAVA_NUMBER_RE = '\\b' +
@@ -27391,86 +27296,65 @@ define('highlight/lib/languages/nix',['require','exports','module'],function (re
 define('highlight/lib/languages/nsis',['require','exports','module'],function (require, exports, module) {module.exports = function(hljs) {
   var CONSTANTS = {
     className: 'variable',
-    begin: /\$(ADMINTOOLS|APPDATA|CDBURN_AREA|CMDLINE|COMMONFILES32|COMMONFILES64|COMMONFILES|COOKIES|DESKTOP|DOCUMENTS|EXEDIR|EXEFILE|EXEPATH|FAVORITES|FONTS|HISTORY|HWNDPARENT|INSTDIR|INTERNET_CACHE|LANGUAGE|LOCALAPPDATA|MUSIC|NETHOOD|OUTDIR|PICTURES|PLUGINSDIR|PRINTHOOD|PROFILE|PROGRAMFILES32|PROGRAMFILES64|PROGRAMFILES|QUICKLAUNCH|RECENT|RESOURCES_LOCALIZED|RESOURCES|SENDTO|SMPROGRAMS|SMSTARTUP|STARTMENU|SYSDIR|TEMP|TEMPLATES|VIDEOS|WINDIR)/
+    begin: '\\$(ADMINTOOLS|APPDATA|CDBURN_AREA|CMDLINE|COMMONFILES32|COMMONFILES64|COMMONFILES|COOKIES|DESKTOP|DOCUMENTS|EXEDIR|EXEFILE|EXEPATH|FAVORITES|FONTS|HISTORY|HWNDPARENT|INSTDIR|INTERNET_CACHE|LANGUAGE|LOCALAPPDATA|MUSIC|NETHOOD|OUTDIR|PICTURES|PLUGINSDIR|PRINTHOOD|PROFILE|PROGRAMFILES32|PROGRAMFILES64|PROGRAMFILES|QUICKLAUNCH|RECENT|RESOURCES_LOCALIZED|RESOURCES|SENDTO|SMPROGRAMS|SMSTARTUP|STARTMENU|SYSDIR|TEMP|TEMPLATES|VIDEOS|WINDIR)'
   };
 
   var DEFINES = {
     // ${defines}
     className: 'variable',
-    begin: /\$+{[\w\.:-]+}/
+    begin: '\\$+{[a-zA-Z0-9_]+}'
   };
 
   var VARIABLES = {
     // $variables
     className: 'variable',
-    begin: /\$+\w+/,
-    illegal: /\(\){}/
+    begin: '\\$+[a-zA-Z0-9_]+',
+    illegal: '\\(\\){}'
   };
 
   var LANGUAGES = {
     // $(language_strings)
     className: 'variable',
-    begin: /\$+\([\w\^\.:-]+\)/
+    begin: '\\$+\\([a-zA-Z0-9_]+\\)'
   };
 
   var PARAMETERS = {
     // command parameters
-    className: 'params',
+    className: 'built_in',
     begin: '(ARCHIVE|FILE_ATTRIBUTE_ARCHIVE|FILE_ATTRIBUTE_NORMAL|FILE_ATTRIBUTE_OFFLINE|FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM|FILE_ATTRIBUTE_TEMPORARY|HKCR|HKCU|HKDD|HKEY_CLASSES_ROOT|HKEY_CURRENT_CONFIG|HKEY_CURRENT_USER|HKEY_DYN_DATA|HKEY_LOCAL_MACHINE|HKEY_PERFORMANCE_DATA|HKEY_USERS|HKLM|HKPD|HKU|IDABORT|IDCANCEL|IDIGNORE|IDNO|IDOK|IDRETRY|IDYES|MB_ABORTRETRYIGNORE|MB_DEFBUTTON1|MB_DEFBUTTON2|MB_DEFBUTTON3|MB_DEFBUTTON4|MB_ICONEXCLAMATION|MB_ICONINFORMATION|MB_ICONQUESTION|MB_ICONSTOP|MB_OK|MB_OKCANCEL|MB_RETRYCANCEL|MB_RIGHT|MB_RTLREADING|MB_SETFOREGROUND|MB_TOPMOST|MB_USERICON|MB_YESNO|NORMAL|OFFLINE|READONLY|SHCTX|SHELL_CONTEXT|SYSTEM|TEMPORARY)'
   };
 
-  var COMPILER = {
+  var COMPILER ={
     // !compiler_flags
     className: 'keyword',
-    begin: /\!(addincludedir|addplugindir|appendfile|cd|define|delfile|echo|else|endif|error|execute|finalize|getdllversionsystem|ifdef|ifmacrodef|ifmacrondef|ifndef|if|include|insertmacro|macroend|macro|makensis|packhdr|searchparse|searchreplace|tempfile|undef|verbose|warning)/
-  };
-
-  var METACHARS = {
-    // $\n, $\r, $\t, $$
-    className: 'subst',
-    begin: /\$(\\[nrt]|\$)/
-  };
-
-  var PLUGINS = {
-    // plug::ins
-    className: 'class',
-    begin: /\w+\:\:\w+/
-  };
-
-    var STRING = {
-      className: 'string',
-      variants: [
-        {
-          begin: '"', end: '"'
-        },
-        {
-          begin: '\'', end: '\''
-        },
-        {
-          begin: '`', end: '`'
-        }
-      ],
-      illegal: /\n/,
-      contains: [
-        METACHARS,
-        CONSTANTS,
-        DEFINES,
-        VARIABLES,
-        LANGUAGES
-      ]
+    begin: '\\!(addincludedir|addplugindir|appendfile|cd|define|delfile|echo|else|endif|error|execute|finalize|getdllversionsystem|ifdef|ifmacrodef|ifmacrondef|ifndef|if|include|insertmacro|macroend|macro|makensis|packhdr|searchparse|searchreplace|tempfile|undef|verbose|warning)'
   };
 
   return {
     case_insensitive: false,
     keywords: {
       keyword:
-      'Abort AddBrandingImage AddSize AllowRootDirInstall AllowSkipFiles AutoCloseWindow BGFont BGGradient BrandingText BringToFront Call CallInstDLL Caption ChangeUI CheckBitmap ClearErrors CompletedText ComponentText CopyFiles CRCCheck CreateDirectory CreateFont CreateShortCut Delete DeleteINISec DeleteINIStr DeleteRegKey DeleteRegValue DetailPrint DetailsButtonText DirText DirVar DirVerify EnableWindow EnumRegKey EnumRegValue Exch Exec ExecShell ExecWait ExpandEnvStrings File FileBufSize FileClose FileErrorText FileOpen FileRead FileReadByte FileReadUTF16LE FileReadWord FileSeek FileWrite FileWriteByte FileWriteUTF16LE FileWriteWord FindClose FindFirst FindNext FindWindow FlushINI FunctionEnd GetCurInstType GetCurrentAddress GetDlgItem GetDLLVersion GetDLLVersionLocal GetErrorLevel GetFileTime GetFileTimeLocal GetFullPathName GetFunctionAddress GetInstDirError GetLabelAddress GetTempFileName Goto HideWindow Icon IfAbort IfErrors IfFileExists IfRebootFlag IfSilent InitPluginsDir InstallButtonText InstallColors InstallDir InstallDirRegKey InstProgressFlags InstType InstTypeGetText InstTypeSetText IntCmp IntCmpU IntFmt IntOp IsWindow LangString LicenseBkColor LicenseData LicenseForceSelection LicenseLangString LicenseText LoadLanguageFile LockWindow LogSet LogText ManifestDPIAware ManifestSupportedOS MessageBox MiscButtonText Name Nop OutFile Page PageCallbacks PageExEnd Pop Push Quit ReadEnvStr ReadINIStr ReadRegDWORD ReadRegStr Reboot RegDLL Rename RequestExecutionLevel ReserveFile Return RMDir SearchPath SectionEnd SectionGetFlags SectionGetInstTypes SectionGetSize SectionGetText SectionGroupEnd SectionIn SectionSetFlags SectionSetInstTypes SectionSetSize SectionSetText SendMessage SetAutoClose SetBrandingImage SetCompress SetCompressor SetCompressorDictSize SetCtlColors SetCurInstType SetDatablockOptimize SetDateSave SetDetailsPrint SetDetailsView SetErrorLevel SetErrors SetFileAttributes SetFont SetOutPath SetOverwrite SetRebootFlag SetRegView SetShellVarContext SetSilent ShowInstDetails ShowUninstDetails ShowWindow SilentInstall SilentUnInstall Sleep SpaceTexts StrCmp StrCmpS StrCpy StrLen SubCaption Unicode UninstallButtonText UninstallCaption UninstallIcon UninstallSubCaption UninstallText UninstPage UnRegDLL Var VIAddVersionKey VIFileVersion VIProductVersion WindowIcon WriteINIStr WriteRegBin WriteRegDWORD WriteRegExpandStr WriteRegStr WriteUninstaller XPStyle',
+      'Abort AddBrandingImage AddSize AllowRootDirInstall AllowSkipFiles AutoCloseWindow BGFont BGGradient BrandingText BringToFront Call CallInstDLL Caption ChangeUI CheckBitmap ClearErrors CompletedText ComponentText CopyFiles CRCCheck CreateDirectory CreateFont CreateShortCut Delete DeleteINISec DeleteINIStr DeleteRegKey DeleteRegValue DetailPrint DetailsButtonText DirText DirVar DirVerify EnableWindow EnumRegKey EnumRegValue Exch Exec ExecShell ExecWait ExpandEnvStrings File FileBufSize FileClose FileErrorText FileOpen FileRead FileReadByte FileReadUTF16LE FileReadWord FileSeek FileWrite FileWriteByte FileWriteUTF16LE FileWriteWord FindClose FindFirst FindNext FindWindow FlushINI FunctionEnd GetCurInstType GetCurrentAddress GetDlgItem GetDLLVersion GetDLLVersionLocal GetErrorLevel GetFileTime GetFileTimeLocal GetFullPathName GetFunctionAddress GetInstDirError GetLabelAddress GetTempFileName Goto HideWindow Icon IfAbort IfErrors IfFileExists IfRebootFlag IfSilent InitPluginsDir InstallButtonText InstallColors InstallDir InstallDirRegKey InstProgressFlags InstType InstTypeGetText InstTypeSetText IntCmp IntCmpU IntFmt IntOp IsWindow LangString LicenseBkColor LicenseData LicenseForceSelection LicenseLangString LicenseText LoadLanguageFile LockWindow LogSet LogText ManifestDPIAware ManifestSupportedOS MessageBox MiscButtonText Name Nop OutFile Page PageCallbacks PageExEnd Pop Push Quit ReadEnvStr ReadINIStr ReadRegDWORD ReadRegStr Reboot RegDLL Rename RequestExecutionLevel ReserveFile Return RMDir SearchPath SectionEnd SectionGetFlags SectionGetInstTypes SectionGetSize SectionGetText SectionGroupEnd SectionIn SectionSetFlags SectionSetInstTypes SectionSetSize SectionSetText SendMessage SetAutoClose SetBrandingImage SetCompress SetCompressor SetCompressorDictSize SetCtlColors SetCurInstType SetDatablockOptimize SetDateSave SetDetailsPrint SetDetailsView SetErrorLevel SetErrors SetFileAttributes SetFont SetOutPath SetOverwrite SetPluginUnload SetRebootFlag SetRegView SetShellVarContext SetSilent ShowInstDetails ShowUninstDetails ShowWindow SilentInstall SilentUnInstall Sleep SpaceTexts StrCmp StrCmpS StrCpy StrLen SubCaption SubSectionEnd Unicode UninstallButtonText UninstallCaption UninstallIcon UninstallSubCaption UninstallText UninstPage UnRegDLL Var VIAddVersionKey VIFileVersion VIProductVersion WindowIcon WriteINIStr WriteRegBin WriteRegDWORD WriteRegExpandStr WriteRegStr WriteUninstaller XPStyle',
       literal:
-      'admin all auto both bottom bzip2 colored components current custom directory false force hide highest ifdiff ifnewer instfiles lastused leave left license listonly lzma nevershow none normal notset off on open print right show silent silentlog smooth textonly top true try un.components un.custom un.directory un.instfiles un.license uninstConfirm user Win10 Win7 Win8 WinVista zlib'
+      'admin all auto both colored current false force hide highest lastused leave listonly none normal notset off on open print show silent silentlog smooth textonly true user '
     },
     contains: [
       hljs.HASH_COMMENT_MODE,
       hljs.C_BLOCK_COMMENT_MODE,
+      {
+        className: 'string',
+        begin: '"', end: '"',
+        illegal: '\\n',
+        contains: [
+          { // $\n, $\r, $\t, $$
+            begin: '\\$(\\\\(n|r|t)|\\$)'
+          },
+          CONSTANTS,
+          DEFINES,
+          VARIABLES,
+          LANGUAGES
+        ]
+      },
       hljs.COMMENT(
         ';',
         '$',
@@ -27480,16 +27364,17 @@ define('highlight/lib/languages/nsis',['require','exports','module'],function (r
       ),
       {
         className: 'function',
-        beginKeywords: 'Function PageEx Section SectionGroup', end: '$'
+        beginKeywords: 'Function PageEx Section SectionGroup SubSection', end: '$'
       },
-      STRING,
       COMPILER,
       DEFINES,
       VARIABLES,
       LANGUAGES,
       PARAMETERS,
-      PLUGINS,
-      hljs.NUMBER_MODE
+      hljs.NUMBER_MODE,
+      { // plug::ins
+        begin: hljs.IDENT_RE + '::' + hljs.IDENT_RE
+      }
     ]
   };
 };
@@ -28176,7 +28061,7 @@ define('highlight/lib/languages/powershell',['require','exports','module'],funct
     case_insensitive: true,
     keywords: {
       keyword: 'if else foreach return function do while until elseif begin for trap data dynamicparam end break throw param continue finally in switch exit filter try process catch',
-      built_in: 'Add-Computer Add-Content Add-History Add-JobTrigger Add-Member Add-PSSnapin Add-Type Checkpoint-Computer Clear-Content Clear-EventLog Clear-History Clear-Host Clear-Item Clear-ItemProperty Clear-Variable Compare-Object Complete-Transaction Connect-PSSession Connect-WSMan Convert-Path ConvertFrom-Csv ConvertFrom-Json ConvertFrom-SecureString ConvertFrom-StringData ConvertTo-Csv ConvertTo-Html ConvertTo-Json ConvertTo-SecureString ConvertTo-Xml Copy-Item Copy-ItemProperty Debug-Process Disable-ComputerRestore Disable-JobTrigger Disable-PSBreakpoint Disable-PSRemoting Disable-PSSessionConfiguration Disable-WSManCredSSP Disconnect-PSSession Disconnect-WSMan Disable-ScheduledJob Enable-ComputerRestore Enable-JobTrigger Enable-PSBreakpoint Enable-PSRemoting Enable-PSSessionConfiguration Enable-ScheduledJob Enable-WSManCredSSP Enter-PSSession Exit-PSSession Export-Alias Export-Clixml Export-Console Export-Counter Export-Csv Export-FormatData Export-ModuleMember Export-PSSession ForEach-Object Format-Custom Format-List Format-Table Format-Wide Get-Acl Get-Alias Get-AuthenticodeSignature Get-ChildItem Get-Command Get-ComputerRestorePoint Get-Content Get-ControlPanelItem Get-Counter Get-Credential Get-Culture Get-Date Get-Event Get-EventLog Get-EventSubscriber Get-ExecutionPolicy Get-FormatData Get-Host Get-HotFix Get-Help Get-History Get-IseSnippet Get-Item Get-ItemProperty Get-Job Get-JobTrigger Get-Location Get-Member Get-Module Get-PfxCertificate Get-Process Get-PSBreakpoint Get-PSCallStack Get-PSDrive Get-PSProvider Get-PSSession Get-PSSessionConfiguration Get-PSSnapin Get-Random Get-ScheduledJob Get-ScheduledJobOption Get-Service Get-TraceSource Get-Transaction Get-TypeData Get-UICulture Get-Unique Get-Variable Get-Verb Get-WinEvent Get-WmiObject Get-WSManCredSSP Get-WSManInstance Group-Object Import-Alias Import-Clixml Import-Counter Import-Csv Import-IseSnippet Import-LocalizedData Import-PSSession Import-Module Invoke-AsWorkflow Invoke-Command Invoke-Expression Invoke-History Invoke-Item Invoke-RestMethod Invoke-WebRequest Invoke-WmiMethod Invoke-WSManAction Join-Path Limit-EventLog Measure-Command Measure-Object Move-Item Move-ItemProperty New-Alias New-Event New-EventLog New-IseSnippet New-Item New-ItemProperty New-JobTrigger New-Object New-Module New-ModuleManifest New-PSDrive New-PSSession New-PSSessionConfigurationFile New-PSSessionOption New-PSTransportOption New-PSWorkflowExecutionOption New-PSWorkflowSession New-ScheduledJobOption New-Service New-TimeSpan New-Variable New-WebServiceProxy New-WinEvent New-WSManInstance New-WSManSessionOption Out-Default Out-File Out-GridView Out-Host Out-Null Out-Printer Out-String Pop-Location Push-Location Read-Host Receive-Job Register-EngineEvent Register-ObjectEvent Register-PSSessionConfiguration Register-ScheduledJob Register-WmiEvent Remove-Computer Remove-Event Remove-EventLog Remove-Item Remove-ItemProperty Remove-Job Remove-JobTrigger Remove-Module Remove-PSBreakpoint Remove-PSDrive Remove-PSSession Remove-PSSnapin Remove-TypeData Remove-Variable Remove-WmiObject Remove-WSManInstance Rename-Computer Rename-Item Rename-ItemProperty Reset-ComputerMachinePassword Resolve-Path Restart-Computer Restart-Service Restore-Computer Resume-Job Resume-Service Save-Help Select-Object Select-String Select-Xml Send-MailMessage Set-Acl Set-Alias Set-AuthenticodeSignature Set-Content Set-Date Set-ExecutionPolicy Set-Item Set-ItemProperty Set-JobTrigger Set-Location Set-PSBreakpoint Set-PSDebug Set-PSSessionConfiguration Set-ScheduledJob Set-ScheduledJobOption Set-Service Set-StrictMode Set-TraceSource Set-Variable Set-WmiInstance Set-WSManInstance Set-WSManQuickConfig Show-Command Show-ControlPanelItem Show-EventLog Sort-Object Split-Path Start-Job Start-Process Start-Service Start-Sleep Start-Transaction Start-Transcript Stop-Computer Stop-Job Stop-Process Stop-Service Stop-Transcript Suspend-Job Suspend-Service Tee-Object Test-ComputerSecureChannel Test-Connection Test-ModuleManifest Test-Path Test-PSSessionConfigurationFile Trace-Command Unblock-File Undo-Transaction Unregister-Event Unregister-PSSessionConfiguration Unregister-ScheduledJob Update-FormatData Update-Help Update-List Update-TypeData Use-Transaction Wait-Event Wait-Job Wait-Process Where-Object Write-Debug Write-Error Write-EventLog Write-Host Write-Output Write-Progress Write-Verbose Write-Warning Add-MDTPersistentDrive Disable-MDTMonitorService Enable-MDTMonitorService Get-MDTDeploymentShareStatistics Get-MDTMonitorData Get-MDTOperatingSystemCatalog Get-MDTPersistentDrive Import-MDTApplication Import-MDTDriver Import-MDTOperatingSystem Import-MDTPackage Import-MDTTaskSequence New-MDTDatabase Remove-MDTMonitorData Remove-MDTPersistentDrive Restore-MDTPersistentDrive Set-MDTMonitorData Test-MDTDeploymentShare Test-MDTMonitorData Update-MDTDatabaseSchema Update-MDTDeploymentShare Update-MDTLinkedDS Update-MDTMedia Update-MDTMedia Add-VamtProductKey Export-VamtData Find-VamtManagedMachine Get-VamtConfirmationId Get-VamtProduct Get-VamtProductKey Import-VamtData Initialize-VamtData Install-VamtConfirmationId Install-VamtProductActivation Install-VamtProductKey Update-VamtProduct',
+      built_in: 'Add-Computer Add-Content Add-History Add-JobTrigger Add-Member Add-PSSnapin Add-Type Checkpoint-Computer Clear-Content Clear-EventLog Clear-History Clear-Host Clear-Item Clear-ItemProperty Clear-Variable Compare-Object Complete-Transaction Connect-PSSession Connect-WSMan Convert-Path ConvertFrom-Csv ConvertFrom-Json ConvertFrom-SecureString ConvertFrom-StringData ConvertTo-Csv ConvertTo-Html ConvertTo-Json ConvertTo-SecureString ConvertTo-Xml Copy-Item Copy-ItemProperty Debug-Process Disable-ComputerRestore Disable-JobTrigger Disable-PSBreakpoint Disable-PSRemoting Disable-PSSessionConfiguration Disable-WSManCredSSP Disconnect-PSSession Disconnect-WSMan Disable-ScheduledJob Enable-ComputerRestore Enable-JobTrigger Enable-PSBreakpoint Enable-PSRemoting Enable-PSSessionConfiguration Enable-ScheduledJob Enable-WSManCredSSP Enter-PSSession Exit-PSSession Export-Alias Export-Clixml Export-Console Export-Counter Export-Csv Export-FormatData Export-ModuleMember Export-PSSession ForEach-Object Format-Custom Format-List Format-Table Format-Wide Get-Acl Get-Alias Get-AuthenticodeSignature Get-ChildItem Get-Command Get-ComputerRestorePoint Get-Content Get-ControlPanelItem Get-Counter Get-Credential Get-Culture Get-Date Get-Event Get-EventLog Get-EventSubscriber Get-ExecutionPolicy Get-FormatData Get-Host Get-HotFix Get-Help Get-History Get-IseSnippet Get-Item Get-ItemProperty Get-Job Get-JobTrigger Get-Location Get-Member Get-Module Get-PfxCertificate Get-Process Get-PSBreakpoint Get-PSCallStack Get-PSDrive Get-PSProvider Get-PSSession Get-PSSessionConfiguration Get-PSSnapin Get-Random Get-ScheduledJob Get-ScheduledJobOption Get-Service Get-TraceSource Get-Transaction Get-TypeData Get-UICulture Get-Unique Get-Variable Get-Verb Get-WinEvent Get-WmiObject Get-WSManCredSSP Get-WSManInstance Group-Object Import-Alias Import-Clixml Import-Counter Import-Csv Import-IseSnippet Import-LocalizedData Import-PSSession Import-Module Invoke-AsWorkflow Invoke-Command Invoke-Expression Invoke-History Invoke-Item Invoke-RestMethod Invoke-WebRequest Invoke-WmiMethod Invoke-WSManAction Join-Path Limit-EventLog Measure-Command Measure-Object Move-Item Move-ItemProperty New-Alias New-Event New-EventLog New-IseSnippet New-Item New-ItemProperty New-JobTrigger New-Object New-Module New-ModuleManifest New-PSDrive New-PSSession New-PSSessionConfigurationFile New-PSSessionOption New-PSTransportOption New-PSWorkflowExecutionOption New-PSWorkflowSession New-ScheduledJobOption New-Service New-TimeSpan New-Variable New-WebServiceProxy New-WinEvent New-WSManInstance New-WSManSessionOption Out-Default Out-File Out-GridView Out-Host Out-Null Out-Printer Out-String Pop-Location Push-Location Read-Host Receive-Job Register-EngineEvent Register-ObjectEvent Register-PSSessionConfiguration Register-ScheduledJob Register-WmiEvent Remove-Computer Remove-Event Remove-EventLog Remove-Item Remove-ItemProperty Remove-Job Remove-JobTrigger Remove-Module Remove-PSBreakpoint Remove-PSDrive Remove-PSSession Remove-PSSnapin Remove-TypeData Remove-Variable Remove-WmiObject Remove-WSManInstance Rename-Computer Rename-Item Rename-ItemProperty Reset-ComputerMachinePassword Resolve-Path Restart-Computer Restart-Service Restore-Computer Resume-Job Resume-Service Save-Help Select-Object Select-String Select-Xml Send-MailMessage Set-Acl Set-Alias Set-AuthenticodeSignature Set-Content Set-Date Set-ExecutionPolicy Set-Item Set-ItemProperty Set-JobTrigger Set-Location Set-PSBreakpoint Set-PSDebug Set-PSSessionConfiguration Set-ScheduledJob Set-ScheduledJobOption Set-Service Set-StrictMode Set-TraceSource Set-Variable Set-WmiInstance Set-WSManInstance Set-WSManQuickConfig Show-Command Show-ControlPanelItem Show-EventLog Sort-Object Split-Path Start-Job Start-Process Start-Service Start-Sleep Start-Transaction Start-Transcript Stop-Computer Stop-Job Stop-Process Stop-Service Stop-Transcript Suspend-Job Suspend-Service Tee-Object Test-ComputerSecureChannel Test-Connection Test-ModuleManifest Test-Path Test-PSSessionConfigurationFile Trace-Command Unblock-File Undo-Transaction Unregister-Event Unregister-PSSessionConfiguration Unregister-ScheduledJob Update-FormatData Update-Help Update-List Update-TypeData Use-Transaction Wait-Event Wait-Job Wait-Process Where-Object Write-Debug Write-Error Write-EventLog Write-Host Write-Output Write-Progress Write-Verbose Write-Warning',
       nomarkup: '-ne -eq -lt -gt -ge -le -not -like -notlike -match -notmatch -contains -notcontains -in -notin -replace'
     },
     contains: [
@@ -28632,7 +28517,7 @@ define('highlight/lib/languages/python',['require','exports','module'],function 
       built_in:
         'Ellipsis NotImplemented'
     },
-    illegal: /(<\/|->|\?)|=>/,
+    illegal: /(<\/|->|\?)/,
     contains: [
       PROMPT,
       NUMBER,
@@ -28640,7 +28525,7 @@ define('highlight/lib/languages/python',['require','exports','module'],function 
       hljs.HASH_COMMENT_MODE,
       {
         variants: [
-          {className: 'function', beginKeywords: 'def'},
+          {className: 'function', beginKeywords: 'def', relevance: 10},
           {className: 'class', beginKeywords: 'class'}
         ],
         end: /:/,
@@ -31132,7 +31017,7 @@ define('highlight/lib/languages/swift',['require','exports','module'],function (
 
   var TYPE = {
     className: 'type',
-    begin: '\\b[A-Z][\\w\u00C0-\u02B8\']*',
+    begin: '\\b[A-Z][\\w\']*',
     relevance: 0
   };
   var BLOCK_COMMENT = hljs.COMMENT(
@@ -31199,7 +31084,7 @@ define('highlight/lib/languages/swift',['require','exports','module'],function (
         end: '\\{',
         excludeEnd: true,
         contains: [
-          hljs.inherit(hljs.TITLE_MODE, {begin: /[A-Za-z$_][\u00C0-\u02B80-9A-Za-z$_]*/})
+          hljs.inherit(hljs.TITLE_MODE, {begin: /[A-Za-z$_][0-9A-Za-z$_]*/})
         ]
       },
       {
@@ -32631,6 +32516,7468 @@ define('highlight/lib/languages/zephir',['require','exports','module'],function 
 };
 });
 
+define('common/common-sanitize-html',[], function () {
+    "use strict";
+
+    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+        return typeof obj;
+    } : function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+    };
+
+    (function (f) {
+        var g;
+        if (typeof window !== "undefined") {
+            g = window;
+        } else if (typeof global !== "undefined") {
+            g = global;
+        } else if (typeof self !== "undefined") {
+            g = self;
+        } else {
+            g = this;
+        }
+        g.sanitizeHtml = f();
+    })(function () {
+        var define, module, exports;
+        return function e(t, n, r) {
+            function s(o, u) {
+                if (!n[o]) {
+                    if (!t[o]) {
+                        var a = typeof require == "function" && require;
+                        if (!u && a) return a(o, !0);
+                        if (i) return i(o, !0);
+                        var f = new Error("Cannot find module '" + o + "'");
+                        throw f.code = "MODULE_NOT_FOUND", f;
+                    }
+                    var l = n[o] = { exports: {} };
+                    t[o][0].call(l.exports, function (e) {
+                        var n = t[o][1][e];
+                        return s(n ? n : e);
+                    }, l, l.exports, e, t, n, r);
+                }
+                return n[o].exports;
+            }
+            var i = typeof require == "function" && require;
+            for (var o = 0; o < r.length; o++) {
+                s(r[o]);
+            }return s;
+        }({
+            1: [function (require, module, exports) {
+                var htmlparser = require('htmlparser2');
+                var extend = require('xtend');
+                var quoteRegexp = require('regexp-quote');
+
+                function each(obj, cb) {
+                    if (obj) Object.keys(obj).forEach(function (key) {
+                        cb(obj[key], key);
+                    });
+                }
+
+                function has(obj, key) {
+                    return {}.hasOwnProperty.call(obj, key);
+                }
+
+                module.exports = sanitizeHtml;
+
+                function sanitizeHtml(html, options, _recursing) {
+                    var result = '';
+
+                    function Frame(tag, attribs) {
+                        var that = this;
+                        this.tag = tag;
+                        this.attribs = attribs || {};
+                        this.tagPosition = result.length;
+                        this.text = '';
+
+                        this.updateParentNodeText = function () {
+                            if (stack.length) {
+                                var parentFrame = stack[stack.length - 1];
+                                parentFrame.text += that.text;
+                            }
+                        };
+                    }
+
+                    if (!options) {
+                        options = sanitizeHtml.defaults;
+                        options.parser = htmlParserDefaults;
+                    } else {
+                        options = extend(sanitizeHtml.defaults, options);
+                        if (options.parser) {
+                            options.parser = extend(htmlParserDefaults, options.parser);
+                        } else {
+                            options.parser = htmlParserDefaults;
+                        }
+                    }
+
+                    var nonTextTagsArray = options.nonTextTags || ['script', 'style', 'textarea'];
+                    var allowedAttributesMap;
+                    var allowedAttributesGlobMap;
+                    if (options.allowedAttributes) {
+                        allowedAttributesMap = {};
+                        allowedAttributesGlobMap = {};
+                        each(options.allowedAttributes, function (attributes, tag) {
+                            allowedAttributesMap[tag] = [];
+                            var globRegex = [];
+                            attributes.forEach(function (name) {
+                                if (name.indexOf('*') >= 0) {
+                                    globRegex.push(quoteRegexp(name).replace(/\\\*/g, '.*'));
+                                } else {
+                                    allowedAttributesMap[tag].push(name);
+                                }
+                            });
+                            allowedAttributesGlobMap[tag] = new RegExp('^(' + globRegex.join('|') + ')$');
+                        });
+                    }
+                    var allowedClassesMap = {};
+                    each(options.allowedClasses, function (classes, tag) {
+                        if (allowedAttributesMap) {
+                            if (!has(allowedAttributesMap, tag)) {
+                                allowedAttributesMap[tag] = [];
+                            }
+                            allowedAttributesMap[tag].push('class');
+                        }
+
+                        allowedClassesMap[tag] = classes;
+                    });
+
+                    var transformTagsMap = {};
+                    var transformTagsAll;
+                    each(options.transformTags, function (transform, tag) {
+                        var transFun;
+                        if (typeof transform === 'function') {
+                            transFun = transform;
+                        } else if (typeof transform === "string") {
+                            transFun = sanitizeHtml.simpleTransform(transform);
+                        }
+                        if (tag === '*') {
+                            transformTagsAll = transFun;
+                        } else {
+                            transformTagsMap[tag] = transFun;
+                        }
+                    });
+
+                    var depth = 0;
+                    var stack = [];
+                    var skipMap = {};
+                    var transformMap = {};
+                    var skipText = false;
+                    var skipTextDepth = 0;
+
+                    var parser = new htmlparser.Parser({
+                        onopentag: function onopentag(name, attribs) {
+                            if (skipText) {
+                                skipTextDepth++;
+                                return;
+                            }
+                            var frame = new Frame(name, attribs);
+                            stack.push(frame);
+
+                            var skip = false;
+                            var hasText = frame.text ? true : false;
+                            var transformedTag;
+                            if (has(transformTagsMap, name)) {
+                                transformedTag = transformTagsMap[name](name, attribs);
+
+                                frame.attribs = attribs = transformedTag.attribs;
+
+                                if (transformedTag.text !== undefined) {
+                                    frame.innerText = transformedTag.text;
+                                }
+
+                                if (name !== transformedTag.tagName) {
+                                    frame.name = name = transformedTag.tagName;
+                                    transformMap[depth] = transformedTag.tagName;
+                                }
+                            }
+                            if (transformTagsAll) {
+                                transformedTag = transformTagsAll(name, attribs);
+
+                                frame.attribs = attribs = transformedTag.attribs;
+                                if (name !== transformedTag.tagName) {
+                                    frame.name = name = transformedTag.tagName;
+                                    transformMap[depth] = transformedTag.tagName;
+                                }
+                            }
+
+                            if (options.allowedTags && options.allowedTags.indexOf(name) === -1) {
+                                skip = true;
+                                if (nonTextTagsArray.indexOf(name) !== -1) {
+                                    skipText = true;
+                                    skipTextDepth = 1;
+                                }
+                                skipMap[depth] = true;
+                            }
+                            depth++;
+                            if (skip) {
+                                return;
+                            }
+                            result += '<' + name;
+                            if (!allowedAttributesMap || has(allowedAttributesMap, name) || allowedAttributesMap['*']) {
+                                each(attribs, function (value, a) {
+                                    if (!allowedAttributesMap || has(allowedAttributesMap, name) && allowedAttributesMap[name].indexOf(a) !== -1 || allowedAttributesMap['*'] && allowedAttributesMap['*'].indexOf(a) !== -1 || has(allowedAttributesGlobMap, name) && allowedAttributesGlobMap[name].test(a) || allowedAttributesGlobMap['*'] && allowedAttributesGlobMap['*'].test(a)) {
+                                        if (a === 'href' || a === 'src') {
+                                            if (naughtyHref(name, value)) {
+                                                delete frame.attribs[a];
+                                                return;
+                                            }
+                                        }
+                                        if (a === 'class') {
+                                            value = filterClasses(value, allowedClassesMap[name]);
+                                            if (!value.length) {
+                                                delete frame.attribs[a];
+                                                return;
+                                            }
+                                        }
+                                        result += ' ' + a;
+                                        if (value.length) {
+                                            result += '="' + escapeHtml(value) + '"';
+                                        }
+                                    } else {
+                                        delete frame.attribs[a];
+                                    }
+                                });
+                            }
+                            if (options.selfClosing.indexOf(name) !== -1) {
+                                result += " />";
+                            } else {
+                                result += ">";
+                                if (frame.innerText && !hasText && !options.textFilter) {
+                                    result += frame.innerText;
+                                }
+                            }
+                        },
+                        ontext: function ontext(text) {
+                            if (skipText) {
+                                return;
+                            }
+                            var lastFrame = stack[stack.length - 1];
+                            var tag;
+
+                            if (lastFrame) {
+                                tag = lastFrame.tag;
+
+                                text = lastFrame.innerText !== undefined ? lastFrame.innerText : text;
+                            }
+
+                            if (tag === 'script' || tag === 'style') {
+                                result += text;
+                            } else {
+                                var escaped = escapeHtml(text);
+                                if (options.textFilter) {
+                                    result += options.textFilter(escaped);
+                                } else {
+                                    result += escaped;
+                                }
+                            }
+                            if (stack.length) {
+                                var frame = stack[stack.length - 1];
+                                frame.text += text;
+                            }
+                        },
+                        onclosetag: function onclosetag(name) {
+
+                            if (skipText) {
+                                skipTextDepth--;
+                                if (!skipTextDepth) {
+                                    skipText = false;
+                                } else {
+                                    return;
+                                }
+                            }
+
+                            var frame = stack.pop();
+                            if (!frame) {
+                                return;
+                            }
+                            skipText = false;
+                            depth--;
+                            if (skipMap[depth]) {
+                                delete skipMap[depth];
+                                frame.updateParentNodeText();
+                                return;
+                            }
+
+                            if (transformMap[depth]) {
+                                name = transformMap[depth];
+                                delete transformMap[depth];
+                            }
+
+                            if (options.exclusiveFilter && options.exclusiveFilter(frame)) {
+                                result = result.substr(0, frame.tagPosition);
+                                return;
+                            }
+
+                            frame.updateParentNodeText();
+
+                            if (options.selfClosing.indexOf(name) !== -1) {
+                                return;
+                            }
+
+                            result += "</" + name + ">";
+                        }
+                    }, options.parser);
+                    parser.write(html);
+                    parser.end();
+
+                    return result;
+
+                    function escapeHtml(s) {
+                        if (typeof s !== 'string') {
+                            s = s + '';
+                        }
+                        return s.replace(/\&/g, '&amp;').replace(/</g, '&lt;').replace(/\>/g, '&gt;').replace(/\"/g, '&quot;');
+                    }
+
+                    function naughtyHref(name, href) {
+                        href = href.replace(/[\x00-\x20]+/g, '');
+
+                        href = href.replace(/<\!\-\-.*?\-\-\>/g, '');
+
+                        var matches = href.match(/^([a-zA-Z]+)\:/);
+                        if (!matches) {
+                            if (href.match(/^\/\//)) {
+                                return !options.allowProtocolRelative;
+                            }
+
+                            return false;
+                        }
+                        var scheme = matches[1].toLowerCase();
+
+                        if (has(options.allowedSchemesByTag, name)) {
+                            return options.allowedSchemesByTag[name].indexOf(scheme) === -1;
+                        }
+
+                        return !options.allowedSchemes || options.allowedSchemes.indexOf(scheme) === -1;
+                    }
+
+                    function filterClasses(classes, allowed) {
+                        if (!allowed) {
+                            return classes;
+                        }
+                        classes = classes.split(/\s+/);
+                        return classes.filter(function (clss) {
+                            return allowed.indexOf(clss) !== -1;
+                        }).join(' ');
+                    }
+                }
+
+                var htmlParserDefaults = {
+                    decodeEntities: true
+                };
+                sanitizeHtml.defaults = {
+                    allowedTags: ['h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol', 'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div', 'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre'],
+                    allowedAttributes: {
+                        a: ['href', 'name', 'target'],
+
+                        img: ['src']
+                    },
+
+                    selfClosing: ['img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'],
+
+                    allowedSchemes: ['http', 'https', 'ftp', 'mailto'],
+                    allowedSchemesByTag: {},
+                    allowProtocolRelative: true
+                };
+
+                sanitizeHtml.simpleTransform = function (newTagName, newAttribs, merge) {
+                    merge = merge === undefined ? true : merge;
+                    newAttribs = newAttribs || {};
+
+                    return function (tagName, attribs) {
+                        var attrib;
+                        if (merge) {
+                            for (attrib in newAttribs) {
+                                attribs[attrib] = newAttribs[attrib];
+                            }
+                        } else {
+                            attribs = newAttribs;
+                        }
+
+                        return {
+                            tagName: newTagName,
+                            attribs: attribs
+                        };
+                    };
+                };
+            }, { "htmlparser2": 37, "regexp-quote": 56, "xtend": 60 }],
+            2: [function (require, module, exports) {
+                'use strict';
+
+                exports.byteLength = byteLength;
+                exports.toByteArray = toByteArray;
+                exports.fromByteArray = fromByteArray;
+
+                var lookup = [];
+                var revLookup = [];
+                var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array;
+
+                var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+                for (var i = 0, len = code.length; i < len; ++i) {
+                    lookup[i] = code[i];
+                    revLookup[code.charCodeAt(i)] = i;
+                }
+
+                revLookup['-'.charCodeAt(0)] = 62;
+                revLookup['_'.charCodeAt(0)] = 63;
+
+                function placeHoldersCount(b64) {
+                    var len = b64.length;
+                    if (len % 4 > 0) {
+                        throw new Error('Invalid string. Length must be a multiple of 4');
+                    }
+
+                    return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0;
+                }
+
+                function byteLength(b64) {
+                    return b64.length * 3 / 4 - placeHoldersCount(b64);
+                }
+
+                function toByteArray(b64) {
+                    var i, j, l, tmp, placeHolders, arr;
+                    var len = b64.length;
+                    placeHolders = placeHoldersCount(b64);
+
+                    arr = new Arr(len * 3 / 4 - placeHolders);
+
+                    l = placeHolders > 0 ? len - 4 : len;
+
+                    var L = 0;
+
+                    for (i = 0, j = 0; i < l; i += 4, j += 3) {
+                        tmp = revLookup[b64.charCodeAt(i)] << 18 | revLookup[b64.charCodeAt(i + 1)] << 12 | revLookup[b64.charCodeAt(i + 2)] << 6 | revLookup[b64.charCodeAt(i + 3)];
+                        arr[L++] = tmp >> 16 & 0xFF;
+                        arr[L++] = tmp >> 8 & 0xFF;
+                        arr[L++] = tmp & 0xFF;
+                    }
+
+                    if (placeHolders === 2) {
+                        tmp = revLookup[b64.charCodeAt(i)] << 2 | revLookup[b64.charCodeAt(i + 1)] >> 4;
+                        arr[L++] = tmp & 0xFF;
+                    } else if (placeHolders === 1) {
+                        tmp = revLookup[b64.charCodeAt(i)] << 10 | revLookup[b64.charCodeAt(i + 1)] << 4 | revLookup[b64.charCodeAt(i + 2)] >> 2;
+                        arr[L++] = tmp >> 8 & 0xFF;
+                        arr[L++] = tmp & 0xFF;
+                    }
+
+                    return arr;
+                }
+
+                function tripletToBase64(num) {
+                    return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F];
+                }
+
+                function encodeChunk(uint8, start, end) {
+                    var tmp;
+                    var output = [];
+                    for (var i = start; i < end; i += 3) {
+                        tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + uint8[i + 2];
+                        output.push(tripletToBase64(tmp));
+                    }
+                    return output.join('');
+                }
+
+                function fromByteArray(uint8) {
+                    var tmp;
+                    var len = uint8.length;
+                    var extraBytes = len % 3;
+                    var output = '';
+                    var parts = [];
+                    var maxChunkLength = 16383;
+                    for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+                        parts.push(encodeChunk(uint8, i, i + maxChunkLength > len2 ? len2 : i + maxChunkLength));
+                    }
+
+                    if (extraBytes === 1) {
+                        tmp = uint8[len - 1];
+                        output += lookup[tmp >> 2];
+                        output += lookup[tmp << 4 & 0x3F];
+                        output += '==';
+                    } else if (extraBytes === 2) {
+                        tmp = (uint8[len - 2] << 8) + uint8[len - 1];
+                        output += lookup[tmp >> 10];
+                        output += lookup[tmp >> 4 & 0x3F];
+                        output += lookup[tmp << 2 & 0x3F];
+                        output += '=';
+                    }
+
+                    parts.push(output);
+
+                    return parts.join('');
+                }
+            }, {}],
+            3: [function (require, module, exports) {}, {}],
+            4: [function (require, module, exports) {
+
+                var Buffer = require('buffer').Buffer;
+
+                var isBufferEncoding = Buffer.isEncoding || function (encoding) {
+                    switch (encoding && encoding.toLowerCase()) {
+                        case 'hex':
+                        case 'utf8':
+                        case 'utf-8':
+                        case 'ascii':
+                        case 'binary':
+                        case 'base64':
+                        case 'ucs2':
+                        case 'ucs-2':
+                        case 'utf16le':
+                        case 'utf-16le':
+                        case 'raw':
+                            return true;
+                        default:
+                            return false;
+                    }
+                };
+
+                function assertEncoding(encoding) {
+                    if (encoding && !isBufferEncoding(encoding)) {
+                        throw new Error('Unknown encoding: ' + encoding);
+                    }
+                }
+
+                var StringDecoder = exports.StringDecoder = function (encoding) {
+                    this.encoding = (encoding || 'utf8').toLowerCase().replace(/[-_]/, '');
+                    assertEncoding(encoding);
+                    switch (this.encoding) {
+                        case 'utf8':
+                            this.surrogateSize = 3;
+                            break;
+                        case 'ucs2':
+                        case 'utf16le':
+                            this.surrogateSize = 2;
+                            this.detectIncompleteChar = utf16DetectIncompleteChar;
+                            break;
+                        case 'base64':
+                            this.surrogateSize = 3;
+                            this.detectIncompleteChar = base64DetectIncompleteChar;
+                            break;
+                        default:
+                            this.write = passThroughWrite;
+                            return;
+                    }
+
+                    this.charBuffer = new Buffer(6);
+
+                    this.charReceived = 0;
+
+                    this.charLength = 0;
+                };
+
+                StringDecoder.prototype.write = function (buffer) {
+                    var charStr = '';
+
+                    while (this.charLength) {
+                        var available = buffer.length >= this.charLength - this.charReceived ? this.charLength - this.charReceived : buffer.length;
+
+                        buffer.copy(this.charBuffer, this.charReceived, 0, available);
+                        this.charReceived += available;
+
+                        if (this.charReceived < this.charLength) {
+                            return '';
+                        }
+
+                        buffer = buffer.slice(available, buffer.length);
+
+                        charStr = this.charBuffer.slice(0, this.charLength).toString(this.encoding);
+
+                        var charCode = charStr.charCodeAt(charStr.length - 1);
+                        if (charCode >= 0xD800 && charCode <= 0xDBFF) {
+                            this.charLength += this.surrogateSize;
+                            charStr = '';
+                            continue;
+                        }
+                        this.charReceived = this.charLength = 0;
+
+                        if (buffer.length === 0) {
+                            return charStr;
+                        }
+                        break;
+                    }
+
+                    this.detectIncompleteChar(buffer);
+
+                    var end = buffer.length;
+                    if (this.charLength) {
+                        buffer.copy(this.charBuffer, 0, buffer.length - this.charReceived, end);
+                        end -= this.charReceived;
+                    }
+
+                    charStr += buffer.toString(this.encoding, 0, end);
+
+                    var end = charStr.length - 1;
+                    var charCode = charStr.charCodeAt(end);
+
+                    if (charCode >= 0xD800 && charCode <= 0xDBFF) {
+                        var size = this.surrogateSize;
+                        this.charLength += size;
+                        this.charReceived += size;
+                        this.charBuffer.copy(this.charBuffer, size, 0, size);
+                        buffer.copy(this.charBuffer, 0, 0, size);
+                        return charStr.substring(0, end);
+                    }
+
+                    return charStr;
+                };
+
+                StringDecoder.prototype.detectIncompleteChar = function (buffer) {
+                    var i = buffer.length >= 3 ? 3 : buffer.length;
+
+                    for (; i > 0; i--) {
+                        var c = buffer[buffer.length - i];
+
+                        if (i == 1 && c >> 5 == 0x06) {
+                            this.charLength = 2;
+                            break;
+                        }
+
+                        if (i <= 2 && c >> 4 == 0x0E) {
+                            this.charLength = 3;
+                            break;
+                        }
+
+                        if (i <= 3 && c >> 3 == 0x1E) {
+                            this.charLength = 4;
+                            break;
+                        }
+                    }
+                    this.charReceived = i;
+                };
+
+                StringDecoder.prototype.end = function (buffer) {
+                    var res = '';
+                    if (buffer && buffer.length) res = this.write(buffer);
+
+                    if (this.charReceived) {
+                        var cr = this.charReceived;
+                        var buf = this.charBuffer;
+                        var enc = this.encoding;
+                        res += buf.slice(0, cr).toString(enc);
+                    }
+
+                    return res;
+                };
+
+                function passThroughWrite(buffer) {
+                    return buffer.toString(this.encoding);
+                }
+
+                function utf16DetectIncompleteChar(buffer) {
+                    this.charReceived = buffer.length % 2;
+                    this.charLength = this.charReceived ? 2 : 0;
+                }
+
+                function base64DetectIncompleteChar(buffer) {
+                    this.charReceived = buffer.length % 3;
+                    this.charLength = this.charReceived ? 3 : 0;
+                }
+            }, { "buffer": 6 }],
+            5: [function (require, module, exports) {
+                (function (global) {
+                    'use strict';
+
+                    var buffer = require('buffer');
+                    var Buffer = buffer.Buffer;
+                    var SlowBuffer = buffer.SlowBuffer;
+                    var MAX_LEN = buffer.kMaxLength || 2147483647;
+                    exports.alloc = function alloc(size, fill, encoding) {
+                        if (typeof Buffer.alloc === 'function') {
+                            return Buffer.alloc(size, fill, encoding);
+                        }
+                        if (typeof encoding === 'number') {
+                            throw new TypeError('encoding must not be number');
+                        }
+                        if (typeof size !== 'number') {
+                            throw new TypeError('size must be a number');
+                        }
+                        if (size > MAX_LEN) {
+                            throw new RangeError('size is too large');
+                        }
+                        var enc = encoding;
+                        var _fill = fill;
+                        if (_fill === undefined) {
+                            enc = undefined;
+                            _fill = 0;
+                        }
+                        var buf = new Buffer(size);
+                        if (typeof _fill === 'string') {
+                            var fillBuf = new Buffer(_fill, enc);
+                            var flen = fillBuf.length;
+                            var i = -1;
+                            while (++i < size) {
+                                buf[i] = fillBuf[i % flen];
+                            }
+                        } else {
+                            buf.fill(_fill);
+                        }
+                        return buf;
+                    };
+                    exports.allocUnsafe = function allocUnsafe(size) {
+                        if (typeof Buffer.allocUnsafe === 'function') {
+                            return Buffer.allocUnsafe(size);
+                        }
+                        if (typeof size !== 'number') {
+                            throw new TypeError('size must be a number');
+                        }
+                        if (size > MAX_LEN) {
+                            throw new RangeError('size is too large');
+                        }
+                        return new Buffer(size);
+                    };
+                    exports.from = function from(value, encodingOrOffset, length) {
+                        if (typeof Buffer.from === 'function' && (!global.Uint8Array || Uint8Array.from !== Buffer.from)) {
+                            return Buffer.from(value, encodingOrOffset, length);
+                        }
+                        if (typeof value === 'number') {
+                            throw new TypeError('"value" argument must not be a number');
+                        }
+                        if (typeof value === 'string') {
+                            return new Buffer(value, encodingOrOffset);
+                        }
+                        if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+                            var offset = encodingOrOffset;
+                            if (arguments.length === 1) {
+                                return new Buffer(value);
+                            }
+                            if (typeof offset === 'undefined') {
+                                offset = 0;
+                            }
+                            var len = length;
+                            if (typeof len === 'undefined') {
+                                len = value.byteLength - offset;
+                            }
+                            if (offset >= value.byteLength) {
+                                throw new RangeError('\'offset\' is out of bounds');
+                            }
+                            if (len > value.byteLength - offset) {
+                                throw new RangeError('\'length\' is out of bounds');
+                            }
+                            return new Buffer(value.slice(offset, offset + len));
+                        }
+                        if (Buffer.isBuffer(value)) {
+                            var out = new Buffer(value.length);
+                            value.copy(out, 0, 0, value.length);
+                            return out;
+                        }
+                        if (value) {
+                            if (Array.isArray(value) || typeof ArrayBuffer !== 'undefined' && value.buffer instanceof ArrayBuffer || 'length' in value) {
+                                return new Buffer(value);
+                            }
+                            if (value.type === 'Buffer' && Array.isArray(value.data)) {
+                                return new Buffer(value.data);
+                            }
+                        }
+
+                        throw new TypeError('First argument must be a string, Buffer, ' + 'ArrayBuffer, Array, or array-like object.');
+                    };
+                    exports.allocUnsafeSlow = function allocUnsafeSlow(size) {
+                        if (typeof Buffer.allocUnsafeSlow === 'function') {
+                            return Buffer.allocUnsafeSlow(size);
+                        }
+                        if (typeof size !== 'number') {
+                            throw new TypeError('size must be a number');
+                        }
+                        if (size >= MAX_LEN) {
+                            throw new RangeError('size is too large');
+                        }
+                        return new SlowBuffer(size);
+                    };
+                }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
+            }, { "buffer": 6 }],
+            6: [function (require, module, exports) {
+                (function (global) {
+                    /*!
+                     * The buffer module from node.js, for the browser.
+                     *
+                     * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+                     * @license  MIT
+                     */
+                    'use strict';
+
+                    var base64 = require('base64-js');
+                    var ieee754 = require('ieee754');
+                    var isArray = require('isarray');
+
+                    exports.Buffer = Buffer;
+                    exports.SlowBuffer = SlowBuffer;
+                    exports.INSPECT_MAX_BYTES = 50;
+
+                    Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined ? global.TYPED_ARRAY_SUPPORT : typedArraySupport();
+
+                    exports.kMaxLength = kMaxLength();
+
+                    function typedArraySupport() {
+                        try {
+                            var arr = new Uint8Array(1);
+                            arr.__proto__ = {
+                                __proto__: Uint8Array.prototype,
+                                foo: function foo() {
+                                    return 42;
+                                }
+                            };
+                            return arr.foo() === 42 && typeof arr.subarray === 'function' && arr.subarray(1, 1).byteLength === 0;
+                        } catch (e) {
+                            return false;
+                        }
+                    }
+
+                    function kMaxLength() {
+                        return Buffer.TYPED_ARRAY_SUPPORT ? 0x7fffffff : 0x3fffffff;
+                    }
+
+                    function createBuffer(that, length) {
+                        if (kMaxLength() < length) {
+                            throw new RangeError('Invalid typed array length');
+                        }
+                        if (Buffer.TYPED_ARRAY_SUPPORT) {
+                            that = new Uint8Array(length);
+                            that.__proto__ = Buffer.prototype;
+                        } else {
+                            if (that === null) {
+                                that = new Buffer(length);
+                            }
+                            that.length = length;
+                        }
+
+                        return that;
+                    }
+
+                    function Buffer(arg, encodingOrOffset, length) {
+                        if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
+                            return new Buffer(arg, encodingOrOffset, length);
+                        }
+
+                        if (typeof arg === 'number') {
+                            if (typeof encodingOrOffset === 'string') {
+                                throw new Error('If encoding is specified then the first argument must be a string');
+                            }
+                            return allocUnsafe(this, arg);
+                        }
+                        return from(this, arg, encodingOrOffset, length);
+                    }
+
+                    Buffer.poolSize = 8192;
+                    Buffer._augment = function (arr) {
+                        arr.__proto__ = Buffer.prototype;
+                        return arr;
+                    };
+
+                    function from(that, value, encodingOrOffset, length) {
+                        if (typeof value === 'number') {
+                            throw new TypeError('"value" argument must not be a number');
+                        }
+
+                        if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+                            return fromArrayBuffer(that, value, encodingOrOffset, length);
+                        }
+
+                        if (typeof value === 'string') {
+                            return fromString(that, value, encodingOrOffset);
+                        }
+
+                        return fromObject(that, value);
+                    }
+
+                    Buffer.from = function (value, encodingOrOffset, length) {
+                        return from(null, value, encodingOrOffset, length);
+                    };
+
+                    if (Buffer.TYPED_ARRAY_SUPPORT) {
+                        Buffer.prototype.__proto__ = Uint8Array.prototype;
+                        Buffer.__proto__ = Uint8Array;
+                        if (typeof Symbol !== 'undefined' && Symbol.species && Buffer[Symbol.species] === Buffer) {
+                            Object.defineProperty(Buffer, Symbol.species, {
+                                value: null,
+                                configurable: true
+                            });
+                        }
+                    }
+
+                    function assertSize(size) {
+                        if (typeof size !== 'number') {
+                            throw new TypeError('"size" argument must be a number');
+                        } else if (size < 0) {
+                            throw new RangeError('"size" argument must not be negative');
+                        }
+                    }
+
+                    function alloc(that, size, fill, encoding) {
+                        assertSize(size);
+                        if (size <= 0) {
+                            return createBuffer(that, size);
+                        }
+                        if (fill !== undefined) {
+                            return typeof encoding === 'string' ? createBuffer(that, size).fill(fill, encoding) : createBuffer(that, size).fill(fill);
+                        }
+                        return createBuffer(that, size);
+                    }
+
+                    Buffer.alloc = function (size, fill, encoding) {
+                        return alloc(null, size, fill, encoding);
+                    };
+
+                    function allocUnsafe(that, size) {
+                        assertSize(size);
+                        that = createBuffer(that, size < 0 ? 0 : checked(size) | 0);
+                        if (!Buffer.TYPED_ARRAY_SUPPORT) {
+                            for (var i = 0; i < size; ++i) {
+                                that[i] = 0;
+                            }
+                        }
+                        return that;
+                    }
+
+                    Buffer.allocUnsafe = function (size) {
+                        return allocUnsafe(null, size);
+                    };
+
+                    Buffer.allocUnsafeSlow = function (size) {
+                        return allocUnsafe(null, size);
+                    };
+
+                    function fromString(that, string, encoding) {
+                        if (typeof encoding !== 'string' || encoding === '') {
+                            encoding = 'utf8';
+                        }
+
+                        if (!Buffer.isEncoding(encoding)) {
+                            throw new TypeError('"encoding" must be a valid string encoding');
+                        }
+
+                        var length = byteLength(string, encoding) | 0;
+                        that = createBuffer(that, length);
+
+                        var actual = that.write(string, encoding);
+
+                        if (actual !== length) {
+                            that = that.slice(0, actual);
+                        }
+
+                        return that;
+                    }
+
+                    function fromArrayLike(that, array) {
+                        var length = array.length < 0 ? 0 : checked(array.length) | 0;
+                        that = createBuffer(that, length);
+                        for (var i = 0; i < length; i += 1) {
+                            that[i] = array[i] & 255;
+                        }
+                        return that;
+                    }
+
+                    function fromArrayBuffer(that, array, byteOffset, length) {
+                        array.byteLength;
+
+                        if (byteOffset < 0 || array.byteLength < byteOffset) {
+                            throw new RangeError('\'offset\' is out of bounds');
+                        }
+
+                        if (array.byteLength < byteOffset + (length || 0)) {
+                            throw new RangeError('\'length\' is out of bounds');
+                        }
+
+                        if (byteOffset === undefined && length === undefined) {
+                            array = new Uint8Array(array);
+                        } else if (length === undefined) {
+                            array = new Uint8Array(array, byteOffset);
+                        } else {
+                            array = new Uint8Array(array, byteOffset, length);
+                        }
+
+                        if (Buffer.TYPED_ARRAY_SUPPORT) {
+                            that = array;
+                            that.__proto__ = Buffer.prototype;
+                        } else {
+                            that = fromArrayLike(that, array);
+                        }
+                        return that;
+                    }
+
+                    function fromObject(that, obj) {
+                        if (Buffer.isBuffer(obj)) {
+                            var len = checked(obj.length) | 0;
+                            that = createBuffer(that, len);
+
+                            if (that.length === 0) {
+                                return that;
+                            }
+
+                            obj.copy(that, 0, 0, len);
+                            return that;
+                        }
+
+                        if (obj) {
+                            if (typeof ArrayBuffer !== 'undefined' && obj.buffer instanceof ArrayBuffer || 'length' in obj) {
+                                if (typeof obj.length !== 'number' || isnan(obj.length)) {
+                                    return createBuffer(that, 0);
+                                }
+                                return fromArrayLike(that, obj);
+                            }
+
+                            if (obj.type === 'Buffer' && isArray(obj.data)) {
+                                return fromArrayLike(that, obj.data);
+                            }
+                        }
+
+                        throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.');
+                    }
+
+                    function checked(length) {
+                        if (length >= kMaxLength()) {
+                            throw new RangeError('Attempt to allocate Buffer larger than maximum ' + 'size: 0x' + kMaxLength().toString(16) + ' bytes');
+                        }
+                        return length | 0;
+                    }
+
+                    function SlowBuffer(length) {
+                        if (+length != length) {
+                            length = 0;
+                        }
+                        return Buffer.alloc(+length);
+                    }
+
+                    Buffer.isBuffer = function isBuffer(b) {
+                        return !!(b != null && b._isBuffer);
+                    };
+
+                    Buffer.compare = function compare(a, b) {
+                        if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+                            throw new TypeError('Arguments must be Buffers');
+                        }
+
+                        if (a === b) return 0;
+
+                        var x = a.length;
+                        var y = b.length;
+
+                        for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+                            if (a[i] !== b[i]) {
+                                x = a[i];
+                                y = b[i];
+                                break;
+                            }
+                        }
+
+                        if (x < y) return -1;
+                        if (y < x) return 1;
+                        return 0;
+                    };
+
+                    Buffer.isEncoding = function isEncoding(encoding) {
+                        switch (String(encoding).toLowerCase()) {
+                            case 'hex':
+                            case 'utf8':
+                            case 'utf-8':
+                            case 'ascii':
+                            case 'latin1':
+                            case 'binary':
+                            case 'base64':
+                            case 'ucs2':
+                            case 'ucs-2':
+                            case 'utf16le':
+                            case 'utf-16le':
+                                return true;
+                            default:
+                                return false;
+                        }
+                    };
+
+                    Buffer.concat = function concat(list, length) {
+                        if (!isArray(list)) {
+                            throw new TypeError('"list" argument must be an Array of Buffers');
+                        }
+
+                        if (list.length === 0) {
+                            return Buffer.alloc(0);
+                        }
+
+                        var i;
+                        if (length === undefined) {
+                            length = 0;
+                            for (i = 0; i < list.length; ++i) {
+                                length += list[i].length;
+                            }
+                        }
+
+                        var buffer = Buffer.allocUnsafe(length);
+                        var pos = 0;
+                        for (i = 0; i < list.length; ++i) {
+                            var buf = list[i];
+                            if (!Buffer.isBuffer(buf)) {
+                                throw new TypeError('"list" argument must be an Array of Buffers');
+                            }
+                            buf.copy(buffer, pos);
+                            pos += buf.length;
+                        }
+                        return buffer;
+                    };
+
+                    function byteLength(string, encoding) {
+                        if (Buffer.isBuffer(string)) {
+                            return string.length;
+                        }
+                        if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' && (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
+                            return string.byteLength;
+                        }
+                        if (typeof string !== 'string') {
+                            string = '' + string;
+                        }
+
+                        var len = string.length;
+                        if (len === 0) return 0;
+
+                        var loweredCase = false;
+                        for (;;) {
+                            switch (encoding) {
+                                case 'ascii':
+                                case 'latin1':
+                                case 'binary':
+                                    return len;
+                                case 'utf8':
+                                case 'utf-8':
+                                case undefined:
+                                    return utf8ToBytes(string).length;
+                                case 'ucs2':
+                                case 'ucs-2':
+                                case 'utf16le':
+                                case 'utf-16le':
+                                    return len * 2;
+                                case 'hex':
+                                    return len >>> 1;
+                                case 'base64':
+                                    return base64ToBytes(string).length;
+                                default:
+                                    if (loweredCase) return utf8ToBytes(string).length;
+                                    encoding = ('' + encoding).toLowerCase();
+                                    loweredCase = true;
+                            }
+                        }
+                    }
+                    Buffer.byteLength = byteLength;
+
+                    function slowToString(encoding, start, end) {
+                        var loweredCase = false;
+
+                        if (start === undefined || start < 0) {
+                            start = 0;
+                        }
+
+                        if (start > this.length) {
+                            return '';
+                        }
+
+                        if (end === undefined || end > this.length) {
+                            end = this.length;
+                        }
+
+                        if (end <= 0) {
+                            return '';
+                        }
+
+                        end >>>= 0;
+                        start >>>= 0;
+
+                        if (end <= start) {
+                            return '';
+                        }
+
+                        if (!encoding) encoding = 'utf8';
+
+                        while (true) {
+                            switch (encoding) {
+                                case 'hex':
+                                    return hexSlice(this, start, end);
+
+                                case 'utf8':
+                                case 'utf-8':
+                                    return utf8Slice(this, start, end);
+
+                                case 'ascii':
+                                    return asciiSlice(this, start, end);
+
+                                case 'latin1':
+                                case 'binary':
+                                    return latin1Slice(this, start, end);
+
+                                case 'base64':
+                                    return base64Slice(this, start, end);
+
+                                case 'ucs2':
+                                case 'ucs-2':
+                                case 'utf16le':
+                                case 'utf-16le':
+                                    return utf16leSlice(this, start, end);
+
+                                default:
+                                    if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding);
+                                    encoding = (encoding + '').toLowerCase();
+                                    loweredCase = true;
+                            }
+                        }
+                    }
+
+                    Buffer.prototype._isBuffer = true;
+
+                    function swap(b, n, m) {
+                        var i = b[n];
+                        b[n] = b[m];
+                        b[m] = i;
+                    }
+
+                    Buffer.prototype.swap16 = function swap16() {
+                        var len = this.length;
+                        if (len % 2 !== 0) {
+                            throw new RangeError('Buffer size must be a multiple of 16-bits');
+                        }
+                        for (var i = 0; i < len; i += 2) {
+                            swap(this, i, i + 1);
+                        }
+                        return this;
+                    };
+
+                    Buffer.prototype.swap32 = function swap32() {
+                        var len = this.length;
+                        if (len % 4 !== 0) {
+                            throw new RangeError('Buffer size must be a multiple of 32-bits');
+                        }
+                        for (var i = 0; i < len; i += 4) {
+                            swap(this, i, i + 3);
+                            swap(this, i + 1, i + 2);
+                        }
+                        return this;
+                    };
+
+                    Buffer.prototype.swap64 = function swap64() {
+                        var len = this.length;
+                        if (len % 8 !== 0) {
+                            throw new RangeError('Buffer size must be a multiple of 64-bits');
+                        }
+                        for (var i = 0; i < len; i += 8) {
+                            swap(this, i, i + 7);
+                            swap(this, i + 1, i + 6);
+                            swap(this, i + 2, i + 5);
+                            swap(this, i + 3, i + 4);
+                        }
+                        return this;
+                    };
+
+                    Buffer.prototype.toString = function toString() {
+                        var length = this.length | 0;
+                        if (length === 0) return '';
+                        if (arguments.length === 0) return utf8Slice(this, 0, length);
+                        return slowToString.apply(this, arguments);
+                    };
+
+                    Buffer.prototype.equals = function equals(b) {
+                        if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer');
+                        if (this === b) return true;
+                        return Buffer.compare(this, b) === 0;
+                    };
+
+                    Buffer.prototype.inspect = function inspect() {
+                        var str = '';
+                        var max = exports.INSPECT_MAX_BYTES;
+                        if (this.length > 0) {
+                            str = this.toString('hex', 0, max).match(/.{2}/g).join(' ');
+                            if (this.length > max) str += ' ... ';
+                        }
+                        return '<Buffer ' + str + '>';
+                    };
+
+                    Buffer.prototype.compare = function compare(target, start, end, thisStart, thisEnd) {
+                        if (!Buffer.isBuffer(target)) {
+                            throw new TypeError('Argument must be a Buffer');
+                        }
+
+                        if (start === undefined) {
+                            start = 0;
+                        }
+                        if (end === undefined) {
+                            end = target ? target.length : 0;
+                        }
+                        if (thisStart === undefined) {
+                            thisStart = 0;
+                        }
+                        if (thisEnd === undefined) {
+                            thisEnd = this.length;
+                        }
+
+                        if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+                            throw new RangeError('out of range index');
+                        }
+
+                        if (thisStart >= thisEnd && start >= end) {
+                            return 0;
+                        }
+                        if (thisStart >= thisEnd) {
+                            return -1;
+                        }
+                        if (start >= end) {
+                            return 1;
+                        }
+
+                        start >>>= 0;
+                        end >>>= 0;
+                        thisStart >>>= 0;
+                        thisEnd >>>= 0;
+
+                        if (this === target) return 0;
+
+                        var x = thisEnd - thisStart;
+                        var y = end - start;
+                        var len = Math.min(x, y);
+
+                        var thisCopy = this.slice(thisStart, thisEnd);
+                        var targetCopy = target.slice(start, end);
+
+                        for (var i = 0; i < len; ++i) {
+                            if (thisCopy[i] !== targetCopy[i]) {
+                                x = thisCopy[i];
+                                y = targetCopy[i];
+                                break;
+                            }
+                        }
+
+                        if (x < y) return -1;
+                        if (y < x) return 1;
+                        return 0;
+                    };
+
+                    function bidirectionalIndexOf(buffer, val, byteOffset, encoding, dir) {
+                        if (buffer.length === 0) return -1;
+
+                        if (typeof byteOffset === 'string') {
+                            encoding = byteOffset;
+                            byteOffset = 0;
+                        } else if (byteOffset > 0x7fffffff) {
+                            byteOffset = 0x7fffffff;
+                        } else if (byteOffset < -0x80000000) {
+                            byteOffset = -0x80000000;
+                        }
+                        byteOffset = +byteOffset;
+                        if (isNaN(byteOffset)) {
+                            byteOffset = dir ? 0 : buffer.length - 1;
+                        }
+
+                        if (byteOffset < 0) byteOffset = buffer.length + byteOffset;
+                        if (byteOffset >= buffer.length) {
+                            if (dir) return -1;else byteOffset = buffer.length - 1;
+                        } else if (byteOffset < 0) {
+                            if (dir) byteOffset = 0;else return -1;
+                        }
+
+                        if (typeof val === 'string') {
+                            val = Buffer.from(val, encoding);
+                        }
+
+                        if (Buffer.isBuffer(val)) {
+                            if (val.length === 0) {
+                                return -1;
+                            }
+                            return arrayIndexOf(buffer, val, byteOffset, encoding, dir);
+                        } else if (typeof val === 'number') {
+                            val = val & 0xFF;
+                            if (Buffer.TYPED_ARRAY_SUPPORT && typeof Uint8Array.prototype.indexOf === 'function') {
+                                if (dir) {
+                                    return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset);
+                                } else {
+                                    return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset);
+                                }
+                            }
+                            return arrayIndexOf(buffer, [val], byteOffset, encoding, dir);
+                        }
+
+                        throw new TypeError('val must be string, number or Buffer');
+                    }
+
+                    function arrayIndexOf(arr, val, byteOffset, encoding, dir) {
+                        var indexSize = 1;
+                        var arrLength = arr.length;
+                        var valLength = val.length;
+
+                        if (encoding !== undefined) {
+                            encoding = String(encoding).toLowerCase();
+                            if (encoding === 'ucs2' || encoding === 'ucs-2' || encoding === 'utf16le' || encoding === 'utf-16le') {
+                                if (arr.length < 2 || val.length < 2) {
+                                    return -1;
+                                }
+                                indexSize = 2;
+                                arrLength /= 2;
+                                valLength /= 2;
+                                byteOffset /= 2;
+                            }
+                        }
+
+                        function read(buf, i) {
+                            if (indexSize === 1) {
+                                return buf[i];
+                            } else {
+                                return buf.readUInt16BE(i * indexSize);
+                            }
+                        }
+
+                        var i;
+                        if (dir) {
+                            var foundIndex = -1;
+                            for (i = byteOffset; i < arrLength; i++) {
+                                if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+                                    if (foundIndex === -1) foundIndex = i;
+                                    if (i - foundIndex + 1 === valLength) return foundIndex * indexSize;
+                                } else {
+                                    if (foundIndex !== -1) i -= i - foundIndex;
+                                    foundIndex = -1;
+                                }
+                            }
+                        } else {
+                            if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength;
+                            for (i = byteOffset; i >= 0; i--) {
+                                var found = true;
+                                for (var j = 0; j < valLength; j++) {
+                                    if (read(arr, i + j) !== read(val, j)) {
+                                        found = false;
+                                        break;
+                                    }
+                                }
+                                if (found) return i;
+                            }
+                        }
+
+                        return -1;
+                    }
+
+                    Buffer.prototype.includes = function includes(val, byteOffset, encoding) {
+                        return this.indexOf(val, byteOffset, encoding) !== -1;
+                    };
+
+                    Buffer.prototype.indexOf = function indexOf(val, byteOffset, encoding) {
+                        return bidirectionalIndexOf(this, val, byteOffset, encoding, true);
+                    };
+
+                    Buffer.prototype.lastIndexOf = function lastIndexOf(val, byteOffset, encoding) {
+                        return bidirectionalIndexOf(this, val, byteOffset, encoding, false);
+                    };
+
+                    function hexWrite(buf, string, offset, length) {
+                        offset = Number(offset) || 0;
+                        var remaining = buf.length - offset;
+                        if (!length) {
+                            length = remaining;
+                        } else {
+                            length = Number(length);
+                            if (length > remaining) {
+                                length = remaining;
+                            }
+                        }
+
+                        var strLen = string.length;
+                        if (strLen % 2 !== 0) throw new TypeError('Invalid hex string');
+
+                        if (length > strLen / 2) {
+                            length = strLen / 2;
+                        }
+                        for (var i = 0; i < length; ++i) {
+                            var parsed = parseInt(string.substr(i * 2, 2), 16);
+                            if (isNaN(parsed)) return i;
+                            buf[offset + i] = parsed;
+                        }
+                        return i;
+                    }
+
+                    function utf8Write(buf, string, offset, length) {
+                        return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length);
+                    }
+
+                    function asciiWrite(buf, string, offset, length) {
+                        return blitBuffer(asciiToBytes(string), buf, offset, length);
+                    }
+
+                    function latin1Write(buf, string, offset, length) {
+                        return asciiWrite(buf, string, offset, length);
+                    }
+
+                    function base64Write(buf, string, offset, length) {
+                        return blitBuffer(base64ToBytes(string), buf, offset, length);
+                    }
+
+                    function ucs2Write(buf, string, offset, length) {
+                        return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length);
+                    }
+
+                    Buffer.prototype.write = function write(string, offset, length, encoding) {
+                        if (offset === undefined) {
+                            encoding = 'utf8';
+                            length = this.length;
+                            offset = 0;
+                        } else if (length === undefined && typeof offset === 'string') {
+                            encoding = offset;
+                            length = this.length;
+                            offset = 0;
+                        } else if (isFinite(offset)) {
+                            offset = offset | 0;
+                            if (isFinite(length)) {
+                                length = length | 0;
+                                if (encoding === undefined) encoding = 'utf8';
+                            } else {
+                                encoding = length;
+                                length = undefined;
+                            }
+                        } else {
+                            throw new Error('Buffer.write(string, encoding, offset[, length]) is no longer supported');
+                        }
+
+                        var remaining = this.length - offset;
+                        if (length === undefined || length > remaining) length = remaining;
+
+                        if (string.length > 0 && (length < 0 || offset < 0) || offset > this.length) {
+                            throw new RangeError('Attempt to write outside buffer bounds');
+                        }
+
+                        if (!encoding) encoding = 'utf8';
+
+                        var loweredCase = false;
+                        for (;;) {
+                            switch (encoding) {
+                                case 'hex':
+                                    return hexWrite(this, string, offset, length);
+
+                                case 'utf8':
+                                case 'utf-8':
+                                    return utf8Write(this, string, offset, length);
+
+                                case 'ascii':
+                                    return asciiWrite(this, string, offset, length);
+
+                                case 'latin1':
+                                case 'binary':
+                                    return latin1Write(this, string, offset, length);
+
+                                case 'base64':
+                                    return base64Write(this, string, offset, length);
+
+                                case 'ucs2':
+                                case 'ucs-2':
+                                case 'utf16le':
+                                case 'utf-16le':
+                                    return ucs2Write(this, string, offset, length);
+
+                                default:
+                                    if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding);
+                                    encoding = ('' + encoding).toLowerCase();
+                                    loweredCase = true;
+                            }
+                        }
+                    };
+
+                    Buffer.prototype.toJSON = function toJSON() {
+                        return {
+                            type: 'Buffer',
+                            data: Array.prototype.slice.call(this._arr || this, 0)
+                        };
+                    };
+
+                    function base64Slice(buf, start, end) {
+                        if (start === 0 && end === buf.length) {
+                            return base64.fromByteArray(buf);
+                        } else {
+                            return base64.fromByteArray(buf.slice(start, end));
+                        }
+                    }
+
+                    function utf8Slice(buf, start, end) {
+                        end = Math.min(buf.length, end);
+                        var res = [];
+
+                        var i = start;
+                        while (i < end) {
+                            var firstByte = buf[i];
+                            var codePoint = null;
+                            var bytesPerSequence = firstByte > 0xEF ? 4 : firstByte > 0xDF ? 3 : firstByte > 0xBF ? 2 : 1;
+
+                            if (i + bytesPerSequence <= end) {
+                                var secondByte, thirdByte, fourthByte, tempCodePoint;
+
+                                switch (bytesPerSequence) {
+                                    case 1:
+                                        if (firstByte < 0x80) {
+                                            codePoint = firstByte;
+                                        }
+                                        break;
+                                    case 2:
+                                        secondByte = buf[i + 1];
+                                        if ((secondByte & 0xC0) === 0x80) {
+                                            tempCodePoint = (firstByte & 0x1F) << 0x6 | secondByte & 0x3F;
+                                            if (tempCodePoint > 0x7F) {
+                                                codePoint = tempCodePoint;
+                                            }
+                                        }
+                                        break;
+                                    case 3:
+                                        secondByte = buf[i + 1];
+                                        thirdByte = buf[i + 2];
+                                        if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+                                            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | thirdByte & 0x3F;
+                                            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+                                                codePoint = tempCodePoint;
+                                            }
+                                        }
+                                        break;
+                                    case 4:
+                                        secondByte = buf[i + 1];
+                                        thirdByte = buf[i + 2];
+                                        fourthByte = buf[i + 3];
+                                        if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+                                            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | fourthByte & 0x3F;
+                                            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+                                                codePoint = tempCodePoint;
+                                            }
+                                        }
+                                }
+                            }
+
+                            if (codePoint === null) {
+                                codePoint = 0xFFFD;
+                                bytesPerSequence = 1;
+                            } else if (codePoint > 0xFFFF) {
+                                codePoint -= 0x10000;
+                                res.push(codePoint >>> 10 & 0x3FF | 0xD800);
+                                codePoint = 0xDC00 | codePoint & 0x3FF;
+                            }
+
+                            res.push(codePoint);
+                            i += bytesPerSequence;
+                        }
+
+                        return decodeCodePointsArray(res);
+                    }
+
+                    var MAX_ARGUMENTS_LENGTH = 0x1000;
+
+                    function decodeCodePointsArray(codePoints) {
+                        var len = codePoints.length;
+                        if (len <= MAX_ARGUMENTS_LENGTH) {
+                            return String.fromCharCode.apply(String, codePoints);
+                        }
+
+                        var res = '';
+                        var i = 0;
+                        while (i < len) {
+                            res += String.fromCharCode.apply(String, codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH));
+                        }
+                        return res;
+                    }
+
+                    function asciiSlice(buf, start, end) {
+                        var ret = '';
+                        end = Math.min(buf.length, end);
+
+                        for (var i = start; i < end; ++i) {
+                            ret += String.fromCharCode(buf[i] & 0x7F);
+                        }
+                        return ret;
+                    }
+
+                    function latin1Slice(buf, start, end) {
+                        var ret = '';
+                        end = Math.min(buf.length, end);
+
+                        for (var i = start; i < end; ++i) {
+                            ret += String.fromCharCode(buf[i]);
+                        }
+                        return ret;
+                    }
+
+                    function hexSlice(buf, start, end) {
+                        var len = buf.length;
+
+                        if (!start || start < 0) start = 0;
+                        if (!end || end < 0 || end > len) end = len;
+
+                        var out = '';
+                        for (var i = start; i < end; ++i) {
+                            out += toHex(buf[i]);
+                        }
+                        return out;
+                    }
+
+                    function utf16leSlice(buf, start, end) {
+                        var bytes = buf.slice(start, end);
+                        var res = '';
+                        for (var i = 0; i < bytes.length; i += 2) {
+                            res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256);
+                        }
+                        return res;
+                    }
+
+                    Buffer.prototype.slice = function slice(start, end) {
+                        var len = this.length;
+                        start = ~~start;
+                        end = end === undefined ? len : ~~end;
+
+                        if (start < 0) {
+                            start += len;
+                            if (start < 0) start = 0;
+                        } else if (start > len) {
+                            start = len;
+                        }
+
+                        if (end < 0) {
+                            end += len;
+                            if (end < 0) end = 0;
+                        } else if (end > len) {
+                            end = len;
+                        }
+
+                        if (end < start) end = start;
+
+                        var newBuf;
+                        if (Buffer.TYPED_ARRAY_SUPPORT) {
+                            newBuf = this.subarray(start, end);
+                            newBuf.__proto__ = Buffer.prototype;
+                        } else {
+                            var sliceLen = end - start;
+                            newBuf = new Buffer(sliceLen, undefined);
+                            for (var i = 0; i < sliceLen; ++i) {
+                                newBuf[i] = this[i + start];
+                            }
+                        }
+
+                        return newBuf;
+                    };
+
+                    function checkOffset(offset, ext, length) {
+                        if (offset % 1 !== 0 || offset < 0) throw new RangeError('offset is not uint');
+                        if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length');
+                    }
+
+                    Buffer.prototype.readUIntLE = function readUIntLE(offset, byteLength, noAssert) {
+                        offset = offset | 0;
+                        byteLength = byteLength | 0;
+                        if (!noAssert) checkOffset(offset, byteLength, this.length);
+
+                        var val = this[offset];
+                        var mul = 1;
+                        var i = 0;
+                        while (++i < byteLength && (mul *= 0x100)) {
+                            val += this[offset + i] * mul;
+                        }
+
+                        return val;
+                    };
+
+                    Buffer.prototype.readUIntBE = function readUIntBE(offset, byteLength, noAssert) {
+                        offset = offset | 0;
+                        byteLength = byteLength | 0;
+                        if (!noAssert) {
+                            checkOffset(offset, byteLength, this.length);
+                        }
+
+                        var val = this[offset + --byteLength];
+                        var mul = 1;
+                        while (byteLength > 0 && (mul *= 0x100)) {
+                            val += this[offset + --byteLength] * mul;
+                        }
+
+                        return val;
+                    };
+
+                    Buffer.prototype.readUInt8 = function readUInt8(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 1, this.length);
+                        return this[offset];
+                    };
+
+                    Buffer.prototype.readUInt16LE = function readUInt16LE(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 2, this.length);
+                        return this[offset] | this[offset + 1] << 8;
+                    };
+
+                    Buffer.prototype.readUInt16BE = function readUInt16BE(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 2, this.length);
+                        return this[offset] << 8 | this[offset + 1];
+                    };
+
+                    Buffer.prototype.readUInt32LE = function readUInt32LE(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 4, this.length);
+
+                        return (this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16) + this[offset + 3] * 0x1000000;
+                    };
+
+                    Buffer.prototype.readUInt32BE = function readUInt32BE(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 4, this.length);
+
+                        return this[offset] * 0x1000000 + (this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3]);
+                    };
+
+                    Buffer.prototype.readIntLE = function readIntLE(offset, byteLength, noAssert) {
+                        offset = offset | 0;
+                        byteLength = byteLength | 0;
+                        if (!noAssert) checkOffset(offset, byteLength, this.length);
+
+                        var val = this[offset];
+                        var mul = 1;
+                        var i = 0;
+                        while (++i < byteLength && (mul *= 0x100)) {
+                            val += this[offset + i] * mul;
+                        }
+                        mul *= 0x80;
+
+                        if (val >= mul) val -= Math.pow(2, 8 * byteLength);
+
+                        return val;
+                    };
+
+                    Buffer.prototype.readIntBE = function readIntBE(offset, byteLength, noAssert) {
+                        offset = offset | 0;
+                        byteLength = byteLength | 0;
+                        if (!noAssert) checkOffset(offset, byteLength, this.length);
+
+                        var i = byteLength;
+                        var mul = 1;
+                        var val = this[offset + --i];
+                        while (i > 0 && (mul *= 0x100)) {
+                            val += this[offset + --i] * mul;
+                        }
+                        mul *= 0x80;
+
+                        if (val >= mul) val -= Math.pow(2, 8 * byteLength);
+
+                        return val;
+                    };
+
+                    Buffer.prototype.readInt8 = function readInt8(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 1, this.length);
+                        if (!(this[offset] & 0x80)) return this[offset];
+                        return (0xff - this[offset] + 1) * -1;
+                    };
+
+                    Buffer.prototype.readInt16LE = function readInt16LE(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 2, this.length);
+                        var val = this[offset] | this[offset + 1] << 8;
+                        return val & 0x8000 ? val | 0xFFFF0000 : val;
+                    };
+
+                    Buffer.prototype.readInt16BE = function readInt16BE(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 2, this.length);
+                        var val = this[offset + 1] | this[offset] << 8;
+                        return val & 0x8000 ? val | 0xFFFF0000 : val;
+                    };
+
+                    Buffer.prototype.readInt32LE = function readInt32LE(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 4, this.length);
+
+                        return this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16 | this[offset + 3] << 24;
+                    };
+
+                    Buffer.prototype.readInt32BE = function readInt32BE(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 4, this.length);
+
+                        return this[offset] << 24 | this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3];
+                    };
+
+                    Buffer.prototype.readFloatLE = function readFloatLE(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 4, this.length);
+                        return ieee754.read(this, offset, true, 23, 4);
+                    };
+
+                    Buffer.prototype.readFloatBE = function readFloatBE(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 4, this.length);
+                        return ieee754.read(this, offset, false, 23, 4);
+                    };
+
+                    Buffer.prototype.readDoubleLE = function readDoubleLE(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 8, this.length);
+                        return ieee754.read(this, offset, true, 52, 8);
+                    };
+
+                    Buffer.prototype.readDoubleBE = function readDoubleBE(offset, noAssert) {
+                        if (!noAssert) checkOffset(offset, 8, this.length);
+                        return ieee754.read(this, offset, false, 52, 8);
+                    };
+
+                    function checkInt(buf, value, offset, ext, max, min) {
+                        if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance');
+                        if (value > max || value < min) throw new RangeError('"value" argument is out of bounds');
+                        if (offset + ext > buf.length) throw new RangeError('Index out of range');
+                    }
+
+                    Buffer.prototype.writeUIntLE = function writeUIntLE(value, offset, byteLength, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        byteLength = byteLength | 0;
+                        if (!noAssert) {
+                            var maxBytes = Math.pow(2, 8 * byteLength) - 1;
+                            checkInt(this, value, offset, byteLength, maxBytes, 0);
+                        }
+
+                        var mul = 1;
+                        var i = 0;
+                        this[offset] = value & 0xFF;
+                        while (++i < byteLength && (mul *= 0x100)) {
+                            this[offset + i] = value / mul & 0xFF;
+                        }
+
+                        return offset + byteLength;
+                    };
+
+                    Buffer.prototype.writeUIntBE = function writeUIntBE(value, offset, byteLength, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        byteLength = byteLength | 0;
+                        if (!noAssert) {
+                            var maxBytes = Math.pow(2, 8 * byteLength) - 1;
+                            checkInt(this, value, offset, byteLength, maxBytes, 0);
+                        }
+
+                        var i = byteLength - 1;
+                        var mul = 1;
+                        this[offset + i] = value & 0xFF;
+                        while (--i >= 0 && (mul *= 0x100)) {
+                            this[offset + i] = value / mul & 0xFF;
+                        }
+
+                        return offset + byteLength;
+                    };
+
+                    Buffer.prototype.writeUInt8 = function writeUInt8(value, offset, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0);
+                        if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
+                        this[offset] = value & 0xff;
+                        return offset + 1;
+                    };
+
+                    function objectWriteUInt16(buf, value, offset, littleEndian) {
+                        if (value < 0) value = 0xffff + value + 1;
+                        for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
+                            buf[offset + i] = (value & 0xff << 8 * (littleEndian ? i : 1 - i)) >>> (littleEndian ? i : 1 - i) * 8;
+                        }
+                    }
+
+                    Buffer.prototype.writeUInt16LE = function writeUInt16LE(value, offset, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
+                        if (Buffer.TYPED_ARRAY_SUPPORT) {
+                            this[offset] = value & 0xff;
+                            this[offset + 1] = value >>> 8;
+                        } else {
+                            objectWriteUInt16(this, value, offset, true);
+                        }
+                        return offset + 2;
+                    };
+
+                    Buffer.prototype.writeUInt16BE = function writeUInt16BE(value, offset, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
+                        if (Buffer.TYPED_ARRAY_SUPPORT) {
+                            this[offset] = value >>> 8;
+                            this[offset + 1] = value & 0xff;
+                        } else {
+                            objectWriteUInt16(this, value, offset, false);
+                        }
+                        return offset + 2;
+                    };
+
+                    function objectWriteUInt32(buf, value, offset, littleEndian) {
+                        if (value < 0) value = 0xffffffff + value + 1;
+                        for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
+                            buf[offset + i] = value >>> (littleEndian ? i : 3 - i) * 8 & 0xff;
+                        }
+                    }
+
+                    Buffer.prototype.writeUInt32LE = function writeUInt32LE(value, offset, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
+                        if (Buffer.TYPED_ARRAY_SUPPORT) {
+                            this[offset + 3] = value >>> 24;
+                            this[offset + 2] = value >>> 16;
+                            this[offset + 1] = value >>> 8;
+                            this[offset] = value & 0xff;
+                        } else {
+                            objectWriteUInt32(this, value, offset, true);
+                        }
+                        return offset + 4;
+                    };
+
+                    Buffer.prototype.writeUInt32BE = function writeUInt32BE(value, offset, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
+                        if (Buffer.TYPED_ARRAY_SUPPORT) {
+                            this[offset] = value >>> 24;
+                            this[offset + 1] = value >>> 16;
+                            this[offset + 2] = value >>> 8;
+                            this[offset + 3] = value & 0xff;
+                        } else {
+                            objectWriteUInt32(this, value, offset, false);
+                        }
+                        return offset + 4;
+                    };
+
+                    Buffer.prototype.writeIntLE = function writeIntLE(value, offset, byteLength, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        if (!noAssert) {
+                            var limit = Math.pow(2, 8 * byteLength - 1);
+
+                            checkInt(this, value, offset, byteLength, limit - 1, -limit);
+                        }
+
+                        var i = 0;
+                        var mul = 1;
+                        var sub = 0;
+                        this[offset] = value & 0xFF;
+                        while (++i < byteLength && (mul *= 0x100)) {
+                            if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+                                sub = 1;
+                            }
+                            this[offset + i] = (value / mul >> 0) - sub & 0xFF;
+                        }
+
+                        return offset + byteLength;
+                    };
+
+                    Buffer.prototype.writeIntBE = function writeIntBE(value, offset, byteLength, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        if (!noAssert) {
+                            var limit = Math.pow(2, 8 * byteLength - 1);
+
+                            checkInt(this, value, offset, byteLength, limit - 1, -limit);
+                        }
+
+                        var i = byteLength - 1;
+                        var mul = 1;
+                        var sub = 0;
+                        this[offset + i] = value & 0xFF;
+                        while (--i >= 0 && (mul *= 0x100)) {
+                            if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+                                sub = 1;
+                            }
+                            this[offset + i] = (value / mul >> 0) - sub & 0xFF;
+                        }
+
+                        return offset + byteLength;
+                    };
+
+                    Buffer.prototype.writeInt8 = function writeInt8(value, offset, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80);
+                        if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
+                        if (value < 0) value = 0xff + value + 1;
+                        this[offset] = value & 0xff;
+                        return offset + 1;
+                    };
+
+                    Buffer.prototype.writeInt16LE = function writeInt16LE(value, offset, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+                        if (Buffer.TYPED_ARRAY_SUPPORT) {
+                            this[offset] = value & 0xff;
+                            this[offset + 1] = value >>> 8;
+                        } else {
+                            objectWriteUInt16(this, value, offset, true);
+                        }
+                        return offset + 2;
+                    };
+
+                    Buffer.prototype.writeInt16BE = function writeInt16BE(value, offset, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+                        if (Buffer.TYPED_ARRAY_SUPPORT) {
+                            this[offset] = value >>> 8;
+                            this[offset + 1] = value & 0xff;
+                        } else {
+                            objectWriteUInt16(this, value, offset, false);
+                        }
+                        return offset + 2;
+                    };
+
+                    Buffer.prototype.writeInt32LE = function writeInt32LE(value, offset, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+                        if (Buffer.TYPED_ARRAY_SUPPORT) {
+                            this[offset] = value & 0xff;
+                            this[offset + 1] = value >>> 8;
+                            this[offset + 2] = value >>> 16;
+                            this[offset + 3] = value >>> 24;
+                        } else {
+                            objectWriteUInt32(this, value, offset, true);
+                        }
+                        return offset + 4;
+                    };
+
+                    Buffer.prototype.writeInt32BE = function writeInt32BE(value, offset, noAssert) {
+                        value = +value;
+                        offset = offset | 0;
+                        if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+                        if (value < 0) value = 0xffffffff + value + 1;
+                        if (Buffer.TYPED_ARRAY_SUPPORT) {
+                            this[offset] = value >>> 24;
+                            this[offset + 1] = value >>> 16;
+                            this[offset + 2] = value >>> 8;
+                            this[offset + 3] = value & 0xff;
+                        } else {
+                            objectWriteUInt32(this, value, offset, false);
+                        }
+                        return offset + 4;
+                    };
+
+                    function checkIEEE754(buf, value, offset, ext, max, min) {
+                        if (offset + ext > buf.length) throw new RangeError('Index out of range');
+                        if (offset < 0) throw new RangeError('Index out of range');
+                    }
+
+                    function writeFloat(buf, value, offset, littleEndian, noAssert) {
+                        if (!noAssert) {
+                            checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38);
+                        }
+                        ieee754.write(buf, value, offset, littleEndian, 23, 4);
+                        return offset + 4;
+                    }
+
+                    Buffer.prototype.writeFloatLE = function writeFloatLE(value, offset, noAssert) {
+                        return writeFloat(this, value, offset, true, noAssert);
+                    };
+
+                    Buffer.prototype.writeFloatBE = function writeFloatBE(value, offset, noAssert) {
+                        return writeFloat(this, value, offset, false, noAssert);
+                    };
+
+                    function writeDouble(buf, value, offset, littleEndian, noAssert) {
+                        if (!noAssert) {
+                            checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308);
+                        }
+                        ieee754.write(buf, value, offset, littleEndian, 52, 8);
+                        return offset + 8;
+                    }
+
+                    Buffer.prototype.writeDoubleLE = function writeDoubleLE(value, offset, noAssert) {
+                        return writeDouble(this, value, offset, true, noAssert);
+                    };
+
+                    Buffer.prototype.writeDoubleBE = function writeDoubleBE(value, offset, noAssert) {
+                        return writeDouble(this, value, offset, false, noAssert);
+                    };
+
+                    Buffer.prototype.copy = function copy(target, targetStart, start, end) {
+                        if (!start) start = 0;
+                        if (!end && end !== 0) end = this.length;
+                        if (targetStart >= target.length) targetStart = target.length;
+                        if (!targetStart) targetStart = 0;
+                        if (end > 0 && end < start) end = start;
+
+                        if (end === start) return 0;
+                        if (target.length === 0 || this.length === 0) return 0;
+
+                        if (targetStart < 0) {
+                            throw new RangeError('targetStart out of bounds');
+                        }
+                        if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds');
+                        if (end < 0) throw new RangeError('sourceEnd out of bounds');
+
+                        if (end > this.length) end = this.length;
+                        if (target.length - targetStart < end - start) {
+                            end = target.length - targetStart + start;
+                        }
+
+                        var len = end - start;
+                        var i;
+
+                        if (this === target && start < targetStart && targetStart < end) {
+                            for (i = len - 1; i >= 0; --i) {
+                                target[i + targetStart] = this[i + start];
+                            }
+                        } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+                            for (i = 0; i < len; ++i) {
+                                target[i + targetStart] = this[i + start];
+                            }
+                        } else {
+                            Uint8Array.prototype.set.call(target, this.subarray(start, start + len), targetStart);
+                        }
+
+                        return len;
+                    };
+
+                    Buffer.prototype.fill = function fill(val, start, end, encoding) {
+                        if (typeof val === 'string') {
+                            if (typeof start === 'string') {
+                                encoding = start;
+                                start = 0;
+                                end = this.length;
+                            } else if (typeof end === 'string') {
+                                encoding = end;
+                                end = this.length;
+                            }
+                            if (val.length === 1) {
+                                var code = val.charCodeAt(0);
+                                if (code < 256) {
+                                    val = code;
+                                }
+                            }
+                            if (encoding !== undefined && typeof encoding !== 'string') {
+                                throw new TypeError('encoding must be a string');
+                            }
+                            if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
+                                throw new TypeError('Unknown encoding: ' + encoding);
+                            }
+                        } else if (typeof val === 'number') {
+                            val = val & 255;
+                        }
+
+                        if (start < 0 || this.length < start || this.length < end) {
+                            throw new RangeError('Out of range index');
+                        }
+
+                        if (end <= start) {
+                            return this;
+                        }
+
+                        start = start >>> 0;
+                        end = end === undefined ? this.length : end >>> 0;
+
+                        if (!val) val = 0;
+
+                        var i;
+                        if (typeof val === 'number') {
+                            for (i = start; i < end; ++i) {
+                                this[i] = val;
+                            }
+                        } else {
+                            var bytes = Buffer.isBuffer(val) ? val : utf8ToBytes(new Buffer(val, encoding).toString());
+                            var len = bytes.length;
+                            for (i = 0; i < end - start; ++i) {
+                                this[i + start] = bytes[i % len];
+                            }
+                        }
+
+                        return this;
+                    };
+
+                    var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g;
+
+                    function base64clean(str) {
+                        str = stringtrim(str).replace(INVALID_BASE64_RE, '');
+
+                        if (str.length < 2) return '';
+
+                        while (str.length % 4 !== 0) {
+                            str = str + '=';
+                        }
+                        return str;
+                    }
+
+                    function stringtrim(str) {
+                        if (str.trim) return str.trim();
+                        return str.replace(/^\s+|\s+$/g, '');
+                    }
+
+                    function toHex(n) {
+                        if (n < 16) return '0' + n.toString(16);
+                        return n.toString(16);
+                    }
+
+                    function utf8ToBytes(string, units) {
+                        units = units || Infinity;
+                        var codePoint;
+                        var length = string.length;
+                        var leadSurrogate = null;
+                        var bytes = [];
+
+                        for (var i = 0; i < length; ++i) {
+                            codePoint = string.charCodeAt(i);
+
+                            if (codePoint > 0xD7FF && codePoint < 0xE000) {
+                                if (!leadSurrogate) {
+                                    if (codePoint > 0xDBFF) {
+                                        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+                                        continue;
+                                    } else if (i + 1 === length) {
+                                        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+                                        continue;
+                                    }
+
+                                    leadSurrogate = codePoint;
+
+                                    continue;
+                                }
+
+                                if (codePoint < 0xDC00) {
+                                    if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+                                    leadSurrogate = codePoint;
+                                    continue;
+                                }
+
+                                codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000;
+                            } else if (leadSurrogate) {
+                                if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+                            }
+
+                            leadSurrogate = null;
+
+                            if (codePoint < 0x80) {
+                                if ((units -= 1) < 0) break;
+                                bytes.push(codePoint);
+                            } else if (codePoint < 0x800) {
+                                if ((units -= 2) < 0) break;
+                                bytes.push(codePoint >> 0x6 | 0xC0, codePoint & 0x3F | 0x80);
+                            } else if (codePoint < 0x10000) {
+                                if ((units -= 3) < 0) break;
+                                bytes.push(codePoint >> 0xC | 0xE0, codePoint >> 0x6 & 0x3F | 0x80, codePoint & 0x3F | 0x80);
+                            } else if (codePoint < 0x110000) {
+                                if ((units -= 4) < 0) break;
+                                bytes.push(codePoint >> 0x12 | 0xF0, codePoint >> 0xC & 0x3F | 0x80, codePoint >> 0x6 & 0x3F | 0x80, codePoint & 0x3F | 0x80);
+                            } else {
+                                throw new Error('Invalid code point');
+                            }
+                        }
+
+                        return bytes;
+                    }
+
+                    function asciiToBytes(str) {
+                        var byteArray = [];
+                        for (var i = 0; i < str.length; ++i) {
+                            byteArray.push(str.charCodeAt(i) & 0xFF);
+                        }
+                        return byteArray;
+                    }
+
+                    function utf16leToBytes(str, units) {
+                        var c, hi, lo;
+                        var byteArray = [];
+                        for (var i = 0; i < str.length; ++i) {
+                            if ((units -= 2) < 0) break;
+
+                            c = str.charCodeAt(i);
+                            hi = c >> 8;
+                            lo = c % 256;
+                            byteArray.push(lo);
+                            byteArray.push(hi);
+                        }
+
+                        return byteArray;
+                    }
+
+                    function base64ToBytes(str) {
+                        return base64.toByteArray(base64clean(str));
+                    }
+
+                    function blitBuffer(src, dst, offset, length) {
+                        for (var i = 0; i < length; ++i) {
+                            if (i + offset >= dst.length || i >= src.length) break;
+                            dst[i + offset] = src[i];
+                        }
+                        return i;
+                    }
+
+                    function isnan(val) {
+                        return val !== val;
+                    }
+                }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
+            }, { "base64-js": 2, "ieee754": 38, "isarray": 41 }],
+            7: [function (require, module, exports) {
+                (function (Buffer) {
+
+                    function isArray(arg) {
+                        if (Array.isArray) {
+                            return Array.isArray(arg);
+                        }
+                        return objectToString(arg) === '[object Array]';
+                    }
+                    exports.isArray = isArray;
+
+                    function isBoolean(arg) {
+                        return typeof arg === 'boolean';
+                    }
+                    exports.isBoolean = isBoolean;
+
+                    function isNull(arg) {
+                        return arg === null;
+                    }
+                    exports.isNull = isNull;
+
+                    function isNullOrUndefined(arg) {
+                        return arg == null;
+                    }
+                    exports.isNullOrUndefined = isNullOrUndefined;
+
+                    function isNumber(arg) {
+                        return typeof arg === 'number';
+                    }
+                    exports.isNumber = isNumber;
+
+                    function isString(arg) {
+                        return typeof arg === 'string';
+                    }
+                    exports.isString = isString;
+
+                    function isSymbol(arg) {
+                        return (typeof arg === "undefined" ? "undefined" : _typeof(arg)) === 'symbol';
+                    }
+                    exports.isSymbol = isSymbol;
+
+                    function isUndefined(arg) {
+                        return arg === void 0;
+                    }
+                    exports.isUndefined = isUndefined;
+
+                    function isRegExp(re) {
+                        return objectToString(re) === '[object RegExp]';
+                    }
+                    exports.isRegExp = isRegExp;
+
+                    function isObject(arg) {
+                        return (typeof arg === "undefined" ? "undefined" : _typeof(arg)) === 'object' && arg !== null;
+                    }
+                    exports.isObject = isObject;
+
+                    function isDate(d) {
+                        return objectToString(d) === '[object Date]';
+                    }
+                    exports.isDate = isDate;
+
+                    function isError(e) {
+                        return objectToString(e) === '[object Error]' || e instanceof Error;
+                    }
+                    exports.isError = isError;
+
+                    function isFunction(arg) {
+                        return typeof arg === 'function';
+                    }
+                    exports.isFunction = isFunction;
+
+                    function isPrimitive(arg) {
+                        return arg === null || typeof arg === 'boolean' || typeof arg === 'number' || typeof arg === 'string' || (typeof arg === "undefined" ? "undefined" : _typeof(arg)) === 'symbol' || typeof arg === 'undefined';
+                    }
+                    exports.isPrimitive = isPrimitive;
+
+                    exports.isBuffer = Buffer.isBuffer;
+
+                    function objectToString(o) {
+                        return Object.prototype.toString.call(o);
+                    }
+                }).call(this, { "isBuffer": require("../../is-buffer/index.js") });
+            }, { "../../is-buffer/index.js": 40 }],
+            8: [function (require, module, exports) {
+                var ElementType = require('domelementtype');
+                var entities = require('entities');
+
+                var booleanAttributes = {
+                    __proto__: null,
+                    allowfullscreen: true,
+                    async: true,
+                    autofocus: true,
+                    autoplay: true,
+                    checked: true,
+                    controls: true,
+                    default: true,
+                    defer: true,
+                    disabled: true,
+                    hidden: true,
+                    ismap: true,
+                    loop: true,
+                    multiple: true,
+                    muted: true,
+                    open: true,
+                    readonly: true,
+                    required: true,
+                    reversed: true,
+                    scoped: true,
+                    seamless: true,
+                    selected: true,
+                    typemustmatch: true
+                };
+
+                var unencodedElements = {
+                    __proto__: null,
+                    style: true,
+                    script: true,
+                    xmp: true,
+                    iframe: true,
+                    noembed: true,
+                    noframes: true,
+                    plaintext: true,
+                    noscript: true
+                };
+
+                function formatAttrs(attributes, opts) {
+                    if (!attributes) return;
+
+                    var output = '',
+                        value;
+
+                    for (var key in attributes) {
+                        value = attributes[key];
+                        if (output) {
+                            output += ' ';
+                        }
+
+                        if (!value && booleanAttributes[key]) {
+                            output += key;
+                        } else {
+                            output += key + '="' + (opts.decodeEntities ? entities.encodeXML(value) : value) + '"';
+                        }
+                    }
+
+                    return output;
+                }
+
+                var singleTag = {
+                    __proto__: null,
+                    area: true,
+                    base: true,
+                    basefont: true,
+                    br: true,
+                    col: true,
+                    command: true,
+                    embed: true,
+                    frame: true,
+                    hr: true,
+                    img: true,
+                    input: true,
+                    isindex: true,
+                    keygen: true,
+                    link: true,
+                    meta: true,
+                    param: true,
+                    source: true,
+                    track: true,
+                    wbr: true
+                };
+
+                var render = module.exports = function (dom, opts) {
+                    if (!Array.isArray(dom) && !dom.cheerio) dom = [dom];
+                    opts = opts || {};
+
+                    var output = '';
+
+                    for (var i = 0; i < dom.length; i++) {
+                        var elem = dom[i];
+
+                        if (elem.type === 'root') output += render(elem.children, opts);else if (ElementType.isTag(elem)) output += renderTag(elem, opts);else if (elem.type === ElementType.Directive) output += renderDirective(elem);else if (elem.type === ElementType.Comment) output += renderComment(elem);else if (elem.type === ElementType.CDATA) output += renderCdata(elem);else output += renderText(elem, opts);
+                    }
+
+                    return output;
+                };
+
+                function renderTag(elem, opts) {
+                    if (elem.name === "svg") opts = { decodeEntities: opts.decodeEntities, xmlMode: true };
+
+                    var tag = '<' + elem.name,
+                        attribs = formatAttrs(elem.attribs, opts);
+
+                    if (attribs) {
+                        tag += ' ' + attribs;
+                    }
+
+                    if (opts.xmlMode && (!elem.children || elem.children.length === 0)) {
+                        tag += '/>';
+                    } else {
+                        tag += '>';
+                        if (elem.children) {
+                            tag += render(elem.children, opts);
+                        }
+
+                        if (!singleTag[elem.name] || opts.xmlMode) {
+                            tag += '</' + elem.name + '>';
+                        }
+                    }
+
+                    return tag;
+                }
+
+                function renderDirective(elem) {
+                    return '<' + elem.data + '>';
+                }
+
+                function renderText(elem, opts) {
+                    var data = elem.data || '';
+
+                    if (opts.decodeEntities && !(elem.parent && elem.parent.name in unencodedElements)) {
+                        data = entities.encodeXML(data);
+                    }
+
+                    return data;
+                }
+
+                function renderCdata(elem) {
+                    return '<![CDATA[' + elem.children[0].data + ']]>';
+                }
+
+                function renderComment(elem) {
+                    return '<!--' + elem.data + '-->';
+                }
+            }, { "domelementtype": 9, "entities": 21 }],
+            9: [function (require, module, exports) {
+                module.exports = {
+                    Text: "text",
+                    Directive: "directive",
+                    Comment: "comment",
+                    Script: "script",
+                    Style: "style",
+                    Tag: "tag",
+                    CDATA: "cdata",
+
+                    isTag: function isTag(elem) {
+                        return elem.type === "tag" || elem.type === "script" || elem.type === "style";
+                    }
+                };
+            }, {}],
+            10: [function (require, module, exports) {
+                module.exports = {
+                    Text: "text",
+                    Directive: "directive",
+                    Comment: "comment",
+                    Script: "script",
+                    Style: "style",
+                    Tag: "tag",
+                    CDATA: "cdata",
+                    Doctype: "doctype",
+
+                    isTag: function isTag(elem) {
+                        return elem.type === "tag" || elem.type === "script" || elem.type === "style";
+                    }
+                };
+            }, {}],
+            11: [function (require, module, exports) {
+                var ElementType = require("domelementtype");
+
+                var re_whitespace = /\s+/g;
+                var NodePrototype = require("./lib/node");
+                var ElementPrototype = require("./lib/element");
+
+                function DomHandler(callback, options, elementCB) {
+                    if ((typeof callback === "undefined" ? "undefined" : _typeof(callback)) === "object") {
+                        elementCB = options;
+                        options = callback;
+                        callback = null;
+                    } else if (typeof options === "function") {
+                        elementCB = options;
+                        options = defaultOpts;
+                    }
+                    this._callback = callback;
+                    this._options = options || defaultOpts;
+                    this._elementCB = elementCB;
+                    this.dom = [];
+                    this._done = false;
+                    this._tagStack = [];
+                    this._parser = this._parser || null;
+                }
+
+                var defaultOpts = {
+                    normalizeWhitespace: false,
+                    withStartIndices: false };
+
+                DomHandler.prototype.onparserinit = function (parser) {
+                    this._parser = parser;
+                };
+
+                DomHandler.prototype.onreset = function () {
+                    DomHandler.call(this, this._callback, this._options, this._elementCB);
+                };
+
+                DomHandler.prototype.onend = function () {
+                    if (this._done) return;
+                    this._done = true;
+                    this._parser = null;
+                    this._handleCallback(null);
+                };
+
+                DomHandler.prototype._handleCallback = DomHandler.prototype.onerror = function (error) {
+                    if (typeof this._callback === "function") {
+                        this._callback(error, this.dom);
+                    } else {
+                        if (error) throw error;
+                    }
+                };
+
+                DomHandler.prototype.onclosetag = function () {
+                    var elem = this._tagStack.pop();
+                    if (this._elementCB) this._elementCB(elem);
+                };
+
+                DomHandler.prototype._addDomElement = function (element) {
+                    var parent = this._tagStack[this._tagStack.length - 1];
+                    var siblings = parent ? parent.children : this.dom;
+                    var previousSibling = siblings[siblings.length - 1];
+
+                    element.next = null;
+
+                    if (this._options.withStartIndices) {
+                        element.startIndex = this._parser.startIndex;
+                    }
+
+                    if (this._options.withDomLvl1) {
+                        element.__proto__ = element.type === "tag" ? ElementPrototype : NodePrototype;
+                    }
+
+                    if (previousSibling) {
+                        element.prev = previousSibling;
+                        previousSibling.next = element;
+                    } else {
+                        element.prev = null;
+                    }
+
+                    siblings.push(element);
+                    element.parent = parent || null;
+                };
+
+                DomHandler.prototype.onopentag = function (name, attribs) {
+                    var element = {
+                        type: name === "script" ? ElementType.Script : name === "style" ? ElementType.Style : ElementType.Tag,
+                        name: name,
+                        attribs: attribs,
+                        children: []
+                    };
+
+                    this._addDomElement(element);
+
+                    this._tagStack.push(element);
+                };
+
+                DomHandler.prototype.ontext = function (data) {
+                    var normalize = this._options.normalizeWhitespace || this._options.ignoreWhitespace;
+
+                    var lastTag;
+
+                    if (!this._tagStack.length && this.dom.length && (lastTag = this.dom[this.dom.length - 1]).type === ElementType.Text) {
+                        if (normalize) {
+                            lastTag.data = (lastTag.data + data).replace(re_whitespace, " ");
+                        } else {
+                            lastTag.data += data;
+                        }
+                    } else {
+                        if (this._tagStack.length && (lastTag = this._tagStack[this._tagStack.length - 1]) && (lastTag = lastTag.children[lastTag.children.length - 1]) && lastTag.type === ElementType.Text) {
+                            if (normalize) {
+                                lastTag.data = (lastTag.data + data).replace(re_whitespace, " ");
+                            } else {
+                                lastTag.data += data;
+                            }
+                        } else {
+                            if (normalize) {
+                                data = data.replace(re_whitespace, " ");
+                            }
+
+                            this._addDomElement({
+                                data: data,
+                                type: ElementType.Text
+                            });
+                        }
+                    }
+                };
+
+                DomHandler.prototype.oncomment = function (data) {
+                    var lastTag = this._tagStack[this._tagStack.length - 1];
+
+                    if (lastTag && lastTag.type === ElementType.Comment) {
+                        lastTag.data += data;
+                        return;
+                    }
+
+                    var element = {
+                        data: data,
+                        type: ElementType.Comment
+                    };
+
+                    this._addDomElement(element);
+                    this._tagStack.push(element);
+                };
+
+                DomHandler.prototype.oncdatastart = function () {
+                    var element = {
+                        children: [{
+                            data: "",
+                            type: ElementType.Text
+                        }],
+                        type: ElementType.CDATA
+                    };
+
+                    this._addDomElement(element);
+                    this._tagStack.push(element);
+                };
+
+                DomHandler.prototype.oncommentend = DomHandler.prototype.oncdataend = function () {
+                    this._tagStack.pop();
+                };
+
+                DomHandler.prototype.onprocessinginstruction = function (name, data) {
+                    this._addDomElement({
+                        name: name,
+                        data: data,
+                        type: ElementType.Directive
+                    });
+                };
+
+                module.exports = DomHandler;
+            }, { "./lib/element": 12, "./lib/node": 13, "domelementtype": 10 }],
+            12: [function (require, module, exports) {
+                var NodePrototype = require('./node');
+                var ElementPrototype = module.exports = Object.create(NodePrototype);
+
+                var domLvl1 = {
+                    tagName: "name"
+                };
+
+                Object.keys(domLvl1).forEach(function (key) {
+                    var shorthand = domLvl1[key];
+                    Object.defineProperty(ElementPrototype, key, {
+                        get: function get() {
+                            return this[shorthand] || null;
+                        },
+                        set: function set(val) {
+                            this[shorthand] = val;
+                            return val;
+                        }
+                    });
+                });
+            }, { "./node": 13 }],
+            13: [function (require, module, exports) {
+                var NodePrototype = module.exports = {
+                    get firstChild() {
+                        var children = this.children;
+                        return children && children[0] || null;
+                    },
+                    get lastChild() {
+                        var children = this.children;
+                        return children && children[children.length - 1] || null;
+                    },
+                    get nodeType() {
+                        return nodeTypes[this.type] || nodeTypes.element;
+                    }
+                };
+
+                var domLvl1 = {
+                    tagName: "name",
+                    childNodes: "children",
+                    parentNode: "parent",
+                    previousSibling: "prev",
+                    nextSibling: "next",
+                    nodeValue: "data"
+                };
+
+                var nodeTypes = {
+                    element: 1,
+                    text: 3,
+                    cdata: 4,
+                    comment: 8
+                };
+
+                Object.keys(domLvl1).forEach(function (key) {
+                    var shorthand = domLvl1[key];
+                    Object.defineProperty(NodePrototype, key, {
+                        get: function get() {
+                            return this[shorthand] || null;
+                        },
+                        set: function set(val) {
+                            this[shorthand] = val;
+                            return val;
+                        }
+                    });
+                });
+            }, {}],
+            14: [function (require, module, exports) {
+                var DomUtils = module.exports;
+
+                [require("./lib/stringify"), require("./lib/traversal"), require("./lib/manipulation"), require("./lib/querying"), require("./lib/legacy"), require("./lib/helpers")].forEach(function (ext) {
+                    Object.keys(ext).forEach(function (key) {
+                        DomUtils[key] = ext[key].bind(DomUtils);
+                    });
+                });
+            }, { "./lib/helpers": 15, "./lib/legacy": 16, "./lib/manipulation": 17, "./lib/querying": 18, "./lib/stringify": 19, "./lib/traversal": 20 }],
+            15: [function (require, module, exports) {
+                exports.removeSubsets = function (nodes) {
+                    var idx = nodes.length,
+                        node,
+                        ancestor,
+                        replace;
+
+                    while (--idx > -1) {
+                        node = ancestor = nodes[idx];
+
+                        nodes[idx] = null;
+                        replace = true;
+
+                        while (ancestor) {
+                            if (nodes.indexOf(ancestor) > -1) {
+                                replace = false;
+                                nodes.splice(idx, 1);
+                                break;
+                            }
+                            ancestor = ancestor.parent;
+                        }
+
+                        if (replace) {
+                            nodes[idx] = node;
+                        }
+                    }
+
+                    return nodes;
+                };
+
+                var POSITION = {
+                    DISCONNECTED: 1,
+                    PRECEDING: 2,
+                    FOLLOWING: 4,
+                    CONTAINS: 8,
+                    CONTAINED_BY: 16
+                };
+
+                var comparePos = exports.compareDocumentPosition = function (nodeA, nodeB) {
+                    var aParents = [];
+                    var bParents = [];
+                    var current, sharedParent, siblings, aSibling, bSibling, idx;
+
+                    if (nodeA === nodeB) {
+                        return 0;
+                    }
+
+                    current = nodeA;
+                    while (current) {
+                        aParents.unshift(current);
+                        current = current.parent;
+                    }
+                    current = nodeB;
+                    while (current) {
+                        bParents.unshift(current);
+                        current = current.parent;
+                    }
+
+                    idx = 0;
+                    while (aParents[idx] === bParents[idx]) {
+                        idx++;
+                    }
+
+                    if (idx === 0) {
+                        return POSITION.DISCONNECTED;
+                    }
+
+                    sharedParent = aParents[idx - 1];
+                    siblings = sharedParent.children;
+                    aSibling = aParents[idx];
+                    bSibling = bParents[idx];
+
+                    if (siblings.indexOf(aSibling) > siblings.indexOf(bSibling)) {
+                        if (sharedParent === nodeB) {
+                            return POSITION.FOLLOWING | POSITION.CONTAINED_BY;
+                        }
+                        return POSITION.FOLLOWING;
+                    } else {
+                        if (sharedParent === nodeA) {
+                            return POSITION.PRECEDING | POSITION.CONTAINS;
+                        }
+                        return POSITION.PRECEDING;
+                    }
+                };
+
+                exports.uniqueSort = function (nodes) {
+                    var idx = nodes.length,
+                        node,
+                        position;
+
+                    nodes = nodes.slice();
+
+                    while (--idx > -1) {
+                        node = nodes[idx];
+                        position = nodes.indexOf(node);
+                        if (position > -1 && position < idx) {
+                            nodes.splice(idx, 1);
+                        }
+                    }
+                    nodes.sort(function (a, b) {
+                        var relative = comparePos(a, b);
+                        if (relative & POSITION.PRECEDING) {
+                            return -1;
+                        } else if (relative & POSITION.FOLLOWING) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+
+                    return nodes;
+                };
+            }, {}],
+            16: [function (require, module, exports) {
+                var ElementType = require("domelementtype");
+                var isTag = exports.isTag = ElementType.isTag;
+
+                exports.testElement = function (options, element) {
+                    for (var key in options) {
+                        if (!options.hasOwnProperty(key)) ;else if (key === "tag_name") {
+                            if (!isTag(element) || !options.tag_name(element.name)) {
+                                return false;
+                            }
+                        } else if (key === "tag_type") {
+                            if (!options.tag_type(element.type)) return false;
+                        } else if (key === "tag_contains") {
+                            if (isTag(element) || !options.tag_contains(element.data)) {
+                                return false;
+                            }
+                        } else if (!element.attribs || !options[key](element.attribs[key])) {
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+
+                var Checks = {
+                    tag_name: function tag_name(name) {
+                        if (typeof name === "function") {
+                            return function (elem) {
+                                return isTag(elem) && name(elem.name);
+                            };
+                        } else if (name === "*") {
+                            return isTag;
+                        } else {
+                            return function (elem) {
+                                return isTag(elem) && elem.name === name;
+                            };
+                        }
+                    },
+                    tag_type: function tag_type(type) {
+                        if (typeof type === "function") {
+                            return function (elem) {
+                                return type(elem.type);
+                            };
+                        } else {
+                            return function (elem) {
+                                return elem.type === type;
+                            };
+                        }
+                    },
+                    tag_contains: function tag_contains(data) {
+                        if (typeof data === "function") {
+                            return function (elem) {
+                                return !isTag(elem) && data(elem.data);
+                            };
+                        } else {
+                            return function (elem) {
+                                return !isTag(elem) && elem.data === data;
+                            };
+                        }
+                    }
+                };
+
+                function getAttribCheck(attrib, value) {
+                    if (typeof value === "function") {
+                        return function (elem) {
+                            return elem.attribs && value(elem.attribs[attrib]);
+                        };
+                    } else {
+                        return function (elem) {
+                            return elem.attribs && elem.attribs[attrib] === value;
+                        };
+                    }
+                }
+
+                function combineFuncs(a, b) {
+                    return function (elem) {
+                        return a(elem) || b(elem);
+                    };
+                }
+
+                exports.getElements = function (options, element, recurse, limit) {
+                    var funcs = Object.keys(options).map(function (key) {
+                        var value = options[key];
+                        return key in Checks ? Checks[key](value) : getAttribCheck(key, value);
+                    });
+
+                    return funcs.length === 0 ? [] : this.filter(funcs.reduce(combineFuncs), element, recurse, limit);
+                };
+
+                exports.getElementById = function (id, element, recurse) {
+                    if (!Array.isArray(element)) element = [element];
+                    return this.findOne(getAttribCheck("id", id), element, recurse !== false);
+                };
+
+                exports.getElementsByTagName = function (name, element, recurse, limit) {
+                    return this.filter(Checks.tag_name(name), element, recurse, limit);
+                };
+
+                exports.getElementsByTagType = function (type, element, recurse, limit) {
+                    return this.filter(Checks.tag_type(type), element, recurse, limit);
+                };
+            }, { "domelementtype": 10 }],
+            17: [function (require, module, exports) {
+                exports.removeElement = function (elem) {
+                    if (elem.prev) elem.prev.next = elem.next;
+                    if (elem.next) elem.next.prev = elem.prev;
+
+                    if (elem.parent) {
+                        var childs = elem.parent.children;
+                        childs.splice(childs.lastIndexOf(elem), 1);
+                    }
+                };
+
+                exports.replaceElement = function (elem, replacement) {
+                    var prev = replacement.prev = elem.prev;
+                    if (prev) {
+                        prev.next = replacement;
+                    }
+
+                    var next = replacement.next = elem.next;
+                    if (next) {
+                        next.prev = replacement;
+                    }
+
+                    var parent = replacement.parent = elem.parent;
+                    if (parent) {
+                        var childs = parent.children;
+                        childs[childs.lastIndexOf(elem)] = replacement;
+                    }
+                };
+
+                exports.appendChild = function (elem, child) {
+                    child.parent = elem;
+
+                    if (elem.children.push(child) !== 1) {
+                        var sibling = elem.children[elem.children.length - 2];
+                        sibling.next = child;
+                        child.prev = sibling;
+                        child.next = null;
+                    }
+                };
+
+                exports.append = function (elem, next) {
+                    var parent = elem.parent,
+                        currNext = elem.next;
+
+                    next.next = currNext;
+                    next.prev = elem;
+                    elem.next = next;
+                    next.parent = parent;
+
+                    if (currNext) {
+                        currNext.prev = next;
+                        if (parent) {
+                            var childs = parent.children;
+                            childs.splice(childs.lastIndexOf(currNext), 0, next);
+                        }
+                    } else if (parent) {
+                        parent.children.push(next);
+                    }
+                };
+
+                exports.prepend = function (elem, prev) {
+                    var parent = elem.parent;
+                    if (parent) {
+                        var childs = parent.children;
+                        childs.splice(childs.lastIndexOf(elem), 0, prev);
+                    }
+
+                    if (elem.prev) {
+                        elem.prev.next = prev;
+                    }
+
+                    prev.parent = parent;
+                    prev.prev = elem.prev;
+                    prev.next = elem;
+                    elem.prev = prev;
+                };
+            }, {}],
+            18: [function (require, module, exports) {
+                var isTag = require("domelementtype").isTag;
+
+                module.exports = {
+                    filter: filter,
+                    find: find,
+                    findOneChild: findOneChild,
+                    findOne: findOne,
+                    existsOne: existsOne,
+                    findAll: findAll
+                };
+
+                function filter(test, element, recurse, limit) {
+                    if (!Array.isArray(element)) element = [element];
+
+                    if (typeof limit !== "number" || !isFinite(limit)) {
+                        limit = Infinity;
+                    }
+                    return find(test, element, recurse !== false, limit);
+                }
+
+                function find(test, elems, recurse, limit) {
+                    var result = [],
+                        childs;
+
+                    for (var i = 0, j = elems.length; i < j; i++) {
+                        if (test(elems[i])) {
+                            result.push(elems[i]);
+                            if (--limit <= 0) break;
+                        }
+
+                        childs = elems[i].children;
+                        if (recurse && childs && childs.length > 0) {
+                            childs = find(test, childs, recurse, limit);
+                            result = result.concat(childs);
+                            limit -= childs.length;
+                            if (limit <= 0) break;
+                        }
+                    }
+
+                    return result;
+                }
+
+                function findOneChild(test, elems) {
+                    for (var i = 0, l = elems.length; i < l; i++) {
+                        if (test(elems[i])) return elems[i];
+                    }
+
+                    return null;
+                }
+
+                function findOne(test, elems) {
+                    var elem = null;
+
+                    for (var i = 0, l = elems.length; i < l && !elem; i++) {
+                        if (!isTag(elems[i])) {
+                            continue;
+                        } else if (test(elems[i])) {
+                            elem = elems[i];
+                        } else if (elems[i].children.length > 0) {
+                            elem = findOne(test, elems[i].children);
+                        }
+                    }
+
+                    return elem;
+                }
+
+                function existsOne(test, elems) {
+                    for (var i = 0, l = elems.length; i < l; i++) {
+                        if (isTag(elems[i]) && (test(elems[i]) || elems[i].children.length > 0 && existsOne(test, elems[i].children))) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+                function findAll(test, elems) {
+                    var result = [];
+                    for (var i = 0, j = elems.length; i < j; i++) {
+                        if (!isTag(elems[i])) continue;
+                        if (test(elems[i])) result.push(elems[i]);
+
+                        if (elems[i].children.length > 0) {
+                            result = result.concat(findAll(test, elems[i].children));
+                        }
+                    }
+                    return result;
+                }
+            }, { "domelementtype": 10 }],
+            19: [function (require, module, exports) {
+                var ElementType = require("domelementtype"),
+                    getOuterHTML = require("dom-serializer"),
+                    isTag = ElementType.isTag;
+
+                module.exports = {
+                    getInnerHTML: getInnerHTML,
+                    getOuterHTML: getOuterHTML,
+                    getText: getText
+                };
+
+                function getInnerHTML(elem, opts) {
+                    return elem.children ? elem.children.map(function (elem) {
+                        return getOuterHTML(elem, opts);
+                    }).join("") : "";
+                }
+
+                function getText(elem) {
+                    if (Array.isArray(elem)) return elem.map(getText).join("");
+                    if (isTag(elem) || elem.type === ElementType.CDATA) return getText(elem.children);
+                    if (elem.type === ElementType.Text) return elem.data;
+                    return "";
+                }
+            }, { "dom-serializer": 8, "domelementtype": 10 }],
+            20: [function (require, module, exports) {
+                var getChildren = exports.getChildren = function (elem) {
+                    return elem.children;
+                };
+
+                var getParent = exports.getParent = function (elem) {
+                    return elem.parent;
+                };
+
+                exports.getSiblings = function (elem) {
+                    var parent = getParent(elem);
+                    return parent ? getChildren(parent) : [elem];
+                };
+
+                exports.getAttributeValue = function (elem, name) {
+                    return elem.attribs && elem.attribs[name];
+                };
+
+                exports.hasAttrib = function (elem, name) {
+                    return !!elem.attribs && hasOwnProperty.call(elem.attribs, name);
+                };
+
+                exports.getName = function (elem) {
+                    return elem.name;
+                };
+            }, {}],
+            21: [function (require, module, exports) {
+                var encode = require("./lib/encode.js"),
+                    decode = require("./lib/decode.js");
+
+                exports.decode = function (data, level) {
+                    return (!level || level <= 0 ? decode.XML : decode.HTML)(data);
+                };
+
+                exports.decodeStrict = function (data, level) {
+                    return (!level || level <= 0 ? decode.XML : decode.HTMLStrict)(data);
+                };
+
+                exports.encode = function (data, level) {
+                    return (!level || level <= 0 ? encode.XML : encode.HTML)(data);
+                };
+
+                exports.encodeXML = encode.XML;
+
+                exports.encodeHTML4 = exports.encodeHTML5 = exports.encodeHTML = encode.HTML;
+
+                exports.decodeXML = exports.decodeXMLStrict = decode.XML;
+
+                exports.decodeHTML4 = exports.decodeHTML5 = exports.decodeHTML = decode.HTML;
+
+                exports.decodeHTML4Strict = exports.decodeHTML5Strict = exports.decodeHTMLStrict = decode.HTMLStrict;
+
+                exports.escape = encode.escape;
+            }, { "./lib/decode.js": 22, "./lib/encode.js": 24 }],
+            22: [function (require, module, exports) {
+                var entityMap = require("../maps/entities.json"),
+                    legacyMap = require("../maps/legacy.json"),
+                    xmlMap = require("../maps/xml.json"),
+                    decodeCodePoint = require("./decode_codepoint.js");
+
+                var decodeXMLStrict = getStrictDecoder(xmlMap),
+                    decodeHTMLStrict = getStrictDecoder(entityMap);
+
+                function getStrictDecoder(map) {
+                    var keys = Object.keys(map).join("|"),
+                        replace = getReplacer(map);
+
+                    keys += "|#[xX][\\da-fA-F]+|#\\d+";
+
+                    var re = new RegExp("&(?:" + keys + ");", "g");
+
+                    return function (str) {
+                        return String(str).replace(re, replace);
+                    };
+                }
+
+                var decodeHTML = function () {
+                    var legacy = Object.keys(legacyMap).sort(sorter);
+
+                    var keys = Object.keys(entityMap).sort(sorter);
+
+                    for (var i = 0, j = 0; i < keys.length; i++) {
+                        if (legacy[j] === keys[i]) {
+                            keys[i] += ";?";
+                            j++;
+                        } else {
+                            keys[i] += ";";
+                        }
+                    }
+
+                    var re = new RegExp("&(?:" + keys.join("|") + "|#[xX][\\da-fA-F]+;?|#\\d+;?)", "g"),
+                        replace = getReplacer(entityMap);
+
+                    function replacer(str) {
+                        if (str.substr(-1) !== ";") str += ";";
+                        return replace(str);
+                    }
+
+                    return function (str) {
+                        return String(str).replace(re, replacer);
+                    };
+                }();
+
+                function sorter(a, b) {
+                    return a < b ? 1 : -1;
+                }
+
+                function getReplacer(map) {
+                    return function replace(str) {
+                        if (str.charAt(1) === "#") {
+                            if (str.charAt(2) === "X" || str.charAt(2) === "x") {
+                                return decodeCodePoint(parseInt(str.substr(3), 16));
+                            }
+                            return decodeCodePoint(parseInt(str.substr(2), 10));
+                        }
+                        return map[str.slice(1, -1)];
+                    };
+                }
+
+                module.exports = {
+                    XML: decodeXMLStrict,
+                    HTML: decodeHTML,
+                    HTMLStrict: decodeHTMLStrict
+                };
+            }, { "../maps/entities.json": 26, "../maps/legacy.json": 27, "../maps/xml.json": 28, "./decode_codepoint.js": 23 }],
+            23: [function (require, module, exports) {
+                var decodeMap = require("../maps/decode.json");
+
+                module.exports = decodeCodePoint;
+
+                function decodeCodePoint(codePoint) {
+
+                    if (codePoint >= 0xD800 && codePoint <= 0xDFFF || codePoint > 0x10FFFF) {
+                        return "�";
+                    }
+
+                    if (codePoint in decodeMap) {
+                        codePoint = decodeMap[codePoint];
+                    }
+
+                    var output = "";
+
+                    if (codePoint > 0xFFFF) {
+                        codePoint -= 0x10000;
+                        output += String.fromCharCode(codePoint >>> 10 & 0x3FF | 0xD800);
+                        codePoint = 0xDC00 | codePoint & 0x3FF;
+                    }
+
+                    output += String.fromCharCode(codePoint);
+                    return output;
+                }
+            }, { "../maps/decode.json": 25 }],
+            24: [function (require, module, exports) {
+                var inverseXML = getInverseObj(require("../maps/xml.json")),
+                    xmlReplacer = getInverseReplacer(inverseXML);
+
+                exports.XML = getInverse(inverseXML, xmlReplacer);
+
+                var inverseHTML = getInverseObj(require("../maps/entities.json")),
+                    htmlReplacer = getInverseReplacer(inverseHTML);
+
+                exports.HTML = getInverse(inverseHTML, htmlReplacer);
+
+                function getInverseObj(obj) {
+                    return Object.keys(obj).sort().reduce(function (inverse, name) {
+                        inverse[obj[name]] = "&" + name + ";";
+                        return inverse;
+                    }, {});
+                }
+
+                function getInverseReplacer(inverse) {
+                    var single = [],
+                        multiple = [];
+
+                    Object.keys(inverse).forEach(function (k) {
+                        if (k.length === 1) {
+                            single.push("\\" + k);
+                        } else {
+                            multiple.push(k);
+                        }
+                    });
+
+                    multiple.unshift("[" + single.join("") + "]");
+
+                    return new RegExp(multiple.join("|"), "g");
+                }
+
+                var re_nonASCII = /[^\0-\x7F]/g,
+                    re_astralSymbols = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
+
+                function singleCharReplacer(c) {
+                    return "&#x" + c.charCodeAt(0).toString(16).toUpperCase() + ";";
+                }
+
+                function astralReplacer(c) {
+                    var high = c.charCodeAt(0);
+                    var low = c.charCodeAt(1);
+                    var codePoint = (high - 0xD800) * 0x400 + low - 0xDC00 + 0x10000;
+                    return "&#x" + codePoint.toString(16).toUpperCase() + ";";
+                }
+
+                function getInverse(inverse, re) {
+                    function func(name) {
+                        return inverse[name];
+                    }
+
+                    return function (data) {
+                        return data.replace(re, func).replace(re_astralSymbols, astralReplacer).replace(re_nonASCII, singleCharReplacer);
+                    };
+                }
+
+                var re_xmlChars = getInverseReplacer(inverseXML);
+
+                function escapeXML(data) {
+                    return data.replace(re_xmlChars, singleCharReplacer).replace(re_astralSymbols, astralReplacer).replace(re_nonASCII, singleCharReplacer);
+                }
+
+                exports.escape = escapeXML;
+            }, { "../maps/entities.json": 26, "../maps/xml.json": 28 }],
+            25: [function (require, module, exports) {
+                module.exports = { "0": 65533, "128": 8364, "130": 8218, "131": 402, "132": 8222, "133": 8230, "134": 8224, "135": 8225, "136": 710, "137": 8240, "138": 352, "139": 8249, "140": 338, "142": 381, "145": 8216, "146": 8217, "147": 8220, "148": 8221, "149": 8226, "150": 8211, "151": 8212, "152": 732, "153": 8482, "154": 353, "155": 8250, "156": 339, "158": 382, "159": 376 };
+            }, {}],
+            26: [function (require, module, exports) {
+                module.exports = { "Aacute": "Á", "aacute": "á", "Abreve": "Ă", "abreve": "ă", "ac": "∾", "acd": "∿", "acE": "∾̳", "Acirc": "Â", "acirc": "â", "acute": "´", "Acy": "А", "acy": "а", "AElig": "Æ", "aelig": "æ", "af": "⁡", "Afr": "𝔄", "afr": "𝔞", "Agrave": "À", "agrave": "à", "alefsym": "ℵ", "aleph": "ℵ", "Alpha": "Α", "alpha": "α", "Amacr": "Ā", "amacr": "ā", "amalg": "⨿", "amp": "&", "AMP": "&", "andand": "⩕", "And": "⩓", "and": "∧", "andd": "⩜", "andslope": "⩘", "andv": "⩚", "ang": "∠", "ange": "⦤", "angle": "∠", "angmsdaa": "⦨", "angmsdab": "⦩", "angmsdac": "⦪", "angmsdad": "⦫", "angmsdae": "⦬", "angmsdaf": "⦭", "angmsdag": "⦮", "angmsdah": "⦯", "angmsd": "∡", "angrt": "∟", "angrtvb": "⊾", "angrtvbd": "⦝", "angsph": "∢", "angst": "Å", "angzarr": "⍼", "Aogon": "Ą", "aogon": "ą", "Aopf": "𝔸", "aopf": "𝕒", "apacir": "⩯", "ap": "≈", "apE": "⩰", "ape": "≊", "apid": "≋", "apos": "'", "ApplyFunction": "⁡", "approx": "≈", "approxeq": "≊", "Aring": "Å", "aring": "å", "Ascr": "𝒜", "ascr": "𝒶", "Assign": "≔", "ast": "*", "asymp": "≈", "asympeq": "≍", "Atilde": "Ã", "atilde": "ã", "Auml": "Ä", "auml": "ä", "awconint": "∳", "awint": "⨑", "backcong": "≌", "backepsilon": "϶", "backprime": "‵", "backsim": "∽", "backsimeq": "⋍", "Backslash": "∖", "Barv": "⫧", "barvee": "⊽", "barwed": "⌅", "Barwed": "⌆", "barwedge": "⌅", "bbrk": "⎵", "bbrktbrk": "⎶", "bcong": "≌", "Bcy": "Б", "bcy": "б", "bdquo": "„", "becaus": "∵", "because": "∵", "Because": "∵", "bemptyv": "⦰", "bepsi": "϶", "bernou": "ℬ", "Bernoullis": "ℬ", "Beta": "Β", "beta": "β", "beth": "ℶ", "between": "≬", "Bfr": "𝔅", "bfr": "𝔟", "bigcap": "⋂", "bigcirc": "◯", "bigcup": "⋃", "bigodot": "⨀", "bigoplus": "⨁", "bigotimes": "⨂", "bigsqcup": "⨆", "bigstar": "★", "bigtriangledown": "▽", "bigtriangleup": "△", "biguplus": "⨄", "bigvee": "⋁", "bigwedge": "⋀", "bkarow": "⤍", "blacklozenge": "⧫", "blacksquare": "▪", "blacktriangle": "▴", "blacktriangledown": "▾", "blacktriangleleft": "◂", "blacktriangleright": "▸", "blank": "␣", "blk12": "▒", "blk14": "░", "blk34": "▓", "block": "█", "bne": "=⃥", "bnequiv": "≡⃥", "bNot": "⫭", "bnot": "⌐", "Bopf": "𝔹", "bopf": "𝕓", "bot": "⊥", "bottom": "⊥", "bowtie": "⋈", "boxbox": "⧉", "boxdl": "┐", "boxdL": "╕", "boxDl": "╖", "boxDL": "╗", "boxdr": "┌", "boxdR": "╒", "boxDr": "╓", "boxDR": "╔", "boxh": "─", "boxH": "═", "boxhd": "┬", "boxHd": "╤", "boxhD": "╥", "boxHD": "╦", "boxhu": "┴", "boxHu": "╧", "boxhU": "╨", "boxHU": "╩", "boxminus": "⊟", "boxplus": "⊞", "boxtimes": "⊠", "boxul": "┘", "boxuL": "╛", "boxUl": "╜", "boxUL": "╝", "boxur": "└", "boxuR": "╘", "boxUr": "╙", "boxUR": "╚", "boxv": "│", "boxV": "║", "boxvh": "┼", "boxvH": "╪", "boxVh": "╫", "boxVH": "╬", "boxvl": "┤", "boxvL": "╡", "boxVl": "╢", "boxVL": "╣", "boxvr": "├", "boxvR": "╞", "boxVr": "╟", "boxVR": "╠", "bprime": "‵", "breve": "˘", "Breve": "˘", "brvbar": "¦", "bscr": "𝒷", "Bscr": "ℬ", "bsemi": "⁏", "bsim": "∽", "bsime": "⋍", "bsolb": "⧅", "bsol": "\\", "bsolhsub": "⟈", "bull": "•", "bullet": "•", "bump": "≎", "bumpE": "⪮", "bumpe": "≏", "Bumpeq": "≎", "bumpeq": "≏", "Cacute": "Ć", "cacute": "ć", "capand": "⩄", "capbrcup": "⩉", "capcap": "⩋", "cap": "∩", "Cap": "⋒", "capcup": "⩇", "capdot": "⩀", "CapitalDifferentialD": "ⅅ", "caps": "∩︀", "caret": "⁁", "caron": "ˇ", "Cayleys": "ℭ", "ccaps": "⩍", "Ccaron": "Č", "ccaron": "č", "Ccedil": "Ç", "ccedil": "ç", "Ccirc": "Ĉ", "ccirc": "ĉ", "Cconint": "∰", "ccups": "⩌", "ccupssm": "⩐", "Cdot": "Ċ", "cdot": "ċ", "cedil": "¸", "Cedilla": "¸", "cemptyv": "⦲", "cent": "¢", "centerdot": "·", "CenterDot": "·", "cfr": "𝔠", "Cfr": "ℭ", "CHcy": "Ч", "chcy": "ч", "check": "✓", "checkmark": "✓", "Chi": "Χ", "chi": "χ", "circ": "ˆ", "circeq": "≗", "circlearrowleft": "↺", "circlearrowright": "↻", "circledast": "⊛", "circledcirc": "⊚", "circleddash": "⊝", "CircleDot": "⊙", "circledR": "®", "circledS": "Ⓢ", "CircleMinus": "⊖", "CirclePlus": "⊕", "CircleTimes": "⊗", "cir": "○", "cirE": "⧃", "cire": "≗", "cirfnint": "⨐", "cirmid": "⫯", "cirscir": "⧂", "ClockwiseContourIntegral": "∲", "CloseCurlyDoubleQuote": "”", "CloseCurlyQuote": "’", "clubs": "♣", "clubsuit": "♣", "colon": ":", "Colon": "∷", "Colone": "⩴", "colone": "≔", "coloneq": "≔", "comma": ",", "commat": "@", "comp": "∁", "compfn": "∘", "complement": "∁", "complexes": "ℂ", "cong": "≅", "congdot": "⩭", "Congruent": "≡", "conint": "∮", "Conint": "∯", "ContourIntegral": "∮", "copf": "𝕔", "Copf": "ℂ", "coprod": "∐", "Coproduct": "∐", "copy": "©", "COPY": "©", "copysr": "℗", "CounterClockwiseContourIntegral": "∳", "crarr": "↵", "cross": "✗", "Cross": "⨯", "Cscr": "𝒞", "cscr": "𝒸", "csub": "⫏", "csube": "⫑", "csup": "⫐", "csupe": "⫒", "ctdot": "⋯", "cudarrl": "⤸", "cudarrr": "⤵", "cuepr": "⋞", "cuesc": "⋟", "cularr": "↶", "cularrp": "⤽", "cupbrcap": "⩈", "cupcap": "⩆", "CupCap": "≍", "cup": "∪", "Cup": "⋓", "cupcup": "⩊", "cupdot": "⊍", "cupor": "⩅", "cups": "∪︀", "curarr": "↷", "curarrm": "⤼", "curlyeqprec": "⋞", "curlyeqsucc": "⋟", "curlyvee": "⋎", "curlywedge": "⋏", "curren": "¤", "curvearrowleft": "↶", "curvearrowright": "↷", "cuvee": "⋎", "cuwed": "⋏", "cwconint": "∲", "cwint": "∱", "cylcty": "⌭", "dagger": "†", "Dagger": "‡", "daleth": "ℸ", "darr": "↓", "Darr": "↡", "dArr": "⇓", "dash": "‐", "Dashv": "⫤", "dashv": "⊣", "dbkarow": "⤏", "dblac": "˝", "Dcaron": "Ď", "dcaron": "ď", "Dcy": "Д", "dcy": "д", "ddagger": "‡", "ddarr": "⇊", "DD": "ⅅ", "dd": "ⅆ", "DDotrahd": "⤑", "ddotseq": "⩷", "deg": "°", "Del": "∇", "Delta": "Δ", "delta": "δ", "demptyv": "⦱", "dfisht": "⥿", "Dfr": "𝔇", "dfr": "𝔡", "dHar": "⥥", "dharl": "⇃", "dharr": "⇂", "DiacriticalAcute": "´", "DiacriticalDot": "˙", "DiacriticalDoubleAcute": "˝", "DiacriticalGrave": "`", "DiacriticalTilde": "˜", "diam": "⋄", "diamond": "⋄", "Diamond": "⋄", "diamondsuit": "♦", "diams": "♦", "die": "¨", "DifferentialD": "ⅆ", "digamma": "ϝ", "disin": "⋲", "div": "÷", "divide": "÷", "divideontimes": "⋇", "divonx": "⋇", "DJcy": "Ђ", "djcy": "ђ", "dlcorn": "⌞", "dlcrop": "⌍", "dollar": "$", "Dopf": "𝔻", "dopf": "𝕕", "Dot": "¨", "dot": "˙", "DotDot": "⃜", "doteq": "≐", "doteqdot": "≑", "DotEqual": "≐", "dotminus": "∸", "dotplus": "∔", "dotsquare": "⊡", "doublebarwedge": "⌆", "DoubleContourIntegral": "∯", "DoubleDot": "¨", "DoubleDownArrow": "⇓", "DoubleLeftArrow": "⇐", "DoubleLeftRightArrow": "⇔", "DoubleLeftTee": "⫤", "DoubleLongLeftArrow": "⟸", "DoubleLongLeftRightArrow": "⟺", "DoubleLongRightArrow": "⟹", "DoubleRightArrow": "⇒", "DoubleRightTee": "⊨", "DoubleUpArrow": "⇑", "DoubleUpDownArrow": "⇕", "DoubleVerticalBar": "∥", "DownArrowBar": "⤓", "downarrow": "↓", "DownArrow": "↓", "Downarrow": "⇓", "DownArrowUpArrow": "⇵", "DownBreve": "̑", "downdownarrows": "⇊", "downharpoonleft": "⇃", "downharpoonright": "⇂", "DownLeftRightVector": "⥐", "DownLeftTeeVector": "⥞", "DownLeftVectorBar": "⥖", "DownLeftVector": "↽", "DownRightTeeVector": "⥟", "DownRightVectorBar": "⥗", "DownRightVector": "⇁", "DownTeeArrow": "↧", "DownTee": "⊤", "drbkarow": "⤐", "drcorn": "⌟", "drcrop": "⌌", "Dscr": "𝒟", "dscr": "𝒹", "DScy": "Ѕ", "dscy": "ѕ", "dsol": "⧶", "Dstrok": "Đ", "dstrok": "đ", "dtdot": "⋱", "dtri": "▿", "dtrif": "▾", "duarr": "⇵", "duhar": "⥯", "dwangle": "⦦", "DZcy": "Џ", "dzcy": "џ", "dzigrarr": "⟿", "Eacute": "É", "eacute": "é", "easter": "⩮", "Ecaron": "Ě", "ecaron": "ě", "Ecirc": "Ê", "ecirc": "ê", "ecir": "≖", "ecolon": "≕", "Ecy": "Э", "ecy": "э", "eDDot": "⩷", "Edot": "Ė", "edot": "ė", "eDot": "≑", "ee": "ⅇ", "efDot": "≒", "Efr": "𝔈", "efr": "𝔢", "eg": "⪚", "Egrave": "È", "egrave": "è", "egs": "⪖", "egsdot": "⪘", "el": "⪙", "Element": "∈", "elinters": "⏧", "ell": "ℓ", "els": "⪕", "elsdot": "⪗", "Emacr": "Ē", "emacr": "ē", "empty": "∅", "emptyset": "∅", "EmptySmallSquare": "◻", "emptyv": "∅", "EmptyVerySmallSquare": "▫", "emsp13": " ", "emsp14": " ", "emsp": " ", "ENG": "Ŋ", "eng": "ŋ", "ensp": " ", "Eogon": "Ę", "eogon": "ę", "Eopf": "𝔼", "eopf": "𝕖", "epar": "⋕", "eparsl": "⧣", "eplus": "⩱", "epsi": "ε", "Epsilon": "Ε", "epsilon": "ε", "epsiv": "ϵ", "eqcirc": "≖", "eqcolon": "≕", "eqsim": "≂", "eqslantgtr": "⪖", "eqslantless": "⪕", "Equal": "⩵", "equals": "=", "EqualTilde": "≂", "equest": "≟", "Equilibrium": "⇌", "equiv": "≡", "equivDD": "⩸", "eqvparsl": "⧥", "erarr": "⥱", "erDot": "≓", "escr": "ℯ", "Escr": "ℰ", "esdot": "≐", "Esim": "⩳", "esim": "≂", "Eta": "Η", "eta": "η", "ETH": "Ð", "eth": "ð", "Euml": "Ë", "euml": "ë", "euro": "€", "excl": "!", "exist": "∃", "Exists": "∃", "expectation": "ℰ", "exponentiale": "ⅇ", "ExponentialE": "ⅇ", "fallingdotseq": "≒", "Fcy": "Ф", "fcy": "ф", "female": "♀", "ffilig": "ﬃ", "fflig": "ﬀ", "ffllig": "ﬄ", "Ffr": "𝔉", "ffr": "𝔣", "filig": "ﬁ", "FilledSmallSquare": "◼", "FilledVerySmallSquare": "▪", "fjlig": "fj", "flat": "♭", "fllig": "ﬂ", "fltns": "▱", "fnof": "ƒ", "Fopf": "𝔽", "fopf": "𝕗", "forall": "∀", "ForAll": "∀", "fork": "⋔", "forkv": "⫙", "Fouriertrf": "ℱ", "fpartint": "⨍", "frac12": "½", "frac13": "⅓", "frac14": "¼", "frac15": "⅕", "frac16": "⅙", "frac18": "⅛", "frac23": "⅔", "frac25": "⅖", "frac34": "¾", "frac35": "⅗", "frac38": "⅜", "frac45": "⅘", "frac56": "⅚", "frac58": "⅝", "frac78": "⅞", "frasl": "⁄", "frown": "⌢", "fscr": "𝒻", "Fscr": "ℱ", "gacute": "ǵ", "Gamma": "Γ", "gamma": "γ", "Gammad": "Ϝ", "gammad": "ϝ", "gap": "⪆", "Gbreve": "Ğ", "gbreve": "ğ", "Gcedil": "Ģ", "Gcirc": "Ĝ", "gcirc": "ĝ", "Gcy": "Г", "gcy": "г", "Gdot": "Ġ", "gdot": "ġ", "ge": "≥", "gE": "≧", "gEl": "⪌", "gel": "⋛", "geq": "≥", "geqq": "≧", "geqslant": "⩾", "gescc": "⪩", "ges": "⩾", "gesdot": "⪀", "gesdoto": "⪂", "gesdotol": "⪄", "gesl": "⋛︀", "gesles": "⪔", "Gfr": "𝔊", "gfr": "𝔤", "gg": "≫", "Gg": "⋙", "ggg": "⋙", "gimel": "ℷ", "GJcy": "Ѓ", "gjcy": "ѓ", "gla": "⪥", "gl": "≷", "glE": "⪒", "glj": "⪤", "gnap": "⪊", "gnapprox": "⪊", "gne": "⪈", "gnE": "≩", "gneq": "⪈", "gneqq": "≩", "gnsim": "⋧", "Gopf": "𝔾", "gopf": "𝕘", "grave": "`", "GreaterEqual": "≥", "GreaterEqualLess": "⋛", "GreaterFullEqual": "≧", "GreaterGreater": "⪢", "GreaterLess": "≷", "GreaterSlantEqual": "⩾", "GreaterTilde": "≳", "Gscr": "𝒢", "gscr": "ℊ", "gsim": "≳", "gsime": "⪎", "gsiml": "⪐", "gtcc": "⪧", "gtcir": "⩺", "gt": ">", "GT": ">", "Gt": "≫", "gtdot": "⋗", "gtlPar": "⦕", "gtquest": "⩼", "gtrapprox": "⪆", "gtrarr": "⥸", "gtrdot": "⋗", "gtreqless": "⋛", "gtreqqless": "⪌", "gtrless": "≷", "gtrsim": "≳", "gvertneqq": "≩︀", "gvnE": "≩︀", "Hacek": "ˇ", "hairsp": " ", "half": "½", "hamilt": "ℋ", "HARDcy": "Ъ", "hardcy": "ъ", "harrcir": "⥈", "harr": "↔", "hArr": "⇔", "harrw": "↭", "Hat": "^", "hbar": "ℏ", "Hcirc": "Ĥ", "hcirc": "ĥ", "hearts": "♥", "heartsuit": "♥", "hellip": "…", "hercon": "⊹", "hfr": "𝔥", "Hfr": "ℌ", "HilbertSpace": "ℋ", "hksearow": "⤥", "hkswarow": "⤦", "hoarr": "⇿", "homtht": "∻", "hookleftarrow": "↩", "hookrightarrow": "↪", "hopf": "𝕙", "Hopf": "ℍ", "horbar": "―", "HorizontalLine": "─", "hscr": "𝒽", "Hscr": "ℋ", "hslash": "ℏ", "Hstrok": "Ħ", "hstrok": "ħ", "HumpDownHump": "≎", "HumpEqual": "≏", "hybull": "⁃", "hyphen": "‐", "Iacute": "Í", "iacute": "í", "ic": "⁣", "Icirc": "Î", "icirc": "î", "Icy": "И", "icy": "и", "Idot": "İ", "IEcy": "Е", "iecy": "е", "iexcl": "¡", "iff": "⇔", "ifr": "𝔦", "Ifr": "ℑ", "Igrave": "Ì", "igrave": "ì", "ii": "ⅈ", "iiiint": "⨌", "iiint": "∭", "iinfin": "⧜", "iiota": "℩", "IJlig": "Ĳ", "ijlig": "ĳ", "Imacr": "Ī", "imacr": "ī", "image": "ℑ", "ImaginaryI": "ⅈ", "imagline": "ℐ", "imagpart": "ℑ", "imath": "ı", "Im": "ℑ", "imof": "⊷", "imped": "Ƶ", "Implies": "⇒", "incare": "℅", "in": "∈", "infin": "∞", "infintie": "⧝", "inodot": "ı", "intcal": "⊺", "int": "∫", "Int": "∬", "integers": "ℤ", "Integral": "∫", "intercal": "⊺", "Intersection": "⋂", "intlarhk": "⨗", "intprod": "⨼", "InvisibleComma": "⁣", "InvisibleTimes": "⁢", "IOcy": "Ё", "iocy": "ё", "Iogon": "Į", "iogon": "į", "Iopf": "𝕀", "iopf": "𝕚", "Iota": "Ι", "iota": "ι", "iprod": "⨼", "iquest": "¿", "iscr": "𝒾", "Iscr": "ℐ", "isin": "∈", "isindot": "⋵", "isinE": "⋹", "isins": "⋴", "isinsv": "⋳", "isinv": "∈", "it": "⁢", "Itilde": "Ĩ", "itilde": "ĩ", "Iukcy": "І", "iukcy": "і", "Iuml": "Ï", "iuml": "ï", "Jcirc": "Ĵ", "jcirc": "ĵ", "Jcy": "Й", "jcy": "й", "Jfr": "𝔍", "jfr": "𝔧", "jmath": "ȷ", "Jopf": "𝕁", "jopf": "𝕛", "Jscr": "𝒥", "jscr": "𝒿", "Jsercy": "Ј", "jsercy": "ј", "Jukcy": "Є", "jukcy": "є", "Kappa": "Κ", "kappa": "κ", "kappav": "ϰ", "Kcedil": "Ķ", "kcedil": "ķ", "Kcy": "К", "kcy": "к", "Kfr": "𝔎", "kfr": "𝔨", "kgreen": "ĸ", "KHcy": "Х", "khcy": "х", "KJcy": "Ќ", "kjcy": "ќ", "Kopf": "𝕂", "kopf": "𝕜", "Kscr": "𝒦", "kscr": "𝓀", "lAarr": "⇚", "Lacute": "Ĺ", "lacute": "ĺ", "laemptyv": "⦴", "lagran": "ℒ", "Lambda": "Λ", "lambda": "λ", "lang": "⟨", "Lang": "⟪", "langd": "⦑", "langle": "⟨", "lap": "⪅", "Laplacetrf": "ℒ", "laquo": "«", "larrb": "⇤", "larrbfs": "⤟", "larr": "←", "Larr": "↞", "lArr": "⇐", "larrfs": "⤝", "larrhk": "↩", "larrlp": "↫", "larrpl": "⤹", "larrsim": "⥳", "larrtl": "↢", "latail": "⤙", "lAtail": "⤛", "lat": "⪫", "late": "⪭", "lates": "⪭︀", "lbarr": "⤌", "lBarr": "⤎", "lbbrk": "❲", "lbrace": "{", "lbrack": "[", "lbrke": "⦋", "lbrksld": "⦏", "lbrkslu": "⦍", "Lcaron": "Ľ", "lcaron": "ľ", "Lcedil": "Ļ", "lcedil": "ļ", "lceil": "⌈", "lcub": "{", "Lcy": "Л", "lcy": "л", "ldca": "⤶", "ldquo": "“", "ldquor": "„", "ldrdhar": "⥧", "ldrushar": "⥋", "ldsh": "↲", "le": "≤", "lE": "≦", "LeftAngleBracket": "⟨", "LeftArrowBar": "⇤", "leftarrow": "←", "LeftArrow": "←", "Leftarrow": "⇐", "LeftArrowRightArrow": "⇆", "leftarrowtail": "↢", "LeftCeiling": "⌈", "LeftDoubleBracket": "⟦", "LeftDownTeeVector": "⥡", "LeftDownVectorBar": "⥙", "LeftDownVector": "⇃", "LeftFloor": "⌊", "leftharpoondown": "↽", "leftharpoonup": "↼", "leftleftarrows": "⇇", "leftrightarrow": "↔", "LeftRightArrow": "↔", "Leftrightarrow": "⇔", "leftrightarrows": "⇆", "leftrightharpoons": "⇋", "leftrightsquigarrow": "↭", "LeftRightVector": "⥎", "LeftTeeArrow": "↤", "LeftTee": "⊣", "LeftTeeVector": "⥚", "leftthreetimes": "⋋", "LeftTriangleBar": "⧏", "LeftTriangle": "⊲", "LeftTriangleEqual": "⊴", "LeftUpDownVector": "⥑", "LeftUpTeeVector": "⥠", "LeftUpVectorBar": "⥘", "LeftUpVector": "↿", "LeftVectorBar": "⥒", "LeftVector": "↼", "lEg": "⪋", "leg": "⋚", "leq": "≤", "leqq": "≦", "leqslant": "⩽", "lescc": "⪨", "les": "⩽", "lesdot": "⩿", "lesdoto": "⪁", "lesdotor": "⪃", "lesg": "⋚︀", "lesges": "⪓", "lessapprox": "⪅", "lessdot": "⋖", "lesseqgtr": "⋚", "lesseqqgtr": "⪋", "LessEqualGreater": "⋚", "LessFullEqual": "≦", "LessGreater": "≶", "lessgtr": "≶", "LessLess": "⪡", "lesssim": "≲", "LessSlantEqual": "⩽", "LessTilde": "≲", "lfisht": "⥼", "lfloor": "⌊", "Lfr": "𝔏", "lfr": "𝔩", "lg": "≶", "lgE": "⪑", "lHar": "⥢", "lhard": "↽", "lharu": "↼", "lharul": "⥪", "lhblk": "▄", "LJcy": "Љ", "ljcy": "љ", "llarr": "⇇", "ll": "≪", "Ll": "⋘", "llcorner": "⌞", "Lleftarrow": "⇚", "llhard": "⥫", "lltri": "◺", "Lmidot": "Ŀ", "lmidot": "ŀ", "lmoustache": "⎰", "lmoust": "⎰", "lnap": "⪉", "lnapprox": "⪉", "lne": "⪇", "lnE": "≨", "lneq": "⪇", "lneqq": "≨", "lnsim": "⋦", "loang": "⟬", "loarr": "⇽", "lobrk": "⟦", "longleftarrow": "⟵", "LongLeftArrow": "⟵", "Longleftarrow": "⟸", "longleftrightarrow": "⟷", "LongLeftRightArrow": "⟷", "Longleftrightarrow": "⟺", "longmapsto": "⟼", "longrightarrow": "⟶", "LongRightArrow": "⟶", "Longrightarrow": "⟹", "looparrowleft": "↫", "looparrowright": "↬", "lopar": "⦅", "Lopf": "𝕃", "lopf": "𝕝", "loplus": "⨭", "lotimes": "⨴", "lowast": "∗", "lowbar": "_", "LowerLeftArrow": "↙", "LowerRightArrow": "↘", "loz": "◊", "lozenge": "◊", "lozf": "⧫", "lpar": "(", "lparlt": "⦓", "lrarr": "⇆", "lrcorner": "⌟", "lrhar": "⇋", "lrhard": "⥭", "lrm": "‎", "lrtri": "⊿", "lsaquo": "‹", "lscr": "𝓁", "Lscr": "ℒ", "lsh": "↰", "Lsh": "↰", "lsim": "≲", "lsime": "⪍", "lsimg": "⪏", "lsqb": "[", "lsquo": "‘", "lsquor": "‚", "Lstrok": "Ł", "lstrok": "ł", "ltcc": "⪦", "ltcir": "⩹", "lt": "<", "LT": "<", "Lt": "≪", "ltdot": "⋖", "lthree": "⋋", "ltimes": "⋉", "ltlarr": "⥶", "ltquest": "⩻", "ltri": "◃", "ltrie": "⊴", "ltrif": "◂", "ltrPar": "⦖", "lurdshar": "⥊", "luruhar": "⥦", "lvertneqq": "≨︀", "lvnE": "≨︀", "macr": "¯", "male": "♂", "malt": "✠", "maltese": "✠", "Map": "⤅", "map": "↦", "mapsto": "↦", "mapstodown": "↧", "mapstoleft": "↤", "mapstoup": "↥", "marker": "▮", "mcomma": "⨩", "Mcy": "М", "mcy": "м", "mdash": "—", "mDDot": "∺", "measuredangle": "∡", "MediumSpace": " ", "Mellintrf": "ℳ", "Mfr": "𝔐", "mfr": "𝔪", "mho": "℧", "micro": "µ", "midast": "*", "midcir": "⫰", "mid": "∣", "middot": "·", "minusb": "⊟", "minus": "−", "minusd": "∸", "minusdu": "⨪", "MinusPlus": "∓", "mlcp": "⫛", "mldr": "…", "mnplus": "∓", "models": "⊧", "Mopf": "𝕄", "mopf": "𝕞", "mp": "∓", "mscr": "𝓂", "Mscr": "ℳ", "mstpos": "∾", "Mu": "Μ", "mu": "μ", "multimap": "⊸", "mumap": "⊸", "nabla": "∇", "Nacute": "Ń", "nacute": "ń", "nang": "∠⃒", "nap": "≉", "napE": "⩰̸", "napid": "≋̸", "napos": "ŉ", "napprox": "≉", "natural": "♮", "naturals": "ℕ", "natur": "♮", "nbsp": " ", "nbump": "≎̸", "nbumpe": "≏̸", "ncap": "⩃", "Ncaron": "Ň", "ncaron": "ň", "Ncedil": "Ņ", "ncedil": "ņ", "ncong": "≇", "ncongdot": "⩭̸", "ncup": "⩂", "Ncy": "Н", "ncy": "н", "ndash": "–", "nearhk": "⤤", "nearr": "↗", "neArr": "⇗", "nearrow": "↗", "ne": "≠", "nedot": "≐̸", "NegativeMediumSpace": "​", "NegativeThickSpace": "​", "NegativeThinSpace": "​", "NegativeVeryThinSpace": "​", "nequiv": "≢", "nesear": "⤨", "nesim": "≂̸", "NestedGreaterGreater": "≫", "NestedLessLess": "≪", "NewLine": "\n", "nexist": "∄", "nexists": "∄", "Nfr": "𝔑", "nfr": "𝔫", "ngE": "≧̸", "nge": "≱", "ngeq": "≱", "ngeqq": "≧̸", "ngeqslant": "⩾̸", "nges": "⩾̸", "nGg": "⋙̸", "ngsim": "≵", "nGt": "≫⃒", "ngt": "≯", "ngtr": "≯", "nGtv": "≫̸", "nharr": "↮", "nhArr": "⇎", "nhpar": "⫲", "ni": "∋", "nis": "⋼", "nisd": "⋺", "niv": "∋", "NJcy": "Њ", "njcy": "њ", "nlarr": "↚", "nlArr": "⇍", "nldr": "‥", "nlE": "≦̸", "nle": "≰", "nleftarrow": "↚", "nLeftarrow": "⇍", "nleftrightarrow": "↮", "nLeftrightarrow": "⇎", "nleq": "≰", "nleqq": "≦̸", "nleqslant": "⩽̸", "nles": "⩽̸", "nless": "≮", "nLl": "⋘̸", "nlsim": "≴", "nLt": "≪⃒", "nlt": "≮", "nltri": "⋪", "nltrie": "⋬", "nLtv": "≪̸", "nmid": "∤", "NoBreak": "⁠", "NonBreakingSpace": " ", "nopf": "𝕟", "Nopf": "ℕ", "Not": "⫬", "not": "¬", "NotCongruent": "≢", "NotCupCap": "≭", "NotDoubleVerticalBar": "∦", "NotElement": "∉", "NotEqual": "≠", "NotEqualTilde": "≂̸", "NotExists": "∄", "NotGreater": "≯", "NotGreaterEqual": "≱", "NotGreaterFullEqual": "≧̸", "NotGreaterGreater": "≫̸", "NotGreaterLess": "≹", "NotGreaterSlantEqual": "⩾̸", "NotGreaterTilde": "≵", "NotHumpDownHump": "≎̸", "NotHumpEqual": "≏̸", "notin": "∉", "notindot": "⋵̸", "notinE": "⋹̸", "notinva": "∉", "notinvb": "⋷", "notinvc": "⋶", "NotLeftTriangleBar": "⧏̸", "NotLeftTriangle": "⋪", "NotLeftTriangleEqual": "⋬", "NotLess": "≮", "NotLessEqual": "≰", "NotLessGreater": "≸", "NotLessLess": "≪̸", "NotLessSlantEqual": "⩽̸", "NotLessTilde": "≴", "NotNestedGreaterGreater": "⪢̸", "NotNestedLessLess": "⪡̸", "notni": "∌", "notniva": "∌", "notnivb": "⋾", "notnivc": "⋽", "NotPrecedes": "⊀", "NotPrecedesEqual": "⪯̸", "NotPrecedesSlantEqual": "⋠", "NotReverseElement": "∌", "NotRightTriangleBar": "⧐̸", "NotRightTriangle": "⋫", "NotRightTriangleEqual": "⋭", "NotSquareSubset": "⊏̸", "NotSquareSubsetEqual": "⋢", "NotSquareSuperset": "⊐̸", "NotSquareSupersetEqual": "⋣", "NotSubset": "⊂⃒", "NotSubsetEqual": "⊈", "NotSucceeds": "⊁", "NotSucceedsEqual": "⪰̸", "NotSucceedsSlantEqual": "⋡", "NotSucceedsTilde": "≿̸", "NotSuperset": "⊃⃒", "NotSupersetEqual": "⊉", "NotTilde": "≁", "NotTildeEqual": "≄", "NotTildeFullEqual": "≇", "NotTildeTilde": "≉", "NotVerticalBar": "∤", "nparallel": "∦", "npar": "∦", "nparsl": "⫽⃥", "npart": "∂̸", "npolint": "⨔", "npr": "⊀", "nprcue": "⋠", "nprec": "⊀", "npreceq": "⪯̸", "npre": "⪯̸", "nrarrc": "⤳̸", "nrarr": "↛", "nrArr": "⇏", "nrarrw": "↝̸", "nrightarrow": "↛", "nRightarrow": "⇏", "nrtri": "⋫", "nrtrie": "⋭", "nsc": "⊁", "nsccue": "⋡", "nsce": "⪰̸", "Nscr": "𝒩", "nscr": "𝓃", "nshortmid": "∤", "nshortparallel": "∦", "nsim": "≁", "nsime": "≄", "nsimeq": "≄", "nsmid": "∤", "nspar": "∦", "nsqsube": "⋢", "nsqsupe": "⋣", "nsub": "⊄", "nsubE": "⫅̸", "nsube": "⊈", "nsubset": "⊂⃒", "nsubseteq": "⊈", "nsubseteqq": "⫅̸", "nsucc": "⊁", "nsucceq": "⪰̸", "nsup": "⊅", "nsupE": "⫆̸", "nsupe": "⊉", "nsupset": "⊃⃒", "nsupseteq": "⊉", "nsupseteqq": "⫆̸", "ntgl": "≹", "Ntilde": "Ñ", "ntilde": "ñ", "ntlg": "≸", "ntriangleleft": "⋪", "ntrianglelefteq": "⋬", "ntriangleright": "⋫", "ntrianglerighteq": "⋭", "Nu": "Ν", "nu": "ν", "num": "#", "numero": "№", "numsp": " ", "nvap": "≍⃒", "nvdash": "⊬", "nvDash": "⊭", "nVdash": "⊮", "nVDash": "⊯", "nvge": "≥⃒", "nvgt": ">⃒", "nvHarr": "⤄", "nvinfin": "⧞", "nvlArr": "⤂", "nvle": "≤⃒", "nvlt": "<⃒", "nvltrie": "⊴⃒", "nvrArr": "⤃", "nvrtrie": "⊵⃒", "nvsim": "∼⃒", "nwarhk": "⤣", "nwarr": "↖", "nwArr": "⇖", "nwarrow": "↖", "nwnear": "⤧", "Oacute": "Ó", "oacute": "ó", "oast": "⊛", "Ocirc": "Ô", "ocirc": "ô", "ocir": "⊚", "Ocy": "О", "ocy": "о", "odash": "⊝", "Odblac": "Ő", "odblac": "ő", "odiv": "⨸", "odot": "⊙", "odsold": "⦼", "OElig": "Œ", "oelig": "œ", "ofcir": "⦿", "Ofr": "𝔒", "ofr": "𝔬", "ogon": "˛", "Ograve": "Ò", "ograve": "ò", "ogt": "⧁", "ohbar": "⦵", "ohm": "Ω", "oint": "∮", "olarr": "↺", "olcir": "⦾", "olcross": "⦻", "oline": "‾", "olt": "⧀", "Omacr": "Ō", "omacr": "ō", "Omega": "Ω", "omega": "ω", "Omicron": "Ο", "omicron": "ο", "omid": "⦶", "ominus": "⊖", "Oopf": "𝕆", "oopf": "𝕠", "opar": "⦷", "OpenCurlyDoubleQuote": "“", "OpenCurlyQuote": "‘", "operp": "⦹", "oplus": "⊕", "orarr": "↻", "Or": "⩔", "or": "∨", "ord": "⩝", "order": "ℴ", "orderof": "ℴ", "ordf": "ª", "ordm": "º", "origof": "⊶", "oror": "⩖", "orslope": "⩗", "orv": "⩛", "oS": "Ⓢ", "Oscr": "𝒪", "oscr": "ℴ", "Oslash": "Ø", "oslash": "ø", "osol": "⊘", "Otilde": "Õ", "otilde": "õ", "otimesas": "⨶", "Otimes": "⨷", "otimes": "⊗", "Ouml": "Ö", "ouml": "ö", "ovbar": "⌽", "OverBar": "‾", "OverBrace": "⏞", "OverBracket": "⎴", "OverParenthesis": "⏜", "para": "¶", "parallel": "∥", "par": "∥", "parsim": "⫳", "parsl": "⫽", "part": "∂", "PartialD": "∂", "Pcy": "П", "pcy": "п", "percnt": "%", "period": ".", "permil": "‰", "perp": "⊥", "pertenk": "‱", "Pfr": "𝔓", "pfr": "𝔭", "Phi": "Φ", "phi": "φ", "phiv": "ϕ", "phmmat": "ℳ", "phone": "☎", "Pi": "Π", "pi": "π", "pitchfork": "⋔", "piv": "ϖ", "planck": "ℏ", "planckh": "ℎ", "plankv": "ℏ", "plusacir": "⨣", "plusb": "⊞", "pluscir": "⨢", "plus": "+", "plusdo": "∔", "plusdu": "⨥", "pluse": "⩲", "PlusMinus": "±", "plusmn": "±", "plussim": "⨦", "plustwo": "⨧", "pm": "±", "Poincareplane": "ℌ", "pointint": "⨕", "popf": "𝕡", "Popf": "ℙ", "pound": "£", "prap": "⪷", "Pr": "⪻", "pr": "≺", "prcue": "≼", "precapprox": "⪷", "prec": "≺", "preccurlyeq": "≼", "Precedes": "≺", "PrecedesEqual": "⪯", "PrecedesSlantEqual": "≼", "PrecedesTilde": "≾", "preceq": "⪯", "precnapprox": "⪹", "precneqq": "⪵", "precnsim": "⋨", "pre": "⪯", "prE": "⪳", "precsim": "≾", "prime": "′", "Prime": "″", "primes": "ℙ", "prnap": "⪹", "prnE": "⪵", "prnsim": "⋨", "prod": "∏", "Product": "∏", "profalar": "⌮", "profline": "⌒", "profsurf": "⌓", "prop": "∝", "Proportional": "∝", "Proportion": "∷", "propto": "∝", "prsim": "≾", "prurel": "⊰", "Pscr": "𝒫", "pscr": "𝓅", "Psi": "Ψ", "psi": "ψ", "puncsp": " ", "Qfr": "𝔔", "qfr": "𝔮", "qint": "⨌", "qopf": "𝕢", "Qopf": "ℚ", "qprime": "⁗", "Qscr": "𝒬", "qscr": "𝓆", "quaternions": "ℍ", "quatint": "⨖", "quest": "?", "questeq": "≟", "quot": "\"", "QUOT": "\"", "rAarr": "⇛", "race": "∽̱", "Racute": "Ŕ", "racute": "ŕ", "radic": "√", "raemptyv": "⦳", "rang": "⟩", "Rang": "⟫", "rangd": "⦒", "range": "⦥", "rangle": "⟩", "raquo": "»", "rarrap": "⥵", "rarrb": "⇥", "rarrbfs": "⤠", "rarrc": "⤳", "rarr": "→", "Rarr": "↠", "rArr": "⇒", "rarrfs": "⤞", "rarrhk": "↪", "rarrlp": "↬", "rarrpl": "⥅", "rarrsim": "⥴", "Rarrtl": "⤖", "rarrtl": "↣", "rarrw": "↝", "ratail": "⤚", "rAtail": "⤜", "ratio": "∶", "rationals": "ℚ", "rbarr": "⤍", "rBarr": "⤏", "RBarr": "⤐", "rbbrk": "❳", "rbrace": "}", "rbrack": "]", "rbrke": "⦌", "rbrksld": "⦎", "rbrkslu": "⦐", "Rcaron": "Ř", "rcaron": "ř", "Rcedil": "Ŗ", "rcedil": "ŗ", "rceil": "⌉", "rcub": "}", "Rcy": "Р", "rcy": "р", "rdca": "⤷", "rdldhar": "⥩", "rdquo": "”", "rdquor": "”", "rdsh": "↳", "real": "ℜ", "realine": "ℛ", "realpart": "ℜ", "reals": "ℝ", "Re": "ℜ", "rect": "▭", "reg": "®", "REG": "®", "ReverseElement": "∋", "ReverseEquilibrium": "⇋", "ReverseUpEquilibrium": "⥯", "rfisht": "⥽", "rfloor": "⌋", "rfr": "𝔯", "Rfr": "ℜ", "rHar": "⥤", "rhard": "⇁", "rharu": "⇀", "rharul": "⥬", "Rho": "Ρ", "rho": "ρ", "rhov": "ϱ", "RightAngleBracket": "⟩", "RightArrowBar": "⇥", "rightarrow": "→", "RightArrow": "→", "Rightarrow": "⇒", "RightArrowLeftArrow": "⇄", "rightarrowtail": "↣", "RightCeiling": "⌉", "RightDoubleBracket": "⟧", "RightDownTeeVector": "⥝", "RightDownVectorBar": "⥕", "RightDownVector": "⇂", "RightFloor": "⌋", "rightharpoondown": "⇁", "rightharpoonup": "⇀", "rightleftarrows": "⇄", "rightleftharpoons": "⇌", "rightrightarrows": "⇉", "rightsquigarrow": "↝", "RightTeeArrow": "↦", "RightTee": "⊢", "RightTeeVector": "⥛", "rightthreetimes": "⋌", "RightTriangleBar": "⧐", "RightTriangle": "⊳", "RightTriangleEqual": "⊵", "RightUpDownVector": "⥏", "RightUpTeeVector": "⥜", "RightUpVectorBar": "⥔", "RightUpVector": "↾", "RightVectorBar": "⥓", "RightVector": "⇀", "ring": "˚", "risingdotseq": "≓", "rlarr": "⇄", "rlhar": "⇌", "rlm": "‏", "rmoustache": "⎱", "rmoust": "⎱", "rnmid": "⫮", "roang": "⟭", "roarr": "⇾", "robrk": "⟧", "ropar": "⦆", "ropf": "𝕣", "Ropf": "ℝ", "roplus": "⨮", "rotimes": "⨵", "RoundImplies": "⥰", "rpar": ")", "rpargt": "⦔", "rppolint": "⨒", "rrarr": "⇉", "Rrightarrow": "⇛", "rsaquo": "›", "rscr": "𝓇", "Rscr": "ℛ", "rsh": "↱", "Rsh": "↱", "rsqb": "]", "rsquo": "’", "rsquor": "’", "rthree": "⋌", "rtimes": "⋊", "rtri": "▹", "rtrie": "⊵", "rtrif": "▸", "rtriltri": "⧎", "RuleDelayed": "⧴", "ruluhar": "⥨", "rx": "℞", "Sacute": "Ś", "sacute": "ś", "sbquo": "‚", "scap": "⪸", "Scaron": "Š", "scaron": "š", "Sc": "⪼", "sc": "≻", "sccue": "≽", "sce": "⪰", "scE": "⪴", "Scedil": "Ş", "scedil": "ş", "Scirc": "Ŝ", "scirc": "ŝ", "scnap": "⪺", "scnE": "⪶", "scnsim": "⋩", "scpolint": "⨓", "scsim": "≿", "Scy": "С", "scy": "с", "sdotb": "⊡", "sdot": "⋅", "sdote": "⩦", "searhk": "⤥", "searr": "↘", "seArr": "⇘", "searrow": "↘", "sect": "§", "semi": ";", "seswar": "⤩", "setminus": "∖", "setmn": "∖", "sext": "✶", "Sfr": "𝔖", "sfr": "𝔰", "sfrown": "⌢", "sharp": "♯", "SHCHcy": "Щ", "shchcy": "щ", "SHcy": "Ш", "shcy": "ш", "ShortDownArrow": "↓", "ShortLeftArrow": "←", "shortmid": "∣", "shortparallel": "∥", "ShortRightArrow": "→", "ShortUpArrow": "↑", "shy": "­", "Sigma": "Σ", "sigma": "σ", "sigmaf": "ς", "sigmav": "ς", "sim": "∼", "simdot": "⩪", "sime": "≃", "simeq": "≃", "simg": "⪞", "simgE": "⪠", "siml": "⪝", "simlE": "⪟", "simne": "≆", "simplus": "⨤", "simrarr": "⥲", "slarr": "←", "SmallCircle": "∘", "smallsetminus": "∖", "smashp": "⨳", "smeparsl": "⧤", "smid": "∣", "smile": "⌣", "smt": "⪪", "smte": "⪬", "smtes": "⪬︀", "SOFTcy": "Ь", "softcy": "ь", "solbar": "⌿", "solb": "⧄", "sol": "/", "Sopf": "𝕊", "sopf": "𝕤", "spades": "♠", "spadesuit": "♠", "spar": "∥", "sqcap": "⊓", "sqcaps": "⊓︀", "sqcup": "⊔", "sqcups": "⊔︀", "Sqrt": "√", "sqsub": "⊏", "sqsube": "⊑", "sqsubset": "⊏", "sqsubseteq": "⊑", "sqsup": "⊐", "sqsupe": "⊒", "sqsupset": "⊐", "sqsupseteq": "⊒", "square": "□", "Square": "□", "SquareIntersection": "⊓", "SquareSubset": "⊏", "SquareSubsetEqual": "⊑", "SquareSuperset": "⊐", "SquareSupersetEqual": "⊒", "SquareUnion": "⊔", "squarf": "▪", "squ": "□", "squf": "▪", "srarr": "→", "Sscr": "𝒮", "sscr": "𝓈", "ssetmn": "∖", "ssmile": "⌣", "sstarf": "⋆", "Star": "⋆", "star": "☆", "starf": "★", "straightepsilon": "ϵ", "straightphi": "ϕ", "strns": "¯", "sub": "⊂", "Sub": "⋐", "subdot": "⪽", "subE": "⫅", "sube": "⊆", "subedot": "⫃", "submult": "⫁", "subnE": "⫋", "subne": "⊊", "subplus": "⪿", "subrarr": "⥹", "subset": "⊂", "Subset": "⋐", "subseteq": "⊆", "subseteqq": "⫅", "SubsetEqual": "⊆", "subsetneq": "⊊", "subsetneqq": "⫋", "subsim": "⫇", "subsub": "⫕", "subsup": "⫓", "succapprox": "⪸", "succ": "≻", "succcurlyeq": "≽", "Succeeds": "≻", "SucceedsEqual": "⪰", "SucceedsSlantEqual": "≽", "SucceedsTilde": "≿", "succeq": "⪰", "succnapprox": "⪺", "succneqq": "⪶", "succnsim": "⋩", "succsim": "≿", "SuchThat": "∋", "sum": "∑", "Sum": "∑", "sung": "♪", "sup1": "¹", "sup2": "²", "sup3": "³", "sup": "⊃", "Sup": "⋑", "supdot": "⪾", "supdsub": "⫘", "supE": "⫆", "supe": "⊇", "supedot": "⫄", "Superset": "⊃", "SupersetEqual": "⊇", "suphsol": "⟉", "suphsub": "⫗", "suplarr": "⥻", "supmult": "⫂", "supnE": "⫌", "supne": "⊋", "supplus": "⫀", "supset": "⊃", "Supset": "⋑", "supseteq": "⊇", "supseteqq": "⫆", "supsetneq": "⊋", "supsetneqq": "⫌", "supsim": "⫈", "supsub": "⫔", "supsup": "⫖", "swarhk": "⤦", "swarr": "↙", "swArr": "⇙", "swarrow": "↙", "swnwar": "⤪", "szlig": "ß", "Tab": "\t", "target": "⌖", "Tau": "Τ", "tau": "τ", "tbrk": "⎴", "Tcaron": "Ť", "tcaron": "ť", "Tcedil": "Ţ", "tcedil": "ţ", "Tcy": "Т", "tcy": "т", "tdot": "⃛", "telrec": "⌕", "Tfr": "𝔗", "tfr": "𝔱", "there4": "∴", "therefore": "∴", "Therefore": "∴", "Theta": "Θ", "theta": "θ", "thetasym": "ϑ", "thetav": "ϑ", "thickapprox": "≈", "thicksim": "∼", "ThickSpace": "  ", "ThinSpace": " ", "thinsp": " ", "thkap": "≈", "thksim": "∼", "THORN": "Þ", "thorn": "þ", "tilde": "˜", "Tilde": "∼", "TildeEqual": "≃", "TildeFullEqual": "≅", "TildeTilde": "≈", "timesbar": "⨱", "timesb": "⊠", "times": "×", "timesd": "⨰", "tint": "∭", "toea": "⤨", "topbot": "⌶", "topcir": "⫱", "top": "⊤", "Topf": "𝕋", "topf": "𝕥", "topfork": "⫚", "tosa": "⤩", "tprime": "‴", "trade": "™", "TRADE": "™", "triangle": "▵", "triangledown": "▿", "triangleleft": "◃", "trianglelefteq": "⊴", "triangleq": "≜", "triangleright": "▹", "trianglerighteq": "⊵", "tridot": "◬", "trie": "≜", "triminus": "⨺", "TripleDot": "⃛", "triplus": "⨹", "trisb": "⧍", "tritime": "⨻", "trpezium": "⏢", "Tscr": "𝒯", "tscr": "𝓉", "TScy": "Ц", "tscy": "ц", "TSHcy": "Ћ", "tshcy": "ћ", "Tstrok": "Ŧ", "tstrok": "ŧ", "twixt": "≬", "twoheadleftarrow": "↞", "twoheadrightarrow": "↠", "Uacute": "Ú", "uacute": "ú", "uarr": "↑", "Uarr": "↟", "uArr": "⇑", "Uarrocir": "⥉", "Ubrcy": "Ў", "ubrcy": "ў", "Ubreve": "Ŭ", "ubreve": "ŭ", "Ucirc": "Û", "ucirc": "û", "Ucy": "У", "ucy": "у", "udarr": "⇅", "Udblac": "Ű", "udblac": "ű", "udhar": "⥮", "ufisht": "⥾", "Ufr": "𝔘", "ufr": "𝔲", "Ugrave": "Ù", "ugrave": "ù", "uHar": "⥣", "uharl": "↿", "uharr": "↾", "uhblk": "▀", "ulcorn": "⌜", "ulcorner": "⌜", "ulcrop": "⌏", "ultri": "◸", "Umacr": "Ū", "umacr": "ū", "uml": "¨", "UnderBar": "_", "UnderBrace": "⏟", "UnderBracket": "⎵", "UnderParenthesis": "⏝", "Union": "⋃", "UnionPlus": "⊎", "Uogon": "Ų", "uogon": "ų", "Uopf": "𝕌", "uopf": "𝕦", "UpArrowBar": "⤒", "uparrow": "↑", "UpArrow": "↑", "Uparrow": "⇑", "UpArrowDownArrow": "⇅", "updownarrow": "↕", "UpDownArrow": "↕", "Updownarrow": "⇕", "UpEquilibrium": "⥮", "upharpoonleft": "↿", "upharpoonright": "↾", "uplus": "⊎", "UpperLeftArrow": "↖", "UpperRightArrow": "↗", "upsi": "υ", "Upsi": "ϒ", "upsih": "ϒ", "Upsilon": "Υ", "upsilon": "υ", "UpTeeArrow": "↥", "UpTee": "⊥", "upuparrows": "⇈", "urcorn": "⌝", "urcorner": "⌝", "urcrop": "⌎", "Uring": "Ů", "uring": "ů", "urtri": "◹", "Uscr": "𝒰", "uscr": "𝓊", "utdot": "⋰", "Utilde": "Ũ", "utilde": "ũ", "utri": "▵", "utrif": "▴", "uuarr": "⇈", "Uuml": "Ü", "uuml": "ü", "uwangle": "⦧", "vangrt": "⦜", "varepsilon": "ϵ", "varkappa": "ϰ", "varnothing": "∅", "varphi": "ϕ", "varpi": "ϖ", "varpropto": "∝", "varr": "↕", "vArr": "⇕", "varrho": "ϱ", "varsigma": "ς", "varsubsetneq": "⊊︀", "varsubsetneqq": "⫋︀", "varsupsetneq": "⊋︀", "varsupsetneqq": "⫌︀", "vartheta": "ϑ", "vartriangleleft": "⊲", "vartriangleright": "⊳", "vBar": "⫨", "Vbar": "⫫", "vBarv": "⫩", "Vcy": "В", "vcy": "в", "vdash": "⊢", "vDash": "⊨", "Vdash": "⊩", "VDash": "⊫", "Vdashl": "⫦", "veebar": "⊻", "vee": "∨", "Vee": "⋁", "veeeq": "≚", "vellip": "⋮", "verbar": "|", "Verbar": "‖", "vert": "|", "Vert": "‖", "VerticalBar": "∣", "VerticalLine": "|", "VerticalSeparator": "❘", "VerticalTilde": "≀", "VeryThinSpace": " ", "Vfr": "𝔙", "vfr": "𝔳", "vltri": "⊲", "vnsub": "⊂⃒", "vnsup": "⊃⃒", "Vopf": "𝕍", "vopf": "𝕧", "vprop": "∝", "vrtri": "⊳", "Vscr": "𝒱", "vscr": "𝓋", "vsubnE": "⫋︀", "vsubne": "⊊︀", "vsupnE": "⫌︀", "vsupne": "⊋︀", "Vvdash": "⊪", "vzigzag": "⦚", "Wcirc": "Ŵ", "wcirc": "ŵ", "wedbar": "⩟", "wedge": "∧", "Wedge": "⋀", "wedgeq": "≙", "weierp": "℘", "Wfr": "𝔚", "wfr": "𝔴", "Wopf": "𝕎", "wopf": "𝕨", "wp": "℘", "wr": "≀", "wreath": "≀", "Wscr": "𝒲", "wscr": "𝓌", "xcap": "⋂", "xcirc": "◯", "xcup": "⋃", "xdtri": "▽", "Xfr": "𝔛", "xfr": "𝔵", "xharr": "⟷", "xhArr": "⟺", "Xi": "Ξ", "xi": "ξ", "xlarr": "⟵", "xlArr": "⟸", "xmap": "⟼", "xnis": "⋻", "xodot": "⨀", "Xopf": "𝕏", "xopf": "𝕩", "xoplus": "⨁", "xotime": "⨂", "xrarr": "⟶", "xrArr": "⟹", "Xscr": "𝒳", "xscr": "𝓍", "xsqcup": "⨆", "xuplus": "⨄", "xutri": "△", "xvee": "⋁", "xwedge": "⋀", "Yacute": "Ý", "yacute": "ý", "YAcy": "Я", "yacy": "я", "Ycirc": "Ŷ", "ycirc": "ŷ", "Ycy": "Ы", "ycy": "ы", "yen": "¥", "Yfr": "𝔜", "yfr": "𝔶", "YIcy": "Ї", "yicy": "ї", "Yopf": "𝕐", "yopf": "𝕪", "Yscr": "𝒴", "yscr": "𝓎", "YUcy": "Ю", "yucy": "ю", "yuml": "ÿ", "Yuml": "Ÿ", "Zacute": "Ź", "zacute": "ź", "Zcaron": "Ž", "zcaron": "ž", "Zcy": "З", "zcy": "з", "Zdot": "Ż", "zdot": "ż", "zeetrf": "ℨ", "ZeroWidthSpace": "​", "Zeta": "Ζ", "zeta": "ζ", "zfr": "𝔷", "Zfr": "ℨ", "ZHcy": "Ж", "zhcy": "ж", "zigrarr": "⇝", "zopf": "𝕫", "Zopf": "ℤ", "Zscr": "𝒵", "zscr": "𝓏", "zwj": "‍", "zwnj": "‌" };
+            }, {}],
+            27: [function (require, module, exports) {
+                module.exports = { "Aacute": "Á", "aacute": "á", "Acirc": "Â", "acirc": "â", "acute": "´", "AElig": "Æ", "aelig": "æ", "Agrave": "À", "agrave": "à", "amp": "&", "AMP": "&", "Aring": "Å", "aring": "å", "Atilde": "Ã", "atilde": "ã", "Auml": "Ä", "auml": "ä", "brvbar": "¦", "Ccedil": "Ç", "ccedil": "ç", "cedil": "¸", "cent": "¢", "copy": "©", "COPY": "©", "curren": "¤", "deg": "°", "divide": "÷", "Eacute": "É", "eacute": "é", "Ecirc": "Ê", "ecirc": "ê", "Egrave": "È", "egrave": "è", "ETH": "Ð", "eth": "ð", "Euml": "Ë", "euml": "ë", "frac12": "½", "frac14": "¼", "frac34": "¾", "gt": ">", "GT": ">", "Iacute": "Í", "iacute": "í", "Icirc": "Î", "icirc": "î", "iexcl": "¡", "Igrave": "Ì", "igrave": "ì", "iquest": "¿", "Iuml": "Ï", "iuml": "ï", "laquo": "«", "lt": "<", "LT": "<", "macr": "¯", "micro": "µ", "middot": "·", "nbsp": " ", "not": "¬", "Ntilde": "Ñ", "ntilde": "ñ", "Oacute": "Ó", "oacute": "ó", "Ocirc": "Ô", "ocirc": "ô", "Ograve": "Ò", "ograve": "ò", "ordf": "ª", "ordm": "º", "Oslash": "Ø", "oslash": "ø", "Otilde": "Õ", "otilde": "õ", "Ouml": "Ö", "ouml": "ö", "para": "¶", "plusmn": "±", "pound": "£", "quot": "\"", "QUOT": "\"", "raquo": "»", "reg": "®", "REG": "®", "sect": "§", "shy": "­", "sup1": "¹", "sup2": "²", "sup3": "³", "szlig": "ß", "THORN": "Þ", "thorn": "þ", "times": "×", "Uacute": "Ú", "uacute": "ú", "Ucirc": "Û", "ucirc": "û", "Ugrave": "Ù", "ugrave": "ù", "uml": "¨", "Uuml": "Ü", "uuml": "ü", "Yacute": "Ý", "yacute": "ý", "yen": "¥", "yuml": "ÿ" };
+            }, {}],
+            28: [function (require, module, exports) {
+                module.exports = { "amp": "&", "apos": "'", "gt": ">", "lt": "<", "quot": "\"" };
+            }, {}],
+            29: [function (require, module, exports) {
+
+                function EventEmitter() {
+                    this._events = this._events || {};
+                    this._maxListeners = this._maxListeners || undefined;
+                }
+                module.exports = EventEmitter;
+
+                EventEmitter.EventEmitter = EventEmitter;
+
+                EventEmitter.prototype._events = undefined;
+                EventEmitter.prototype._maxListeners = undefined;
+
+                EventEmitter.defaultMaxListeners = 10;
+
+                EventEmitter.prototype.setMaxListeners = function (n) {
+                    if (!isNumber(n) || n < 0 || isNaN(n)) throw TypeError('n must be a positive number');
+                    this._maxListeners = n;
+                    return this;
+                };
+
+                EventEmitter.prototype.emit = function (type) {
+                    var er, handler, len, args, i, listeners;
+
+                    if (!this._events) this._events = {};
+
+                    if (type === 'error') {
+                        if (!this._events.error || isObject(this._events.error) && !this._events.error.length) {
+                            er = arguments[1];
+                            if (er instanceof Error) {
+                                throw er;
+                            } else {
+                                var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
+                                err.context = er;
+                                throw err;
+                            }
+                        }
+                    }
+
+                    handler = this._events[type];
+
+                    if (isUndefined(handler)) return false;
+
+                    if (isFunction(handler)) {
+                        switch (arguments.length) {
+                            case 1:
+                                handler.call(this);
+                                break;
+                            case 2:
+                                handler.call(this, arguments[1]);
+                                break;
+                            case 3:
+                                handler.call(this, arguments[1], arguments[2]);
+                                break;
+
+                            default:
+                                args = Array.prototype.slice.call(arguments, 1);
+                                handler.apply(this, args);
+                        }
+                    } else if (isObject(handler)) {
+                        args = Array.prototype.slice.call(arguments, 1);
+                        listeners = handler.slice();
+                        len = listeners.length;
+                        for (i = 0; i < len; i++) {
+                            listeners[i].apply(this, args);
+                        }
+                    }
+
+                    return true;
+                };
+
+                EventEmitter.prototype.addListener = function (type, listener) {
+                    var m;
+
+                    if (!isFunction(listener)) throw TypeError('listener must be a function');
+
+                    if (!this._events) this._events = {};
+
+                    if (this._events.newListener) this.emit('newListener', type, isFunction(listener.listener) ? listener.listener : listener);
+
+                    if (!this._events[type]) this._events[type] = listener;else if (isObject(this._events[type])) this._events[type].push(listener);else this._events[type] = [this._events[type], listener];
+
+                    if (isObject(this._events[type]) && !this._events[type].warned) {
+                        if (!isUndefined(this._maxListeners)) {
+                            m = this._maxListeners;
+                        } else {
+                            m = EventEmitter.defaultMaxListeners;
+                        }
+
+                        if (m && m > 0 && this._events[type].length > m) {
+                            this._events[type].warned = true;
+                            console.error('(node) warning: possible EventEmitter memory ' + 'leak detected. %d listeners added. ' + 'Use emitter.setMaxListeners() to increase limit.', this._events[type].length);
+                            if (typeof console.trace === 'function') {
+                                console.trace();
+                            }
+                        }
+                    }
+
+                    return this;
+                };
+
+                EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+                EventEmitter.prototype.once = function (type, listener) {
+                    if (!isFunction(listener)) throw TypeError('listener must be a function');
+
+                    var fired = false;
+
+                    function g() {
+                        this.removeListener(type, g);
+
+                        if (!fired) {
+                            fired = true;
+                            listener.apply(this, arguments);
+                        }
+                    }
+
+                    g.listener = listener;
+                    this.on(type, g);
+
+                    return this;
+                };
+
+                EventEmitter.prototype.removeListener = function (type, listener) {
+                    var list, position, length, i;
+
+                    if (!isFunction(listener)) throw TypeError('listener must be a function');
+
+                    if (!this._events || !this._events[type]) return this;
+
+                    list = this._events[type];
+                    length = list.length;
+                    position = -1;
+
+                    if (list === listener || isFunction(list.listener) && list.listener === listener) {
+                        delete this._events[type];
+                        if (this._events.removeListener) this.emit('removeListener', type, listener);
+                    } else if (isObject(list)) {
+                        for (i = length; i-- > 0;) {
+                            if (list[i] === listener || list[i].listener && list[i].listener === listener) {
+                                position = i;
+                                break;
+                            }
+                        }
+
+                        if (position < 0) return this;
+
+                        if (list.length === 1) {
+                            list.length = 0;
+                            delete this._events[type];
+                        } else {
+                            list.splice(position, 1);
+                        }
+
+                        if (this._events.removeListener) this.emit('removeListener', type, listener);
+                    }
+
+                    return this;
+                };
+
+                EventEmitter.prototype.removeAllListeners = function (type) {
+                    var key, listeners;
+
+                    if (!this._events) return this;
+
+                    if (!this._events.removeListener) {
+                        if (arguments.length === 0) this._events = {};else if (this._events[type]) delete this._events[type];
+                        return this;
+                    }
+
+                    if (arguments.length === 0) {
+                        for (key in this._events) {
+                            if (key === 'removeListener') continue;
+                            this.removeAllListeners(key);
+                        }
+                        this.removeAllListeners('removeListener');
+                        this._events = {};
+                        return this;
+                    }
+
+                    listeners = this._events[type];
+
+                    if (isFunction(listeners)) {
+                        this.removeListener(type, listeners);
+                    } else if (listeners) {
+                        while (listeners.length) {
+                            this.removeListener(type, listeners[listeners.length - 1]);
+                        }
+                    }
+                    delete this._events[type];
+
+                    return this;
+                };
+
+                EventEmitter.prototype.listeners = function (type) {
+                    var ret;
+                    if (!this._events || !this._events[type]) ret = [];else if (isFunction(this._events[type])) ret = [this._events[type]];else ret = this._events[type].slice();
+                    return ret;
+                };
+
+                EventEmitter.prototype.listenerCount = function (type) {
+                    if (this._events) {
+                        var evlistener = this._events[type];
+
+                        if (isFunction(evlistener)) return 1;else if (evlistener) return evlistener.length;
+                    }
+                    return 0;
+                };
+
+                EventEmitter.listenerCount = function (emitter, type) {
+                    return emitter.listenerCount(type);
+                };
+
+                function isFunction(arg) {
+                    return typeof arg === 'function';
+                }
+
+                function isNumber(arg) {
+                    return typeof arg === 'number';
+                }
+
+                function isObject(arg) {
+                    return (typeof arg === "undefined" ? "undefined" : _typeof(arg)) === 'object' && arg !== null;
+                }
+
+                function isUndefined(arg) {
+                    return arg === void 0;
+                }
+            }, {}],
+            30: [function (require, module, exports) {
+                module.exports = CollectingHandler;
+
+                function CollectingHandler(cbs) {
+                    this._cbs = cbs || {};
+                    this.events = [];
+                }
+
+                var EVENTS = require("./").EVENTS;
+                Object.keys(EVENTS).forEach(function (name) {
+                    if (EVENTS[name] === 0) {
+                        name = "on" + name;
+                        CollectingHandler.prototype[name] = function () {
+                            this.events.push([name]);
+                            if (this._cbs[name]) this._cbs[name]();
+                        };
+                    } else if (EVENTS[name] === 1) {
+                        name = "on" + name;
+                        CollectingHandler.prototype[name] = function (a) {
+                            this.events.push([name, a]);
+                            if (this._cbs[name]) this._cbs[name](a);
+                        };
+                    } else if (EVENTS[name] === 2) {
+                        name = "on" + name;
+                        CollectingHandler.prototype[name] = function (a, b) {
+                            this.events.push([name, a, b]);
+                            if (this._cbs[name]) this._cbs[name](a, b);
+                        };
+                    } else {
+                        throw Error("wrong number of arguments");
+                    }
+                });
+
+                CollectingHandler.prototype.onreset = function () {
+                    this.events = [];
+                    if (this._cbs.onreset) this._cbs.onreset();
+                };
+
+                CollectingHandler.prototype.restart = function () {
+                    if (this._cbs.onreset) this._cbs.onreset();
+
+                    for (var i = 0, len = this.events.length; i < len; i++) {
+                        if (this._cbs[this.events[i][0]]) {
+
+                            var num = this.events[i].length;
+
+                            if (num === 1) {
+                                this._cbs[this.events[i][0]]();
+                            } else if (num === 2) {
+                                this._cbs[this.events[i][0]](this.events[i][1]);
+                            } else {
+                                this._cbs[this.events[i][0]](this.events[i][1], this.events[i][2]);
+                            }
+                        }
+                    }
+                };
+            }, { "./": 37 }],
+            31: [function (require, module, exports) {
+                var index = require("./index.js"),
+                    DomHandler = index.DomHandler,
+                    DomUtils = index.DomUtils;
+
+                function FeedHandler(callback, options) {
+                    this.init(callback, options);
+                }
+
+                require("inherits")(FeedHandler, DomHandler);
+
+                FeedHandler.prototype.init = DomHandler;
+
+                function getElements(what, where) {
+                    return DomUtils.getElementsByTagName(what, where, true);
+                }
+
+                function getOneElement(what, where) {
+                    return DomUtils.getElementsByTagName(what, where, true, 1)[0];
+                }
+
+                function fetch(what, where, recurse) {
+                    return DomUtils.getText(DomUtils.getElementsByTagName(what, where, recurse, 1)).trim();
+                }
+
+                function addConditionally(obj, prop, what, where, recurse) {
+                    var tmp = fetch(what, where, recurse);
+                    if (tmp) obj[prop] = tmp;
+                }
+
+                var isValidFeed = function isValidFeed(value) {
+                    return value === "rss" || value === "feed" || value === "rdf:RDF";
+                };
+
+                FeedHandler.prototype.onend = function () {
+                    var feed = {},
+                        feedRoot = getOneElement(isValidFeed, this.dom),
+                        tmp,
+                        childs;
+
+                    if (feedRoot) {
+                        if (feedRoot.name === "feed") {
+                            childs = feedRoot.children;
+
+                            feed.type = "atom";
+                            addConditionally(feed, "id", "id", childs);
+                            addConditionally(feed, "title", "title", childs);
+                            if ((tmp = getOneElement("link", childs)) && (tmp = tmp.attribs) && (tmp = tmp.href)) feed.link = tmp;
+                            addConditionally(feed, "description", "subtitle", childs);
+                            if (tmp = fetch("updated", childs)) feed.updated = new Date(tmp);
+                            addConditionally(feed, "author", "email", childs, true);
+
+                            feed.items = getElements("entry", childs).map(function (item) {
+                                var entry = {},
+                                    tmp;
+
+                                item = item.children;
+
+                                addConditionally(entry, "id", "id", item);
+                                addConditionally(entry, "title", "title", item);
+                                if ((tmp = getOneElement("link", item)) && (tmp = tmp.attribs) && (tmp = tmp.href)) entry.link = tmp;
+                                if (tmp = fetch("summary", item) || fetch("content", item)) entry.description = tmp;
+                                if (tmp = fetch("updated", item)) entry.pubDate = new Date(tmp);
+                                return entry;
+                            });
+                        } else {
+                            childs = getOneElement("channel", feedRoot.children).children;
+
+                            feed.type = feedRoot.name.substr(0, 3);
+                            feed.id = "";
+                            addConditionally(feed, "title", "title", childs);
+                            addConditionally(feed, "link", "link", childs);
+                            addConditionally(feed, "description", "description", childs);
+                            if (tmp = fetch("lastBuildDate", childs)) feed.updated = new Date(tmp);
+                            addConditionally(feed, "author", "managingEditor", childs, true);
+
+                            feed.items = getElements("item", feedRoot.children).map(function (item) {
+                                var entry = {},
+                                    tmp;
+
+                                item = item.children;
+
+                                addConditionally(entry, "id", "guid", item);
+                                addConditionally(entry, "title", "title", item);
+                                addConditionally(entry, "link", "link", item);
+                                addConditionally(entry, "description", "description", item);
+                                if (tmp = fetch("pubDate", item)) entry.pubDate = new Date(tmp);
+                                return entry;
+                            });
+                        }
+                    }
+                    this.dom = feed;
+                    DomHandler.prototype._handleCallback.call(this, feedRoot ? null : Error("couldn't find root of feed"));
+                };
+
+                module.exports = FeedHandler;
+            }, { "./index.js": 37, "inherits": 39 }],
+            32: [function (require, module, exports) {
+                var Tokenizer = require("./Tokenizer.js");
+
+                var formTags = {
+                    input: true,
+                    option: true,
+                    optgroup: true,
+                    select: true,
+                    button: true,
+                    datalist: true,
+                    textarea: true
+                };
+
+                var openImpliesClose = {
+                    tr: { tr: true, th: true, td: true },
+                    th: { th: true },
+                    td: { thead: true, th: true, td: true },
+                    body: { head: true, link: true, script: true },
+                    li: { li: true },
+                    p: { p: true },
+                    h1: { p: true },
+                    h2: { p: true },
+                    h3: { p: true },
+                    h4: { p: true },
+                    h5: { p: true },
+                    h6: { p: true },
+                    select: formTags,
+                    input: formTags,
+                    output: formTags,
+                    button: formTags,
+                    datalist: formTags,
+                    textarea: formTags,
+                    option: { option: true },
+                    optgroup: { optgroup: true }
+                };
+
+                var voidElements = {
+                    __proto__: null,
+                    area: true,
+                    base: true,
+                    basefont: true,
+                    br: true,
+                    col: true,
+                    command: true,
+                    embed: true,
+                    frame: true,
+                    hr: true,
+                    img: true,
+                    input: true,
+                    isindex: true,
+                    keygen: true,
+                    link: true,
+                    meta: true,
+                    param: true,
+                    source: true,
+                    track: true,
+                    wbr: true,
+
+                    path: true,
+                    circle: true,
+                    ellipse: true,
+                    line: true,
+                    rect: true,
+                    use: true,
+                    stop: true,
+                    polyline: true,
+                    polygon: true
+                };
+
+                var re_nameEnd = /\s|\//;
+
+                function Parser(cbs, options) {
+                    this._options = options || {};
+                    this._cbs = cbs || {};
+
+                    this._tagname = "";
+                    this._attribname = "";
+                    this._attribvalue = "";
+                    this._attribs = null;
+                    this._stack = [];
+
+                    this.startIndex = 0;
+                    this.endIndex = null;
+
+                    this._lowerCaseTagNames = "lowerCaseTags" in this._options ? !!this._options.lowerCaseTags : !this._options.xmlMode;
+                    this._lowerCaseAttributeNames = "lowerCaseAttributeNames" in this._options ? !!this._options.lowerCaseAttributeNames : !this._options.xmlMode;
+
+                    if (this._options.Tokenizer) {
+                        Tokenizer = this._options.Tokenizer;
+                    }
+                    this._tokenizer = new Tokenizer(this._options, this);
+
+                    if (this._cbs.onparserinit) this._cbs.onparserinit(this);
+                }
+
+                require("inherits")(Parser, require("events").EventEmitter);
+
+                Parser.prototype._updatePosition = function (initialOffset) {
+                    if (this.endIndex === null) {
+                        if (this._tokenizer._sectionStart <= initialOffset) {
+                            this.startIndex = 0;
+                        } else {
+                            this.startIndex = this._tokenizer._sectionStart - initialOffset;
+                        }
+                    } else this.startIndex = this.endIndex + 1;
+                    this.endIndex = this._tokenizer.getAbsoluteIndex();
+                };
+
+                Parser.prototype.ontext = function (data) {
+                    this._updatePosition(1);
+                    this.endIndex--;
+
+                    if (this._cbs.ontext) this._cbs.ontext(data);
+                };
+
+                Parser.prototype.onopentagname = function (name) {
+                    if (this._lowerCaseTagNames) {
+                        name = name.toLowerCase();
+                    }
+
+                    this._tagname = name;
+
+                    if (!this._options.xmlMode && name in openImpliesClose) {
+                        for (var el; (el = this._stack[this._stack.length - 1]) in openImpliesClose[name]; this.onclosetag(el)) {}
+                    }
+
+                    if (this._options.xmlMode || !(name in voidElements)) {
+                        this._stack.push(name);
+                    }
+
+                    if (this._cbs.onopentagname) this._cbs.onopentagname(name);
+                    if (this._cbs.onopentag) this._attribs = {};
+                };
+
+                Parser.prototype.onopentagend = function () {
+                    this._updatePosition(1);
+
+                    if (this._attribs) {
+                        if (this._cbs.onopentag) this._cbs.onopentag(this._tagname, this._attribs);
+                        this._attribs = null;
+                    }
+
+                    if (!this._options.xmlMode && this._cbs.onclosetag && this._tagname in voidElements) {
+                        this._cbs.onclosetag(this._tagname);
+                    }
+
+                    this._tagname = "";
+                };
+
+                Parser.prototype.onclosetag = function (name) {
+                    this._updatePosition(1);
+
+                    if (this._lowerCaseTagNames) {
+                        name = name.toLowerCase();
+                    }
+
+                    if (this._stack.length && (!(name in voidElements) || this._options.xmlMode)) {
+                        var pos = this._stack.lastIndexOf(name);
+                        if (pos !== -1) {
+                            if (this._cbs.onclosetag) {
+                                pos = this._stack.length - pos;
+                                while (pos--) {
+                                    this._cbs.onclosetag(this._stack.pop());
+                                }
+                            } else this._stack.length = pos;
+                        } else if (name === "p" && !this._options.xmlMode) {
+                            this.onopentagname(name);
+                            this._closeCurrentTag();
+                        }
+                    } else if (!this._options.xmlMode && (name === "br" || name === "p")) {
+                        this.onopentagname(name);
+                        this._closeCurrentTag();
+                    }
+                };
+
+                Parser.prototype.onselfclosingtag = function () {
+                    if (this._options.xmlMode || this._options.recognizeSelfClosing) {
+                        this._closeCurrentTag();
+                    } else {
+                        this.onopentagend();
+                    }
+                };
+
+                Parser.prototype._closeCurrentTag = function () {
+                    var name = this._tagname;
+
+                    this.onopentagend();
+
+                    if (this._stack[this._stack.length - 1] === name) {
+                        if (this._cbs.onclosetag) {
+                            this._cbs.onclosetag(name);
+                        }
+                        this._stack.pop();
+                    }
+                };
+
+                Parser.prototype.onattribname = function (name) {
+                    if (this._lowerCaseAttributeNames) {
+                        name = name.toLowerCase();
+                    }
+                    this._attribname = name;
+                };
+
+                Parser.prototype.onattribdata = function (value) {
+                    this._attribvalue += value;
+                };
+
+                Parser.prototype.onattribend = function () {
+                    if (this._cbs.onattribute) this._cbs.onattribute(this._attribname, this._attribvalue);
+                    if (this._attribs && !Object.prototype.hasOwnProperty.call(this._attribs, this._attribname)) {
+                        this._attribs[this._attribname] = this._attribvalue;
+                    }
+                    this._attribname = "";
+                    this._attribvalue = "";
+                };
+
+                Parser.prototype._getInstructionName = function (value) {
+                    var idx = value.search(re_nameEnd),
+                        name = idx < 0 ? value : value.substr(0, idx);
+
+                    if (this._lowerCaseTagNames) {
+                        name = name.toLowerCase();
+                    }
+
+                    return name;
+                };
+
+                Parser.prototype.ondeclaration = function (value) {
+                    if (this._cbs.onprocessinginstruction) {
+                        var name = this._getInstructionName(value);
+                        this._cbs.onprocessinginstruction("!" + name, "!" + value);
+                    }
+                };
+
+                Parser.prototype.onprocessinginstruction = function (value) {
+                    if (this._cbs.onprocessinginstruction) {
+                        var name = this._getInstructionName(value);
+                        this._cbs.onprocessinginstruction("?" + name, "?" + value);
+                    }
+                };
+
+                Parser.prototype.oncomment = function (value) {
+                    this._updatePosition(4);
+
+                    if (this._cbs.oncomment) this._cbs.oncomment(value);
+                    if (this._cbs.oncommentend) this._cbs.oncommentend();
+                };
+
+                Parser.prototype.oncdata = function (value) {
+                    this._updatePosition(1);
+
+                    if (this._options.xmlMode || this._options.recognizeCDATA) {
+                        if (this._cbs.oncdatastart) this._cbs.oncdatastart();
+                        if (this._cbs.ontext) this._cbs.ontext(value);
+                        if (this._cbs.oncdataend) this._cbs.oncdataend();
+                    } else {
+                        this.oncomment("[CDATA[" + value + "]]");
+                    }
+                };
+
+                Parser.prototype.onerror = function (err) {
+                    if (this._cbs.onerror) this._cbs.onerror(err);
+                };
+
+                Parser.prototype.onend = function () {
+                    if (this._cbs.onclosetag) {
+                        for (var i = this._stack.length; i > 0; this._cbs.onclosetag(this._stack[--i])) {}
+                    }
+                    if (this._cbs.onend) this._cbs.onend();
+                };
+
+                Parser.prototype.reset = function () {
+                    if (this._cbs.onreset) this._cbs.onreset();
+                    this._tokenizer.reset();
+
+                    this._tagname = "";
+                    this._attribname = "";
+                    this._attribs = null;
+                    this._stack = [];
+
+                    if (this._cbs.onparserinit) this._cbs.onparserinit(this);
+                };
+
+                Parser.prototype.parseComplete = function (data) {
+                    this.reset();
+                    this.end(data);
+                };
+
+                Parser.prototype.write = function (chunk) {
+                    this._tokenizer.write(chunk);
+                };
+
+                Parser.prototype.end = function (chunk) {
+                    this._tokenizer.end(chunk);
+                };
+
+                Parser.prototype.pause = function () {
+                    this._tokenizer.pause();
+                };
+
+                Parser.prototype.resume = function () {
+                    this._tokenizer.resume();
+                };
+
+                Parser.prototype.parseChunk = Parser.prototype.write;
+                Parser.prototype.done = Parser.prototype.end;
+
+                module.exports = Parser;
+            }, { "./Tokenizer.js": 35, "events": 29, "inherits": 39 }],
+            33: [function (require, module, exports) {
+                module.exports = ProxyHandler;
+
+                function ProxyHandler(cbs) {
+                    this._cbs = cbs || {};
+                }
+
+                var EVENTS = require("./").EVENTS;
+                Object.keys(EVENTS).forEach(function (name) {
+                    if (EVENTS[name] === 0) {
+                        name = "on" + name;
+                        ProxyHandler.prototype[name] = function () {
+                            if (this._cbs[name]) this._cbs[name]();
+                        };
+                    } else if (EVENTS[name] === 1) {
+                        name = "on" + name;
+                        ProxyHandler.prototype[name] = function (a) {
+                            if (this._cbs[name]) this._cbs[name](a);
+                        };
+                    } else if (EVENTS[name] === 2) {
+                        name = "on" + name;
+                        ProxyHandler.prototype[name] = function (a, b) {
+                            if (this._cbs[name]) this._cbs[name](a, b);
+                        };
+                    } else {
+                        throw Error("wrong number of arguments");
+                    }
+                });
+            }, { "./": 37 }],
+            34: [function (require, module, exports) {
+                module.exports = Stream;
+
+                var Parser = require("./WritableStream.js");
+
+                function Stream(options) {
+                    Parser.call(this, new Cbs(this), options);
+                }
+
+                require("inherits")(Stream, Parser);
+
+                Stream.prototype.readable = true;
+
+                function Cbs(scope) {
+                    this.scope = scope;
+                }
+
+                var EVENTS = require("../").EVENTS;
+
+                Object.keys(EVENTS).forEach(function (name) {
+                    if (EVENTS[name] === 0) {
+                        Cbs.prototype["on" + name] = function () {
+                            this.scope.emit(name);
+                        };
+                    } else if (EVENTS[name] === 1) {
+                        Cbs.prototype["on" + name] = function (a) {
+                            this.scope.emit(name, a);
+                        };
+                    } else if (EVENTS[name] === 2) {
+                        Cbs.prototype["on" + name] = function (a, b) {
+                            this.scope.emit(name, a, b);
+                        };
+                    } else {
+                        throw Error("wrong number of arguments!");
+                    }
+                });
+            }, { "../": 37, "./WritableStream.js": 36, "inherits": 39 }],
+            35: [function (require, module, exports) {
+                module.exports = Tokenizer;
+
+                var decodeCodePoint = require("entities/lib/decode_codepoint.js"),
+                    entityMap = require("entities/maps/entities.json"),
+                    legacyMap = require("entities/maps/legacy.json"),
+                    xmlMap = require("entities/maps/xml.json"),
+                    i = 0,
+                    TEXT = i++,
+                    BEFORE_TAG_NAME = i++,
+                    IN_TAG_NAME = i++,
+                    IN_SELF_CLOSING_TAG = i++,
+                    BEFORE_CLOSING_TAG_NAME = i++,
+                    IN_CLOSING_TAG_NAME = i++,
+                    AFTER_CLOSING_TAG_NAME = i++,
+                    BEFORE_ATTRIBUTE_NAME = i++,
+                    IN_ATTRIBUTE_NAME = i++,
+                    AFTER_ATTRIBUTE_NAME = i++,
+                    BEFORE_ATTRIBUTE_VALUE = i++,
+                    IN_ATTRIBUTE_VALUE_DQ = i++,
+                    IN_ATTRIBUTE_VALUE_SQ = i++,
+                    IN_ATTRIBUTE_VALUE_NQ = i++,
+                    BEFORE_DECLARATION = i++,
+                    IN_DECLARATION = i++,
+                    IN_PROCESSING_INSTRUCTION = i++,
+                    BEFORE_COMMENT = i++,
+                    IN_COMMENT = i++,
+                    AFTER_COMMENT_1 = i++,
+                    AFTER_COMMENT_2 = i++,
+                    BEFORE_CDATA_1 = i++,
+                    BEFORE_CDATA_2 = i++,
+                    BEFORE_CDATA_3 = i++,
+                    BEFORE_CDATA_4 = i++,
+                    BEFORE_CDATA_5 = i++,
+                    BEFORE_CDATA_6 = i++,
+                    IN_CDATA = i++,
+                    AFTER_CDATA_1 = i++,
+                    AFTER_CDATA_2 = i++,
+                    BEFORE_SPECIAL = i++,
+                    BEFORE_SPECIAL_END = i++,
+                    BEFORE_SCRIPT_1 = i++,
+                    BEFORE_SCRIPT_2 = i++,
+                    BEFORE_SCRIPT_3 = i++,
+                    BEFORE_SCRIPT_4 = i++,
+                    BEFORE_SCRIPT_5 = i++,
+                    AFTER_SCRIPT_1 = i++,
+                    AFTER_SCRIPT_2 = i++,
+                    AFTER_SCRIPT_3 = i++,
+                    AFTER_SCRIPT_4 = i++,
+                    AFTER_SCRIPT_5 = i++,
+                    BEFORE_STYLE_1 = i++,
+                    BEFORE_STYLE_2 = i++,
+                    BEFORE_STYLE_3 = i++,
+                    BEFORE_STYLE_4 = i++,
+                    AFTER_STYLE_1 = i++,
+                    AFTER_STYLE_2 = i++,
+                    AFTER_STYLE_3 = i++,
+                    AFTER_STYLE_4 = i++,
+                    BEFORE_ENTITY = i++,
+                    BEFORE_NUMERIC_ENTITY = i++,
+                    IN_NAMED_ENTITY = i++,
+                    IN_NUMERIC_ENTITY = i++,
+                    IN_HEX_ENTITY = i++,
+                    j = 0,
+                    SPECIAL_NONE = j++,
+                    SPECIAL_SCRIPT = j++,
+                    SPECIAL_STYLE = j++;
+
+                function whitespace(c) {
+                    return c === " " || c === "\n" || c === "\t" || c === "\f" || c === "\r";
+                }
+
+                function characterState(char, SUCCESS) {
+                    return function (c) {
+                        if (c === char) this._state = SUCCESS;
+                    };
+                }
+
+                function ifElseState(upper, SUCCESS, FAILURE) {
+                    var lower = upper.toLowerCase();
+
+                    if (upper === lower) {
+                        return function (c) {
+                            if (c === lower) {
+                                this._state = SUCCESS;
+                            } else {
+                                this._state = FAILURE;
+                                this._index--;
+                            }
+                        };
+                    } else {
+                        return function (c) {
+                            if (c === lower || c === upper) {
+                                this._state = SUCCESS;
+                            } else {
+                                this._state = FAILURE;
+                                this._index--;
+                            }
+                        };
+                    }
+                }
+
+                function consumeSpecialNameChar(upper, NEXT_STATE) {
+                    var lower = upper.toLowerCase();
+
+                    return function (c) {
+                        if (c === lower || c === upper) {
+                            this._state = NEXT_STATE;
+                        } else {
+                            this._state = IN_TAG_NAME;
+                            this._index--;
+                        }
+                    };
+                }
+
+                function Tokenizer(options, cbs) {
+                    this._state = TEXT;
+                    this._buffer = "";
+                    this._sectionStart = 0;
+                    this._index = 0;
+                    this._bufferOffset = 0;
+                    this._baseState = TEXT;
+                    this._special = SPECIAL_NONE;
+                    this._cbs = cbs;
+                    this._running = true;
+                    this._ended = false;
+                    this._xmlMode = !!(options && options.xmlMode);
+                    this._decodeEntities = !!(options && options.decodeEntities);
+                }
+
+                Tokenizer.prototype._stateText = function (c) {
+                    if (c === "<") {
+                        if (this._index > this._sectionStart) {
+                            this._cbs.ontext(this._getSection());
+                        }
+                        this._state = BEFORE_TAG_NAME;
+                        this._sectionStart = this._index;
+                    } else if (this._decodeEntities && this._special === SPECIAL_NONE && c === "&") {
+                        if (this._index > this._sectionStart) {
+                            this._cbs.ontext(this._getSection());
+                        }
+                        this._baseState = TEXT;
+                        this._state = BEFORE_ENTITY;
+                        this._sectionStart = this._index;
+                    }
+                };
+
+                Tokenizer.prototype._stateBeforeTagName = function (c) {
+                    if (c === "/") {
+                        this._state = BEFORE_CLOSING_TAG_NAME;
+                    } else if (c === "<") {
+                        this._cbs.ontext(this._getSection());
+                        this._sectionStart = this._index;
+                    } else if (c === ">" || this._special !== SPECIAL_NONE || whitespace(c)) {
+                        this._state = TEXT;
+                    } else if (c === "!") {
+                        this._state = BEFORE_DECLARATION;
+                        this._sectionStart = this._index + 1;
+                    } else if (c === "?") {
+                        this._state = IN_PROCESSING_INSTRUCTION;
+                        this._sectionStart = this._index + 1;
+                    } else {
+                        this._state = !this._xmlMode && (c === "s" || c === "S") ? BEFORE_SPECIAL : IN_TAG_NAME;
+                        this._sectionStart = this._index;
+                    }
+                };
+
+                Tokenizer.prototype._stateInTagName = function (c) {
+                    if (c === "/" || c === ">" || whitespace(c)) {
+                        this._emitToken("onopentagname");
+                        this._state = BEFORE_ATTRIBUTE_NAME;
+                        this._index--;
+                    }
+                };
+
+                Tokenizer.prototype._stateBeforeCloseingTagName = function (c) {
+                    if (whitespace(c)) ;else if (c === ">") {
+                        this._state = TEXT;
+                    } else if (this._special !== SPECIAL_NONE) {
+                        if (c === "s" || c === "S") {
+                            this._state = BEFORE_SPECIAL_END;
+                        } else {
+                            this._state = TEXT;
+                            this._index--;
+                        }
+                    } else {
+                        this._state = IN_CLOSING_TAG_NAME;
+                        this._sectionStart = this._index;
+                    }
+                };
+
+                Tokenizer.prototype._stateInCloseingTagName = function (c) {
+                    if (c === ">" || whitespace(c)) {
+                        this._emitToken("onclosetag");
+                        this._state = AFTER_CLOSING_TAG_NAME;
+                        this._index--;
+                    }
+                };
+
+                Tokenizer.prototype._stateAfterCloseingTagName = function (c) {
+                    if (c === ">") {
+                        this._state = TEXT;
+                        this._sectionStart = this._index + 1;
+                    }
+                };
+
+                Tokenizer.prototype._stateBeforeAttributeName = function (c) {
+                    if (c === ">") {
+                        this._cbs.onopentagend();
+                        this._state = TEXT;
+                        this._sectionStart = this._index + 1;
+                    } else if (c === "/") {
+                        this._state = IN_SELF_CLOSING_TAG;
+                    } else if (!whitespace(c)) {
+                        this._state = IN_ATTRIBUTE_NAME;
+                        this._sectionStart = this._index;
+                    }
+                };
+
+                Tokenizer.prototype._stateInSelfClosingTag = function (c) {
+                    if (c === ">") {
+                        this._cbs.onselfclosingtag();
+                        this._state = TEXT;
+                        this._sectionStart = this._index + 1;
+                    } else if (!whitespace(c)) {
+                        this._state = BEFORE_ATTRIBUTE_NAME;
+                        this._index--;
+                    }
+                };
+
+                Tokenizer.prototype._stateInAttributeName = function (c) {
+                    if (c === "=" || c === "/" || c === ">" || whitespace(c)) {
+                        this._cbs.onattribname(this._getSection());
+                        this._sectionStart = -1;
+                        this._state = AFTER_ATTRIBUTE_NAME;
+                        this._index--;
+                    }
+                };
+
+                Tokenizer.prototype._stateAfterAttributeName = function (c) {
+                    if (c === "=") {
+                        this._state = BEFORE_ATTRIBUTE_VALUE;
+                    } else if (c === "/" || c === ">") {
+                        this._cbs.onattribend();
+                        this._state = BEFORE_ATTRIBUTE_NAME;
+                        this._index--;
+                    } else if (!whitespace(c)) {
+                        this._cbs.onattribend();
+                        this._state = IN_ATTRIBUTE_NAME;
+                        this._sectionStart = this._index;
+                    }
+                };
+
+                Tokenizer.prototype._stateBeforeAttributeValue = function (c) {
+                    if (c === "\"") {
+                        this._state = IN_ATTRIBUTE_VALUE_DQ;
+                        this._sectionStart = this._index + 1;
+                    } else if (c === "'") {
+                        this._state = IN_ATTRIBUTE_VALUE_SQ;
+                        this._sectionStart = this._index + 1;
+                    } else if (!whitespace(c)) {
+                        this._state = IN_ATTRIBUTE_VALUE_NQ;
+                        this._sectionStart = this._index;
+                        this._index--;
+                    }
+                };
+
+                Tokenizer.prototype._stateInAttributeValueDoubleQuotes = function (c) {
+                    if (c === "\"") {
+                        this._emitToken("onattribdata");
+                        this._cbs.onattribend();
+                        this._state = BEFORE_ATTRIBUTE_NAME;
+                    } else if (this._decodeEntities && c === "&") {
+                        this._emitToken("onattribdata");
+                        this._baseState = this._state;
+                        this._state = BEFORE_ENTITY;
+                        this._sectionStart = this._index;
+                    }
+                };
+
+                Tokenizer.prototype._stateInAttributeValueSingleQuotes = function (c) {
+                    if (c === "'") {
+                        this._emitToken("onattribdata");
+                        this._cbs.onattribend();
+                        this._state = BEFORE_ATTRIBUTE_NAME;
+                    } else if (this._decodeEntities && c === "&") {
+                        this._emitToken("onattribdata");
+                        this._baseState = this._state;
+                        this._state = BEFORE_ENTITY;
+                        this._sectionStart = this._index;
+                    }
+                };
+
+                Tokenizer.prototype._stateInAttributeValueNoQuotes = function (c) {
+                    if (whitespace(c) || c === ">") {
+                        this._emitToken("onattribdata");
+                        this._cbs.onattribend();
+                        this._state = BEFORE_ATTRIBUTE_NAME;
+                        this._index--;
+                    } else if (this._decodeEntities && c === "&") {
+                        this._emitToken("onattribdata");
+                        this._baseState = this._state;
+                        this._state = BEFORE_ENTITY;
+                        this._sectionStart = this._index;
+                    }
+                };
+
+                Tokenizer.prototype._stateBeforeDeclaration = function (c) {
+                    this._state = c === "[" ? BEFORE_CDATA_1 : c === "-" ? BEFORE_COMMENT : IN_DECLARATION;
+                };
+
+                Tokenizer.prototype._stateInDeclaration = function (c) {
+                    if (c === ">") {
+                        this._cbs.ondeclaration(this._getSection());
+                        this._state = TEXT;
+                        this._sectionStart = this._index + 1;
+                    }
+                };
+
+                Tokenizer.prototype._stateInProcessingInstruction = function (c) {
+                    if (c === ">") {
+                        this._cbs.onprocessinginstruction(this._getSection());
+                        this._state = TEXT;
+                        this._sectionStart = this._index + 1;
+                    }
+                };
+
+                Tokenizer.prototype._stateBeforeComment = function (c) {
+                    if (c === "-") {
+                        this._state = IN_COMMENT;
+                        this._sectionStart = this._index + 1;
+                    } else {
+                        this._state = IN_DECLARATION;
+                    }
+                };
+
+                Tokenizer.prototype._stateInComment = function (c) {
+                    if (c === "-") this._state = AFTER_COMMENT_1;
+                };
+
+                Tokenizer.prototype._stateAfterComment1 = function (c) {
+                    if (c === "-") {
+                        this._state = AFTER_COMMENT_2;
+                    } else {
+                        this._state = IN_COMMENT;
+                    }
+                };
+
+                Tokenizer.prototype._stateAfterComment2 = function (c) {
+                    if (c === ">") {
+                        this._cbs.oncomment(this._buffer.substring(this._sectionStart, this._index - 2));
+                        this._state = TEXT;
+                        this._sectionStart = this._index + 1;
+                    } else if (c !== "-") {
+                        this._state = IN_COMMENT;
+                    }
+                };
+
+                Tokenizer.prototype._stateBeforeCdata1 = ifElseState("C", BEFORE_CDATA_2, IN_DECLARATION);
+                Tokenizer.prototype._stateBeforeCdata2 = ifElseState("D", BEFORE_CDATA_3, IN_DECLARATION);
+                Tokenizer.prototype._stateBeforeCdata3 = ifElseState("A", BEFORE_CDATA_4, IN_DECLARATION);
+                Tokenizer.prototype._stateBeforeCdata4 = ifElseState("T", BEFORE_CDATA_5, IN_DECLARATION);
+                Tokenizer.prototype._stateBeforeCdata5 = ifElseState("A", BEFORE_CDATA_6, IN_DECLARATION);
+
+                Tokenizer.prototype._stateBeforeCdata6 = function (c) {
+                    if (c === "[") {
+                        this._state = IN_CDATA;
+                        this._sectionStart = this._index + 1;
+                    } else {
+                        this._state = IN_DECLARATION;
+                        this._index--;
+                    }
+                };
+
+                Tokenizer.prototype._stateInCdata = function (c) {
+                    if (c === "]") this._state = AFTER_CDATA_1;
+                };
+
+                Tokenizer.prototype._stateAfterCdata1 = characterState("]", AFTER_CDATA_2);
+
+                Tokenizer.prototype._stateAfterCdata2 = function (c) {
+                    if (c === ">") {
+                        this._cbs.oncdata(this._buffer.substring(this._sectionStart, this._index - 2));
+                        this._state = TEXT;
+                        this._sectionStart = this._index + 1;
+                    } else if (c !== "]") {
+                        this._state = IN_CDATA;
+                    }
+                };
+
+                Tokenizer.prototype._stateBeforeSpecial = function (c) {
+                    if (c === "c" || c === "C") {
+                        this._state = BEFORE_SCRIPT_1;
+                    } else if (c === "t" || c === "T") {
+                        this._state = BEFORE_STYLE_1;
+                    } else {
+                        this._state = IN_TAG_NAME;
+                        this._index--;
+                    }
+                };
+
+                Tokenizer.prototype._stateBeforeSpecialEnd = function (c) {
+                    if (this._special === SPECIAL_SCRIPT && (c === "c" || c === "C")) {
+                        this._state = AFTER_SCRIPT_1;
+                    } else if (this._special === SPECIAL_STYLE && (c === "t" || c === "T")) {
+                        this._state = AFTER_STYLE_1;
+                    } else this._state = TEXT;
+                };
+
+                Tokenizer.prototype._stateBeforeScript1 = consumeSpecialNameChar("R", BEFORE_SCRIPT_2);
+                Tokenizer.prototype._stateBeforeScript2 = consumeSpecialNameChar("I", BEFORE_SCRIPT_3);
+                Tokenizer.prototype._stateBeforeScript3 = consumeSpecialNameChar("P", BEFORE_SCRIPT_4);
+                Tokenizer.prototype._stateBeforeScript4 = consumeSpecialNameChar("T", BEFORE_SCRIPT_5);
+
+                Tokenizer.prototype._stateBeforeScript5 = function (c) {
+                    if (c === "/" || c === ">" || whitespace(c)) {
+                        this._special = SPECIAL_SCRIPT;
+                    }
+                    this._state = IN_TAG_NAME;
+                    this._index--;
+                };
+
+                Tokenizer.prototype._stateAfterScript1 = ifElseState("R", AFTER_SCRIPT_2, TEXT);
+                Tokenizer.prototype._stateAfterScript2 = ifElseState("I", AFTER_SCRIPT_3, TEXT);
+                Tokenizer.prototype._stateAfterScript3 = ifElseState("P", AFTER_SCRIPT_4, TEXT);
+                Tokenizer.prototype._stateAfterScript4 = ifElseState("T", AFTER_SCRIPT_5, TEXT);
+
+                Tokenizer.prototype._stateAfterScript5 = function (c) {
+                    if (c === ">" || whitespace(c)) {
+                        this._special = SPECIAL_NONE;
+                        this._state = IN_CLOSING_TAG_NAME;
+                        this._sectionStart = this._index - 6;
+                        this._index--;
+                    } else this._state = TEXT;
+                };
+
+                Tokenizer.prototype._stateBeforeStyle1 = consumeSpecialNameChar("Y", BEFORE_STYLE_2);
+                Tokenizer.prototype._stateBeforeStyle2 = consumeSpecialNameChar("L", BEFORE_STYLE_3);
+                Tokenizer.prototype._stateBeforeStyle3 = consumeSpecialNameChar("E", BEFORE_STYLE_4);
+
+                Tokenizer.prototype._stateBeforeStyle4 = function (c) {
+                    if (c === "/" || c === ">" || whitespace(c)) {
+                        this._special = SPECIAL_STYLE;
+                    }
+                    this._state = IN_TAG_NAME;
+                    this._index--;
+                };
+
+                Tokenizer.prototype._stateAfterStyle1 = ifElseState("Y", AFTER_STYLE_2, TEXT);
+                Tokenizer.prototype._stateAfterStyle2 = ifElseState("L", AFTER_STYLE_3, TEXT);
+                Tokenizer.prototype._stateAfterStyle3 = ifElseState("E", AFTER_STYLE_4, TEXT);
+
+                Tokenizer.prototype._stateAfterStyle4 = function (c) {
+                    if (c === ">" || whitespace(c)) {
+                        this._special = SPECIAL_NONE;
+                        this._state = IN_CLOSING_TAG_NAME;
+                        this._sectionStart = this._index - 5;
+                        this._index--;
+                    } else this._state = TEXT;
+                };
+
+                Tokenizer.prototype._stateBeforeEntity = ifElseState("#", BEFORE_NUMERIC_ENTITY, IN_NAMED_ENTITY);
+                Tokenizer.prototype._stateBeforeNumericEntity = ifElseState("X", IN_HEX_ENTITY, IN_NUMERIC_ENTITY);
+
+                Tokenizer.prototype._parseNamedEntityStrict = function () {
+                    if (this._sectionStart + 1 < this._index) {
+                        var entity = this._buffer.substring(this._sectionStart + 1, this._index),
+                            map = this._xmlMode ? xmlMap : entityMap;
+
+                        if (map.hasOwnProperty(entity)) {
+                            this._emitPartial(map[entity]);
+                            this._sectionStart = this._index + 1;
+                        }
+                    }
+                };
+
+                Tokenizer.prototype._parseLegacyEntity = function () {
+                    var start = this._sectionStart + 1,
+                        limit = this._index - start;
+
+                    if (limit > 6) limit = 6;
+
+                    while (limit >= 2) {
+                        var entity = this._buffer.substr(start, limit);
+
+                        if (legacyMap.hasOwnProperty(entity)) {
+                            this._emitPartial(legacyMap[entity]);
+                            this._sectionStart += limit + 1;
+                            return;
+                        } else {
+                            limit--;
+                        }
+                    }
+                };
+
+                Tokenizer.prototype._stateInNamedEntity = function (c) {
+                    if (c === ";") {
+                        this._parseNamedEntityStrict();
+                        if (this._sectionStart + 1 < this._index && !this._xmlMode) {
+                            this._parseLegacyEntity();
+                        }
+                        this._state = this._baseState;
+                    } else if ((c < "a" || c > "z") && (c < "A" || c > "Z") && (c < "0" || c > "9")) {
+                        if (this._xmlMode) ;else if (this._sectionStart + 1 === this._index) ;else if (this._baseState !== TEXT) {
+                            if (c !== "=") {
+                                this._parseNamedEntityStrict();
+                            }
+                        } else {
+                            this._parseLegacyEntity();
+                        }
+
+                        this._state = this._baseState;
+                        this._index--;
+                    }
+                };
+
+                Tokenizer.prototype._decodeNumericEntity = function (offset, base) {
+                    var sectionStart = this._sectionStart + offset;
+
+                    if (sectionStart !== this._index) {
+                        var entity = this._buffer.substring(sectionStart, this._index);
+                        var parsed = parseInt(entity, base);
+
+                        this._emitPartial(decodeCodePoint(parsed));
+                        this._sectionStart = this._index;
+                    } else {
+                        this._sectionStart--;
+                    }
+
+                    this._state = this._baseState;
+                };
+
+                Tokenizer.prototype._stateInNumericEntity = function (c) {
+                    if (c === ";") {
+                        this._decodeNumericEntity(2, 10);
+                        this._sectionStart++;
+                    } else if (c < "0" || c > "9") {
+                        if (!this._xmlMode) {
+                            this._decodeNumericEntity(2, 10);
+                        } else {
+                            this._state = this._baseState;
+                        }
+                        this._index--;
+                    }
+                };
+
+                Tokenizer.prototype._stateInHexEntity = function (c) {
+                    if (c === ";") {
+                        this._decodeNumericEntity(3, 16);
+                        this._sectionStart++;
+                    } else if ((c < "a" || c > "f") && (c < "A" || c > "F") && (c < "0" || c > "9")) {
+                        if (!this._xmlMode) {
+                            this._decodeNumericEntity(3, 16);
+                        } else {
+                            this._state = this._baseState;
+                        }
+                        this._index--;
+                    }
+                };
+
+                Tokenizer.prototype._cleanup = function () {
+                    if (this._sectionStart < 0) {
+                        this._buffer = "";
+                        this._bufferOffset += this._index;
+                        this._index = 0;
+                    } else if (this._running) {
+                        if (this._state === TEXT) {
+                            if (this._sectionStart !== this._index) {
+                                this._cbs.ontext(this._buffer.substr(this._sectionStart));
+                            }
+                            this._buffer = "";
+                            this._bufferOffset += this._index;
+                            this._index = 0;
+                        } else if (this._sectionStart === this._index) {
+                            this._buffer = "";
+                            this._bufferOffset += this._index;
+                            this._index = 0;
+                        } else {
+                            this._buffer = this._buffer.substr(this._sectionStart);
+                            this._index -= this._sectionStart;
+                            this._bufferOffset += this._sectionStart;
+                        }
+
+                        this._sectionStart = 0;
+                    }
+                };
+
+                Tokenizer.prototype.write = function (chunk) {
+                    if (this._ended) this._cbs.onerror(Error(".write() after done!"));
+
+                    this._buffer += chunk;
+                    this._parse();
+                };
+
+                Tokenizer.prototype._parse = function () {
+                    while (this._index < this._buffer.length && this._running) {
+                        var c = this._buffer.charAt(this._index);
+                        if (this._state === TEXT) {
+                            this._stateText(c);
+                        } else if (this._state === BEFORE_TAG_NAME) {
+                            this._stateBeforeTagName(c);
+                        } else if (this._state === IN_TAG_NAME) {
+                            this._stateInTagName(c);
+                        } else if (this._state === BEFORE_CLOSING_TAG_NAME) {
+                            this._stateBeforeCloseingTagName(c);
+                        } else if (this._state === IN_CLOSING_TAG_NAME) {
+                            this._stateInCloseingTagName(c);
+                        } else if (this._state === AFTER_CLOSING_TAG_NAME) {
+                            this._stateAfterCloseingTagName(c);
+                        } else if (this._state === IN_SELF_CLOSING_TAG) {
+                            this._stateInSelfClosingTag(c);
+                        } else if (this._state === BEFORE_ATTRIBUTE_NAME) {
+                                this._stateBeforeAttributeName(c);
+                            } else if (this._state === IN_ATTRIBUTE_NAME) {
+                                this._stateInAttributeName(c);
+                            } else if (this._state === AFTER_ATTRIBUTE_NAME) {
+                                this._stateAfterAttributeName(c);
+                            } else if (this._state === BEFORE_ATTRIBUTE_VALUE) {
+                                this._stateBeforeAttributeValue(c);
+                            } else if (this._state === IN_ATTRIBUTE_VALUE_DQ) {
+                                this._stateInAttributeValueDoubleQuotes(c);
+                            } else if (this._state === IN_ATTRIBUTE_VALUE_SQ) {
+                                this._stateInAttributeValueSingleQuotes(c);
+                            } else if (this._state === IN_ATTRIBUTE_VALUE_NQ) {
+                                this._stateInAttributeValueNoQuotes(c);
+                            } else if (this._state === BEFORE_DECLARATION) {
+                                    this._stateBeforeDeclaration(c);
+                                } else if (this._state === IN_DECLARATION) {
+                                    this._stateInDeclaration(c);
+                                } else if (this._state === IN_PROCESSING_INSTRUCTION) {
+                                        this._stateInProcessingInstruction(c);
+                                    } else if (this._state === BEFORE_COMMENT) {
+                                            this._stateBeforeComment(c);
+                                        } else if (this._state === IN_COMMENT) {
+                                            this._stateInComment(c);
+                                        } else if (this._state === AFTER_COMMENT_1) {
+                                            this._stateAfterComment1(c);
+                                        } else if (this._state === AFTER_COMMENT_2) {
+                                            this._stateAfterComment2(c);
+                                        } else if (this._state === BEFORE_CDATA_1) {
+                                                this._stateBeforeCdata1(c);
+                                            } else if (this._state === BEFORE_CDATA_2) {
+                                                this._stateBeforeCdata2(c);
+                                            } else if (this._state === BEFORE_CDATA_3) {
+                                                this._stateBeforeCdata3(c);
+                                            } else if (this._state === BEFORE_CDATA_4) {
+                                                this._stateBeforeCdata4(c);
+                                            } else if (this._state === BEFORE_CDATA_5) {
+                                                this._stateBeforeCdata5(c);
+                                            } else if (this._state === BEFORE_CDATA_6) {
+                                                this._stateBeforeCdata6(c);
+                                            } else if (this._state === IN_CDATA) {
+                                                this._stateInCdata(c);
+                                            } else if (this._state === AFTER_CDATA_1) {
+                                                this._stateAfterCdata1(c);
+                                            } else if (this._state === AFTER_CDATA_2) {
+                                                this._stateAfterCdata2(c);
+                                            } else if (this._state === BEFORE_SPECIAL) {
+                                                    this._stateBeforeSpecial(c);
+                                                } else if (this._state === BEFORE_SPECIAL_END) {
+                                                    this._stateBeforeSpecialEnd(c);
+                                                } else if (this._state === BEFORE_SCRIPT_1) {
+                                                        this._stateBeforeScript1(c);
+                                                    } else if (this._state === BEFORE_SCRIPT_2) {
+                                                        this._stateBeforeScript2(c);
+                                                    } else if (this._state === BEFORE_SCRIPT_3) {
+                                                        this._stateBeforeScript3(c);
+                                                    } else if (this._state === BEFORE_SCRIPT_4) {
+                                                        this._stateBeforeScript4(c);
+                                                    } else if (this._state === BEFORE_SCRIPT_5) {
+                                                        this._stateBeforeScript5(c);
+                                                    } else if (this._state === AFTER_SCRIPT_1) {
+                                                        this._stateAfterScript1(c);
+                                                    } else if (this._state === AFTER_SCRIPT_2) {
+                                                        this._stateAfterScript2(c);
+                                                    } else if (this._state === AFTER_SCRIPT_3) {
+                                                        this._stateAfterScript3(c);
+                                                    } else if (this._state === AFTER_SCRIPT_4) {
+                                                        this._stateAfterScript4(c);
+                                                    } else if (this._state === AFTER_SCRIPT_5) {
+                                                        this._stateAfterScript5(c);
+                                                    } else if (this._state === BEFORE_STYLE_1) {
+                                                            this._stateBeforeStyle1(c);
+                                                        } else if (this._state === BEFORE_STYLE_2) {
+                                                            this._stateBeforeStyle2(c);
+                                                        } else if (this._state === BEFORE_STYLE_3) {
+                                                            this._stateBeforeStyle3(c);
+                                                        } else if (this._state === BEFORE_STYLE_4) {
+                                                            this._stateBeforeStyle4(c);
+                                                        } else if (this._state === AFTER_STYLE_1) {
+                                                            this._stateAfterStyle1(c);
+                                                        } else if (this._state === AFTER_STYLE_2) {
+                                                            this._stateAfterStyle2(c);
+                                                        } else if (this._state === AFTER_STYLE_3) {
+                                                            this._stateAfterStyle3(c);
+                                                        } else if (this._state === AFTER_STYLE_4) {
+                                                            this._stateAfterStyle4(c);
+                                                        } else if (this._state === BEFORE_ENTITY) {
+                                                                this._stateBeforeEntity(c);
+                                                            } else if (this._state === BEFORE_NUMERIC_ENTITY) {
+                                                                this._stateBeforeNumericEntity(c);
+                                                            } else if (this._state === IN_NAMED_ENTITY) {
+                                                                this._stateInNamedEntity(c);
+                                                            } else if (this._state === IN_NUMERIC_ENTITY) {
+                                                                this._stateInNumericEntity(c);
+                                                            } else if (this._state === IN_HEX_ENTITY) {
+                                                                this._stateInHexEntity(c);
+                                                            } else {
+                                                                this._cbs.onerror(Error("unknown _state"), this._state);
+                                                            }
+
+                        this._index++;
+                    }
+
+                    this._cleanup();
+                };
+
+                Tokenizer.prototype.pause = function () {
+                    this._running = false;
+                };
+                Tokenizer.prototype.resume = function () {
+                    this._running = true;
+
+                    if (this._index < this._buffer.length) {
+                        this._parse();
+                    }
+                    if (this._ended) {
+                        this._finish();
+                    }
+                };
+
+                Tokenizer.prototype.end = function (chunk) {
+                    if (this._ended) this._cbs.onerror(Error(".end() after done!"));
+                    if (chunk) this.write(chunk);
+
+                    this._ended = true;
+
+                    if (this._running) this._finish();
+                };
+
+                Tokenizer.prototype._finish = function () {
+                    if (this._sectionStart < this._index) {
+                        this._handleTrailingData();
+                    }
+
+                    this._cbs.onend();
+                };
+
+                Tokenizer.prototype._handleTrailingData = function () {
+                    var data = this._buffer.substr(this._sectionStart);
+
+                    if (this._state === IN_CDATA || this._state === AFTER_CDATA_1 || this._state === AFTER_CDATA_2) {
+                        this._cbs.oncdata(data);
+                    } else if (this._state === IN_COMMENT || this._state === AFTER_COMMENT_1 || this._state === AFTER_COMMENT_2) {
+                        this._cbs.oncomment(data);
+                    } else if (this._state === IN_NAMED_ENTITY && !this._xmlMode) {
+                        this._parseLegacyEntity();
+                        if (this._sectionStart < this._index) {
+                            this._state = this._baseState;
+                            this._handleTrailingData();
+                        }
+                    } else if (this._state === IN_NUMERIC_ENTITY && !this._xmlMode) {
+                        this._decodeNumericEntity(2, 10);
+                        if (this._sectionStart < this._index) {
+                            this._state = this._baseState;
+                            this._handleTrailingData();
+                        }
+                    } else if (this._state === IN_HEX_ENTITY && !this._xmlMode) {
+                        this._decodeNumericEntity(3, 16);
+                        if (this._sectionStart < this._index) {
+                            this._state = this._baseState;
+                            this._handleTrailingData();
+                        }
+                    } else if (this._state !== IN_TAG_NAME && this._state !== BEFORE_ATTRIBUTE_NAME && this._state !== BEFORE_ATTRIBUTE_VALUE && this._state !== AFTER_ATTRIBUTE_NAME && this._state !== IN_ATTRIBUTE_NAME && this._state !== IN_ATTRIBUTE_VALUE_SQ && this._state !== IN_ATTRIBUTE_VALUE_DQ && this._state !== IN_ATTRIBUTE_VALUE_NQ && this._state !== IN_CLOSING_TAG_NAME) {
+                        this._cbs.ontext(data);
+                    }
+                };
+
+                Tokenizer.prototype.reset = function () {
+                    Tokenizer.call(this, { xmlMode: this._xmlMode, decodeEntities: this._decodeEntities }, this._cbs);
+                };
+
+                Tokenizer.prototype.getAbsoluteIndex = function () {
+                    return this._bufferOffset + this._index;
+                };
+
+                Tokenizer.prototype._getSection = function () {
+                    return this._buffer.substring(this._sectionStart, this._index);
+                };
+
+                Tokenizer.prototype._emitToken = function (name) {
+                    this._cbs[name](this._getSection());
+                    this._sectionStart = -1;
+                };
+
+                Tokenizer.prototype._emitPartial = function (value) {
+                    if (this._baseState !== TEXT) {
+                        this._cbs.onattribdata(value);
+                    } else {
+                        this._cbs.ontext(value);
+                    }
+                };
+            }, { "entities/lib/decode_codepoint.js": 23, "entities/maps/entities.json": 26, "entities/maps/legacy.json": 27, "entities/maps/xml.json": 28 }],
+            36: [function (require, module, exports) {
+                module.exports = Stream;
+
+                var Parser = require("./Parser.js"),
+                    WritableStream = require("stream").Writable || require("readable-stream").Writable,
+                    StringDecoder = require("string_decoder").StringDecoder,
+                    Buffer = require("buffer").Buffer;
+
+                function Stream(cbs, options) {
+                    var parser = this._parser = new Parser(cbs, options);
+                    var decoder = this._decoder = new StringDecoder();
+
+                    WritableStream.call(this, { decodeStrings: false });
+
+                    this.once("finish", function () {
+                        parser.end(decoder.end());
+                    });
+                }
+
+                require("inherits")(Stream, WritableStream);
+
+                WritableStream.prototype._write = function (chunk, encoding, cb) {
+                    if (chunk instanceof Buffer) chunk = this._decoder.write(chunk);
+                    this._parser.write(chunk);
+                    cb();
+                };
+            }, { "./Parser.js": 32, "buffer": 6, "inherits": 39, "readable-stream": 3, "stream": 57, "string_decoder": 4 }],
+            37: [function (require, module, exports) {
+                var Parser = require("./Parser.js"),
+                    DomHandler = require("domhandler");
+
+                function defineProp(name, value) {
+                    delete module.exports[name];
+                    module.exports[name] = value;
+                    return value;
+                }
+
+                module.exports = {
+                    Parser: Parser,
+                    Tokenizer: require("./Tokenizer.js"),
+                    ElementType: require("domelementtype"),
+                    DomHandler: DomHandler,
+                    get FeedHandler() {
+                        return defineProp("FeedHandler", require("./FeedHandler.js"));
+                    },
+                    get Stream() {
+                        return defineProp("Stream", require("./Stream.js"));
+                    },
+                    get WritableStream() {
+                        return defineProp("WritableStream", require("./WritableStream.js"));
+                    },
+                    get ProxyHandler() {
+                        return defineProp("ProxyHandler", require("./ProxyHandler.js"));
+                    },
+                    get DomUtils() {
+                        return defineProp("DomUtils", require("domutils"));
+                    },
+                    get CollectingHandler() {
+                        return defineProp("CollectingHandler", require("./CollectingHandler.js"));
+                    },
+
+                    DefaultHandler: DomHandler,
+                    get RssHandler() {
+                        return defineProp("RssHandler", this.FeedHandler);
+                    },
+
+                    parseDOM: function parseDOM(data, options) {
+                        var handler = new DomHandler(options);
+                        new Parser(handler, options).end(data);
+                        return handler.dom;
+                    },
+                    parseFeed: function parseFeed(feed, options) {
+                        var handler = new module.exports.FeedHandler(options);
+                        new Parser(handler, options).end(feed);
+                        return handler.dom;
+                    },
+                    createDomStream: function createDomStream(cb, options, elementCb) {
+                        var handler = new DomHandler(cb, options, elementCb);
+                        return new Parser(handler, options);
+                    },
+
+                    EVENTS: {
+                        attribute: 2,
+                        cdatastart: 0,
+                        cdataend: 0,
+                        text: 1,
+                        processinginstruction: 2,
+                        comment: 1,
+                        commentend: 0,
+                        closetag: 1,
+                        opentag: 2,
+                        opentagname: 1,
+                        error: 1,
+                        end: 0
+                    }
+                };
+            }, { "./CollectingHandler.js": 30, "./FeedHandler.js": 31, "./Parser.js": 32, "./ProxyHandler.js": 33, "./Stream.js": 34, "./Tokenizer.js": 35, "./WritableStream.js": 36, "domelementtype": 10, "domhandler": 11, "domutils": 14 }],
+            38: [function (require, module, exports) {
+                exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+                    var e, m;
+                    var eLen = nBytes * 8 - mLen - 1;
+                    var eMax = (1 << eLen) - 1;
+                    var eBias = eMax >> 1;
+                    var nBits = -7;
+                    var i = isLE ? nBytes - 1 : 0;
+                    var d = isLE ? -1 : 1;
+                    var s = buffer[offset + i];
+
+                    i += d;
+
+                    e = s & (1 << -nBits) - 1;
+                    s >>= -nBits;
+                    nBits += eLen;
+                    for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+                    m = e & (1 << -nBits) - 1;
+                    e >>= -nBits;
+                    nBits += mLen;
+                    for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+                    if (e === 0) {
+                        e = 1 - eBias;
+                    } else if (e === eMax) {
+                        return m ? NaN : (s ? -1 : 1) * Infinity;
+                    } else {
+                        m = m + Math.pow(2, mLen);
+                        e = e - eBias;
+                    }
+                    return (s ? -1 : 1) * m * Math.pow(2, e - mLen);
+                };
+
+                exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+                    var e, m, c;
+                    var eLen = nBytes * 8 - mLen - 1;
+                    var eMax = (1 << eLen) - 1;
+                    var eBias = eMax >> 1;
+                    var rt = mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0;
+                    var i = isLE ? 0 : nBytes - 1;
+                    var d = isLE ? 1 : -1;
+                    var s = value < 0 || value === 0 && 1 / value < 0 ? 1 : 0;
+
+                    value = Math.abs(value);
+
+                    if (isNaN(value) || value === Infinity) {
+                        m = isNaN(value) ? 1 : 0;
+                        e = eMax;
+                    } else {
+                        e = Math.floor(Math.log(value) / Math.LN2);
+                        if (value * (c = Math.pow(2, -e)) < 1) {
+                            e--;
+                            c *= 2;
+                        }
+                        if (e + eBias >= 1) {
+                            value += rt / c;
+                        } else {
+                            value += rt * Math.pow(2, 1 - eBias);
+                        }
+                        if (value * c >= 2) {
+                            e++;
+                            c /= 2;
+                        }
+
+                        if (e + eBias >= eMax) {
+                            m = 0;
+                            e = eMax;
+                        } else if (e + eBias >= 1) {
+                            m = (value * c - 1) * Math.pow(2, mLen);
+                            e = e + eBias;
+                        } else {
+                            m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
+                            e = 0;
+                        }
+                    }
+
+                    for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+                    e = e << mLen | m;
+                    eLen += mLen;
+                    for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+                    buffer[offset + i - d] |= s * 128;
+                };
+            }, {}],
+            39: [function (require, module, exports) {
+                if (typeof Object.create === 'function') {
+                    module.exports = function inherits(ctor, superCtor) {
+                        ctor.super_ = superCtor;
+                        ctor.prototype = Object.create(superCtor.prototype, {
+                            constructor: {
+                                value: ctor,
+                                enumerable: false,
+                                writable: true,
+                                configurable: true
+                            }
+                        });
+                    };
+                } else {
+                    module.exports = function inherits(ctor, superCtor) {
+                        ctor.super_ = superCtor;
+                        var TempCtor = function TempCtor() {};
+                        TempCtor.prototype = superCtor.prototype;
+                        ctor.prototype = new TempCtor();
+                        ctor.prototype.constructor = ctor;
+                    };
+                }
+            }, {}],
+            40: [function (require, module, exports) {
+                /*!
+                 * Determine if an object is a Buffer
+                 *
+                 * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+                 * @license  MIT
+                 */
+
+                module.exports = function (obj) {
+                    return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer);
+                };
+
+                function isBuffer(obj) {
+                    return !!obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj);
+                }
+
+                function isSlowBuffer(obj) {
+                    return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0));
+                }
+            }, {}],
+            41: [function (require, module, exports) {
+                var toString = {}.toString;
+
+                module.exports = Array.isArray || function (arr) {
+                    return toString.call(arr) == '[object Array]';
+                };
+            }, {}],
+            42: [function (require, module, exports) {
+                (function (process) {
+                    'use strict';
+
+                    if (!process.version || process.version.indexOf('v0.') === 0 || process.version.indexOf('v1.') === 0 && process.version.indexOf('v1.8.') !== 0) {
+                        module.exports = nextTick;
+                    } else {
+                        module.exports = process.nextTick;
+                    }
+
+                    function nextTick(fn, arg1, arg2, arg3) {
+                        if (typeof fn !== 'function') {
+                            throw new TypeError('"callback" argument must be a function');
+                        }
+                        var len = arguments.length;
+                        var args, i;
+                        switch (len) {
+                            case 0:
+                            case 1:
+                                return process.nextTick(fn);
+                            case 2:
+                                return process.nextTick(function afterTickOne() {
+                                    fn.call(null, arg1);
+                                });
+                            case 3:
+                                return process.nextTick(function afterTickTwo() {
+                                    fn.call(null, arg1, arg2);
+                                });
+                            case 4:
+                                return process.nextTick(function afterTickThree() {
+                                    fn.call(null, arg1, arg2, arg3);
+                                });
+                            default:
+                                args = new Array(len - 1);
+                                i = 0;
+                                while (i < args.length) {
+                                    args[i++] = arguments[i];
+                                }
+                                return process.nextTick(function afterTick() {
+                                    fn.apply(null, args);
+                                });
+                        }
+                    }
+                }).call(this, require('_process'));
+            }, { "_process": 43 }],
+            43: [function (require, module, exports) {
+                var process = module.exports = {};
+
+                var cachedSetTimeout;
+                var cachedClearTimeout;
+
+                function defaultSetTimout() {
+                    throw new Error('setTimeout has not been defined');
+                }
+
+                function defaultClearTimeout() {
+                    throw new Error('clearTimeout has not been defined');
+                }
+                (function () {
+                    try {
+                        if (typeof setTimeout === 'function') {
+                            cachedSetTimeout = setTimeout;
+                        } else {
+                            cachedSetTimeout = defaultSetTimout;
+                        }
+                    } catch (e) {
+                        cachedSetTimeout = defaultSetTimout;
+                    }
+                    try {
+                        if (typeof clearTimeout === 'function') {
+                            cachedClearTimeout = clearTimeout;
+                        } else {
+                            cachedClearTimeout = defaultClearTimeout;
+                        }
+                    } catch (e) {
+                        cachedClearTimeout = defaultClearTimeout;
+                    }
+                })();
+
+                function runTimeout(fun) {
+                    if (cachedSetTimeout === setTimeout) {
+                        return setTimeout(fun, 0);
+                    }
+
+                    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+                        cachedSetTimeout = setTimeout;
+                        return setTimeout(fun, 0);
+                    }
+                    try {
+                        return cachedSetTimeout(fun, 0);
+                    } catch (e) {
+                        try {
+                            return cachedSetTimeout.call(null, fun, 0);
+                        } catch (e) {
+                            return cachedSetTimeout.call(this, fun, 0);
+                        }
+                    }
+                }
+
+                function runClearTimeout(marker) {
+                    if (cachedClearTimeout === clearTimeout) {
+                        return clearTimeout(marker);
+                    }
+
+                    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+                        cachedClearTimeout = clearTimeout;
+                        return clearTimeout(marker);
+                    }
+                    try {
+                        return cachedClearTimeout(marker);
+                    } catch (e) {
+                        try {
+                            return cachedClearTimeout.call(null, marker);
+                        } catch (e) {
+                            return cachedClearTimeout.call(this, marker);
+                        }
+                    }
+                }
+                var queue = [];
+                var draining = false;
+                var currentQueue;
+                var queueIndex = -1;
+
+                function cleanUpNextTick() {
+                    if (!draining || !currentQueue) {
+                        return;
+                    }
+                    draining = false;
+                    if (currentQueue.length) {
+                        queue = currentQueue.concat(queue);
+                    } else {
+                        queueIndex = -1;
+                    }
+                    if (queue.length) {
+                        drainQueue();
+                    }
+                }
+
+                function drainQueue() {
+                    if (draining) {
+                        return;
+                    }
+                    var timeout = runTimeout(cleanUpNextTick);
+                    draining = true;
+
+                    var len = queue.length;
+                    while (len) {
+                        currentQueue = queue;
+                        queue = [];
+                        while (++queueIndex < len) {
+                            if (currentQueue) {
+                                currentQueue[queueIndex].run();
+                            }
+                        }
+                        queueIndex = -1;
+                        len = queue.length;
+                    }
+                    currentQueue = null;
+                    draining = false;
+                    runClearTimeout(timeout);
+                }
+
+                process.nextTick = function (fun) {
+                    var args = new Array(arguments.length - 1);
+                    if (arguments.length > 1) {
+                        for (var i = 1; i < arguments.length; i++) {
+                            args[i - 1] = arguments[i];
+                        }
+                    }
+                    queue.push(new Item(fun, args));
+                    if (queue.length === 1 && !draining) {
+                        runTimeout(drainQueue);
+                    }
+                };
+
+                function Item(fun, array) {
+                    this.fun = fun;
+                    this.array = array;
+                }
+                Item.prototype.run = function () {
+                    this.fun.apply(null, this.array);
+                };
+                process.title = 'browser';
+                process.browser = true;
+                process.env = {};
+                process.argv = [];
+                process.version = '';
+                process.versions = {};
+
+                function noop() {}
+
+                process.on = noop;
+                process.addListener = noop;
+                process.once = noop;
+                process.off = noop;
+                process.removeListener = noop;
+                process.removeAllListeners = noop;
+                process.emit = noop;
+
+                process.binding = function (name) {
+                    throw new Error('process.binding is not supported');
+                };
+
+                process.cwd = function () {
+                    return '/';
+                };
+                process.chdir = function (dir) {
+                    throw new Error('process.chdir is not supported');
+                };
+                process.umask = function () {
+                    return 0;
+                };
+            }, {}],
+            44: [function (require, module, exports) {
+                module.exports = require('./lib/_stream_duplex.js');
+            }, { "./lib/_stream_duplex.js": 45 }],
+            45: [function (require, module, exports) {
+
+                'use strict';
+
+                var objectKeys = Object.keys || function (obj) {
+                    var keys = [];
+                    for (var key in obj) {
+                        keys.push(key);
+                    }
+                    return keys;
+                };
+
+
+                module.exports = Duplex;
+
+                var processNextTick = require('process-nextick-args');
+
+                var util = require('core-util-is');
+                util.inherits = require('inherits');
+
+
+                var Readable = require('./_stream_readable');
+                var Writable = require('./_stream_writable');
+
+                util.inherits(Duplex, Readable);
+
+                var keys = objectKeys(Writable.prototype);
+                for (var v = 0; v < keys.length; v++) {
+                    var method = keys[v];
+                    if (!Duplex.prototype[method]) Duplex.prototype[method] = Writable.prototype[method];
+                }
+
+                function Duplex(options) {
+                    if (!(this instanceof Duplex)) return new Duplex(options);
+
+                    Readable.call(this, options);
+                    Writable.call(this, options);
+
+                    if (options && options.readable === false) this.readable = false;
+
+                    if (options && options.writable === false) this.writable = false;
+
+                    this.allowHalfOpen = true;
+                    if (options && options.allowHalfOpen === false) this.allowHalfOpen = false;
+
+                    this.once('end', onend);
+                }
+
+                function onend() {
+                    if (this.allowHalfOpen || this._writableState.ended) return;
+
+                    processNextTick(onEndNT, this);
+                }
+
+                function onEndNT(self) {
+                    self.end();
+                }
+
+                function forEach(xs, f) {
+                    for (var i = 0, l = xs.length; i < l; i++) {
+                        f(xs[i], i);
+                    }
+                }
+            }, { "./_stream_readable": 47, "./_stream_writable": 49, "core-util-is": 7, "inherits": 39, "process-nextick-args": 42 }],
+            46: [function (require, module, exports) {
+
+                'use strict';
+
+                module.exports = PassThrough;
+
+                var Transform = require('./_stream_transform');
+
+                var util = require('core-util-is');
+                util.inherits = require('inherits');
+
+
+                util.inherits(PassThrough, Transform);
+
+                function PassThrough(options) {
+                    if (!(this instanceof PassThrough)) return new PassThrough(options);
+
+                    Transform.call(this, options);
+                }
+
+                PassThrough.prototype._transform = function (chunk, encoding, cb) {
+                    cb(null, chunk);
+                };
+            }, { "./_stream_transform": 48, "core-util-is": 7, "inherits": 39 }],
+            47: [function (require, module, exports) {
+                (function (process) {
+                    'use strict';
+
+                    module.exports = Readable;
+
+                    var processNextTick = require('process-nextick-args');
+
+                    var isArray = require('isarray');
+
+                    var Duplex;
+
+
+                    Readable.ReadableState = ReadableState;
+
+                    var EE = require('events').EventEmitter;
+
+                    var EElistenerCount = function EElistenerCount(emitter, type) {
+                        return emitter.listeners(type).length;
+                    };
+
+                    var Stream = require('./internal/streams/stream');
+
+
+                    var Buffer = require('buffer').Buffer;
+
+                    var bufferShim = require('buffer-shims');
+
+                    var util = require('core-util-is');
+                    util.inherits = require('inherits');
+
+                    var debugUtil = require('util');
+                    var debug = void 0;
+                    if (debugUtil && debugUtil.debuglog) {
+                        debug = debugUtil.debuglog('stream');
+                    } else {
+                        debug = function debug() {};
+                    }
+
+
+                    var BufferList = require('./internal/streams/BufferList');
+                    var StringDecoder;
+
+                    util.inherits(Readable, Stream);
+
+                    var kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
+
+                    function prependListener(emitter, event, fn) {
+                        if (typeof emitter.prependListener === 'function') {
+                            return emitter.prependListener(event, fn);
+                        } else {
+                            if (!emitter._events || !emitter._events[event]) emitter.on(event, fn);else if (isArray(emitter._events[event])) emitter._events[event].unshift(fn);else emitter._events[event] = [fn, emitter._events[event]];
+                        }
+                    }
+
+                    function ReadableState(options, stream) {
+                        Duplex = Duplex || require('./_stream_duplex');
+
+                        options = options || {};
+
+                        this.objectMode = !!options.objectMode;
+
+                        if (stream instanceof Duplex) this.objectMode = this.objectMode || !!options.readableObjectMode;
+
+                        var hwm = options.highWaterMark;
+                        var defaultHwm = this.objectMode ? 16 : 16 * 1024;
+                        this.highWaterMark = hwm || hwm === 0 ? hwm : defaultHwm;
+
+                        this.highWaterMark = ~~this.highWaterMark;
+
+                        this.buffer = new BufferList();
+                        this.length = 0;
+                        this.pipes = null;
+                        this.pipesCount = 0;
+                        this.flowing = null;
+                        this.ended = false;
+                        this.endEmitted = false;
+                        this.reading = false;
+
+                        this.sync = true;
+
+                        this.needReadable = false;
+                        this.emittedReadable = false;
+                        this.readableListening = false;
+                        this.resumeScheduled = false;
+
+                        this.defaultEncoding = options.defaultEncoding || 'utf8';
+
+                        this.ranOut = false;
+
+                        this.awaitDrain = 0;
+
+                        this.readingMore = false;
+
+                        this.decoder = null;
+                        this.encoding = null;
+                        if (options.encoding) {
+                            if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
+                            this.decoder = new StringDecoder(options.encoding);
+                            this.encoding = options.encoding;
+                        }
+                    }
+
+                    function Readable(options) {
+                        Duplex = Duplex || require('./_stream_duplex');
+
+                        if (!(this instanceof Readable)) return new Readable(options);
+
+                        this._readableState = new ReadableState(options, this);
+
+                        this.readable = true;
+
+                        if (options && typeof options.read === 'function') this._read = options.read;
+
+                        Stream.call(this);
+                    }
+
+                    Readable.prototype.push = function (chunk, encoding) {
+                        var state = this._readableState;
+
+                        if (!state.objectMode && typeof chunk === 'string') {
+                            encoding = encoding || state.defaultEncoding;
+                            if (encoding !== state.encoding) {
+                                chunk = bufferShim.from(chunk, encoding);
+                                encoding = '';
+                            }
+                        }
+
+                        return readableAddChunk(this, state, chunk, encoding, false);
+                    };
+
+                    Readable.prototype.unshift = function (chunk) {
+                        var state = this._readableState;
+                        return readableAddChunk(this, state, chunk, '', true);
+                    };
+
+                    Readable.prototype.isPaused = function () {
+                        return this._readableState.flowing === false;
+                    };
+
+                    function readableAddChunk(stream, state, chunk, encoding, addToFront) {
+                        var er = chunkInvalid(state, chunk);
+                        if (er) {
+                            stream.emit('error', er);
+                        } else if (chunk === null) {
+                            state.reading = false;
+                            onEofChunk(stream, state);
+                        } else if (state.objectMode || chunk && chunk.length > 0) {
+                            if (state.ended && !addToFront) {
+                                var e = new Error('stream.push() after EOF');
+                                stream.emit('error', e);
+                            } else if (state.endEmitted && addToFront) {
+                                var _e = new Error('stream.unshift() after end event');
+                                stream.emit('error', _e);
+                            } else {
+                                var skipAdd;
+                                if (state.decoder && !addToFront && !encoding) {
+                                    chunk = state.decoder.write(chunk);
+                                    skipAdd = !state.objectMode && chunk.length === 0;
+                                }
+
+                                if (!addToFront) state.reading = false;
+
+                                if (!skipAdd) {
+                                    if (state.flowing && state.length === 0 && !state.sync) {
+                                        stream.emit('data', chunk);
+                                        stream.read(0);
+                                    } else {
+                                        state.length += state.objectMode ? 1 : chunk.length;
+                                        if (addToFront) state.buffer.unshift(chunk);else state.buffer.push(chunk);
+
+                                        if (state.needReadable) emitReadable(stream);
+                                    }
+                                }
+
+                                maybeReadMore(stream, state);
+                            }
+                        } else if (!addToFront) {
+                            state.reading = false;
+                        }
+
+                        return needMoreData(state);
+                    }
+
+                    function needMoreData(state) {
+                        return !state.ended && (state.needReadable || state.length < state.highWaterMark || state.length === 0);
+                    }
+
+                    Readable.prototype.setEncoding = function (enc) {
+                        if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
+                        this._readableState.decoder = new StringDecoder(enc);
+                        this._readableState.encoding = enc;
+                        return this;
+                    };
+
+                    var MAX_HWM = 0x800000;
+
+                    function computeNewHighWaterMark(n) {
+                        if (n >= MAX_HWM) {
+                            n = MAX_HWM;
+                        } else {
+                            n--;
+                            n |= n >>> 1;
+                            n |= n >>> 2;
+                            n |= n >>> 4;
+                            n |= n >>> 8;
+                            n |= n >>> 16;
+                            n++;
+                        }
+                        return n;
+                    }
+
+                    function howMuchToRead(n, state) {
+                        if (n <= 0 || state.length === 0 && state.ended) return 0;
+                        if (state.objectMode) return 1;
+                        if (n !== n) {
+                            if (state.flowing && state.length) return state.buffer.head.data.length;else return state.length;
+                        }
+
+                        if (n > state.highWaterMark) state.highWaterMark = computeNewHighWaterMark(n);
+                        if (n <= state.length) return n;
+
+                        if (!state.ended) {
+                            state.needReadable = true;
+                            return 0;
+                        }
+                        return state.length;
+                    }
+
+                    Readable.prototype.read = function (n) {
+                        debug('read', n);
+                        n = parseInt(n, 10);
+                        var state = this._readableState;
+                        var nOrig = n;
+
+                        if (n !== 0) state.emittedReadable = false;
+
+                        if (n === 0 && state.needReadable && (state.length >= state.highWaterMark || state.ended)) {
+                            debug('read: emitReadable', state.length, state.ended);
+                            if (state.length === 0 && state.ended) endReadable(this);else emitReadable(this);
+                            return null;
+                        }
+
+                        n = howMuchToRead(n, state);
+
+                        if (n === 0 && state.ended) {
+                            if (state.length === 0) endReadable(this);
+                            return null;
+                        }
+
+                        var doRead = state.needReadable;
+                        debug('need readable', doRead);
+
+                        if (state.length === 0 || state.length - n < state.highWaterMark) {
+                            doRead = true;
+                            debug('length less than watermark', doRead);
+                        }
+
+                        if (state.ended || state.reading) {
+                            doRead = false;
+                            debug('reading or ended', doRead);
+                        } else if (doRead) {
+                            debug('do read');
+                            state.reading = true;
+                            state.sync = true;
+
+                            if (state.length === 0) state.needReadable = true;
+
+                            this._read(state.highWaterMark);
+                            state.sync = false;
+
+                            if (!state.reading) n = howMuchToRead(nOrig, state);
+                        }
+
+                        var ret;
+                        if (n > 0) ret = fromList(n, state);else ret = null;
+
+                        if (ret === null) {
+                            state.needReadable = true;
+                            n = 0;
+                        } else {
+                            state.length -= n;
+                        }
+
+                        if (state.length === 0) {
+                            if (!state.ended) state.needReadable = true;
+
+                            if (nOrig !== n && state.ended) endReadable(this);
+                        }
+
+                        if (ret !== null) this.emit('data', ret);
+
+                        return ret;
+                    };
+
+                    function chunkInvalid(state, chunk) {
+                        var er = null;
+                        if (!Buffer.isBuffer(chunk) && typeof chunk !== 'string' && chunk !== null && chunk !== undefined && !state.objectMode) {
+                            er = new TypeError('Invalid non-string/buffer chunk');
+                        }
+                        return er;
+                    }
+
+                    function onEofChunk(stream, state) {
+                        if (state.ended) return;
+                        if (state.decoder) {
+                            var chunk = state.decoder.end();
+                            if (chunk && chunk.length) {
+                                state.buffer.push(chunk);
+                                state.length += state.objectMode ? 1 : chunk.length;
+                            }
+                        }
+                        state.ended = true;
+
+                        emitReadable(stream);
+                    }
+
+                    function emitReadable(stream) {
+                        var state = stream._readableState;
+                        state.needReadable = false;
+                        if (!state.emittedReadable) {
+                            debug('emitReadable', state.flowing);
+                            state.emittedReadable = true;
+                            if (state.sync) processNextTick(emitReadable_, stream);else emitReadable_(stream);
+                        }
+                    }
+
+                    function emitReadable_(stream) {
+                        debug('emit readable');
+                        stream.emit('readable');
+                        flow(stream);
+                    }
+
+                    function maybeReadMore(stream, state) {
+                        if (!state.readingMore) {
+                            state.readingMore = true;
+                            processNextTick(maybeReadMore_, stream, state);
+                        }
+                    }
+
+                    function maybeReadMore_(stream, state) {
+                        var len = state.length;
+                        while (!state.reading && !state.flowing && !state.ended && state.length < state.highWaterMark) {
+                            debug('maybeReadMore read 0');
+                            stream.read(0);
+                            if (len === state.length) break;else len = state.length;
+                        }
+                        state.readingMore = false;
+                    }
+
+                    Readable.prototype._read = function (n) {
+                        this.emit('error', new Error('_read() is not implemented'));
+                    };
+
+                    Readable.prototype.pipe = function (dest, pipeOpts) {
+                        var src = this;
+                        var state = this._readableState;
+
+                        switch (state.pipesCount) {
+                            case 0:
+                                state.pipes = dest;
+                                break;
+                            case 1:
+                                state.pipes = [state.pipes, dest];
+                                break;
+                            default:
+                                state.pipes.push(dest);
+                                break;
+                        }
+                        state.pipesCount += 1;
+                        debug('pipe count=%d opts=%j', state.pipesCount, pipeOpts);
+
+                        var doEnd = (!pipeOpts || pipeOpts.end !== false) && dest !== process.stdout && dest !== process.stderr;
+
+                        var endFn = doEnd ? onend : cleanup;
+                        if (state.endEmitted) processNextTick(endFn);else src.once('end', endFn);
+
+                        dest.on('unpipe', onunpipe);
+
+                        function onunpipe(readable) {
+                            debug('onunpipe');
+                            if (readable === src) {
+                                cleanup();
+                            }
+                        }
+
+                        function onend() {
+                            debug('onend');
+                            dest.end();
+                        }
+
+                        var ondrain = pipeOnDrain(src);
+                        dest.on('drain', ondrain);
+
+                        var cleanedUp = false;
+
+                        function cleanup() {
+                            debug('cleanup');
+
+                            dest.removeListener('close', onclose);
+                            dest.removeListener('finish', onfinish);
+                            dest.removeListener('drain', ondrain);
+                            dest.removeListener('error', onerror);
+                            dest.removeListener('unpipe', onunpipe);
+                            src.removeListener('end', onend);
+                            src.removeListener('end', cleanup);
+                            src.removeListener('data', ondata);
+
+                            cleanedUp = true;
+
+                            if (state.awaitDrain && (!dest._writableState || dest._writableState.needDrain)) ondrain();
+                        }
+
+                        var increasedAwaitDrain = false;
+                        src.on('data', ondata);
+
+                        function ondata(chunk) {
+                            debug('ondata');
+                            increasedAwaitDrain = false;
+                            var ret = dest.write(chunk);
+                            if (false === ret && !increasedAwaitDrain) {
+                                if ((state.pipesCount === 1 && state.pipes === dest || state.pipesCount > 1 && indexOf(state.pipes, dest) !== -1) && !cleanedUp) {
+                                    debug('false write response, pause', src._readableState.awaitDrain);
+                                    src._readableState.awaitDrain++;
+                                    increasedAwaitDrain = true;
+                                }
+                                src.pause();
+                            }
+                        }
+
+                        function onerror(er) {
+                            debug('onerror', er);
+                            unpipe();
+                            dest.removeListener('error', onerror);
+                            if (EElistenerCount(dest, 'error') === 0) dest.emit('error', er);
+                        }
+
+                        prependListener(dest, 'error', onerror);
+
+                        function onclose() {
+                            dest.removeListener('finish', onfinish);
+                            unpipe();
+                        }
+                        dest.once('close', onclose);
+
+                        function onfinish() {
+                            debug('onfinish');
+                            dest.removeListener('close', onclose);
+                            unpipe();
+                        }
+                        dest.once('finish', onfinish);
+
+                        function unpipe() {
+                            debug('unpipe');
+                            src.unpipe(dest);
+                        }
+
+                        dest.emit('pipe', src);
+
+                        if (!state.flowing) {
+                            debug('pipe resume');
+                            src.resume();
+                        }
+
+                        return dest;
+                    };
+
+                    function pipeOnDrain(src) {
+                        return function () {
+                            var state = src._readableState;
+                            debug('pipeOnDrain', state.awaitDrain);
+                            if (state.awaitDrain) state.awaitDrain--;
+                            if (state.awaitDrain === 0 && EElistenerCount(src, 'data')) {
+                                state.flowing = true;
+                                flow(src);
+                            }
+                        };
+                    }
+
+                    Readable.prototype.unpipe = function (dest) {
+                        var state = this._readableState;
+
+                        if (state.pipesCount === 0) return this;
+
+                        if (state.pipesCount === 1) {
+                            if (dest && dest !== state.pipes) return this;
+
+                            if (!dest) dest = state.pipes;
+
+                            state.pipes = null;
+                            state.pipesCount = 0;
+                            state.flowing = false;
+                            if (dest) dest.emit('unpipe', this);
+                            return this;
+                        }
+
+                        if (!dest) {
+                            var dests = state.pipes;
+                            var len = state.pipesCount;
+                            state.pipes = null;
+                            state.pipesCount = 0;
+                            state.flowing = false;
+
+                            for (var i = 0; i < len; i++) {
+                                dests[i].emit('unpipe', this);
+                            }
+                            return this;
+                        }
+
+                        var index = indexOf(state.pipes, dest);
+                        if (index === -1) return this;
+
+                        state.pipes.splice(index, 1);
+                        state.pipesCount -= 1;
+                        if (state.pipesCount === 1) state.pipes = state.pipes[0];
+
+                        dest.emit('unpipe', this);
+
+                        return this;
+                    };
+
+                    Readable.prototype.on = function (ev, fn) {
+                        var res = Stream.prototype.on.call(this, ev, fn);
+
+                        if (ev === 'data') {
+                            if (this._readableState.flowing !== false) this.resume();
+                        } else if (ev === 'readable') {
+                            var state = this._readableState;
+                            if (!state.endEmitted && !state.readableListening) {
+                                state.readableListening = state.needReadable = true;
+                                state.emittedReadable = false;
+                                if (!state.reading) {
+                                    processNextTick(nReadingNextTick, this);
+                                } else if (state.length) {
+                                    emitReadable(this, state);
+                                }
+                            }
+                        }
+
+                        return res;
+                    };
+                    Readable.prototype.addListener = Readable.prototype.on;
+
+                    function nReadingNextTick(self) {
+                        debug('readable nexttick read 0');
+                        self.read(0);
+                    }
+
+                    Readable.prototype.resume = function () {
+                        var state = this._readableState;
+                        if (!state.flowing) {
+                            debug('resume');
+                            state.flowing = true;
+                            resume(this, state);
+                        }
+                        return this;
+                    };
+
+                    function resume(stream, state) {
+                        if (!state.resumeScheduled) {
+                            state.resumeScheduled = true;
+                            processNextTick(resume_, stream, state);
+                        }
+                    }
+
+                    function resume_(stream, state) {
+                        if (!state.reading) {
+                            debug('resume read 0');
+                            stream.read(0);
+                        }
+
+                        state.resumeScheduled = false;
+                        state.awaitDrain = 0;
+                        stream.emit('resume');
+                        flow(stream);
+                        if (state.flowing && !state.reading) stream.read(0);
+                    }
+
+                    Readable.prototype.pause = function () {
+                        debug('call pause flowing=%j', this._readableState.flowing);
+                        if (false !== this._readableState.flowing) {
+                            debug('pause');
+                            this._readableState.flowing = false;
+                            this.emit('pause');
+                        }
+                        return this;
+                    };
+
+                    function flow(stream) {
+                        var state = stream._readableState;
+                        debug('flow', state.flowing);
+                        while (state.flowing && stream.read() !== null) {}
+                    }
+
+                    Readable.prototype.wrap = function (stream) {
+                        var state = this._readableState;
+                        var paused = false;
+
+                        var self = this;
+                        stream.on('end', function () {
+                            debug('wrapped end');
+                            if (state.decoder && !state.ended) {
+                                var chunk = state.decoder.end();
+                                if (chunk && chunk.length) self.push(chunk);
+                            }
+
+                            self.push(null);
+                        });
+
+                        stream.on('data', function (chunk) {
+                            debug('wrapped data');
+                            if (state.decoder) chunk = state.decoder.write(chunk);
+
+                            if (state.objectMode && (chunk === null || chunk === undefined)) return;else if (!state.objectMode && (!chunk || !chunk.length)) return;
+
+                            var ret = self.push(chunk);
+                            if (!ret) {
+                                paused = true;
+                                stream.pause();
+                            }
+                        });
+
+                        for (var i in stream) {
+                            if (this[i] === undefined && typeof stream[i] === 'function') {
+                                this[i] = function (method) {
+                                    return function () {
+                                        return stream[method].apply(stream, arguments);
+                                    };
+                                }(i);
+                            }
+                        }
+
+                        for (var n = 0; n < kProxyEvents.length; n++) {
+                            stream.on(kProxyEvents[n], self.emit.bind(self, kProxyEvents[n]));
+                        }
+
+                        self._read = function (n) {
+                            debug('wrapped _read', n);
+                            if (paused) {
+                                paused = false;
+                                stream.resume();
+                            }
+                        };
+
+                        return self;
+                    };
+
+                    Readable._fromList = fromList;
+
+                    function fromList(n, state) {
+                        if (state.length === 0) return null;
+
+                        var ret;
+                        if (state.objectMode) ret = state.buffer.shift();else if (!n || n >= state.length) {
+                            if (state.decoder) ret = state.buffer.join('');else if (state.buffer.length === 1) ret = state.buffer.head.data;else ret = state.buffer.concat(state.length);
+                            state.buffer.clear();
+                        } else {
+                            ret = fromListPartial(n, state.buffer, state.decoder);
+                        }
+
+                        return ret;
+                    }
+
+                    function fromListPartial(n, list, hasStrings) {
+                        var ret;
+                        if (n < list.head.data.length) {
+                            ret = list.head.data.slice(0, n);
+                            list.head.data = list.head.data.slice(n);
+                        } else if (n === list.head.data.length) {
+                            ret = list.shift();
+                        } else {
+                            ret = hasStrings ? copyFromBufferString(n, list) : copyFromBuffer(n, list);
+                        }
+                        return ret;
+                    }
+
+                    function copyFromBufferString(n, list) {
+                        var p = list.head;
+                        var c = 1;
+                        var ret = p.data;
+                        n -= ret.length;
+                        while (p = p.next) {
+                            var str = p.data;
+                            var nb = n > str.length ? str.length : n;
+                            if (nb === str.length) ret += str;else ret += str.slice(0, n);
+                            n -= nb;
+                            if (n === 0) {
+                                if (nb === str.length) {
+                                    ++c;
+                                    if (p.next) list.head = p.next;else list.head = list.tail = null;
+                                } else {
+                                    list.head = p;
+                                    p.data = str.slice(nb);
+                                }
+                                break;
+                            }
+                            ++c;
+                        }
+                        list.length -= c;
+                        return ret;
+                    }
+
+                    function copyFromBuffer(n, list) {
+                        var ret = bufferShim.allocUnsafe(n);
+                        var p = list.head;
+                        var c = 1;
+                        p.data.copy(ret);
+                        n -= p.data.length;
+                        while (p = p.next) {
+                            var buf = p.data;
+                            var nb = n > buf.length ? buf.length : n;
+                            buf.copy(ret, ret.length - n, 0, nb);
+                            n -= nb;
+                            if (n === 0) {
+                                if (nb === buf.length) {
+                                    ++c;
+                                    if (p.next) list.head = p.next;else list.head = list.tail = null;
+                                } else {
+                                    list.head = p;
+                                    p.data = buf.slice(nb);
+                                }
+                                break;
+                            }
+                            ++c;
+                        }
+                        list.length -= c;
+                        return ret;
+                    }
+
+                    function endReadable(stream) {
+                        var state = stream._readableState;
+
+                        if (state.length > 0) throw new Error('"endReadable()" called on non-empty stream');
+
+                        if (!state.endEmitted) {
+                            state.ended = true;
+                            processNextTick(endReadableNT, state, stream);
+                        }
+                    }
+
+                    function endReadableNT(state, stream) {
+                        if (!state.endEmitted && state.length === 0) {
+                            state.endEmitted = true;
+                            stream.readable = false;
+                            stream.emit('end');
+                        }
+                    }
+
+                    function forEach(xs, f) {
+                        for (var i = 0, l = xs.length; i < l; i++) {
+                            f(xs[i], i);
+                        }
+                    }
+
+                    function indexOf(xs, x) {
+                        for (var i = 0, l = xs.length; i < l; i++) {
+                            if (xs[i] === x) return i;
+                        }
+                        return -1;
+                    }
+                }).call(this, require('_process'));
+            }, { "./_stream_duplex": 45, "./internal/streams/BufferList": 50, "./internal/streams/stream": 51, "_process": 43, "buffer": 6, "buffer-shims": 5, "core-util-is": 7, "events": 29, "inherits": 39, "isarray": 41, "process-nextick-args": 42, "string_decoder/": 58, "util": 3 }],
+            48: [function (require, module, exports) {
+
+                'use strict';
+
+                module.exports = Transform;
+
+                var Duplex = require('./_stream_duplex');
+
+                var util = require('core-util-is');
+                util.inherits = require('inherits');
+
+
+                util.inherits(Transform, Duplex);
+
+                function TransformState(stream) {
+                    this.afterTransform = function (er, data) {
+                        return afterTransform(stream, er, data);
+                    };
+
+                    this.needTransform = false;
+                    this.transforming = false;
+                    this.writecb = null;
+                    this.writechunk = null;
+                    this.writeencoding = null;
+                }
+
+                function afterTransform(stream, er, data) {
+                    var ts = stream._transformState;
+                    ts.transforming = false;
+
+                    var cb = ts.writecb;
+
+                    if (!cb) return stream.emit('error', new Error('no writecb in Transform class'));
+
+                    ts.writechunk = null;
+                    ts.writecb = null;
+
+                    if (data !== null && data !== undefined) stream.push(data);
+
+                    cb(er);
+
+                    var rs = stream._readableState;
+                    rs.reading = false;
+                    if (rs.needReadable || rs.length < rs.highWaterMark) {
+                        stream._read(rs.highWaterMark);
+                    }
+                }
+
+                function Transform(options) {
+                    if (!(this instanceof Transform)) return new Transform(options);
+
+                    Duplex.call(this, options);
+
+                    this._transformState = new TransformState(this);
+
+                    var stream = this;
+
+                    this._readableState.needReadable = true;
+
+                    this._readableState.sync = false;
+
+                    if (options) {
+                        if (typeof options.transform === 'function') this._transform = options.transform;
+
+                        if (typeof options.flush === 'function') this._flush = options.flush;
+                    }
+
+                    this.once('prefinish', function () {
+                        if (typeof this._flush === 'function') this._flush(function (er, data) {
+                            done(stream, er, data);
+                        });else done(stream);
+                    });
+                }
+
+                Transform.prototype.push = function (chunk, encoding) {
+                    this._transformState.needTransform = false;
+                    return Duplex.prototype.push.call(this, chunk, encoding);
+                };
+
+                Transform.prototype._transform = function (chunk, encoding, cb) {
+                    throw new Error('_transform() is not implemented');
+                };
+
+                Transform.prototype._write = function (chunk, encoding, cb) {
+                    var ts = this._transformState;
+                    ts.writecb = cb;
+                    ts.writechunk = chunk;
+                    ts.writeencoding = encoding;
+                    if (!ts.transforming) {
+                        var rs = this._readableState;
+                        if (ts.needTransform || rs.needReadable || rs.length < rs.highWaterMark) this._read(rs.highWaterMark);
+                    }
+                };
+
+                Transform.prototype._read = function (n) {
+                    var ts = this._transformState;
+
+                    if (ts.writechunk !== null && ts.writecb && !ts.transforming) {
+                        ts.transforming = true;
+                        this._transform(ts.writechunk, ts.writeencoding, ts.afterTransform);
+                    } else {
+                        ts.needTransform = true;
+                    }
+                };
+
+                function done(stream, er, data) {
+                    if (er) return stream.emit('error', er);
+
+                    if (data !== null && data !== undefined) stream.push(data);
+
+                    var ws = stream._writableState;
+                    var ts = stream._transformState;
+
+                    if (ws.length) throw new Error('Calling transform done when ws.length != 0');
+
+                    if (ts.transforming) throw new Error('Calling transform done when still transforming');
+
+                    return stream.push(null);
+                }
+            }, { "./_stream_duplex": 45, "core-util-is": 7, "inherits": 39 }],
+            49: [function (require, module, exports) {
+                (function (process) {
+
+                    'use strict';
+
+                    module.exports = Writable;
+
+                    var processNextTick = require('process-nextick-args');
+
+                    var asyncWrite = !process.browser && ['v0.10', 'v0.9.'].indexOf(process.version.slice(0, 5)) > -1 ? setImmediate : processNextTick;
+
+                    var Duplex;
+
+
+                    Writable.WritableState = WritableState;
+
+                    var util = require('core-util-is');
+                    util.inherits = require('inherits');
+
+                    var internalUtil = {
+                        deprecate: require('util-deprecate')
+                    };
+
+                    var Stream = require('./internal/streams/stream');
+
+
+                    var Buffer = require('buffer').Buffer;
+
+                    var bufferShim = require('buffer-shims');
+
+
+                    util.inherits(Writable, Stream);
+
+                    function nop() {}
+
+                    function WriteReq(chunk, encoding, cb) {
+                        this.chunk = chunk;
+                        this.encoding = encoding;
+                        this.callback = cb;
+                        this.next = null;
+                    }
+
+                    function WritableState(options, stream) {
+                        Duplex = Duplex || require('./_stream_duplex');
+
+                        options = options || {};
+
+                        this.objectMode = !!options.objectMode;
+
+                        if (stream instanceof Duplex) this.objectMode = this.objectMode || !!options.writableObjectMode;
+
+                        var hwm = options.highWaterMark;
+                        var defaultHwm = this.objectMode ? 16 : 16 * 1024;
+                        this.highWaterMark = hwm || hwm === 0 ? hwm : defaultHwm;
+
+                        this.highWaterMark = ~~this.highWaterMark;
+
+                        this.needDrain = false;
+
+                        this.ending = false;
+
+                        this.ended = false;
+
+                        this.finished = false;
+
+                        var noDecode = options.decodeStrings === false;
+                        this.decodeStrings = !noDecode;
+
+                        this.defaultEncoding = options.defaultEncoding || 'utf8';
+
+                        this.length = 0;
+
+                        this.writing = false;
+
+                        this.corked = 0;
+
+                        this.sync = true;
+
+                        this.bufferProcessing = false;
+
+                        this.onwrite = function (er) {
+                            onwrite(stream, er);
+                        };
+
+                        this.writecb = null;
+
+                        this.writelen = 0;
+
+                        this.bufferedRequest = null;
+                        this.lastBufferedRequest = null;
+
+                        this.pendingcb = 0;
+
+                        this.prefinished = false;
+
+                        this.errorEmitted = false;
+
+                        this.bufferedRequestCount = 0;
+
+                        this.corkedRequestsFree = new CorkedRequest(this);
+                    }
+
+                    WritableState.prototype.getBuffer = function getBuffer() {
+                        var current = this.bufferedRequest;
+                        var out = [];
+                        while (current) {
+                            out.push(current);
+                            current = current.next;
+                        }
+                        return out;
+                    };
+
+                    (function () {
+                        try {
+                            Object.defineProperty(WritableState.prototype, 'buffer', {
+                                get: internalUtil.deprecate(function () {
+                                    return this.getBuffer();
+                                }, '_writableState.buffer is deprecated. Use _writableState.getBuffer ' + 'instead.')
+                            });
+                        } catch (_) {}
+                    })();
+
+                    var realHasInstance;
+                    if (typeof Symbol === 'function' && Symbol.hasInstance && typeof Function.prototype[Symbol.hasInstance] === 'function') {
+                        realHasInstance = Function.prototype[Symbol.hasInstance];
+                        Object.defineProperty(Writable, Symbol.hasInstance, {
+                            value: function value(object) {
+                                if (realHasInstance.call(this, object)) return true;
+
+                                return object && object._writableState instanceof WritableState;
+                            }
+                        });
+                    } else {
+                        realHasInstance = function realHasInstance(object) {
+                            return object instanceof this;
+                        };
+                    }
+
+                    function Writable(options) {
+                        Duplex = Duplex || require('./_stream_duplex');
+
+                        if (!realHasInstance.call(Writable, this) && !(this instanceof Duplex)) {
+                            return new Writable(options);
+                        }
+
+                        this._writableState = new WritableState(options, this);
+
+                        this.writable = true;
+
+                        if (options) {
+                            if (typeof options.write === 'function') this._write = options.write;
+
+                            if (typeof options.writev === 'function') this._writev = options.writev;
+                        }
+
+                        Stream.call(this);
+                    }
+
+                    Writable.prototype.pipe = function () {
+                        this.emit('error', new Error('Cannot pipe, not readable'));
+                    };
+
+                    function writeAfterEnd(stream, cb) {
+                        var er = new Error('write after end');
+
+                        stream.emit('error', er);
+                        processNextTick(cb, er);
+                    }
+
+                    function validChunk(stream, state, chunk, cb) {
+                        var valid = true;
+                        var er = false;
+
+                        if (chunk === null) {
+                            er = new TypeError('May not write null values to stream');
+                        } else if (typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
+                            er = new TypeError('Invalid non-string/buffer chunk');
+                        }
+                        if (er) {
+                            stream.emit('error', er);
+                            processNextTick(cb, er);
+                            valid = false;
+                        }
+                        return valid;
+                    }
+
+                    Writable.prototype.write = function (chunk, encoding, cb) {
+                        var state = this._writableState;
+                        var ret = false;
+                        var isBuf = Buffer.isBuffer(chunk);
+
+                        if (typeof encoding === 'function') {
+                            cb = encoding;
+                            encoding = null;
+                        }
+
+                        if (isBuf) encoding = 'buffer';else if (!encoding) encoding = state.defaultEncoding;
+
+                        if (typeof cb !== 'function') cb = nop;
+
+                        if (state.ended) writeAfterEnd(this, cb);else if (isBuf || validChunk(this, state, chunk, cb)) {
+                            state.pendingcb++;
+                            ret = writeOrBuffer(this, state, isBuf, chunk, encoding, cb);
+                        }
+
+                        return ret;
+                    };
+
+                    Writable.prototype.cork = function () {
+                        var state = this._writableState;
+
+                        state.corked++;
+                    };
+
+                    Writable.prototype.uncork = function () {
+                        var state = this._writableState;
+
+                        if (state.corked) {
+                            state.corked--;
+
+                            if (!state.writing && !state.corked && !state.finished && !state.bufferProcessing && state.bufferedRequest) clearBuffer(this, state);
+                        }
+                    };
+
+                    Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
+                        if (typeof encoding === 'string') encoding = encoding.toLowerCase();
+                        if (!(['hex', 'utf8', 'utf-8', 'ascii', 'binary', 'base64', 'ucs2', 'ucs-2', 'utf16le', 'utf-16le', 'raw'].indexOf((encoding + '').toLowerCase()) > -1)) throw new TypeError('Unknown encoding: ' + encoding);
+                        this._writableState.defaultEncoding = encoding;
+                        return this;
+                    };
+
+                    function decodeChunk(state, chunk, encoding) {
+                        if (!state.objectMode && state.decodeStrings !== false && typeof chunk === 'string') {
+                            chunk = bufferShim.from(chunk, encoding);
+                        }
+                        return chunk;
+                    }
+
+                    function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
+                        if (!isBuf) {
+                            chunk = decodeChunk(state, chunk, encoding);
+                            if (Buffer.isBuffer(chunk)) encoding = 'buffer';
+                        }
+                        var len = state.objectMode ? 1 : chunk.length;
+
+                        state.length += len;
+
+                        var ret = state.length < state.highWaterMark;
+
+                        if (!ret) state.needDrain = true;
+
+                        if (state.writing || state.corked) {
+                            var last = state.lastBufferedRequest;
+                            state.lastBufferedRequest = new WriteReq(chunk, encoding, cb);
+                            if (last) {
+                                last.next = state.lastBufferedRequest;
+                            } else {
+                                state.bufferedRequest = state.lastBufferedRequest;
+                            }
+                            state.bufferedRequestCount += 1;
+                        } else {
+                            doWrite(stream, state, false, len, chunk, encoding, cb);
+                        }
+
+                        return ret;
+                    }
+
+                    function doWrite(stream, state, writev, len, chunk, encoding, cb) {
+                        state.writelen = len;
+                        state.writecb = cb;
+                        state.writing = true;
+                        state.sync = true;
+                        if (writev) stream._writev(chunk, state.onwrite);else stream._write(chunk, encoding, state.onwrite);
+                        state.sync = false;
+                    }
+
+                    function onwriteError(stream, state, sync, er, cb) {
+                        --state.pendingcb;
+                        if (sync) processNextTick(cb, er);else cb(er);
+
+                        stream._writableState.errorEmitted = true;
+                        stream.emit('error', er);
+                    }
+
+                    function onwriteStateUpdate(state) {
+                        state.writing = false;
+                        state.writecb = null;
+                        state.length -= state.writelen;
+                        state.writelen = 0;
+                    }
+
+                    function onwrite(stream, er) {
+                        var state = stream._writableState;
+                        var sync = state.sync;
+                        var cb = state.writecb;
+
+                        onwriteStateUpdate(state);
+
+                        if (er) onwriteError(stream, state, sync, er, cb);else {
+                            var finished = needFinish(state);
+
+                            if (!finished && !state.corked && !state.bufferProcessing && state.bufferedRequest) {
+                                clearBuffer(stream, state);
+                            }
+
+                            if (sync) {
+                                asyncWrite(afterWrite, stream, state, finished, cb);
+                            } else {
+                                afterWrite(stream, state, finished, cb);
+                            }
+                        }
+                    }
+
+                    function afterWrite(stream, state, finished, cb) {
+                        if (!finished) onwriteDrain(stream, state);
+                        state.pendingcb--;
+                        cb();
+                        finishMaybe(stream, state);
+                    }
+
+                    function onwriteDrain(stream, state) {
+                        if (state.length === 0 && state.needDrain) {
+                            state.needDrain = false;
+                            stream.emit('drain');
+                        }
+                    }
+
+                    function clearBuffer(stream, state) {
+                        state.bufferProcessing = true;
+                        var entry = state.bufferedRequest;
+
+                        if (stream._writev && entry && entry.next) {
+                            var l = state.bufferedRequestCount;
+                            var buffer = new Array(l);
+                            var holder = state.corkedRequestsFree;
+                            holder.entry = entry;
+
+                            var count = 0;
+                            while (entry) {
+                                buffer[count] = entry;
+                                entry = entry.next;
+                                count += 1;
+                            }
+
+                            doWrite(stream, state, true, state.length, buffer, '', holder.finish);
+
+                            state.pendingcb++;
+                            state.lastBufferedRequest = null;
+                            if (holder.next) {
+                                state.corkedRequestsFree = holder.next;
+                                holder.next = null;
+                            } else {
+                                state.corkedRequestsFree = new CorkedRequest(state);
+                            }
+                        } else {
+                            while (entry) {
+                                var chunk = entry.chunk;
+                                var encoding = entry.encoding;
+                                var cb = entry.callback;
+                                var len = state.objectMode ? 1 : chunk.length;
+
+                                doWrite(stream, state, false, len, chunk, encoding, cb);
+                                entry = entry.next;
+
+                                if (state.writing) {
+                                    break;
+                                }
+                            }
+
+                            if (entry === null) state.lastBufferedRequest = null;
+                        }
+
+                        state.bufferedRequestCount = 0;
+                        state.bufferedRequest = entry;
+                        state.bufferProcessing = false;
+                    }
+
+                    Writable.prototype._write = function (chunk, encoding, cb) {
+                        cb(new Error('_write() is not implemented'));
+                    };
+
+                    Writable.prototype._writev = null;
+
+                    Writable.prototype.end = function (chunk, encoding, cb) {
+                        var state = this._writableState;
+
+                        if (typeof chunk === 'function') {
+                            cb = chunk;
+                            chunk = null;
+                            encoding = null;
+                        } else if (typeof encoding === 'function') {
+                            cb = encoding;
+                            encoding = null;
+                        }
+
+                        if (chunk !== null && chunk !== undefined) this.write(chunk, encoding);
+
+                        if (state.corked) {
+                            state.corked = 1;
+                            this.uncork();
+                        }
+
+                        if (!state.ending && !state.finished) endWritable(this, state, cb);
+                    };
+
+                    function needFinish(state) {
+                        return state.ending && state.length === 0 && state.bufferedRequest === null && !state.finished && !state.writing;
+                    }
+
+                    function prefinish(stream, state) {
+                        if (!state.prefinished) {
+                            state.prefinished = true;
+                            stream.emit('prefinish');
+                        }
+                    }
+
+                    function finishMaybe(stream, state) {
+                        var need = needFinish(state);
+                        if (need) {
+                            if (state.pendingcb === 0) {
+                                prefinish(stream, state);
+                                state.finished = true;
+                                stream.emit('finish');
+                            } else {
+                                prefinish(stream, state);
+                            }
+                        }
+                        return need;
+                    }
+
+                    function endWritable(stream, state, cb) {
+                        state.ending = true;
+                        finishMaybe(stream, state);
+                        if (cb) {
+                            if (state.finished) processNextTick(cb);else stream.once('finish', cb);
+                        }
+                        state.ended = true;
+                        stream.writable = false;
+                    }
+
+                    function CorkedRequest(state) {
+                        var _this = this;
+
+                        this.next = null;
+                        this.entry = null;
+                        this.finish = function (err) {
+                            var entry = _this.entry;
+                            _this.entry = null;
+                            while (entry) {
+                                var cb = entry.callback;
+                                state.pendingcb--;
+                                cb(err);
+                                entry = entry.next;
+                            }
+                            if (state.corkedRequestsFree) {
+                                state.corkedRequestsFree.next = _this;
+                            } else {
+                                state.corkedRequestsFree = _this;
+                            }
+                        };
+                    }
+                }).call(this, require('_process'));
+            }, { "./_stream_duplex": 45, "./internal/streams/stream": 51, "_process": 43, "buffer": 6, "buffer-shims": 5, "core-util-is": 7, "inherits": 39, "process-nextick-args": 42, "util-deprecate": 59 }],
+            50: [function (require, module, exports) {
+                'use strict';
+
+                var Buffer = require('buffer').Buffer;
+
+                var bufferShim = require('buffer-shims');
+
+
+                module.exports = BufferList;
+
+                function BufferList() {
+                    this.head = null;
+                    this.tail = null;
+                    this.length = 0;
+                }
+
+                BufferList.prototype.push = function (v) {
+                    var entry = { data: v, next: null };
+                    if (this.length > 0) this.tail.next = entry;else this.head = entry;
+                    this.tail = entry;
+                    ++this.length;
+                };
+
+                BufferList.prototype.unshift = function (v) {
+                    var entry = { data: v, next: this.head };
+                    if (this.length === 0) this.tail = entry;
+                    this.head = entry;
+                    ++this.length;
+                };
+
+                BufferList.prototype.shift = function () {
+                    if (this.length === 0) return;
+                    var ret = this.head.data;
+                    if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
+                    --this.length;
+                    return ret;
+                };
+
+                BufferList.prototype.clear = function () {
+                    this.head = this.tail = null;
+                    this.length = 0;
+                };
+
+                BufferList.prototype.join = function (s) {
+                    if (this.length === 0) return '';
+                    var p = this.head;
+                    var ret = '' + p.data;
+                    while (p = p.next) {
+                        ret += s + p.data;
+                    }
+                    return ret;
+                };
+
+                BufferList.prototype.concat = function (n) {
+                    if (this.length === 0) return bufferShim.alloc(0);
+                    if (this.length === 1) return this.head.data;
+                    var ret = bufferShim.allocUnsafe(n >>> 0);
+                    var p = this.head;
+                    var i = 0;
+                    while (p) {
+                        p.data.copy(ret, i);
+                        i += p.data.length;
+                        p = p.next;
+                    }
+                    return ret;
+                };
+            }, { "buffer": 6, "buffer-shims": 5 }],
+            51: [function (require, module, exports) {
+                module.exports = require('events').EventEmitter;
+            }, { "events": 29 }],
+            52: [function (require, module, exports) {
+                module.exports = require('./readable').PassThrough;
+            }, { "./readable": 53 }],
+            53: [function (require, module, exports) {
+                exports = module.exports = require('./lib/_stream_readable.js');
+                exports.Stream = exports;
+                exports.Readable = exports;
+                exports.Writable = require('./lib/_stream_writable.js');
+                exports.Duplex = require('./lib/_stream_duplex.js');
+                exports.Transform = require('./lib/_stream_transform.js');
+                exports.PassThrough = require('./lib/_stream_passthrough.js');
+            }, { "./lib/_stream_duplex.js": 45, "./lib/_stream_passthrough.js": 46, "./lib/_stream_readable.js": 47, "./lib/_stream_transform.js": 48, "./lib/_stream_writable.js": 49 }],
+            54: [function (require, module, exports) {
+                module.exports = require('./readable').Transform;
+            }, { "./readable": 53 }],
+            55: [function (require, module, exports) {
+                module.exports = require('./lib/_stream_writable.js');
+            }, { "./lib/_stream_writable.js": 49 }],
+            56: [function (require, module, exports) {
+                module.exports = function (string) {
+                    return string.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
+                };
+            }, {}],
+            57: [function (require, module, exports) {
+
+                module.exports = Stream;
+
+                var EE = require('events').EventEmitter;
+                var inherits = require('inherits');
+
+                inherits(Stream, EE);
+                Stream.Readable = require('readable-stream/readable.js');
+                Stream.Writable = require('readable-stream/writable.js');
+                Stream.Duplex = require('readable-stream/duplex.js');
+                Stream.Transform = require('readable-stream/transform.js');
+                Stream.PassThrough = require('readable-stream/passthrough.js');
+
+                Stream.Stream = Stream;
+
+                function Stream() {
+                    EE.call(this);
+                }
+
+                Stream.prototype.pipe = function (dest, options) {
+                    var source = this;
+
+                    function ondata(chunk) {
+                        if (dest.writable) {
+                            if (false === dest.write(chunk) && source.pause) {
+                                source.pause();
+                            }
+                        }
+                    }
+
+                    source.on('data', ondata);
+
+                    function ondrain() {
+                        if (source.readable && source.resume) {
+                            source.resume();
+                        }
+                    }
+
+                    dest.on('drain', ondrain);
+
+                    if (!dest._isStdio && (!options || options.end !== false)) {
+                        source.on('end', onend);
+                        source.on('close', onclose);
+                    }
+
+                    var didOnEnd = false;
+
+                    function onend() {
+                        if (didOnEnd) return;
+                        didOnEnd = true;
+
+                        dest.end();
+                    }
+
+                    function onclose() {
+                        if (didOnEnd) return;
+                        didOnEnd = true;
+
+                        if (typeof dest.destroy === 'function') dest.destroy();
+                    }
+
+                    function onerror(er) {
+                        cleanup();
+                        if (EE.listenerCount(this, 'error') === 0) {
+                            throw er;
+                        }
+                    }
+
+                    source.on('error', onerror);
+                    dest.on('error', onerror);
+
+                    function cleanup() {
+                        source.removeListener('data', ondata);
+                        dest.removeListener('drain', ondrain);
+
+                        source.removeListener('end', onend);
+                        source.removeListener('close', onclose);
+
+                        source.removeListener('error', onerror);
+                        dest.removeListener('error', onerror);
+
+                        source.removeListener('end', cleanup);
+                        source.removeListener('close', cleanup);
+
+                        dest.removeListener('close', cleanup);
+                    }
+
+                    source.on('end', cleanup);
+                    source.on('close', cleanup);
+
+                    dest.on('close', cleanup);
+
+                    dest.emit('pipe', source);
+
+                    return dest;
+                };
+            }, { "events": 29, "inherits": 39, "readable-stream/duplex.js": 44, "readable-stream/passthrough.js": 52, "readable-stream/readable.js": 53, "readable-stream/transform.js": 54, "readable-stream/writable.js": 55 }],
+            58: [function (require, module, exports) {
+                'use strict';
+
+                var Buffer = require('buffer').Buffer;
+                var bufferShim = require('buffer-shims');
+
+                var isEncoding = Buffer.isEncoding || function (encoding) {
+                    encoding = '' + encoding;
+                    switch (encoding && encoding.toLowerCase()) {
+                        case 'hex':
+                        case 'utf8':
+                        case 'utf-8':
+                        case 'ascii':
+                        case 'binary':
+                        case 'base64':
+                        case 'ucs2':
+                        case 'ucs-2':
+                        case 'utf16le':
+                        case 'utf-16le':
+                        case 'raw':
+                            return true;
+                        default:
+                            return false;
+                    }
+                };
+
+                function _normalizeEncoding(enc) {
+                    if (!enc) return 'utf8';
+                    var retried;
+                    while (true) {
+                        switch (enc) {
+                            case 'utf8':
+                            case 'utf-8':
+                                return 'utf8';
+                            case 'ucs2':
+                            case 'ucs-2':
+                            case 'utf16le':
+                            case 'utf-16le':
+                                return 'utf16le';
+                            case 'latin1':
+                            case 'binary':
+                                return 'latin1';
+                            case 'base64':
+                            case 'ascii':
+                            case 'hex':
+                                return enc;
+                            default:
+                                if (retried) return;
+                                enc = ('' + enc).toLowerCase();
+                                retried = true;
+                        }
+                    }
+                };
+
+                function normalizeEncoding(enc) {
+                    var nenc = _normalizeEncoding(enc);
+                    if (typeof nenc !== 'string' && (Buffer.isEncoding === isEncoding || !isEncoding(enc))) throw new Error('Unknown encoding: ' + enc);
+                    return nenc || enc;
+                }
+
+                exports.StringDecoder = StringDecoder;
+
+                function StringDecoder(encoding) {
+                    this.encoding = normalizeEncoding(encoding);
+                    var nb;
+                    switch (this.encoding) {
+                        case 'utf16le':
+                            this.text = utf16Text;
+                            this.end = utf16End;
+                            nb = 4;
+                            break;
+                        case 'utf8':
+                            this.fillLast = utf8FillLast;
+                            nb = 4;
+                            break;
+                        case 'base64':
+                            this.text = base64Text;
+                            this.end = base64End;
+                            nb = 3;
+                            break;
+                        default:
+                            this.write = simpleWrite;
+                            this.end = simpleEnd;
+                            return;
+                    }
+                    this.lastNeed = 0;
+                    this.lastTotal = 0;
+                    this.lastChar = bufferShim.allocUnsafe(nb);
+                }
+
+                StringDecoder.prototype.write = function (buf) {
+                    if (buf.length === 0) return '';
+                    var r;
+                    var i;
+                    if (this.lastNeed) {
+                        r = this.fillLast(buf);
+                        if (r === undefined) return '';
+                        i = this.lastNeed;
+                        this.lastNeed = 0;
+                    } else {
+                        i = 0;
+                    }
+                    if (i < buf.length) return r ? r + this.text(buf, i) : this.text(buf, i);
+                    return r || '';
+                };
+
+                StringDecoder.prototype.end = utf8End;
+
+                StringDecoder.prototype.text = utf8Text;
+
+                StringDecoder.prototype.fillLast = function (buf) {
+                    if (this.lastNeed <= buf.length) {
+                        buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, this.lastNeed);
+                        return this.lastChar.toString(this.encoding, 0, this.lastTotal);
+                    }
+                    buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, buf.length);
+                    this.lastNeed -= buf.length;
+                };
+
+                function utf8CheckByte(byte) {
+                    if (byte <= 0x7F) return 0;else if (byte >> 5 === 0x06) return 2;else if (byte >> 4 === 0x0E) return 3;else if (byte >> 3 === 0x1E) return 4;
+                    return -1;
+                }
+
+                function utf8CheckIncomplete(self, buf, i) {
+                    var j = buf.length - 1;
+                    if (j < i) return 0;
+                    var nb = utf8CheckByte(buf[j]);
+                    if (nb >= 0) {
+                        if (nb > 0) self.lastNeed = nb - 1;
+                        return nb;
+                    }
+                    if (--j < i) return 0;
+                    nb = utf8CheckByte(buf[j]);
+                    if (nb >= 0) {
+                        if (nb > 0) self.lastNeed = nb - 2;
+                        return nb;
+                    }
+                    if (--j < i) return 0;
+                    nb = utf8CheckByte(buf[j]);
+                    if (nb >= 0) {
+                        if (nb > 0) {
+                            if (nb === 2) nb = 0;else self.lastNeed = nb - 3;
+                        }
+                        return nb;
+                    }
+                    return 0;
+                }
+
+                function utf8CheckExtraBytes(self, buf, p) {
+                    if ((buf[0] & 0xC0) !== 0x80) {
+                        self.lastNeed = 0;
+                        return "�".repeat(p);
+                    }
+                    if (self.lastNeed > 1 && buf.length > 1) {
+                        if ((buf[1] & 0xC0) !== 0x80) {
+                            self.lastNeed = 1;
+                            return "�".repeat(p + 1);
+                        }
+                        if (self.lastNeed > 2 && buf.length > 2) {
+                            if ((buf[2] & 0xC0) !== 0x80) {
+                                self.lastNeed = 2;
+                                return "�".repeat(p + 2);
+                            }
+                        }
+                    }
+                }
+
+                function utf8FillLast(buf) {
+                    var p = this.lastTotal - this.lastNeed;
+                    var r = utf8CheckExtraBytes(this, buf, p);
+                    if (r !== undefined) return r;
+                    if (this.lastNeed <= buf.length) {
+                        buf.copy(this.lastChar, p, 0, this.lastNeed);
+                        return this.lastChar.toString(this.encoding, 0, this.lastTotal);
+                    }
+                    buf.copy(this.lastChar, p, 0, buf.length);
+                    this.lastNeed -= buf.length;
+                }
+
+                function utf8Text(buf, i) {
+                    var total = utf8CheckIncomplete(this, buf, i);
+                    if (!this.lastNeed) return buf.toString('utf8', i);
+                    this.lastTotal = total;
+                    var end = buf.length - (total - this.lastNeed);
+                    buf.copy(this.lastChar, 0, end);
+                    return buf.toString('utf8', i, end);
+                }
+
+                function utf8End(buf) {
+                    var r = buf && buf.length ? this.write(buf) : '';
+                    if (this.lastNeed) return r + "�".repeat(this.lastTotal - this.lastNeed);
+                    return r;
+                }
+
+                function utf16Text(buf, i) {
+                    if ((buf.length - i) % 2 === 0) {
+                        var r = buf.toString('utf16le', i);
+                        if (r) {
+                            var c = r.charCodeAt(r.length - 1);
+                            if (c >= 0xD800 && c <= 0xDBFF) {
+                                this.lastNeed = 2;
+                                this.lastTotal = 4;
+                                this.lastChar[0] = buf[buf.length - 2];
+                                this.lastChar[1] = buf[buf.length - 1];
+                                return r.slice(0, -1);
+                            }
+                        }
+                        return r;
+                    }
+                    this.lastNeed = 1;
+                    this.lastTotal = 2;
+                    this.lastChar[0] = buf[buf.length - 1];
+                    return buf.toString('utf16le', i, buf.length - 1);
+                }
+
+                function utf16End(buf) {
+                    var r = buf && buf.length ? this.write(buf) : '';
+                    if (this.lastNeed) {
+                        var end = this.lastTotal - this.lastNeed;
+                        return r + this.lastChar.toString('utf16le', 0, end);
+                    }
+                    return r;
+                }
+
+                function base64Text(buf, i) {
+                    var n = (buf.length - i) % 3;
+                    if (n === 0) return buf.toString('base64', i);
+                    this.lastNeed = 3 - n;
+                    this.lastTotal = 3;
+                    if (n === 1) {
+                        this.lastChar[0] = buf[buf.length - 1];
+                    } else {
+                        this.lastChar[0] = buf[buf.length - 2];
+                        this.lastChar[1] = buf[buf.length - 1];
+                    }
+                    return buf.toString('base64', i, buf.length - n);
+                }
+
+                function base64End(buf) {
+                    var r = buf && buf.length ? this.write(buf) : '';
+                    if (this.lastNeed) return r + this.lastChar.toString('base64', 0, 3 - this.lastNeed);
+                    return r;
+                }
+
+                function simpleWrite(buf) {
+                    return buf.toString(this.encoding);
+                }
+
+                function simpleEnd(buf) {
+                    return buf && buf.length ? this.write(buf) : '';
+                }
+            }, { "buffer": 6, "buffer-shims": 5 }],
+            59: [function (require, module, exports) {
+                (function (global) {
+
+                    module.exports = deprecate;
+
+                    function deprecate(fn, msg) {
+                        if (config('noDeprecation')) {
+                            return fn;
+                        }
+
+                        var warned = false;
+
+                        function deprecated() {
+                            if (!warned) {
+                                if (config('throwDeprecation')) {
+                                    throw new Error(msg);
+                                } else if (config('traceDeprecation')) {
+                                    console.trace(msg);
+                                } else {
+                                    console.warn(msg);
+                                }
+                                warned = true;
+                            }
+                            return fn.apply(this, arguments);
+                        }
+
+                        return deprecated;
+                    }
+
+                    function config(name) {
+                        try {
+                            if (!global.localStorage) return false;
+                        } catch (_) {
+                            return false;
+                        }
+                        var val = global.localStorage[name];
+                        if (null == val) return false;
+                        return String(val).toLowerCase() === 'true';
+                    }
+                }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
+            }, {}],
+            60: [function (require, module, exports) {
+                module.exports = extend;
+
+                var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+                function extend() {
+                    var target = {};
+
+                    for (var i = 0; i < arguments.length; i++) {
+                        var source = arguments[i];
+
+                        for (var key in source) {
+                            if (hasOwnProperty.call(source, key)) {
+                                target[key] = source[key];
+                            }
+                        }
+                    }
+
+                    return target;
+                }
+            }, {}]
+        }, {}, [1])(1);
+    });
+});
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./app.css\"></require>\r\n    <require from=\"./common.css\"></require>\r\n    <require from=\"./override.css\"></require>\r\n    <require from=\"./chat/md-github.css\"></require>\r\n    <require from=\"common/common-scrollbar.css\"></require>\r\n    <require from=\"nprogress/nprogress.css\"></require>\r\n    <require from=\"toastr/build/toastr.css\"></require>\r\n    <require from=\"tms-semantic-ui/semantic.min.css\"></require>\r\n    <require from=\"semantic-ui-calendar/dist/calendar.min.css\"></require>\r\n    <require from=\"modaal/dist/css/modaal.min.css\"></require>\r\n    <require from=\"dropzone/dist/basic.css\"></require>\r\n    <require from=\"swipebox/src/css/swipebox.min.css\"></require>\r\n    <require from=\"simplemde/dist/simplemde.min.css\"></require>\r\n    <require from=\"highlight/styles/github.css\"></require>\r\n    <router-view></router-view>\r\n</template>\r\n"; });
 define('text!blog/blog.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./blog.css\"></require>\r\n    <div ref=\"blogContainerRef\" class=\"tms-blog ${!isHide ? 'left-sidebar-show' : ''} ${rightSidebarShow ? 'right-sidebar-show' : ''}\">\r\n        <em-blog-top-menu></em-blog-top-menu>\r\n        <em-blog-left-sidebar></em-blog-left-sidebar>\r\n        <em-blog-content></em-blog-content>\r\n        <em-blog-right-sidebar></em-blog-right-sidebar>\r\n        <em-chat-member-popup></em-chat-member-popup>\r\n    </div>\r\n    <em-blog-comment-popup></em-blog-comment-popup>\r\n</template>\r\n"; });
 define('text!app.css', ['module'], function(module) { module.exports = "html,\nbody {\n  height: 100%;\n  overflow: hidden;\n}\n::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n::-webkit-scrollbar-thumb {\n  border-radius: 6px;\n  background-color: #c6c6c6;\n}\n::-webkit-scrollbar-thumb:hover {\n  background: #999;\n}\n@media only screen and (min-width: 768px) {\n  .ui.modal.tms-md450 {\n    width: 450px!important;\n    margin-left: -225px !important;\n  }\n  .ui.modal.tms-md510 {\n    width: 510px!important;\n    margin-left: -255px !important;\n  }\n  .ui.modal.tms-md540 {\n    width: 540px!important;\n    margin-left: -275px !important;\n  }\n}\n/* for swipebox */\n#swipebox-overlay {\n  background: rgba(13, 13, 13, 0.5) !important;\n}\n.keyboard {\n  background: #fff;\n  font-weight: 700;\n  padding: 2px .35rem;\n  font-size: .8rem;\n  margin: 0 2px;\n  border-radius: .25rem;\n  color: #3d3c40;\n  border-bottom: 2px solid #9e9ea6;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);\n  text-shadow: none;\n}\n#nprogress .spinner {\n  display: none!important;\n}\n.tms-dropzone-preview-hidden .dz-preview {\n  display: none!important;\n}\n"; });
@@ -32644,21 +39991,21 @@ define('text!user/user-pwd-reset.html', ['module'], function(module) { module.ex
 define('text!chat/chat-direct.css', ['module'], function(module) { module.exports = ".tms-chat-direct {\n  height: 100%;\n}\n.tms-chat-direct .ui.comments {\n  min-height: calc(100% - 170px);\n}\n.tms-chat-direct .ui.comments > .comment > .content {\n  display: block!important;\n}\n.tms-chat-direct .tms-edit-textarea {\n  width: 100%;\n}\n.tms-chat-direct .ui.selection.list > .item {\n  cursor: default;\n}\n.tms-chat-direct .ui.search .prompt {\n  border-radius: .28571429rem;\n}\n.tms-chat-direct .tms-content {\n  position: relative;\n  margin-left: 220px;\n  top: 60px;\n  height: calc(100% - 60px);\n}\n.tms-chat-direct .tms-content.tms-sidebar-show .tms-right-sidebar {\n  width: 388px;\n  border-left: 1px #e9e9e9 solid;\n  -webkit-transition: width 0.15s ease-out 0s;\n  transition: width 0.15s ease-out 0s;\n  margin: 4px;\n  margin-right: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content {\n    margin-left: 0;\n  }\n}\n.tms-chat-direct .tms-content .tms-content-body {\n  width: 100%;\n  height: 100%;\n  max-width: 100%;\n  padding-bottom: 73px;\n}\n.tms-chat-direct .tms-content .tms-content-body .tms-comments-container {\n  width: 100%;\n  height: 100%;\n  overflow: auto;\n}\n.tms-chat-direct .tms-content .tms-content-body .ui.comments {\n  overflow: hidden;\n  max-width: none;\n  margin-bottom: 12px;\n  margin-top: 10px;\n}\n.tms-chat-direct .tms-content .tms-content-body .ui.comments > .ui.basic.button {\n  display: block;\n  margin-right: 0;\n}\n.tms-chat-direct .tms-content .tms-content-body .ui.comments .tms-pre-more {\n  margin-bottom: 10px;\n}\n.tms-chat-direct .tms-content .tms-content-body .ui.comments .tms-next-more {\n  margin-top: 10px;\n  position: relative;\n}\n.tms-chat-direct .tms-content .tms-content-body .ui.comments .tms-next-more .ui.icon.button {\n  position: absolute;\n  top: 2px;\n  right: -1px;\n}\n.tms-chat-direct .tms-content .tms-content-body .tms-go {\n  position: fixed;\n  left: 240px;\n}\n.tms-chat-direct .tms-content .tms-content-body .tms-go .ui.button {\n  margin: 0;\n  background-color: rgba(224, 225, 226, 0.5);\n}\n.tms-chat-direct .tms-content .tms-content-body .tms-go .ui.button:hover {\n  background-color: #CACBCD;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-content .tms-content-body .tms-go {\n    left: 20px;\n  }\n}\n.tms-chat-direct .tms-content .tms-content-body .tms-go-head {\n  top: 80px;\n}\n.tms-chat-direct .tms-content .tms-content-body .tms-go-foot {\n  bottom: 90px;\n}\n.tms-chat-direct .tms-right-sidebar {\n  position: absolute;\n  top: 0;\n  right: 0;\n  width: 0;\n  bottom: 0;\n  overflow: hidden;\n  padding-top: 10px;\n  padding-bottom: 10px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .ui.button.tms-search-more {\n  display: block;\n  margin: 0;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body {\n  max-height: 65px;\n  overflow-y: hidden;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .markdown-body.tms-open {\n  max-height: none;\n  overflow-y: auto;\n  padding-bottom: 20px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment .tms-btn-open-search-item {\n  display: none;\n  height: 25px;\n  background-color: rgba(0, 0, 0, 0.1);\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  text-align: center;\n  padding-top: 2px;\n}\n.tms-chat-direct .tms-right-sidebar .comments .comment:hover .tms-btn-open-search-item {\n  display: block;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-direct .tms-left-sidebar {\n    display: none;\n  }\n  .tms-chat-direct .tms-right-sidebar {\n    position: fixed;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 59px;\n    background-color: white;\n    margin-left: 0!important;\n  }\n  .tms-chat-direct .tms-right-sidebar .panel-chat-msg .ui.basic.segment.minimal.selection.list.segment.comments {\n    padding-left: 0;\n    padding-right: 0;\n  }\n  .tms-chat-direct .tms-sidebar-show .tms-right-sidebar {\n    width: 100%!important;\n  }\n}\n.tms-chat-direct .tms-edit-actions .left.button {\n  border-top-left-radius: 0;\n}\n.tms-chat-direct .tms-edit-actions .right.button {\n  border-top-right-radius: 0;\n}\n.tms-chat-progress {\n  position: absolute;\n  display: inline-block;\n  top: 60px;\n  left: 0;\n  width: 0;\n  height: 2px;\n  margin-left: 220px;\n  background-color: #c6c6c6;\n  box-shadow: 0px 0px 8px 0px #c6c6c6;\n}\n@media only screen and (max-width: 767px) {\n  .tms-chat-progress {\n    margin-left: 0;\n  }\n}\n"; });
 define('text!user/user-register.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./user-register.css\"></require>\r\n    <div class=\"ui container tms-user-register\">\r\n        <div class=\"tms-flex\">\r\n            <div if.bind=\"!token\" ref=\"fm\" class=\"ui form segment\" style=\"width: 280px;\">\r\n                <div class=\"ui message\">提交账户注册信息成功后,我们会向您的注册邮箱发送一封账户激活邮件,激活账户后即可登录!</div>\r\n                <div class=\"required field\">\r\n                    <label>用户名</label>\r\n                    <input type=\"text\" name=\"username\" autofocus=\"\" value.bind=\"username\" placeholder=\"输入您的登录用户名\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>密码</label>\r\n                    <input type=\"password\" name=\"pwd\" autofocus=\"\" value.bind=\"pwd\" placeholder=\"输入您的登录密码\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>姓名</label>\r\n                    <input type=\"text\" name=\"name\" autofocus=\"\" value.bind=\"name\" placeholder=\"输入您的显示名称\">\r\n                </div>\r\n                <div class=\"required field\">\r\n                    <label>邮箱</label>\r\n                    <input type=\"text\" name=\"mail\" autofocus=\"\" value.bind=\"mail\" placeholder=\"输入您的账户激活邮箱\">\r\n                </div>\r\n                <div class=\"ui green fluid button ${isReq ? 'disabled' : ''}\" click.delegate=\"okHandler()\">确认</div>\r\n            </div>\r\n            <div if.bind=\"token\" class=\"ui center aligned very padded segment\" style=\"width: 320px;\">\r\n            \t<h1 class=\"ui header\">${header}</h1>\r\n            \t<a href=\"/admin/login\" class=\"ui green button\">返回登录页面</a>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!chat/md-github.css', ['module'], function(module) { module.exports = ".markdown-body {\n  font-size: 14px;\n  line-height: 1.6;\n}\n.markdown-body > br,\n.markdown-body ul br .markdown-body ol br {\n  display: none;\n}\n.markdown-body > *:first-child {\n  margin-top: 0 !important;\n}\n.markdown-body > *:last-child {\n  margin-bottom: 0 !important;\n}\n.markdown-body a {\n  word-break: break-all;\n}\n.markdown-body a.absent {\n  color: #CC0000;\n}\n.markdown-body a.anchor {\n  bottom: 0;\n  cursor: pointer;\n  display: block;\n  left: 0;\n  margin-left: -30px;\n  padding-left: 30px;\n  position: absolute;\n  top: 0;\n}\n.markdown-body h1,\n.markdown-body h2,\n.markdown-body h3,\n.markdown-body h4,\n.markdown-body h5,\n.markdown-body h6 {\n  cursor: text;\n  font-weight: bold;\n  margin: 20px 0 10px;\n  padding: 0;\n  position: relative;\n  word-break: break-all;\n}\n.markdown-body h1 .mini-icon-link,\n.markdown-body h2 .mini-icon-link,\n.markdown-body h3 .mini-icon-link,\n.markdown-body h4 .mini-icon-link,\n.markdown-body h5 .mini-icon-link,\n.markdown-body h6 .mini-icon-link {\n  color: #000000;\n  display: none;\n}\n.markdown-body h1:hover a.anchor,\n.markdown-body h2:hover a.anchor,\n.markdown-body h3:hover a.anchor,\n.markdown-body h4:hover a.anchor,\n.markdown-body h5:hover a.anchor,\n.markdown-body h6:hover a.anchor {\n  line-height: 1;\n  margin-left: -22px;\n  padding-left: 0;\n  text-decoration: none;\n  top: 15%;\n}\n.markdown-body h1:hover a.anchor .mini-icon-link,\n.markdown-body h2:hover a.anchor .mini-icon-link,\n.markdown-body h3:hover a.anchor .mini-icon-link,\n.markdown-body h4:hover a.anchor .mini-icon-link,\n.markdown-body h5:hover a.anchor .mini-icon-link,\n.markdown-body h6:hover a.anchor .mini-icon-link {\n  display: inline-block;\n}\n.markdown-body h1 tt,\n.markdown-body h1 code,\n.markdown-body h2 tt,\n.markdown-body h2 code,\n.markdown-body h3 tt,\n.markdown-body h3 code,\n.markdown-body h4 tt,\n.markdown-body h4 code,\n.markdown-body h5 tt,\n.markdown-body h5 code,\n.markdown-body h6 tt,\n.markdown-body h6 code {\n  font-size: inherit;\n}\n.markdown-body h1 {\n  color: #000000;\n  font-size: 28px;\n}\n.markdown-body h2 {\n  border-bottom: 1px solid #CCCCCC;\n  color: #000000;\n  font-size: 24px;\n}\n.markdown-body h3 {\n  font-size: 18px;\n}\n.markdown-body h4 {\n  font-size: 16px;\n}\n.markdown-body h5 {\n  font-size: 14px;\n}\n.markdown-body h6 {\n  color: #777777;\n  font-size: 14px;\n}\n.markdown-body p,\n.markdown-body blockquote,\n.markdown-body ul,\n.markdown-body ol,\n.markdown-body dl,\n.markdown-body table,\n.markdown-body pre {\n  margin: 15px 0;\n}\n.markdown-body hr {\n  overflow: hidden;\n  background: 0 0;\n}\n.markdown-body hr:before {\n  display: table;\n  content: \"\";\n}\n.markdown-body hr:after {\n  display: table;\n  clear: both;\n  content: \"\";\n}\n.markdown-body hr {\n  height: 4px;\n  padding: 0;\n  margin: 16px 0;\n  background-color: #e7e7e7;\n  border: 0;\n}\n.markdown-body hr {\n  -moz-box-sizing: content-box;\n  box-sizing: content-box;\n}\n.markdown-body > h2:first-child,\n.markdown-body > h1:first-child,\n.markdown-body > h1:first-child + h2,\n.markdown-body > h3:first-child,\n.markdown-body > h4:first-child,\n.markdown-body > h5:first-child,\n.markdown-body > h6:first-child {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body a:first-child h1,\n.markdown-body a:first-child h2,\n.markdown-body a:first-child h3,\n.markdown-body a:first-child h4,\n.markdown-body a:first-child h5,\n.markdown-body a:first-child h6 {\n  margin-top: 0;\n  padding-top: 0;\n}\n.markdown-body h1 + p,\n.markdown-body h2 + p,\n.markdown-body h3 + p,\n.markdown-body h4 + p,\n.markdown-body h5 + p,\n.markdown-body h6 + p {\n  margin-top: 0;\n}\n.markdown-body li p.first {\n  display: inline-block;\n}\n.markdown-body ul,\n.markdown-body ol {\n  padding-left: 30px;\n}\n.markdown-body ul.no-list,\n.markdown-body ol.no-list {\n  list-style-type: none;\n  padding: 0;\n}\n.markdown-body ul li > *:first-child,\n.markdown-body ol li > *:first-child {\n  margin-top: 0;\n}\n.markdown-body ul ul,\n.markdown-body ul ol,\n.markdown-body ol ol,\n.markdown-body ol ul {\n  margin-bottom: 0;\n}\n.markdown-body dl {\n  padding: 0;\n}\n.markdown-body dl dt {\n  font-size: 14px;\n  font-style: italic;\n  font-weight: bold;\n  margin: 15px 0 5px;\n  padding: 0;\n}\n.markdown-body dl dt:first-child {\n  padding: 0;\n}\n.markdown-body dl dt > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dt > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body dl dd {\n  margin: 0 0 15px;\n  padding: 0 15px;\n}\n.markdown-body dl dd > *:first-child {\n  margin-top: 0;\n}\n.markdown-body dl dd > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body blockquote {\n  border-left: 4px solid #DDDDDD;\n  color: #777777;\n  padding: 0 15px;\n}\n.markdown-body blockquote > *:first-child {\n  margin-top: 0;\n}\n.markdown-body blockquote > *:last-child {\n  margin-bottom: 0;\n}\n.markdown-body table th {\n  font-weight: bold;\n}\n.markdown-body table th,\n.markdown-body table td {\n  border: 1px solid #CCCCCC;\n  padding: 6px 13px;\n}\n.markdown-body table tr {\n  background-color: #FFFFFF;\n  border-top: 1px solid #CCCCCC;\n}\n.markdown-body table tr:nth-child(2n) {\n  background-color: #F8F8F8;\n}\n.markdown-body img {\n  max-width: 100%;\n}\n.markdown-body span.frame {\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.frame > span {\n  border: 1px solid #DDDDDD;\n  display: block;\n  float: left;\n  margin: 13px 0 0;\n  overflow: hidden;\n  padding: 7px;\n  width: auto;\n}\n.markdown-body span.frame span img {\n  display: block;\n  float: left;\n}\n.markdown-body span.frame span span {\n  clear: both;\n  color: #333333;\n  display: block;\n  padding: 5px 0 0;\n}\n.markdown-body span.align-center {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-center > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: center;\n}\n.markdown-body span.align-center span img {\n  margin: 0 auto;\n  text-align: center;\n}\n.markdown-body span.align-right {\n  clear: both;\n  display: block;\n  overflow: hidden;\n}\n.markdown-body span.align-right > span {\n  display: block;\n  margin: 13px 0 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body span.align-right span img {\n  margin: 0;\n  text-align: right;\n}\n.markdown-body span.float-left {\n  display: block;\n  float: left;\n  margin-right: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-left span {\n  margin: 13px 0 0;\n}\n.markdown-body span.float-right {\n  display: block;\n  float: right;\n  margin-left: 13px;\n  overflow: hidden;\n}\n.markdown-body span.float-right > span {\n  display: block;\n  margin: 13px auto 0;\n  overflow: hidden;\n  text-align: right;\n}\n.markdown-body code,\n.markdown-body tt {\n  background-color: #F8F8F8;\n  border: 1px solid #EAEAEA;\n  border-radius: 3px 3px 3px 3px;\n  margin: 0 2px;\n  padding: 0 5px;\n  /* white-space: nowrap; */\n  white-space: normal;\n  word-break: break-all;\n}\n.markdown-body pre > code {\n  background: none repeat scroll 0 0 transparent;\n  border: medium none;\n  margin: 0;\n  padding: 0;\n  white-space: pre;\n}\n.markdown-body .highlight pre,\n.markdown-body pre {\n  background-color: #F8F8F8;\n  border: 1px solid #CCCCCC;\n  border-radius: 3px 3px 3px 3px;\n  font-size: 13px;\n  line-height: 19px;\n  overflow: auto;\n  padding: 6px 10px;\n}\n.markdown-body pre code,\n.markdown-body pre tt {\n  background-color: transparent;\n  border: medium none;\n}\n"; });
-define('text!resources/elements/em-blog-comment-popup.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-blog-comment-popup.css\"></require>\n    <div ref=\"popup\" class=\"ui flowing popup transition hidden em-blog-comment-popup\">\n        <div class=\"ui items\">\n            <div class=\"item\">\n                <div class=\"content\" style=\"width:300px; word-break: break-all;\">\n                    <a class=\"header pp-not\" href=\"javascript:void(0);\">评论#${comment.id}</a>\n                    <div class=\"meta\" style=\"width:300px; word-break: break-all; font-size: 12px;\">\n                        <i class=\"wait icon\"></i>\n                        <span>\n                            ${comment.creator ? (comment.creator.name ? comment.creator.name : comment.creator.username) : ''}\n                        </span>\n                        <span>发表于</span>\n                        <span class=\"cinema timeago\" style=\"font-style: italic;\" title=\"${comment.createDate | date}\">${comment.createDate | timeago}</span>\n                    </div>\n                    <div class=\"ui divider\"></div>\n                    <div class=\"description markdown-body\" style=\"width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;\" innerhtml.bind=\"comment.content | parseMd\"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-blog-comment-popup.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-comment-popup.css\"></require>\r\n    <div ref=\"popup\" class=\"ui flowing popup transition hidden em-blog-comment-popup\">\r\n        <div class=\"ui items\">\r\n            <div class=\"item\">\r\n                <div class=\"content\" style=\"width:300px; word-break: break-all;\">\r\n                    <a class=\"header pp-not\" href=\"javascript:void(0);\">评论#${comment.id}</a>\r\n                    <div class=\"meta\" style=\"width:300px; word-break: break-all; font-size: 12px;\">\r\n                        <i class=\"wait icon\"></i>\r\n                        <span>\r\n                            ${comment.creator ? (comment.creator.name ? comment.creator.name : comment.creator.username) : ''}\r\n                        </span>\r\n                        <span>发表于</span>\r\n                        <span class=\"cinema timeago\" style=\"font-style: italic;\" title=\"${comment.createDate | date}\">${comment.createDate | timeago}</span>\r\n                    </div>\r\n                    <div class=\"ui divider\"></div>\r\n                    <div class=\"description markdown-body\" style=\"width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;\" innerhtml.bind=\"comment.content | parseMd\"></div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!common/common-scrollbar.css', ['module'], function(module) { module.exports = "/*************** SCROLLBAR BASE CSS ***************/\n.scroll-wrapper {\n  overflow: hidden !important;\n  padding: 0 !important;\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.scroll-wrapper > .scroll-content {\n  border: none !important;\n  box-sizing: content-box !important;\n  height: auto;\n  left: 0;\n  margin: 0;\n  max-height: none;\n  max-width: none !important;\n  overflow: scroll !important;\n  padding: 0;\n  position: relative !important;\n  top: 0;\n  width: auto !important;\n}\n.scroll-wrapper > .scroll-content::-webkit-scrollbar {\n  height: 0;\n  width: 0;\n}\n.scroll-element {\n  display: none;\n}\n.scroll-element,\n.scroll-element div {\n  box-sizing: content-box;\n}\n.scroll-element.scroll-x.scroll-scrollx_visible,\n.scroll-element.scroll-y.scroll-scrolly_visible {\n  display: block;\n}\n.scroll-element .scroll-bar,\n.scroll-element .scroll-arrow {\n  cursor: default;\n}\n.scroll-textarea {\n  border: 1px solid #cccccc;\n  border-top-color: #999999;\n}\n.scroll-textarea > .scroll-content {\n  overflow: hidden !important;\n}\n.scroll-textarea > .scroll-content > textarea {\n  border: none !important;\n  box-sizing: border-box;\n  height: 100% !important;\n  margin: 0;\n  max-height: none !important;\n  max-width: none !important;\n  overflow: scroll !important;\n  outline: none;\n  padding: 2px;\n  position: relative !important;\n  top: 0;\n  width: 100% !important;\n}\n.scroll-textarea > .scroll-content > textarea::-webkit-scrollbar {\n  height: 0;\n  width: 0;\n}\n/*************** SIMPLE OUTER SCROLLBAR ***************/\n.scrollbar-outer > .scroll-element,\n.scrollbar-outer > .scroll-element div {\n  border: none;\n  margin: 0;\n  padding: 0;\n  position: absolute;\n  z-index: 10;\n}\n.scrollbar-outer > .scroll-element {\n  background-color: #ffffff;\n}\n.scrollbar-outer > .scroll-element div {\n  display: block;\n  height: 100%;\n  left: 0;\n  top: 0;\n  width: 100%;\n}\n.scrollbar-outer > .scroll-element.scroll-x {\n  bottom: 0;\n  height: 12px;\n  left: 0;\n  width: 100%;\n}\n.scrollbar-outer > .scroll-element.scroll-y {\n  height: 100%;\n  right: 0;\n  top: 0;\n  width: 12px;\n}\n.scrollbar-outer > .scroll-element.scroll-x .scroll-element_outer {\n  height: 8px;\n  top: 2px;\n}\n.scrollbar-outer > .scroll-element.scroll-y .scroll-element_outer {\n  left: 2px;\n  width: 8px;\n}\n.scrollbar-outer > .scroll-element .scroll-element_outer {\n  overflow: hidden;\n}\n.scrollbar-outer > .scroll-element .scroll-element_track {\n  background-color: #eeeeee;\n}\n.scrollbar-outer > .scroll-element .scroll-element_outer,\n.scrollbar-outer > .scroll-element .scroll-element_track,\n.scrollbar-outer > .scroll-element .scroll-bar {\n  -webkit-border-radius: 8px;\n  -moz-border-radius: 8px;\n  border-radius: 8px;\n}\n.scrollbar-outer > .scroll-element .scroll-bar {\n  background-color: #d9d9d9;\n}\n.scrollbar-outer > .scroll-element .scroll-bar:hover {\n  background-color: #c2c2c2;\n}\n.scrollbar-outer > .scroll-element.scroll-draggable .scroll-bar {\n  background-color: #919191;\n}\n/* scrollbar height/width & offset from container borders */\n.scrollbar-outer > .scroll-content.scroll-scrolly_visible {\n  left: -12px;\n  margin-left: 12px;\n}\n.scrollbar-outer > .scroll-content.scroll-scrollx_visible {\n  top: -12px;\n  margin-top: 12px;\n}\n.scrollbar-outer > .scroll-element.scroll-x .scroll-bar {\n  min-width: 10px;\n}\n.scrollbar-outer > .scroll-element.scroll-y .scroll-bar {\n  min-height: 10px;\n}\n/* update scrollbar offset if both scrolls are visible */\n.scrollbar-outer > .scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_track {\n  left: -14px;\n}\n.scrollbar-outer > .scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_track {\n  top: -14px;\n}\n.scrollbar-outer > .scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_size {\n  left: -14px;\n}\n.scrollbar-outer > .scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_size {\n  top: -14px;\n}\n/*************** SCROLLBAR MAC OS X ***************/\n.scrollbar-macosx > .scroll-element,\n.scrollbar-macosx > .scroll-element div {\n  background: none;\n  border: none;\n  margin: 0;\n  padding: 0;\n  position: absolute;\n  z-index: 10;\n}\n.scrollbar-macosx > .scroll-element div {\n  display: block;\n  height: 100%;\n  left: 0;\n  top: 0;\n  width: 100%;\n}\n.scrollbar-macosx > .scroll-element .scroll-element_track {\n  display: none;\n}\n.scrollbar-macosx > .scroll-element .scroll-bar {\n  background-color: #6C6E71;\n  display: block;\n  -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)\";\n  filter: alpha(opacity=0);\n  opacity: 0;\n  -webkit-border-radius: 7px;\n  -moz-border-radius: 7px;\n  border-radius: 7px;\n  -webkit-transition: opacity 0.2s linear;\n  -moz-transition: opacity 0.2s linear;\n  -o-transition: opacity 0.2s linear;\n  -ms-transition: opacity 0.2s linear;\n  transition: opacity 0.2s linear;\n}\n.scrollbar-macosx:hover > .scroll-element .scroll-bar,\n.scrollbar-macosx > .scroll-element.scroll-draggable .scroll-bar {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=70)\";\n  filter: alpha(opacity=70);\n  opacity: 0.7;\n}\n.scrollbar-macosx > .scroll-element.scroll-x {\n  bottom: 0px;\n  height: 0px;\n  left: 0;\n  min-width: 100%;\n  overflow: visible;\n  width: 100%;\n}\n.scrollbar-macosx > .scroll-element.scroll-y {\n  height: 100%;\n  min-height: 100%;\n  right: 0px;\n  top: 0;\n  width: 0px;\n}\n/* scrollbar height/width & offset from container borders */\n.scrollbar-macosx > .scroll-element.scroll-x .scroll-bar {\n  height: 7px;\n  min-width: 10px;\n  top: -9px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y .scroll-bar {\n  left: -9px;\n  min-height: 10px;\n  width: 7px;\n}\n.scrollbar-macosx > .scroll-element.scroll-x .scroll-element_outer {\n  left: 2px;\n}\n.scrollbar-macosx > .scroll-element.scroll-x .scroll-element_size {\n  left: -4px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y .scroll-element_outer {\n  top: 2px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y .scroll-element_size {\n  top: -4px;\n}\n/* update scrollbar offset if both scrolls are visible */\n.scrollbar-macosx > .scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_size {\n  left: -11px;\n}\n.scrollbar-macosx > .scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_size {\n  top: -11px;\n}\n"; });
 define('text!resources/elements/em-blog-comment.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-comment.css\"></require>\r\n    <div class=\"em-blog-comment\">\r\n        <div class=\"ui minimal comments\" ref=\"blogCommentsRef\">\r\n            <h3 title=\"快速评论 (r)\" class=\"ui dividing header\"><i class=\"blue comments outline icon\"></i> ${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>\r\n            <div repeat.for=\"item of comments\" class=\"comment\" data-id=\"${item.id}\">\r\n                <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\r\n                <div class=\"content\">\r\n                    <a class=\"author\" data-value=${item.creator.username}>${item.creator.name}</a>\r\n                    <div class=\"metadata\">\r\n                        <span class=\"date\" data-timeago=\"${item.createDate}\" title=\"${item.createDate | date}\">${item.createDate | timeago}</span>\r\n                        <div class=\"rating\">\r\n                            <i click.delegate=\"rateHandler(item)\" style=\"cursor: pointer;\" title=\"赞一下\" class=\"cbutton cbutton--effect-novak thumbs ${item.voteZan && item.voteZan.split(',').includes(loginUser.username) ? '' : 'outline'} up icon\"></i> <span title=\"${item.voteZan}\">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>\r\n                        </div>\r\n                    </div>\r\n                    <div swipebox show.bind=\"!item.isEditing\" ref=\"mkbodyRef\" class=\"text markdown-body\" innerhtml.bind=\"item.content | parseMd | emoji:mkbodyRef\"></div>\r\n                    <div class=\"textcomplete-container\" show.bind=\"item.isEditing\">\r\n                        <div class=\"append-to\"></div>\r\n                    </div>\r\n                    <textarea ref=\"editTxtRef\" data-id=\"${item.id}\" textcomplete.bind=\"users\" pastable autosize dropzone keydown.trigger=\"eidtKeydownHandler($event, item, editTxtRef)\" show.bind=\"item.isEditing\" value.bind=\"item.content & oneWay\" class=\"tms-blog-comment-edit-textarea\" rows=\"1\"></textarea>\r\n                    <div show.bind=\"item.isEditing\" class=\"ui compact icon buttons tms-blog-comment-edit-actions\">\r\n                        <button click.delegate=\"editOkHandler($event, item, editTxtRef)\" title=\"保存 (ctrl+enter)\" class=\"ui left attached compact icon button\">\r\n                            <i class=\"checkmark icon\"></i>\r\n                        </button>\r\n                        <button click.delegate=\"editCancelHandler($event, item, editTxtRef)\" title=\"取消 (esc)\" class=\"ui attached compact icon button\">\r\n                            <i class=\"remove icon\"></i>\r\n                        </button>\r\n                        <button dropzone=\"type:Blog; clickable.bind: !0; target.bind: editTxtRef\" title=\"上传 (ctrl+u)\" class=\"ui right attached compact icon button\">\r\n                            <i class=\"upload icon\"></i>\r\n                        </button>\r\n                    </div>\r\n                    <div class=\"actions\">\r\n                        <a click.delegate=\"replyHandler(item)\" class=\"reply\">回复</a>\r\n                        <a if.bind=\"isSuper || item.creator.username == loginUser.username\" click.delegate=\"editHandler(item, editTxtRef)\" title=\"评论编辑(ctrl+dblclick)\" class=\"reply\">编辑</a>\r\n                        <a class=\"item tms-clipboard\" data-clipboard-text=\"${item.content}\" title=\"复制评论内容\">复制</a>\r\n                        <a class=\"item tms-clipboard\" data-clipboard-text=\"${basePath + '#/blog/' + blog.id + '?cid=' + item.id}\" title=\"复制评论链接\">分享</a>\r\n                        <div if.bind=\"isSuper || item.creator.username == loginUser.username\" ui-dropdown-action style=\"margin-right: .75em;\" class=\"ui icon top right pointing dropdown\" title=\"移除评论\">\r\n                            移除\r\n                            <div class=\"menu\">\r\n                                <div style=\"color: red;\" class=\"item\" click.delegate=\"removeHandler(item)\"><i class=\"trash outline icon\"></i>确认移除</div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"tools\">\r\n                        <button show.bind=\"!item.isEditing\" click.delegate=\"refreshHandler(item)\" title=\"刷新同步\" class=\"mini circular ui icon button\">\r\n                            <i class=\"refresh icon\"></i>\r\n                        </button>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui divider\"></div>\r\n            </div>\r\n            <form class=\"ui reply form dropzone\">\r\n                <div class=\"tms-blog-comment-status-bar-wrapper\">\r\n                    <div class=\"tms-blog-comment-status-bar\"></div>\r\n                    <div class=\"dropzone-previews\"></div>\r\n                </div>\r\n                <div ref=\"markdownRef\" class=\"field markdown-body\">\r\n                    <textarea ref=\"commentRef\"></textarea>\r\n                </div>\r\n                <div click.delegate=\"addHandler()\" title=\"提交评论(ctrl+enter)\" class=\"ui blue labeled submit icon button\">\r\n                    <i class=\"icon edit\"></i> 添加评论\r\n                </div>\r\n                <button style=\"float: right;\" click.delegate=\"gotoTopHandler()\" title=\"滚至顶部(t), 滚至底部(b)\" class=\"circular ui icon button\">\r\n                    <i class=\"arrow up icon\"></i>\r\n                </button>\r\n            </form>\r\n        </div>\r\n        <div class=\"preview-template\" style=\"display: none;\">\r\n            <div class=\"dz-preview dz-file-preview\">\r\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!user/user-login.css', ['module'], function(module) { module.exports = ".tms-user-login {\n  width: 100%;\n  min-height: 100%;\n  background-color: #5a3636;\n  overflow: hidden;\n}\n.tms-user-login .container {\n  width: 300px;\n  top: 50px;\n  margin-left: auto;\n  margin-right: auto;\n  position: relative;\n}\n.tms-user-login h2 {\n  color: rgba(197, 164, 164, 0.8) !important;\n}\n.tms-user-login .ui.form {\n  background-color: #353131;\n}\n.tms-user-login .ui.error.message {\n  background-color: #5a3636;\n}\n.tms-user-login .ui.error.message .header {\n  color: #e0b4b4;\n}\n.tms-user-login .ui.checkbox label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox input:focus ~ label {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.checkbox label:hover {\n  color: #ad8b8b;\n}\n.tms-user-login .ui.button {\n  background-color: #5a3636;\n  color: #ad8b75;\n}\n"; });
-define('text!resources/elements/em-blog-content.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-content.css\"></require>\r\n    <div class=\"em-blog-content-wrapper\">\r\n        <div click.delegate=\"dimmerHandler()\" class=\"ui inverted dimmer\"></div>\r\n        <div show.bind=\"blog\" class=\"em-blog-content\">\r\n            <div class=\"topbar\">\r\n                <div class=\"ui breadcrumb\">\r\n                    <a class=\"section\" href=\"#/blog\">TMS博文</a>\r\n                    <div show.bind=\"blog.space\" class=\"divider\"> / </div>\r\n                    <a show.bind=\"blog.space\" class=\"section active\">${blog.space.name}</a>\r\n                    <span if.bind=\"isSuper || blog.creator.username == loginUser.username\" data-tooltip=\"${blog.privated ? '私有博文,点击可公开' : '公开博文,点击可关闭'}\" data-position=\"right center\" style=\"margin-left: 16px;\"><i click.delegate=\"updatePrivatedHandler()\" class=\"link icon ${blog.privated ? 'lock' : 'unlock alternate'}\"></i></span>\r\n                    <span if.bind=\"(isSuper || blog.creator.username == loginUser.username) && blog.openEdit\" data-tooltip=\"开放编辑中,点击可关闭\" data-position=\"right center\" style=\"margin-left: 8px; top: -1px;\"><i click.delegate=\"openEditHandler()\" class=\"link icon write\"></i></span>\r\n                </div>\r\n                <div class=\"actions\">\r\n                    <a if.bind=\"dir\" class=\"ui basic mini button\" title=\"博文目录 (d)\" click.delegate=\"catalogHandler()\">\r\n                        <i class=\"unordered list icon\"></i> 目录\r\n                    </a>\r\n                    <a if.bind=\"blog.openEdit || isSuper || blog.creator.username == loginUser.username\" title=\"博文编辑 (e | ctrl+dblclick)\" class=\"ui basic mini button\" click.delegate=\"editHandler()\">\r\n                        <i class=\"large icon edit\"></i> 编辑\r\n                    </a>\r\n                    <a title=\"${!blogFollower ? '关注' : '取消关注'}博文更新 (f)\" class=\"ui basic mini button\" click.delegate=\"followerHandler()\">\r\n                        <i class=\"${!blogFollower ? 'unhide' : 'hide'} large icon\"></i> ${!blogFollower ? '关注' : '取消'}\r\n                    </a>\r\n                    <em-blog-share view-model.ref=\"blogShareVm\" blog.bind=\"blog\"></em-blog-share>\r\n                    <div ui-dropdown-action class=\"ui top right pointing dropdown basic mini icon button\">\r\n                        <i class=\"large ellipsis horizontal icon\"></i>\r\n                        <div class=\"menu\">\r\n                            <div click.delegate=\"refreshHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + r</span>\r\n                                <i class=\"refresh icon\"></i> 刷新\r\n                            </div>\r\n                            <div click.delegate=\"historyHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + h</span>\r\n                                <i class=\"history icon\"></i> 历史\r\n                            </div>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"authHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + l</span>\r\n                                <i class=\"lock icon\"></i> 限制\r\n                            </div>\r\n                            <div click.delegate=\"stowHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + s</span>\r\n                                <i class=\"${!blogStow ? 'empty' : ''} star icon\"></i> ${!blogStow ? '收藏' : '删除收藏'}\r\n                            </div>\r\n                            <div click.delegate=\"copyHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + c</span>\r\n                                <i class=\"copy icon\"></i> 复制\r\n                            </div>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"updateSpaceHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + m</span>\r\n                                <i class=\"exchange icon\"></i> 移动\r\n                            </div>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"openEditHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + o</span>\r\n                                <i class=\"write icon\"></i> ${blog.openEdit ? '关闭编辑' : '开放编辑'}\r\n                            </div>\r\n                            <div class=\"divider\"></div>\r\n                            <a href=\"/admin/blog/download/${blog.id}?type=pdf\" class=\"item\">\r\n                                <i class=\"file pdf outline icon\"></i> 导出为PDF\r\n                            </a>\r\n                            <a href=\"/admin/blog/download/${blog.id}?type=md\" class=\"item\">\r\n                                <i class=\"file text outline icon\"></i> 导出为Markdown\r\n                            </a>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" class=\"divider\"></div>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"deleteHandler()\" class=\"item\" style=\"color: red;\">\r\n                                <span class=\"description\">ctrl + alt + d</span>\r\n                                <i class=\"trash outline icon\"></i> 删除\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"header\">\r\n                <h1 class=\"ui header\">${blog.title}\r\n                <div class=\"sub header\">\r\n                    <i class=\"wait icon\"></i> <a class=\"author\" data-value=\"${blog.creator.username}\">${blog.creator.username == loginUser.username ? '自己' : blog.creator.name}</a> 创建于 <span data-timeago=\"${blog.createDate}\" title=\"${blog.createDate | date}\">${blog.createDate | timeago}</span>, <a class=\"author\" data-value=\"${blog.updater.username}\">${blog.updater.username == loginUser.username ? '自己' : blog.updater.name}</a> 最后修改于 <span data-timeago=\"${blog.updateDate}\" title=\"${blog.updateDate | date}\">${blog.updateDate | timeago}</span>\r\n                    <span click.delegate=\"refreshHandler()\" class=\"readCnt\" show.bind=\"blog.readCnt\" title=\"点击刷新博文 (alt+r)\"><i class=\"unhide icon\"></i>浏览: <a>${blog.readCnt}</a> 次</span>\r\n                    <span click.delegate=\"commentsHandler()\" class=\"commentCnt\" show.bind=\"comments\" title=\"点击快速去评论 (r)\"><i class=\"comments outline icon\"></i>评论: <a>${comments.length}</a></span>\r\n                </div>\r\n            </h1>\r\n            </div>\r\n            <div swipebox ref=\"mkbodyRef\" class=\"markdown-body\" innerhtml.bind=\"blog.content | parseMd | emoji:mkbodyRef\"></div>\r\n            <div class=\"footer\">\r\n                <span click.delegate=\"rateHandler()\" class=\"rate\"><i class=\"link icon thumbs outline up\"></i>${blog.voteZan && blog.voteZan.split(',').includes(loginUser.username) ? '踩' : '赞'}</span> <span show.bind=\"!blog.voteZanCnt\">成为第一个赞同者</span> <span show.bind=\"blog.voteZan && blog.voteZan.split(',').includes(loginUser.username)\">你赞了它</span> <span show.bind=\"blog.voteZan && !blog.voteZan.split(',').includes(loginUser.username)\" title=\"${blog.voteZan}\"><a href=\"javascript:void(0);\">${blog.voteZanCnt}</a>人赞了它</span>\r\n            </div>\r\n            <em-blog-comment blog.bind=\"blog\"></em-blog-comment>\r\n        </div>\r\n        <div show.bind=\"!blog\" class=\"em-blog-content\">\r\n            <div class=\"ui positive icon huge message transition\">\r\n                <i class=\"info circle icon\"></i>\r\n                <div class=\"content\">\r\n                    <div class=\"header\">\r\n                        欢迎使用TMS博文进行知识的分享总结!\r\n                    </div>\r\n                    <span>现在就去创建自己的博文吧!</span> <a click.delegate=\"createHandler()\" class=\"ui mini blue button\">创建</a>\r\n                </div>\r\n            </div>\r\n            <div ref=\"feedRef\" class=\"ui segment feed\">\r\n                <h3 class=\"ui dividing header\">\r\n                <i class=\"icon feed\"></i>\r\n                <div class=\"content\">博文更新</div>\r\n                </h3>\r\n                <button click.delegate=\"refreshFeedHandler()\" style=\"position: absolute; right: 0; top: 2px;\" class=\"circular ui icon button\" data-tooltip=\"刷新博文更新\" data-position=\"top right\">\r\n                  <i class=\"icon refresh\"></i>\r\n                </button>\r\n                <div if.bind=\"!logs || logs.length == 0\" class=\"ui info massive message\">\r\n                    暂无博文更新!\r\n                </div>\r\n                <div repeat.for=\"item of logs\" mouseleave.trigger=\"feedEventItemMouseleaveHandler(item)\" class=\"event ${item.isOpen ? 'opened' : ''}\">\r\n                    <div class=\"label\">\r\n                        <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\r\n                    </div>\r\n                    <div class=\"content\">\r\n                        <div class=\"summary\">\r\n                            <a class=\"user author\" data-value=\"${item.creator.username}\">${item.creator.name}</a>\r\n                            <template if.bind=\"item.target == 'Blog'\">\r\n                                <span if.bind=\"item.action == 'Create'\">创建了博文 <a href=\"#/blog/${item.targetId}\">${item.newValue}</a></span>\r\n                                <span if.bind=\"item.action == 'Delete'\">删除了博文 <a href=\"javascript:void(0);\">${item.newValue}</a></span>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'content'\">\r\n                                    <span>更新了博文 <a href=\"#/blog/${item.targetId}\">${item.oldValue}</a> 的内容</span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'title'\">\r\n                                    <span>更新了博文 <a href=\"#/blog/${item.targetId}\">${item.newValue}</a> 的标题</span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'privated'\">\r\n                                    <span>更新了博文 <a href=\"#/blog/${item.targetId}\">${item.oldValue}</a> 的可见性</span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'space'\">\r\n                                    <span>更新了博文 <a href=\"#/blog/${item.targetId}\">${item.oldValue}</a> 的所属空间</span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'openEdit'\">\r\n                                    <span>${item.newValue == 'true' ? '开放' : '关闭'}了博文 <a href=\"#/blog/${item.targetId}\">${item.oldValue}</a> 的协作编辑权限</span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'voteZan'\">\r\n                                    <span>投票赞了博文 <a href=\"#/blog/${item.targetId}\">${item.newValue}</a> </span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'stow'\">\r\n                                    <span>收藏了博文 <a href=\"#/blog/${item.targetId}\">${item.newValue}</a> </span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'follower'\">\r\n                                    <span>关注了博文 <a href=\"#/blog/${item.targetId}\">${item.newValue}</a> </span>\r\n                                </template>\r\n                            </template>\r\n                            <template if.bind=\"item.target == 'Comment'\">\r\n                                <span if.bind=\"item.action == 'Create'\">添加了评论 <a href=\"#/blog/${item.oldValue}?cid=${item.targetId}\">#${item.targetId}</a></span>\r\n                                <span if.bind=\"item.action == 'Delete'\">删除了评论 <a href=\"javascript:void(0);\">#${item.targetId}</a></span>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'content'\">\r\n                                    <span>更新了评论 <a href=\"#/blog/${item.oldValue}?cid=${item.targetId}\">#${item.targetId}</a> 的内容</span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'voteZan'\">\r\n                                    <span>投票赞了评论 <a href=\"#/blog/${item.newValue}?cid=${item.targetId}\">#${item.targetId}</a> </span>\r\n                                </template>\r\n                            </template>\r\n                            <div class=\"date\" title=\"${item.createDate | date}\">\r\n                                ${item.createDate | timeago}\r\n                            </div>\r\n                        </div>\r\n                        <template if.bind=\"item.target == 'Blog'\">\r\n                            <template if.bind=\"item.action == 'Update' && item.properties == 'content'\">\r\n                                <div class=\"extra text\">\r\n                                    <div innerhtml.bind=\"item.newValue\"></div>\r\n                                    <div class=\"btn-open\" click.delegate=\"openFeedEventItemHandler(item)\">\r\n                                        <i title=\"${item.isOpen ? '点击收起' : '点击展开'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                                    </div>\r\n                                </div>\r\n                            </template>\r\n                            <template if.bind=\"item.action == 'Update' && item.properties == 'title'\">\r\n                                <div class=\"extra text\">原标题: ${item.oldValue}</div>\r\n                            </template>\r\n                            <template if.bind=\"item.action == 'Update' && item.properties == 'privated'\">\r\n                                <div class=\"extra text\">可见性修改为: ${item.newValue == 'true' ? '私有' : '公开'}</div>\r\n                            </template>\r\n                            <template if.bind=\"item.action == 'Update' && item.properties == 'space'\">\r\n                                <div class=\"extra text\">所属空间修改为: ${item.newValue}</div>\r\n                            </template>\r\n                        </template>\r\n                        <template if.bind=\"item.target == 'Comment'\">\r\n                            <template if.bind=\"item.action == 'Create'\">\r\n                                <div ref=\"mkbodyRef2\" class=\"extra text markdown-body\">\r\n                                    <div innerhtml.bind=\"item.newValue | parseMd | emoji:mkbodyRef2\"></div>\r\n                                    <div class=\"btn-open\" click.delegate=\"openFeedEventItemHandler(item)\">\r\n                                        <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                                    </div>\r\n                                </div>\r\n                            </template>\r\n                            <template if.bind=\"item.action == 'Delete'\">\r\n                                <div ref=\"mkbodyRef2\" class=\"extra text markdown-body\">\r\n                                    <div innerhtml.bind=\"item.newValue | parseMd | emoji:mkbodyRef2\"></div>\r\n                                    <div class=\"btn-open\" click.delegate=\"openFeedEventItemHandler(item)\">\r\n                                        <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                                    </div>\r\n                                </div>\r\n                            </template>\r\n                            <template if.bind=\"item.action=='Update' && item.properties=='content' \">\r\n                                <div class=\"extra text\">\r\n                                    <div innerhtml.bind=\"item.newValue\"></div>\r\n                                    <div class=\"btn-open\" click.delegate=\"openFeedEventItemHandler(item)\">\r\n                                        <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                                    </div>\r\n                                </div>\r\n                            </template>\r\n                            <template if.bind=\"item.action=='Update' && item.properties=='voteZan' \">\r\n                                <div ref=\"mkbodyRef2 \" class=\"extra text markdown-body\">\r\n                                    <div innerhtml.bind=\"item.oldValue | parseMd | emoji:mkbodyRef2\"></div>\r\n                                    <div class=\"btn-open\" click.delegate=\"openFeedEventItemHandler(item)\">\r\n                                        <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                                    </div>\r\n                                </div>\r\n                            </template>\r\n                        </template>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div css=\"width: ${progressWidth}px; \" class=\"tms-blog-progress \"></div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal \"></em-confirm-modal>\r\n    <em-blog-space-update view-model.ref=\"blogSpaceUpdateVm \"></em-blog-space-update>\r\n    <em-blog-history view-model.ref=\"blogHistoryVm \"></em-blog-history>\r\n    <em-blog-space-auth view-model.ref=\"blogSpaceAuthVm \"></em-blog-space-auth>\r\n</template>\r\n"; });
+define('text!resources/elements/em-blog-content.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-content.css\"></require>\r\n    <div class=\"em-blog-content-wrapper\">\r\n        <div click.delegate=\"dimmerHandler()\" class=\"ui inverted dimmer\"></div>\r\n        <div show.bind=\"blog\" class=\"em-blog-content\">\r\n            <div class=\"topbar\">\r\n                <div class=\"ui breadcrumb\">\r\n                    <a class=\"section\" href=\"#/blog\">TMS博文</a>\r\n                    <div show.bind=\"blog.space\" class=\"divider\"> / </div>\r\n                    <a show.bind=\"blog.space\" class=\"section active\">${blog.space.name}</a>\r\n                    <span if.bind=\"isSuper || blog.creator.username == loginUser.username\" data-tooltip=\"${blog.privated ? '私有博文,点击可公开' : '公开博文,点击可关闭'}\" data-position=\"right center\" style=\"margin-left: 16px;\"><i click.delegate=\"updatePrivatedHandler()\" class=\"link icon ${blog.privated ? 'lock' : 'unlock alternate'}\"></i></span>\r\n                    <span if.bind=\"(isSuper || blog.creator.username == loginUser.username) && blog.openEdit\" data-tooltip=\"开放编辑中,点击可关闭\" data-position=\"right center\" style=\"margin-left: 8px; top: -1px;\"><i click.delegate=\"openEditHandler()\" class=\"link icon write\"></i></span>\r\n                </div>\r\n                <div class=\"actions\">\r\n                    <a if.bind=\"dir\" class=\"ui basic mini button\" title=\"博文目录 (d)\" click.delegate=\"catalogHandler()\">\r\n                        <i class=\"unordered list icon\"></i> 目录\r\n                    </a>\r\n                    <a if.bind=\"blog.openEdit || isSuper || blog.creator.username == loginUser.username\" title=\"博文编辑 (e | ctrl+dblclick)\" class=\"ui basic mini button\" click.delegate=\"editHandler()\">\r\n                        <i class=\"large icon edit\"></i> 编辑\r\n                    </a>\r\n                    <a title=\"${!blogFollower ? '关注' : '取消关注'}博文更新 (f)\" class=\"ui basic mini button\" click.delegate=\"followerHandler()\">\r\n                        <i class=\"${!blogFollower ? 'unhide' : 'hide'} large icon\"></i> ${!blogFollower ? '关注' : '取消'}\r\n                    </a>\r\n                    <em-blog-share view-model.ref=\"blogShareVm\" blog.bind=\"blog\"></em-blog-share>\r\n                    <div ui-dropdown-action class=\"ui top right pointing dropdown basic mini icon button\">\r\n                        <i class=\"large ellipsis horizontal icon\"></i>\r\n                        <div class=\"menu\">\r\n                            <div click.delegate=\"refreshHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + r</span>\r\n                                <i class=\"refresh icon\"></i> 刷新\r\n                            </div>\r\n                            <div click.delegate=\"historyHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + h</span>\r\n                                <i class=\"history icon\"></i> 历史\r\n                            </div>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"authHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + l</span>\r\n                                <i class=\"lock icon\"></i> 限制\r\n                            </div>\r\n                            <div click.delegate=\"stowHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + s</span>\r\n                                <i class=\"${!blogStow ? 'empty' : ''} star icon\"></i> ${!blogStow ? '收藏' : '删除收藏'}\r\n                            </div>\r\n                            <div click.delegate=\"copyHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + c</span>\r\n                                <i class=\"copy icon\"></i> 复制\r\n                            </div>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"updateSpaceHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + m</span>\r\n                                <i class=\"exchange icon\"></i> 移动\r\n                            </div>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"openEditHandler()\" class=\"item\">\r\n                                <span class=\"description\">alt + o</span>\r\n                                <i class=\"write icon\"></i> ${blog.openEdit ? '关闭编辑' : '开放编辑'}\r\n                            </div>\r\n                            <div class=\"divider\"></div>\r\n                            <a href=\"/admin/blog/download/${blog.id}?type=pdf\" class=\"item\">\r\n                                <i class=\"file pdf outline icon\"></i> 导出为PDF\r\n                            </a>\r\n                            <a href=\"/admin/blog/download/${blog.id}?type=md\" class=\"item\">\r\n                                <i class=\"file text outline icon\"></i> 导出为Markdown\r\n                            </a>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" class=\"divider\"></div>\r\n                            <div if.bind=\"isSuper || blog.creator.username == loginUser.username\" click.delegate=\"deleteHandler()\" class=\"item\" style=\"color: red;\">\r\n                                <span class=\"description\">ctrl + alt + d</span>\r\n                                <i class=\"trash outline icon\"></i> 删除\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"header\">\r\n                <h1 class=\"ui header\">${blog.title}\r\n                <div class=\"sub header\">\r\n                    <i class=\"wait icon\"></i> <a class=\"author\" data-value=\"${blog.creator.username}\">${blog.creator.username == loginUser.username ? '自己' : blog.creator.name}</a> 创建于 <span data-timeago=\"${blog.createDate}\" title=\"${blog.createDate | date}\">${blog.createDate | timeago}</span>, <a class=\"author\" data-value=\"${blog.updater.username}\">${blog.updater.username == loginUser.username ? '自己' : blog.updater.name}</a> 最后修改于 <span data-timeago=\"${blog.updateDate}\" title=\"${blog.updateDate | date}\">${blog.updateDate | timeago}</span>\r\n                    <span click.delegate=\"refreshHandler()\" class=\"readCnt\" show.bind=\"blog.readCnt\" title=\"点击刷新博文 (alt+r)\"><i class=\"unhide icon\"></i>浏览: <a>${blog.readCnt}</a> 次</span>\r\n                    <span click.delegate=\"commentsHandler()\" class=\"commentCnt\" show.bind=\"comments\" title=\"点击快速去评论 (r)\"><i class=\"comments outline icon\"></i>评论: <a>${comments.length}</a></span>\r\n                </div>\r\n            </h1>\r\n            </div>\r\n            <div swipebox ref=\"mkbodyRef\" class=\"markdown-body\" innerhtml.bind=\"blog.content | parseMd | emoji:mkbodyRef\"></div>\r\n            <div class=\"footer\">\r\n                <span click.delegate=\"rateHandler()\" class=\"rate\"><i class=\"link icon thumbs outline up\"></i>${blog.voteZan && blog.voteZan.split(',').includes(loginUser.username) ? '踩' : '赞'}</span> <span show.bind=\"!blog.voteZanCnt\">成为第一个赞同者</span> <span show.bind=\"blog.voteZan && blog.voteZan.split(',').includes(loginUser.username)\">你赞了它</span> <span show.bind=\"blog.voteZan && !blog.voteZan.split(',').includes(loginUser.username)\" title=\"${blog.voteZan}\"><a href=\"javascript:void(0);\">${blog.voteZanCnt}</a>人赞了它</span>\r\n            </div>\r\n            <em-blog-comment blog.bind=\"blog\"></em-blog-comment>\r\n        </div>\r\n        <div show.bind=\"!blog\" class=\"em-blog-content\">\r\n            <div class=\"ui positive icon huge message transition\">\r\n                <i class=\"info circle icon\"></i>\r\n                <div class=\"content\">\r\n                    <div class=\"header\">\r\n                        欢迎使用TMS博文进行知识的分享总结!\r\n                    </div>\r\n                    <span>现在就去创建自己的博文吧!</span> <a click.delegate=\"createHandler()\" class=\"ui mini blue button\">创建</a>\r\n                </div>\r\n            </div>\r\n            <div ref=\"feedRef\" class=\"ui segment feed\">\r\n                <h3 class=\"ui dividing header\">\r\n                <i class=\"icon feed\"></i>\r\n                <div class=\"content\">博文更新</div>\r\n                </h3>\r\n                <button click.delegate=\"refreshFeedHandler()\" style=\"position: absolute; right: 0; top: 2px;\" class=\"circular ui icon button\" data-tooltip=\"刷新博文更新\" data-position=\"top right\">\r\n                  <i class=\"icon refresh\"></i>\r\n                </button>\r\n                <div if.bind=\"!logs || logs.length == 0\" class=\"ui info massive message\">\r\n                    暂无博文更新!\r\n                </div>\r\n                <div repeat.for=\"item of logs\" mouseleave.trigger=\"feedEventItemMouseleaveHandler(item)\" class=\"event ${item.isOpen ? 'opened' : ''}\">\r\n                    <div class=\"label\">\r\n                        <em-user-avatar user.bind=\"item.creator\"></em-user-avatar>\r\n                    </div>\r\n                    <div class=\"content\">\r\n                        <div class=\"summary\">\r\n                            <a class=\"user author\" data-value=\"${item.creator.username}\">${item.creator.name}</a>\r\n                            <template if.bind=\"item.target == 'Blog'\">\r\n                                <span if.bind=\"item.action == 'Create'\">创建了博文 <a href=\"#/blog/${item.targetId}\">${item.newValue}</a></span>\r\n                                <span if.bind=\"item.action == 'Delete'\">删除了博文 <a href=\"javascript:void(0);\">${item.newValue}</a></span>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'content'\">\r\n                                    <span>更新了博文 <a href=\"#/blog/${item.targetId}\">${item.oldValue}</a> 的内容</span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'title'\">\r\n                                    <span>更新了博文 <a href=\"#/blog/${item.targetId}\">${item.newValue}</a> 的标题</span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'privated'\">\r\n                                    <span>更新了博文 <a href=\"#/blog/${item.targetId}\">${item.oldValue}</a> 的可见性</span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'space'\">\r\n                                    <span>更新了博文 <a href=\"#/blog/${item.targetId}\">${item.oldValue}</a> 的所属空间</span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'openEdit'\">\r\n                                    <span>${item.newValue == 'true' ? '开放' : '关闭'}了博文 <a href=\"#/blog/${item.targetId}\">${item.oldValue}</a> 的协作编辑权限</span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'voteZan'\">\r\n                                    <span>投票赞了博文 <a href=\"#/blog/${item.targetId}\">${item.newValue}</a> </span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'stow'\">\r\n                                    <span>收藏了博文 <a href=\"#/blog/${item.targetId}\">${item.newValue}</a> </span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'follower'\">\r\n                                    <span>关注了博文 <a href=\"#/blog/${item.targetId}\">${item.newValue}</a> </span>\r\n                                </template>\r\n                            </template>\r\n                            <template if.bind=\"item.target == 'Comment'\">\r\n                                <span if.bind=\"item.action == 'Create'\">添加了评论 <a href=\"#/blog/${item.oldValue}?cid=${item.targetId}\">#${item.targetId}</a></span>\r\n                                <span if.bind=\"item.action == 'Delete'\">删除了评论 <a href=\"javascript:void(0);\">#${item.targetId}</a></span>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'content'\">\r\n                                    <span>更新了评论 <a href=\"#/blog/${item.oldValue}?cid=${item.targetId}\">#${item.targetId}</a> 的内容</span>\r\n                                </template>\r\n                                <template if.bind=\"item.action == 'Update' && item.properties == 'voteZan'\">\r\n                                    <span>投票赞了评论 <a href=\"#/blog/${item.newValue}?cid=${item.targetId}\">#${item.targetId}</a> </span>\r\n                                </template>\r\n                            </template>\r\n                            <div class=\"date\" title=\"${item.createDate | date}\">\r\n                                ${item.createDate | timeago}\r\n                            </div>\r\n                        </div>\r\n                        <template if.bind=\"item.target == 'Blog'\">\r\n                            <template if.bind=\"item.action == 'Update' && item.properties == 'content'\">\r\n                                <div class=\"extra text\">\r\n                                    <!-- <div textcontent.bind=\"item.newValue\"></div> -->\r\n                                    <div innerhtml.bind=\"item.newValue | diffHtml\"></div>\r\n                                    <div class=\"btn-open\" click.delegate=\"openFeedEventItemHandler(item)\">\r\n                                        <i title=\"${item.isOpen ? '点击收起' : '点击展开'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                                    </div>\r\n                                </div>\r\n                            </template>\r\n                            <template if.bind=\"item.action == 'Update' && item.properties == 'title'\">\r\n                                <div class=\"extra text\">原标题: ${item.oldValue}</div>\r\n                            </template>\r\n                            <template if.bind=\"item.action == 'Update' && item.properties == 'privated'\">\r\n                                <div class=\"extra text\">可见性修改为: ${item.newValue == 'true' ? '私有' : '公开'}</div>\r\n                            </template>\r\n                            <template if.bind=\"item.action == 'Update' && item.properties == 'space'\">\r\n                                <div class=\"extra text\">所属空间修改为: ${item.newValue}</div>\r\n                            </template>\r\n                        </template>\r\n                        <template if.bind=\"item.target == 'Comment'\">\r\n                            <template if.bind=\"item.action == 'Create'\">\r\n                                <div ref=\"mkbodyRef2\" class=\"extra text markdown-body\">\r\n                                    <div innerhtml.bind=\"item.newValue | parseMd | emoji:mkbodyRef2\"></div>\r\n                                    <div class=\"btn-open\" click.delegate=\"openFeedEventItemHandler(item)\">\r\n                                        <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                                    </div>\r\n                                </div>\r\n                            </template>\r\n                            <template if.bind=\"item.action == 'Delete'\">\r\n                                <div ref=\"mkbodyRef2\" class=\"extra text markdown-body\">\r\n                                    <div innerhtml.bind=\"item.newValue | parseMd | emoji:mkbodyRef2\"></div>\r\n                                    <div class=\"btn-open\" click.delegate=\"openFeedEventItemHandler(item)\">\r\n                                        <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                                    </div>\r\n                                </div>\r\n                            </template>\r\n                            <template if.bind=\"item.action=='Update' && item.properties=='content' \">\r\n                                <div class=\"extra text\">\r\n                                    <div innerhtml.bind=\"item.newValue | diffHtml \"></div>\r\n                                    <div class=\"btn-open\" click.delegate=\"openFeedEventItemHandler(item)\">\r\n                                        <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                                    </div>\r\n                                </div>\r\n                            </template>\r\n                            <template if.bind=\"item.action=='Update' && item.properties=='voteZan' \">\r\n                                <div ref=\"mkbodyRef2 \" class=\"extra text markdown-body\">\r\n                                    <div innerhtml.bind=\"item.oldValue | parseMd | emoji:mkbodyRef2\"></div>\r\n                                    <div class=\"btn-open\" click.delegate=\"openFeedEventItemHandler(item)\">\r\n                                        <i title=\"${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}\" class=\"angle double ${item.isOpen ? 'up' : 'down'} large icon\"></i>\r\n                                    </div>\r\n                                </div>\r\n                            </template>\r\n                        </template>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div css=\"width: ${progressWidth}px; \" class=\"tms-blog-progress \"></div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal \"></em-confirm-modal>\r\n    <em-blog-space-update view-model.ref=\"blogSpaceUpdateVm \"></em-blog-space-update>\r\n    <em-blog-history view-model.ref=\"blogHistoryVm \"></em-blog-history>\r\n    <em-blog-space-auth view-model.ref=\"blogSpaceAuthVm \"></em-blog-space-auth>\r\n</template>\r\n"; });
 define('text!user/user-pwd-reset.css', ['module'], function(module) { module.exports = ".tms-user-pwd-reset {\n  height: 100%;\n}\n.tms-user-pwd-reset .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
-define('text!resources/elements/em-blog-history-diff.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-blog-history-diff.css\"></require>\n    <em-modal classes=\"\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\n        <div slot=\"header\">博文历史版本比较(v.${sIndex + 1} <i class=\"resize horizontal icon\"></i> v.${fIndex + 1})</div>\n        <div slot=\"content\" class=\"em-blog-history-diff\">\n            <div class=\"content markdown-body\" innerhtml.bind=\"diffHtml\"></div>\n        </div>\n    </em-modal>\n</template>\n"; });
+define('text!resources/elements/em-blog-history-diff.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-history-diff.css\"></require>\r\n    <em-modal classes=\"\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文历史版本比较(v.${sIndex + 1} <i class=\"resize horizontal icon\"></i> v.${fIndex + 1})</div>\r\n        <div slot=\"content\" class=\"em-blog-history-diff\">\r\n            <div class=\"content markdown-body\" innerhtml.bind=\"diffHtml\"></div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!user/user-register.css', ['module'], function(module) { module.exports = ".tms-user-register {\n  height: 100%;\n}\n.tms-user-register .tms-flex {\n  height: 100%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n"; });
 define('text!resources/elements/em-blog-comment-popup.css', ['module'], function(module) { module.exports = ""; });
-define('text!resources/elements/em-blog-history-view.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-blog-history-view.css\"></require>\n    <em-modal classes=\"\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\n        <div slot=\"header\">博文历史版本查看(${isCurrentVer ? '当前 ' : ''}v.${ver})</div>\n        <div slot=\"content\" class=\"em-blog-history-view\">\n            <div class=\"topbar\">\n                <div click.delegate=\"restoreHandler()\" class=\"ui ${!ajax1 || ajax1.readyState == 4 ? '' : 'tms-disabled'} ${!isCurrentVer || (isSuper || blog.creator.username == loginUser.username || blog.openEdit) ? '' : 'disabled'} mini basic button\"><i class=\"undo icon\"></i>还原此历史版本</div>\n            </div>\n            <div ref=\"mkbodyRef\" class=\"content markdown-body\" innerhtml.bind=\"blogHistory.content | parseMd | emoji:mkbodyRef\"></div>\n        </div>\n    </em-modal>\n</template>\n"; });
-define('text!resources/elements/em-blog-history.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-blog-history.css\"></require>\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\n        <div slot=\"header\">博文历史记录</div>\n        <div slot=\"content\" class=\"em-blog-history\">\n            <div class=\"topbar\">\n                <div click.delegate=\"diffHandler()\" class=\"ui mini basic button\"><i class=\"resize horizontal icon\"></i>比较选择的版本</div>\n            </div>\n            <div class=\"content\">\n                <table class=\"ui very basic table\">\n                    <thead>\n                        <tr>\n                            <th></th>\n                            <th>版本</th>\n                            <th>日期</th>\n                            <th>更新人</th>\n                            <th>操作</th>\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            <td>\n                                <em-checkbox checked.bind=\"blog.checked\"></em-checkbox>\n                            </td>\n                            <td><a click.delegate=\"viewHistoryHandler(blog, histories.length + 1, true)\">当前</a>(v.${histories.length + 1})</td>\n                            <td title=\"${blog.updateDate | date}\">${blog.updateDate | timeago}</td>\n                            <td>${blog.updater.name}</td>\n                            <td></td>\n                        </tr>\n                        <tr repeat.for=\"item of histories\">\n                            <td>\n                                <em-checkbox checked.bind=\"item.checked\"></em-checkbox>\n                            </td>\n                            <td><a click.delegate=\"viewHistoryHandler(item, histories.length - $index)\">v.${histories.length - $index}</a></td>\n                            <td title=\"${item.blogUpdateDate | date}\">${item.blogUpdateDate | timeago}</td>\n                            <td>${item.blogUpdater.name}</td>\n                            <td>\n                                <a if.bind=\"isSuper || blog.creator.username == loginUser.username || blog.openEdit\" class=\"${!$parent.ajax1 || $parent.ajax1.readyState == 4 ? '' : 'tms-disabled'}\" click.delegate=\"restoreHandler(item)\">还原此版本</a> ·\n                                <a if.bind=\"isSuper || blog.creator.username == loginUser.username\" ui-dropdown-action style=\"margin-right: .75em;\" class=\"ui icon top right pointing dropdown ${!$parent.ajax2 || $parent.ajax2.readyState == 4 ? '' : 'disabled'}\" title=\"删除博文历史记录\">\n                                    删除\n                                    <div class=\"menu\">\n                                        <div style=\"color: red;\" class=\"item\" click.delegate=\"removeHandler(item)\"><i class=\"trash outline icon\"></i>确认删除</div>\n                                    </div>\n                                </a>\n                            </td>\n                        </tr>\n                    </tbody>\n                </table>\n            </div>\n        </div>\n    </em-modal>\n    <em-blog-history-view view-model.ref=\"blogHistoryViewVm\"></em-blog-history-view>\n    <em-blog-history-diff view-model.ref=\"blogHistoryDiffVm\"></em-blog-history-diff>\n</template>\n"; });
+define('text!resources/elements/em-blog-history-view.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-history-view.css\"></require>\r\n    <em-modal classes=\"\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文历史版本查看(${isCurrentVer ? '当前 ' : ''}v.${ver})</div>\r\n        <div slot=\"content\" class=\"em-blog-history-view\">\r\n            <div class=\"topbar\">\r\n                <div click.delegate=\"restoreHandler()\" class=\"ui ${!ajax1 || ajax1.readyState == 4 ? '' : 'tms-disabled'} ${!isCurrentVer || (isSuper || blog.creator.username == loginUser.username || blog.openEdit) ? '' : 'disabled'} mini basic button\"><i class=\"undo icon\"></i>还原此历史版本</div>\r\n            </div>\r\n            <div ref=\"mkbodyRef\" class=\"content markdown-body\" innerhtml.bind=\"blogHistory.content | parseMd | emoji:mkbodyRef\"></div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
+define('text!resources/elements/em-blog-history.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-history.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文历史记录</div>\r\n        <div slot=\"content\" class=\"em-blog-history\">\r\n            <div class=\"topbar\">\r\n                <div click.delegate=\"diffHandler()\" class=\"ui mini basic button\"><i class=\"resize horizontal icon\"></i>比较选择的版本</div>\r\n            </div>\r\n            <div class=\"content\">\r\n                <table class=\"ui very basic table\">\r\n                    <thead>\r\n                        <tr>\r\n                            <th></th>\r\n                            <th>版本</th>\r\n                            <th>日期</th>\r\n                            <th>更新人</th>\r\n                            <th>操作</th>\r\n                        </tr>\r\n                    </thead>\r\n                    <tbody>\r\n                        <tr>\r\n                            <td>\r\n                                <em-checkbox checked.bind=\"blog.checked\"></em-checkbox>\r\n                            </td>\r\n                            <td><a click.delegate=\"viewHistoryHandler(blog, histories.length + 1, true)\">当前</a>(v.${histories.length + 1})</td>\r\n                            <td title=\"${blog.updateDate | date}\">${blog.updateDate | timeago}</td>\r\n                            <td>${blog.updater.name}</td>\r\n                            <td></td>\r\n                        </tr>\r\n                        <tr repeat.for=\"item of histories\">\r\n                            <td>\r\n                                <em-checkbox checked.bind=\"item.checked\"></em-checkbox>\r\n                            </td>\r\n                            <td><a click.delegate=\"viewHistoryHandler(item, histories.length - $index)\">v.${histories.length - $index}</a></td>\r\n                            <td title=\"${item.blogUpdateDate | date}\">${item.blogUpdateDate | timeago}</td>\r\n                            <td>${item.blogUpdater.name}</td>\r\n                            <td>\r\n                                <a if.bind=\"isSuper || blog.creator.username == loginUser.username || blog.openEdit\" class=\"${!$parent.ajax1 || $parent.ajax1.readyState == 4 ? '' : 'tms-disabled'}\" click.delegate=\"restoreHandler(item)\">还原此版本</a> ·\r\n                                <a if.bind=\"isSuper || blog.creator.username == loginUser.username\" ui-dropdown-action style=\"margin-right: .75em;\" class=\"ui icon top right pointing dropdown ${!$parent.ajax2 || $parent.ajax2.readyState == 4 ? '' : 'disabled'}\" title=\"删除博文历史记录\">\r\n                                    删除\r\n                                    <div class=\"menu\">\r\n                                        <div style=\"color: red;\" class=\"item\" click.delegate=\"removeHandler(item)\"><i class=\"trash outline icon\"></i>确认删除</div>\r\n                                    </div>\r\n                                </a>\r\n                            </td>\r\n                        </tr>\r\n                    </tbody>\r\n                </table>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n    <em-blog-history-view view-model.ref=\"blogHistoryViewVm\"></em-blog-history-view>\r\n    <em-blog-history-diff view-model.ref=\"blogHistoryDiffVm\"></em-blog-history-diff>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-comment.css', ['module'], function(module) { module.exports = ".em-blog-comment {\n  margin-top: 32px;\n  margin-bottom: 32px;\n}\n.em-blog-comment .ui.comments {\n  max-width: 100%;\n}\n.em-blog-comment .ui.comments > .ui.dividing.header {\n  margin-bottom: 0;\n}\n.em-blog-comment .ui.comments .comment {\n  margin-top: 0;\n}\n.em-blog-comment .ui.comments .comment:hover {\n  background: rgba(0, 0, 0, 0.03);\n  color: rgba(0, 0, 0, 0.8);\n}\n.em-blog-comment .ui.comments .comment:hover .content .tools {\n  display: block;\n}\n.em-blog-comment .ui.comments .comment:hover:before {\n  width: 4px;\n}\n.em-blog-comment .ui.comments .comment > .ui.divider {\n  margin-bottom: 0;\n}\n.em-blog-comment .ui.comments .comment .content .tms-blog-comment-edit-textarea {\n  width: 100%;\n}\n.em-blog-comment .ui.comments .comment .content .textcomplete-container {\n  position: relative;\n}\n.em-blog-comment .ui.comments .comment .content .textcomplete-container .append-to {\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  width: 100%;\n}\n.em-blog-comment .ui.comments .comment .content > .tools {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  display: none;\n}\n.em-blog-comment .ui.comments .comment .content > .tools > .ui.button {\n  margin: 0;\n  background-color: rgba(224, 225, 226, 0.5);\n}\n.em-blog-comment .ui.comments .comment .content > .tools > .ui.button:hover {\n  background-color: #e0e1e2;\n}\n.em-blog-comment .ui.comments .comment.active {\n  background-color: #f5f5f5;\n}\n.em-blog-comment .ui.comments .comment.active:before {\n  width: 4px;\n}\n.em-blog-comment .ui.comments .comment:before {\n  content: \"\";\n  position: absolute;\n  z-index: -1;\n  top: -2px;\n  left: -4px;\n  bottom: 1px;\n  background: #2098D1;\n  width: 0;\n  -webkit-transition-property: width;\n  transition-property: width;\n  -webkit-transition-duration: 0.3s;\n  transition-duration: 0.3s;\n  -webkit-transition-timing-function: ease-out;\n  transition-timing-function: ease-out;\n}\n.em-blog-comment .ui.comments .comment:nth-child(2):before {\n  top: -1px;\n}\n.em-blog-comment .CodeMirror {\n  min-height: 60px;\n}\n.em-blog-comment .CodeMirror-scroll {\n  min-height: 60px;\n}\n.em-blog-comment .dropzone {\n  position: relative;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper {\n  position: relative;\n  width: 100%;\n  height: 0;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .tms-blog-comment-status-bar {\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews {\n  position: absolute;\n  left: 0;\n  bottom: -7px;\n  width: 100%;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews .dz-preview {\n  width: 100%;\n  margin: 0;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews .dz-preview .dz-progress {\n  height: 2px;\n  background-color: #aaa;\n  border: none;\n}\n.em-blog-comment .dropzone .tms-blog-comment-status-bar-wrapper .dropzone-previews .dz-preview .dz-remove {\n  display: none;\n}\n"; });
 define('text!resources/elements/em-blog-left-sidebar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-left-sidebar.css\"></require>\r\n    <div class=\"ui left visible sidebar em-blog-left-sidebar ${isHide ? 'mobile-hide' : ''}\">\r\n        <div class=\"tms-body\">\r\n            <div scrollbar=\"scrollbar-macosx\">\r\n                <div class=\"ui list space\">\r\n                    <div class=\"item\" style=\"padding-top: 0.214286em;\">\r\n                        <i click.delegate=\"spaceToggleHandler(spaceStow)\" class=\"angle ${spaceStow.open ? 'down' : 'right'} link icon\"></i>\r\n                        <div class=\"content\">\r\n                            <span style=\"cursor: pointer;\" click.delegate=\"spaceToggleHandler(spaceStow)\">\r\n                                    <i class=\"empty star icon\" style=\"margin-right: 0; position: relative; left: -2px;\"></i>\r\n                                    ${spaceStow.name}\r\n                                </span>\r\n                            <div show.bind=\"spaceStow.open\" class=\"ui bulleted list\">\r\n                                <template repeat.for=\"item of blogStows\">\r\n                                    <div if.bind=\"item.blog.status != 'Deleted'\" show.bind=\"!item._hidden\" class=\"item ${item.blog.id == $parent.blog.id ? 'active' : ''}\">\r\n                                        <a title=\"${item.blog.title}\" href=\"#/blog/${item.blog.id}\">\r\n                                            <i class=\"icons\">\r\n                                                <i class=\"file outline icon\"></i>\r\n                                            <i show.bind=\"item.blog.privated\" class=\"corner lock icon\"></i>\r\n                                            </i>\r\n                                            ${item.blog.title}</a>\r\n                                    </div>\r\n                                </template>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <template repeat.for=\"space of spaces | sort:'name'\">\r\n                        <div class=\"item\" show.bind=\"!space._hidden\">\r\n                            <i click.delegate=\"spaceToggleHandler(space)\" class=\"angle ${space.open ? 'down' : 'right'} link icon\"></i>\r\n                            <div class=\"content\">\r\n                                <span style=\"cursor: pointer;\" click.delegate=\"spaceToggleHandler(space)\">\r\n                                    <i class=\"icons\">\r\n                                        <i class=\"folder outline icon\"></i>\r\n                                    <i show.bind=\"space.privated\" class=\"corner lock icon\"></i>\r\n                                    </i>\r\n                                    ${space.name}\r\n                                </span>\r\n                                <div show.bind=\"space.open\" class=\"ui bulleted list\">\r\n                                    <div repeat.for=\"item of space.blogs | sort:'title'\" show.bind=\"!item._hidden\" class=\"item ${item.id == blog.id ? 'active' : ''}\">\r\n                                        <a title=\"${item.title}\" href=\"#/blog/${item.id}\">\r\n                                            <i class=\"icons\">\r\n                                                <i class=\"file outline icon\"></i>\r\n                                            <i show.bind=\"item.privated\" class=\"corner lock icon\"></i>\r\n                                            </i>\r\n                                            ${item.title}</a>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"actions\">\r\n                                <div if.bind=\"isSuper || space.creator.username == loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                    <i class=\"large ellipsis horizontal icon\"></i>\r\n                                    <div class=\"menu\">\r\n                                        <div class=\"item\" click.delegate=\"editSpaceHandler(space)\"><i class=\"icon edit\"></i>编辑</div>\r\n                                        <div class=\"item\" click.delegate=\"authSpaceHandler(space)\"><i class=\"lock icon\"></i>限制</div>\r\n                                        <!-- <div class=\"divider\"></div> -->\r\n                                        <div class=\"item\" style=\"color: red;\" click.delegate=\"delSpaceHandler(space)\"><i class=\"trash outline icon\"></i>删除</div>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </template>\r\n                </div>\r\n                <div class=\"ui bulleted list no-space\">\r\n                    <div repeat.for=\"item of noSpaceBlogs | sort:'title'\" show.bind=\"!item._hidden\" class=\"item ${item.id == blog.id ? 'active' : ''}\">\r\n                        <a title=\"${item.title}\" href=\"#/blog/${item.id}\">\r\n                            <i class=\"icons\">\r\n                                <i class=\"file outline icon\"></i>\r\n                            <i show.bind=\"item.privated\" class=\"corner lock icon\"></i>\r\n                            </i>\r\n                            </i>${item.title}</a>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"tms-footer\">\r\n            <div class=\"ui icon menu\">\r\n                <em-blog-space-create></em-blog-space-create>\r\n                <div class=\"item tms-search\">\r\n                    <div class=\"ui transparent left icon input\">\r\n                        <input keyup.trigger=\"filterKeyupHandler($event)\" value.bind=\"filter\" type=\"text\" placeholder=\"过滤查找...\">\r\n                        <i class=\"search icon\"></i>\r\n                    </div>\r\n                    <i click.delegate=\"clearFilterHandler()\" class=\"remove link icon ${!filter ? 'tms-hidden' : ''}\"></i>\r\n                </div>\r\n                <div class=\"right menu\">\r\n                    <div class=\"ui dropdown icon item\" ui-dropdown>\r\n                        <i class=\"content icon\"></i>\r\n                        <div class=\"menu\">\r\n                            <div class=\"header\">\r\n                                <i class=\"linkify icon\"></i> 系统外链\r\n                            </div>\r\n                            <div if.bind=\"!sysLinks || sysLinks.length == 0\" class=\"item\">暂无系统外链</div>\r\n                            <a repeat.for=\"item of sysLinks | sort:'title'\" target=\"_blank\" href=\"${item.href}\" class=\"item\">${item.title}</a>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n    <em-blog-space-edit view-model.ref=\"spaceEditVm\"></em-blog-space-edit>\r\n    <em-blog-space-auth view-model.ref=\"blogSpaceAuthVm\"></em-blog-space-auth>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-content.css', ['module'], function(module) { module.exports = ".em-blog-content {\n  transition: width 0.15s ease-out 0s;\n  position: fixed;\n  top: 55px;\n  left: 300px;\n  width: calc(100% - 300px) !important;\n  height: calc(100% - 55px) !important;\n  padding: 16px;\n  overflow: auto;\n}\n.right-sidebar-show .em-blog-content {\n  width: calc(100% - 600px) !important;\n}\n@media only screen and (max-width: 767px) {\n  .right-sidebar-show .em-blog-content {\n    width: 100%!important;\n  }\n}\n@media only screen and (max-width: 767px) {\n  .em-blog-content {\n    left: 0;\n    width: 100%!important;\n  }\n}\n.em-blog-content > .header {\n  margin-bottom: 24px;\n}\n.em-blog-content > .header .ui.header .sub.header {\n  color: #707070;\n  font-size: 12px;\n  margin-top: 8px;\n}\n.em-blog-content > .header .ui.header .sub.header a.author {\n  cursor: pointer;\n}\n.em-blog-content > .header .ui.header .sub.header .readCnt {\n  cursor: pointer;\n  margin-left: 16px;\n}\n.em-blog-content > .header .ui.header .sub.header .readCnt a {\n  cursor: pointer;\n}\n.em-blog-content > .header .ui.header .sub.header .commentCnt {\n  cursor: pointer;\n  margin-left: 16px;\n}\n.em-blog-content > .header .ui.header .sub.header .commentCnt a {\n  cursor: pointer;\n}\n.em-blog-content .topbar {\n  position: relative;\n  height: 30px;\n  margin-bottom: 8px;\n}\n.em-blog-content .topbar > .ui.breadcrumb {\n  line-height: 30px;\n}\n.em-blog-content .topbar:after {\n  content: '';\n  clear: both;\n}\n.em-blog-content .topbar .actions {\n  float: right;\n}\n.em-blog-content .topbar .actions > .ui.basic.button {\n  padding: 8px;\n  box-shadow: none;\n}\n.em-blog-content .topbar .actions > .ui.basic.button:hover {\n  box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.35) inset, 0 0 0 0 rgba(34, 36, 38, 0.15) inset;\n}\n.em-blog-content .topbar .actions > .ui.basic.button > i.icon {\n  margin-right: 2px;\n}\n.em-blog-content .topbar .actions > .ui.basic.button > i.icon.hide {\n  position: relative;\n  top: -1px;\n}\n.em-blog-content .topbar .actions > .ui.basic.button > i.icon.unhide {\n  position: relative;\n  top: -1px;\n}\n.em-blog-content > .ui.message .content > span {\n  display: inline-block;\n  margin-top: 10px;\n}\n.em-blog-content > .ui.message .content .ui.button {\n  position: relative;\n  top: -5px;\n  left: 10px;\n}\n.em-blog-content .footer {\n  margin-top: 16px;\n}\n.em-blog-content .footer > span {\n  font-size: 12px;\n}\n.em-blog-content .footer .rate {\n  margin-right: 16px;\n  cursor: pointer;\n  color: #4183c4;\n}\n.em-blog-content > .ui.feed {\n  margin-bottom: 25px!important;\n}\n.em-blog-content > .ui.feed > .event {\n  position: relative;\n}\n.em-blog-content > .ui.feed > .event.opened > .content .extra.text:hover {\n  max-height: none;\n  overflow-y: auto;\n  padding-bottom: 25px;\n}\n.em-blog-content > .ui.feed > .event > .content .extra.text {\n  position: relative;\n  max-width: none;\n  min-height: 25px;\n  max-height: 60px;\n  overflow-y: hidden;\n}\n.em-blog-content > .ui.feed > .event > .content .extra.text:hover > .btn-open {\n  display: block;\n}\n.em-blog-content > .ui.feed > .event > .content .extra.text > .btn-open {\n  display: none;\n  height: 25px;\n  background-color: rgba(0, 0, 0, 0.1);\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  text-align: center;\n  padding-top: 2px;\n}\n.em-blog-content > .ui.feed > .event > .content .extra.text pre {\n  white-space: pre-wrap;\n  white-space: -moz-pre-wrap;\n  white-space: -pre-wrap;\n  white-space: -o-pre-wrap;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n.em-blog-content > .ui.feed > .event.active {\n  background: rgba(0, 0, 0, 0.03);\n}\n.em-blog-content > .ui.feed > .event.active:before {\n  width: 4px;\n}\n.em-blog-content > .ui.feed > .event:hover {\n  background: rgba(0, 0, 0, 0.03);\n}\n.em-blog-content > .ui.feed > .event:hover:before {\n  width: 4px;\n}\n.em-blog-content > .ui.feed > .event:before {\n  content: \"\";\n  position: absolute;\n  top: 0;\n  left: -4px;\n  bottom: 0;\n  background: #2098D1;\n  width: 0;\n  -webkit-transition-property: width;\n  transition-property: width;\n  -webkit-transition-duration: 0.3s;\n  transition-duration: 0.3s;\n  -webkit-transition-timing-function: ease-out;\n  transition-timing-function: ease-out;\n}\n.tms-blog-progress {\n  position: absolute;\n  display: inline-block;\n  top: 55px;\n  left: 0;\n  width: 0;\n  height: 2px;\n  margin-left: 300px;\n  background-color: #2185d0;\n  box-shadow: 0px 0px 8px 0px #205081;\n}\n@media only screen and (max-width: 767px) {\n  .tms-blog-progress {\n    margin-left: 0;\n  }\n}\n.em-blog-content-wrapper {\n  position: fixed;\n  top: 55px;\n  width: calc(100vw) !important;\n  height: calc(100% - 55px) !important;\n}\n@media only screen and (max-width: 767px) {\n  .tms-blog.left-sidebar-show .em-blog-content-wrapper > .ui.dimmer {\n    display: block;\n    opacity: 1;\n  }\n  .tms-blog.right-sidebar-show .em-blog-content-wrapper > .ui.dimmer {\n    display: block;\n    opacity: 1;\n  }\n  .tms-blog .em-blog-content-wrapper > .ui.dimmer {\n    display: none;\n  }\n}\n"; });
-define('text!resources/elements/em-blog-right-sidebar.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-blog-right-sidebar.css\"></require>\n    <div class=\"em-blog-right-sidebar\">\n        <div scrollbar=\"scrollbar-macosx\">\n            <div ref=\"dirRef\" class=\"panel-blog-dir\"></div>\n        </div>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-blog-right-sidebar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-right-sidebar.css\"></require>\r\n    <div class=\"em-blog-right-sidebar\">\r\n        <div scrollbar=\"scrollbar-macosx\">\r\n            <div ref=\"dirRef\" class=\"panel-blog-dir\"></div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-history-diff.css', ['module'], function(module) { module.exports = ".em-blog-history-diff > .content {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
 define('text!resources/elements/em-blog-save.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-save.css\"></require>\r\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文保存</div>\r\n        <div slot=\"content\" class=\"em-blog-save\">\r\n            <form class=\"ui form\">\r\n                <div class=\"field\">\r\n                    <div ref=\"spacesRef\" class=\"ui fluid search selection dropdown\">\r\n                        <input type=\"hidden\" name=\"country\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\">选择空间(可选)</div>\r\n                        <div class=\"menu\">\r\n                            <div class=\"item\" data-value=\"\">(不指定空间)</div>\r\n                            <template repeat.for=\"item of spaces | sort:'name'\">\r\n                                <div task.bind=\"initSpacesHandler($last)\" class=\"item\" data-value=\"${item.id}\"><i class=\"folder outline icon\"></i>${item.name}</div>\r\n                            </template>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\r\n                        <label><i class=\"lock icon\"></i>私有博文(不公开)</label>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-history-view.css', ['module'], function(module) { module.exports = ".em-blog-history-view > .topbar {\n  margin-bottom: 16px;\n}\n.em-blog-history-view > .content {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
@@ -32666,21 +40013,21 @@ define('text!resources/elements/em-blog-share.html', ['module'], function(module
 define('text!resources/elements/em-blog-history.css', ['module'], function(module) { module.exports = ".em-blog-history > .topbar {\n  margin-bottom: 16px;\n}\n.em-blog-history > .content {\n  max-height: 300px;\n  overflow-y: auto;\n}\n.em-blog-history .ui.table td a {\n  cursor: pointer;\n}\n"; });
 define('text!resources/elements/em-blog-space-auth.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-space-auth.css\"></require>\r\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">${type == 'blog' ? '博文' : '空间'}可见性限制</div>\r\n        <div slot=\"content\" class=\"em-blog-space-auth\">\r\n            <div show.bind=\"!authO.privated\" class=\"ui warning message\">\r\n                <i class=\"warning icon\"></i> 设置为私有${type == 'blog' ? '博文' : '空间'}后,可见性限制才会有效!\r\n            </div>\r\n            <form class=\"ui form\">\r\n                <div class=\"field\">\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\r\n                        <label><i class=\"lock icon\"></i>私有${type == 'blog' ? '博文' : '空间'}(不公开)</label>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n            <div class=\"ui divider\"></div>\r\n            <div class=\"${!authO.privated? 'tms-disabled' : ''}\">\r\n                <div class=\"tms-header\"><i class=\"lock icon\"></i>限制为仅下面用户或者频道成员可见:</div>\r\n                <div ref=\"searchRef\" class=\"ui fluid search\">\r\n                    <div class=\"ui icon fluid input\">\r\n                        <input ref=\"inputSearchRef\" class=\"prompt\" type=\"text\" placeholder=\"用户名，频道\">\r\n                        <i class=\"search icon\"></i>\r\n                    </div>\r\n                    <div class=\"results\"></div>\r\n                </div>\r\n                <div class=\"ui list\">\r\n                    <div repeat.for=\"item of shares\" class=\"item\">\r\n                        <div class=\"right floated content\">\r\n                            <i click.delegate=\"removeShareHandler(item)\" class=\"red trash link icon\"></i>\r\n                        </div>\r\n                        <template if.bind=\"item.username\">\r\n                            <i class=\"user icon\"></i>\r\n                            <div class=\"content\">\r\n                                ${item.name} (${item.username})\r\n                            </div>\r\n                        </template>\r\n                        <template if.bind=\"!item.username\">\r\n                            <i class=\"users icon\"></i>\r\n                            <div class=\"content\">\r\n                                ${item.title} (${item.name})\r\n                            </div>\r\n                        </template>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-left-sidebar.css', ['module'], function(module) { module.exports = ".em-blog-left-sidebar.ui.left.sidebar {\n  transition: left 0.15s ease-out 0s;\n  width: 300px;\n  top: 55px;\n  left: 0;\n  height: calc(100% - 55px) !important;\n  background-color: #f5f5f5;\n  box-shadow: none!important;\n}\n@media only screen and (max-width: 767px) {\n  .em-blog-left-sidebar.ui.left.sidebar {\n    z-index: 104;\n  }\n  .em-blog-left-sidebar.ui.left.sidebar.mobile-hide {\n    left: -300px;\n  }\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body {\n  height: calc(100% - 40px) !important;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list {\n  padding: 16px;\n  padding-left: 15px;\n  margin-bottom: 0px;\n  padding-bottom: 8px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item {\n  position: relative;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item:hover {\n  box-shadow: 0px 0px 2px -1px #5791cb;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item:hover > .actions {\n  display: inline-block;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .icon {\n  padding-right: 0;\n  position: relative;\n  top: -1px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .content {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  max-width: 245px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .actions {\n  display: none;\n  position: absolute;\n  right: 0;\n  top: -2px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list {\n  padding-left: 16px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item {\n  max-width: 220px;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item > a {\n  display: block;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 220px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item:before {\n  color: #999;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item.active {\n  font-weight: bold;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item.active > a {\n  color: black;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item:hover {\n  background-color: rgba(232, 224, 224, 0.5);\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list .ui.bulleted.list > div.item.aurelia-hide {\n  display: none!important;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space {\n  padding: 20px;\n  margin-top: 0px;\n  padding-top: 0px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item {\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item > a {\n  display: block;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 242px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item:before {\n  color: #999;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item.active {\n  font-weight: bold;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item.active > a {\n  color: black;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.bulleted.list.no-space > div.item:hover {\n  background-color: rgba(232, 224, 224, 0.5);\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer {\n  position: absolute;\n  width: 100%;\n  height: 40px;\n  left: 0;\n  bottom: 0;\n  background-color: #efe4e4;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer .ui.menu {\n  border: none;\n  border-radius: 0;\n  background-color: #e8e0e0;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer .ui.menu > .item.tms-search {\n  position: relative;\n  height: 40px;\n  max-width: 207px;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer .ui.menu > .item.tms-search:before {\n  width: 0;\n}\n.em-blog-left-sidebar.ui.left.sidebar .tms-footer .ui.menu > .item.tms-search > .remove.icon {\n  position: absolute;\n  right: 5px;\n  top: 13px;\n}\n"; });
-define('text!resources/elements/em-blog-space-create.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-blog-space-create.css\"></require>\n    <a ref=\"ppRef\" ui-popup=\"top left\" class=\"item\">\n        <i class=\"plus icon\"></i>\n    </a>\n    <div class=\"ui popup em-blog-space-create\">\n        <form class=\"ui form\">\n            <h3 class=\"ui dividing header\">创建空间</h3>\n            <div class=\"required field\">\n                <input type=\"text\" value.bind=\"name\" placeholder=\"空间名称\">\n            </div>\n            <div class=\"field\">\n                <textarea value.bind=\"desc\" placeholder=\"可选的针对空间的描述\" rows=\"2\"></textarea>\n            </div>\n            <div class=\"field\">\n                <div ref=\"chk\" class=\"ui checkbox\">\n                    <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\n                    <label><i class=\"lock icon\"></i>私有空间(不公开)</label>\n                </div>\n            </div>\n            <button click.delegate=\"createHandler()\" class=\"ui ${(!name || (ajax && ajax.readyState != 4)) ? 'disabled' : ''} blue mini button\" type=\"submit\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i>创建</button>\n        </form>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-blog-space-create.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-space-create.css\"></require>\r\n    <a ref=\"ppRef\" ui-popup=\"top left\" class=\"item\">\r\n        <i class=\"plus icon\"></i>\r\n    </a>\r\n    <div class=\"ui popup em-blog-space-create\">\r\n        <form class=\"ui form\">\r\n            <h3 class=\"ui dividing header\">创建空间</h3>\r\n            <div class=\"required field\">\r\n                <input type=\"text\" value.bind=\"name\" placeholder=\"空间名称\">\r\n            </div>\r\n            <div class=\"field\">\r\n                <textarea value.bind=\"desc\" placeholder=\"可选的针对空间的描述\" rows=\"2\"></textarea>\r\n            </div>\r\n            <div class=\"field\">\r\n                <div ref=\"chk\" class=\"ui checkbox\">\r\n                    <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\r\n                    <label><i class=\"lock icon\"></i>私有空间(不公开)</label>\r\n                </div>\r\n            </div>\r\n            <button click.delegate=\"createHandler()\" class=\"ui ${(!name || (ajax && ajax.readyState != 4)) ? 'disabled' : ''} blue mini button\" type=\"submit\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i>创建</button>\r\n        </form>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-right-sidebar.css', ['module'], function(module) { module.exports = ".em-blog-right-sidebar {\n  width: 300px;\n  background-color: #f5f5f5;\n  position: fixed;\n  top: 55px;\n  right: -300px;\n  height: calc(100% - 55px);\n  transition: right 0.15s ease-out 0s;\n}\n.right-sidebar-show .em-blog-right-sidebar {\n  right: 0;\n}\n.em-blog-right-sidebar .panel-blog-dir {\n  padding: 16px;\n}\n"; });
 define('text!resources/elements/em-blog-save.css', ['module'], function(module) { module.exports = ""; });
-define('text!resources/elements/em-blog-space-edit.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-blog-space-edit.css\"></require>\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\n        <div slot=\"header\">空间编辑</div>\n        <div slot=\"content\" class=\"em-blog-space-edit\">\n            <form class=\"ui form\">\n                <div class=\"required field\">\n                    <input type=\"text\" value.bind=\"space.name\" placeholder=\"空间名称\">\n                </div>\n                <div class=\"field\">\n                    <textarea value.bind=\"space.description\" placeholder=\"可选的针对空间的描述\" rows=\"2\"></textarea>\n                </div>\n                <div class=\"field\">\n                    <div ref=\"chk\" class=\"ui checkbox\">\n                        <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\n                        <label><i class=\"lock icon\"></i>私有空间(不公开)</label>\n                    </div>\n                </div>\n            </form>\n        </div>\n    </em-modal>\n</template>\n"; });
+define('text!resources/elements/em-blog-space-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-space-edit.css\"></require>\r\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">空间编辑</div>\r\n        <div slot=\"content\" class=\"em-blog-space-edit\">\r\n            <form class=\"ui form\">\r\n                <div class=\"required field\">\r\n                    <input type=\"text\" value.bind=\"space.name\" placeholder=\"空间名称\">\r\n                </div>\r\n                <div class=\"field\">\r\n                    <textarea value.bind=\"space.description\" placeholder=\"可选的针对空间的描述\" rows=\"2\"></textarea>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" tabindex=\"0\" class=\"hidden\">\r\n                        <label><i class=\"lock icon\"></i>私有空间(不公开)</label>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-space-update.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-space-update.css\"></require>\r\n    <em-modal classes=\"small tms-md450\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\">\r\n        <div slot=\"header\">博文移动</div>\r\n        <div slot=\"content\" class=\"em-blog-space-update\">\r\n            <form class=\"ui form\">\r\n                <div class=\"required field\">\r\n                    <div ref=\"spacesRef\" class=\"ui fluid search selection dropdown\">\r\n                        <input type=\"hidden\" name=\"country\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\">选择空间(可选)</div>\r\n                        <div class=\"menu\">\r\n                            <div class=\"item\" data-value=\"\">(不指定空间)</div>\r\n                            <template repeat.for=\"item of spaces | sort:'name'\">\r\n                                <div task.bind=\"initSpacesHandler($last)\" class=\"item\" data-value=\"${item.id}\"><i class=\"folder outline icon\"></i>${item.name}</div>\r\n                            </template>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-share.css', ['module'], function(module) { module.exports = ".em-blog-share.ui.popup {\n  max-width: 100%;\n  width: 255px;\n}\n.em-blog-share.ui.popup .ui.input {\n  width: 225px;\n}\n.em-blog-share:after {\n  content: '';\n  clear: both;\n}\n.em-blog-share .footer {\n  margin-top: 16px;\n}\n.em-blog-share .footer .btn-cancel {\n  float: right;\n  margin-top: 6px;\n  margin-left: 8px;\n}\n"; });
 define('text!resources/elements/em-blog-top-menu.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-top-menu.css\"></require>\r\n    <div ref=\"topMenuRef\" class=\"ui top fixed inverted blue menu em-blog-top-menu ${isSearchFocus ? 'search-focus' : ''}\">\r\n        <div click.delegate=\"toggleHandler()\" class=\"item tms-toggle\">\r\n            <i class=\"large ${isHide ? 'indent' : 'outdent'} link icon\"></i>\r\n        </div>\r\n        <div ui-dropdown-action class=\"ui dropdown item tms-links\">\r\n            <i class=\"large content icon\"></i>\r\n            <div class=\"menu\">\r\n                <div class=\"header\">系统外链</div>\r\n                <a repeat.for=\"item of sysLinks\" href=\"${item.href}\" target=\"_blank\" class=\"item\">${item.title}</a>\r\n            </div>\r\n        </div>\r\n        <div class=\"item tms-logo\">\r\n            <a href=\"#/\"><img ref=\"logoRef\" src=\"img/tms-x32.png\"></a>\r\n        </div>\r\n        <a class=\"header item\" href=\"#/blog\">\r\n            TMS博文\r\n        </a>\r\n        <div class=\"item tms-create\">\r\n            <a modaal=\"blog-create\" href=\"#modaal-blog-write\" title=\"博文创建 (c)\" class=\"ui primary button\">创建</a>\r\n        </div>\r\n        <div id=\"modaal-blog-write\" style=\"display:none;\">\r\n            <em-blog-write></em-blog-write>\r\n        </div>\r\n        <div class=\"right menu\">\r\n            <div class=\"item\">\r\n                <div ref=\"searchRef\" class=\"ui search\">\r\n                    <div class=\"ui icon input\">\r\n                        <input keyup.trigger=\"searchKeyupHandler($event)\" blur.trigger=\"searchBlurHandler()\" focus.trigger=\"searchFocusHandler()\" class=\"prompt\" type=\"text\" placeholder=\"搜索...\">\r\n                        <i class=\"search icon\"></i>\r\n                    </div>\r\n                    <div class=\"results\"></div>\r\n                </div>\r\n            </div>\r\n            <div ui-dropdown-hover class=\"ui top right dropdown item tms-login-user ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <em-user-avatar user.bind=\"loginUser\"></em-user-avatar>\r\n                <div class=\"menu\">\r\n                    <div class=\"header\">账户操作</div>\r\n                    <div class=\"divider\"></div>\r\n                    <a class=\"item\" click.delegate=\"userEditHandler()\"><i class=\"edit icon\"></i>修改</a>\r\n                    <a class=\"item\" click.delegate=\"logoutHandler()\"><i class=\"sign out icon\"></i>退出</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-user-edit user.bind=\"loginUser\" view-model.ref=\"userEditMd\"></em-user-edit>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-space-auth.css', ['module'], function(module) { module.exports = ".em-blog-space-auth > .ui.form {\n  margin-bottom: 16px;\n}\n.em-blog-space-auth .tms-header {\n  margin-bottom: 8px;\n}\n.em-blog-space-auth .ui.search .prompt {\n  border-radius: .28571429rem;\n}\n"; });
-define('text!resources/elements/em-blog-write.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-blog-write.css\"></require>\n    <div class=\"em-blog-write\">\n        <div class=\"wrapper dropzone\">\n            <div class=\"title\">\n                <div class=\"ui transparent fluid massive input\">\n                    <input id=\"blog-title-input\" type=\"text\" placeholder=\"标题\">\n                </div>\n                <button id=\"blog-save-btn\" title=\"ctrl+click快速保存\" class=\"ui mini positive button\"><i style=\"display: none;\" class=\"spinner loading icon\"></i><span>保存</span></button>\n            </div>\n            <div class=\"dropzone-previews\"></div>\n            <div id=\"txt-blog-write-wrapper\" class=\"content markdown-body\">\n                <textarea style=\"width: 0; height: 0; border: 0; resize:none;\" id=\"txt-blog-write\"></textarea>\n            </div>\n            <div class=\"tms-blog-write-status-bar-wrapper\">\n                <div class=\"tms-blog-write-status-bar\"></div>\n            </div>\n        </div>\n        <div class=\"preview-template\" style=\"display: none;\">\n            <div class=\"dz-preview dz-file-preview\">\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\n            </div>\n        </div>\n    </div>\n    <em-blog-save view-model.ref=\"blogSaveVm\"></em-blog-save>\n</template>\n"; });
+define('text!resources/elements/em-blog-write.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-blog-write.css\"></require>\r\n    <div class=\"em-blog-write\">\r\n        <div class=\"wrapper dropzone\">\r\n            <div class=\"title\">\r\n                <div class=\"ui transparent fluid massive input\">\r\n                    <input id=\"blog-title-input\" type=\"text\" placeholder=\"标题\">\r\n                </div>\r\n                <button id=\"blog-save-btn\" title=\"ctrl+click快速保存\" class=\"ui mini positive button\"><i style=\"display: none;\" class=\"spinner loading icon\"></i><span>保存</span></button>\r\n            </div>\r\n            <div class=\"dropzone-previews\"></div>\r\n            <div id=\"txt-blog-write-wrapper\" class=\"content markdown-body\">\r\n                <textarea style=\"width: 0; height: 0; border: 0; resize:none;\" id=\"txt-blog-write\"></textarea>\r\n            </div>\r\n            <div class=\"tms-blog-write-status-bar-wrapper\">\r\n                <div class=\"tms-blog-write-status-bar\"></div>\r\n            </div>\r\n        </div>\r\n        <div class=\"preview-template\" style=\"display: none;\">\r\n            <div class=\"dz-preview dz-file-preview\">\r\n                <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-blog-save view-model.ref=\"blogSaveVm\"></em-blog-save>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-space-create.css', ['module'], function(module) { module.exports = ".em-blog-space-create.ui.popup .ui.form {\n  width: 260px;\n}\n"; });
 define('text!resources/elements/em-blog-space-edit.css', ['module'], function(module) { module.exports = ""; });
-define('text!resources/elements/em-chat-attach.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-chat-attach.css\"></require>\n    <div class=\"em-chat-attach tms-attach-search-input\">\n        <div class=\"ui fluid left action icon input\">\n            <button class=\"ui basic icon button\">\n                <i show.bind=\"!ajax || ajax.readyState == 4\" class=\"${type == 'Image' ? 'image' : ''} file outline icon\"></i>\n                <i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i>\n            </button>\n            <input ref=\"searchRef\" type=\"text\" value.bind=\"search\" keyup.trigger=\"keyupHandler($event)\" placeholder=\"${type == 'Image' ? '图片' : '文件'}搜索(Enter确认, Esc取消)...\">\n            <i click.delegate=\"searchHandler()\" class=\"search link icon\"></i>\n        </div>\n    </div>\n    <div ref=\"tabRef\" class=\"ui pointing secondary menu em-chat-attach\">\n        <a click.delegate=\"tabClickHandler('Image')\" class=\"active item\" data-tab=\"Image\"><i show.bind=\"!ajax || ajax.readyState == 4 || type == 'Attachment'\" class=\"file image outline icon\"></i><i show.bind=\"ajax && ajax.readyState != 4 && type == 'Image'\" class=\"spinner loading icon\"></i>图片${(page && type == 'Image') ? '(' + page.totalElements + ')' : ''}</a>\n        <a click.delegate=\"tabClickHandler('Attachment')\" class=\"item\" data-tab=\"Attachment\"><i show.bind=\"!ajax || ajax.readyState == 4 || type == 'Image'\" class=\"file outline icon\"></i><i show.bind=\"ajax && ajax.readyState != 4 && type == 'Attachment'\" class=\"spinner loading icon\"></i>文件${(page && type == 'Attachment') ? '(' + page.totalElements + ')' : ''}</a>\n    </div>\n    <div swipebox class=\"ui active tab basic segment em-chat-attach\" data-tab=\"Image\">\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无图片</h1>\n        <div if.bind=\"type == 'Image'\" class=\"ui small bordered images\">\n            <img repeat.for=\"item of attachs\" if.bind=\"item.type == 'Image'\" src=\"/${item.path + item.uuidName}\" alt=\"${item.name}\" title=\"${item.username | userName}上传于${item.createDate | timeago}\">\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\n        </div>\n    </div>\n    <div class=\"ui tab basic segment em-chat-attach\" data-tab=\"Attachment\">\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无文件</h1>\n        <div if.bind=\"type == 'Attachment'\" class=\"divided list selection ui\">\n            <div repeat.for=\"item of attachs\" if.bind=\"item.type == 'Attachment'\" class=\"item\">\n                <i class=\"file outline icon\"></i>\n                <div class=\"content\">\n                    <div class=\"header\"><a href=\"/admin/file/download/${item.id}\">${item.name}</a></div>\n                    <div class=\"description\"><i class=\"wait icon\"></i><b>${item.username | userName}</b>上传于<span title=\"${item.createDate | date}\">${item.createDate | timeago}</span></div>\n                </div>\n            </div>\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\n        </div>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-chat-attach.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-attach.css\"></require>\r\n    <div class=\"em-chat-attach tms-attach-search-input\">\r\n        <div class=\"ui fluid left action icon input\">\r\n            <button class=\"ui basic icon button\">\r\n                <i show.bind=\"!ajax || ajax.readyState == 4\" class=\"${type == 'Image' ? 'image' : ''} file outline icon\"></i>\r\n                <i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i>\r\n            </button>\r\n            <input ref=\"searchRef\" type=\"text\" value.bind=\"search\" keyup.trigger=\"keyupHandler($event)\" placeholder=\"${type == 'Image' ? '图片' : '文件'}搜索(Enter确认, Esc取消)...\">\r\n            <i click.delegate=\"searchHandler()\" class=\"search link icon\"></i>\r\n        </div>\r\n    </div>\r\n    <div ref=\"tabRef\" class=\"ui pointing secondary menu em-chat-attach\">\r\n        <a click.delegate=\"tabClickHandler('Image')\" class=\"active item\" data-tab=\"Image\"><i show.bind=\"!ajax || ajax.readyState == 4 || type == 'Attachment'\" class=\"file image outline icon\"></i><i show.bind=\"ajax && ajax.readyState != 4 && type == 'Image'\" class=\"spinner loading icon\"></i>图片${(page && type == 'Image') ? '(' + page.totalElements + ')' : ''}</a>\r\n        <a click.delegate=\"tabClickHandler('Attachment')\" class=\"item\" data-tab=\"Attachment\"><i show.bind=\"!ajax || ajax.readyState == 4 || type == 'Image'\" class=\"file outline icon\"></i><i show.bind=\"ajax && ajax.readyState != 4 && type == 'Attachment'\" class=\"spinner loading icon\"></i>文件${(page && type == 'Attachment') ? '(' + page.totalElements + ')' : ''}</a>\r\n    </div>\r\n    <div swipebox class=\"ui active tab basic segment em-chat-attach\" data-tab=\"Image\">\r\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无图片</h1>\r\n        <div if.bind=\"type == 'Image'\" class=\"ui small bordered images\">\r\n            <img repeat.for=\"item of attachs\" if.bind=\"item.type == 'Image'\" src=\"/${item.path + item.uuidName}\" alt=\"${item.name}\" title=\"${item.username | userName}上传于${item.createDate | timeago}\">\r\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\r\n        </div>\r\n    </div>\r\n    <div class=\"ui tab basic segment em-chat-attach\" data-tab=\"Attachment\">\r\n        <h1 if.bind=\"!attachs || attachs.length == 0\" class=\"centered ui header\">暂无文件</h1>\r\n        <div if.bind=\"type == 'Attachment'\" class=\"divided list selection ui\">\r\n            <div repeat.for=\"item of attachs\" if.bind=\"item.type == 'Attachment'\" class=\"item\">\r\n                <i class=\"file outline icon\"></i>\r\n                <div class=\"content\">\r\n                    <div class=\"header\"><a href=\"/admin/file/download/${item.id}\">${item.name}</a></div>\r\n                    <div class=\"description\"><i class=\"wait icon\"></i><b>${item.username | userName}</b>上传于<span title=\"${item.createDate | date}\">${item.createDate | timeago}</span></div>\r\n                </div>\r\n            </div>\r\n            <div if.bind=\"page && !page.last\" click.delegate=\"moreHandler()\" class=\"basic ui button\"><i show.bind=\"ajax && ajax.readyState != 4\" class=\"spinner loading icon\"></i> 加载更多(${moreCnt})</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-space-update.css', ['module'], function(module) { module.exports = ""; });
 define('text!resources/elements/em-chat-channel-create.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-channel-create.css\"></require>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" show-confirm.bind=\"activeTab == 'channel-create'\" confirm-label=\"创建\">\r\n        <div slot=\"header\">频道管理</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"tabRef\" class=\"ui pointing secondary menu\">\r\n                <a class=\"active item\" data-tab=\"channel-create\">创建频道</a>\r\n                <a class=\"item\" data-tab=\"channel-join\">加入频道</a>\r\n            </div>\r\n            <div class=\"ui active tab basic segment tms-create\" data-tab=\"channel-create\">\r\n                <div ref=\"frm\" class=\"ui form\">\r\n                    <div class=\"inline required field\">\r\n                        <label>标识</label>\r\n                        <input type=\"text\" name=\"name\" value.bind=\"name\" placeholder=\"小写字母数组-_组合\">\r\n                    </div>\r\n                    <div class=\"inline required field\">\r\n                        <label>名称</label>\r\n                        <input type=\"text\" name=\"title\" value.bind=\"title\" placeholder=\"\">\r\n                    </div>\r\n                    <div class=\"inline field\">\r\n                        <label style=\"visibility: hidden;\">公开</label>\r\n                        <div ref=\"chk\" class=\"ui checkbox\">\r\n                            <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                            <label>非公开(公开频道用户可以自由加入)</label>\r\n                        </div>\r\n                    </div>\r\n                    <div class=\"field\">\r\n                        <label>描述</label>\r\n                        <textarea name=\"desc\" value.bind=\"desc\" placeholder=\"\" rows=\"5\"></textarea>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"ui tab basic segment tms-join\" data-tab=\"channel-join\">\r\n                <em-chat-channel-join em-chat-channel-join.ref=\"channelJoinVm\" login-user.bind=\"loginUser\"></em-chat-channel-join>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
-define('text!resources/elements/em-chat-channel-edit.html', ['module'], function(module) { module.exports = "<template>\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\n        <div slot=\"header\">编辑频道</div>\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\n            <div ref=\"frm\" class=\"ui form\">\n                <div class=\"inline required field\">\n                    <label>标识</label>\n                    <div class=\"ui basic label\">${channel.name}</div>\n                </div>\n                <div class=\"inline required field\">\n                    <label>名称</label>\n                    <input type=\"text\" name=\"title\" value.bind=\"channel.title\" placeholder=\"\">\n                </div>\n                <div class=\"inline field\">\n                    <label style=\"visibility: hidden;\">公开</label>\n                    <div ref=\"chk\" class=\"ui checkbox\">\n                        <input type=\"checkbox\" name=\"privated\" checked=\"\">\n                        <label>非公开(公开频道用户可以自由加入)</label>\n                    </div>\n                </div>\n                <div class=\"field\">\n                    <label>描述</label>\n                    <textarea name=\"desc\" value.bind=\"channel.description\" placeholder=\"\" rows=\"5\"></textarea>\n                </div>\n            </div>\n        </div>\n    </em-modal>\n</template>\n"; });
+define('text!resources/elements/em-chat-channel-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <em-modal classes=\"small\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\r\n        <div slot=\"header\">编辑频道</div>\r\n        <div slot=\"content\" class=\"tms-em-chat-channel-create\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"inline required field\">\r\n                    <label>标识</label>\r\n                    <div class=\"ui basic label\">${channel.name}</div>\r\n                </div>\r\n                <div class=\"inline required field\">\r\n                    <label>名称</label>\r\n                    <input type=\"text\" name=\"title\" value.bind=\"channel.title\" placeholder=\"\">\r\n                </div>\r\n                <div class=\"inline field\">\r\n                    <label style=\"visibility: hidden;\">公开</label>\r\n                    <div ref=\"chk\" class=\"ui checkbox\">\r\n                        <input type=\"checkbox\" name=\"privated\" checked=\"\">\r\n                        <label>非公开(公开频道用户可以自由加入)</label>\r\n                    </div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <label>描述</label>\r\n                    <textarea name=\"desc\" value.bind=\"channel.description\" placeholder=\"\" rows=\"5\"></textarea>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-top-menu.css', ['module'], function(module) { module.exports = ".em-blog-top-menu.ui.inverted.blue.menu {\n  background-color: #205081;\n  height: 55px;\n  z-index: 103;\n}\n.em-blog-top-menu.ui.inverted.blue.menu .item.tms-toggle {\n  display: none;\n}\n.em-blog-top-menu.ui.inverted.blue.menu .item.tms-toggle i.icon {\n  margin-right: 0;\n}\n.em-blog-top-menu.ui.inverted.blue.menu .item.tms-links i.icon {\n  margin-right: 0;\n}\n.em-blog-top-menu.ui.inverted.blue.menu .right.menu .item .ui.icon.input input {\n  background-color: #103a65;\n  color: white;\n}\n.em-blog-top-menu.ui.inverted.blue.menu .right.menu .item .ui.icon.input input:focus {\n  border-color: rgba(34, 36, 38, 0.15);\n  box-shadow: none;\n}\n.em-blog-top-menu.ui.inverted.blue.menu .right.menu .item .ui.icon.input i.icon.search:before {\n  color: #a3aab0;\n}\n@media only screen and (max-width: 767px) {\n  .em-blog-top-menu.ui.inverted.blue.menu .item.tms-links {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu .item.tms-logo {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu .item.header {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu .item.tms-toggle {\n    display: flex;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu .right.menu .item .ui.search .ui.input {\n    width: 100px;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu.search-focus .tms-logo {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu.search-focus .tms-create {\n    display: none;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu.search-focus .right.menu .item .ui.search .ui.input {\n    width: initial;\n    transition: width 0.15s ease-out 0s;\n  }\n  .em-blog-top-menu.ui.inverted.blue.menu.search-focus .right.menu .tms-login-user {\n    display: none;\n  }\n}\n"; });
 define('text!resources/elements/em-chat-channel-join.html', ['module'], function(module) { module.exports = "<template>\r\n    <table class=\"ui very basic striped table\">\r\n        <thead>\r\n            <tr>\r\n                <th>标识</th>\r\n                <th>名称</th>\r\n                <th>描述</th>\r\n                <th>可见性</th>\r\n                <th>拥有者</th>\r\n                <th>操作</th>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n            <tr repeat.for=\"item of channels | sort:'title' | sortChannels\">\r\n                <td><i class=\"hashtag icon\"></i>${item.name}</td>\r\n                <td title=\"${item.title}\">${item.title}</td>\r\n                <td><span data-tooltip=\"${item.description}\"><i class=\"info circle icon\"></i></span></td>\r\n                <td if.bind=\"item.privated\"><span data-tooltip=\"私有频道\"><i class=\"lock icon\"></i></span></td>\r\n                <td if.bind=\"!item.privated\"><span data-tooltip=\"公开频道\"><i class=\"unlock icon\"></i></span></td>\r\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username != loginUser.username\">${item.owner.name ? item.owner.name : item.owner.username}</td>\r\n                <td title=\"${item.owner.name}(${item.owner.username})\" if.bind=\"item.owner.username == loginUser.username\">自己</td>\r\n                <td>\r\n                    <div if.bind=\"!item.privated && !item.joined\" class=\"ui mini green button\" click.delegate=\"joinHandler(item)\">加入</div>\r\n                    <div if.bind=\"item.joined && (item.owner.username != loginUser.username)\" class=\"ui mini orange button\" click.delegate=\"leaveHandler(item)\">离开</div>\r\n                </td>\r\n            </tr>\r\n        </tbody>\r\n    </table>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-blog-write.css', ['module'], function(module) { module.exports = "@media only screen and (max-width: 827px) {\n  .modaal-wrapper .modaal-close {\n    top: initial!important;\n    bottom: 10px;\n    z-index: 2;\n  }\n}\n.em-blog-write {\n  margin-top: -30px;\n  margin-bottom: 20px;\n}\n.em-blog-write > .wrapper {\n  max-width: 768px;\n  margin: auto;\n}\n.em-blog-write > .wrapper > .title {\n  position: fixed;\n  z-index: 2;\n  margin-bottom: 8px;\n  width: calc(100% - 60px);\n  background-color: white;\n  padding-top: 18px;\n  box-shadow: 0px 1px 0px 0px #dddddd;\n}\n@media only screen and (min-width: 828px) {\n  .em-blog-write > .wrapper > .title {\n    width: 768px;\n  }\n}\n.em-blog-write > .wrapper > .title > .ui.input {\n  padding-right: 80px;\n}\n.em-blog-write > .wrapper > .title > .ui.button {\n  position: absolute;\n  right: 0;\n  top: 15px;\n}\n.em-blog-write > .wrapper > .content {\n  padding-top: 60px;\n}\n.em-blog-write > .wrapper > .content .editor-toolbar.fullscreen {\n  z-index: 800;\n}\n.em-blog-write .dropzone {\n  position: relative;\n}\n.em-blog-write .dropzone .dropzone-previews {\n  position: absolute;\n  top: 48px;\n  width: 100%;\n}\n.em-blog-write .dropzone .dropzone-previews .dz-preview {\n  width: 100%;\n  margin: 0;\n}\n.em-blog-write .dropzone .dropzone-previews .dz-preview .dz-progress {\n  height: 2px;\n  background-color: #aaa;\n  border: none;\n}\n.em-blog-write .dropzone .dropzone-previews .dz-preview .dz-remove {\n  display: none;\n}\n.em-blog-write .tms-blog-write-status-bar-wrapper {\n  position: fixed;\n  z-index: 800;\n  height: 0;\n  top: 120px;\n  width: calc(100% - 60px);\n}\n@media only screen and (min-width: 828px) {\n  .em-blog-write .tms-blog-write-status-bar-wrapper {\n    width: 768px;\n  }\n}\n.em-blog-write .tms-blog-write-status-bar-wrapper .tms-blog-write-status-bar {\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n}\n"; });
@@ -32696,7 +40043,7 @@ define('text!resources/elements/em-chat-input.html', ['module'], function(module
 define('text!resources/elements/em-chat-channel-members-show.css', ['module'], function(module) { module.exports = ".em-chat-channel-members-show {\n  max-height: 300px;\n  overflow-y: auto;\n}\n"; });
 define('text!resources/elements/em-chat-member-popup.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-member-popup.css\"></require>\r\n    <div ref=\"popup\" class=\"ui flowing popup transition hidden tms-chat-member-popup\">\r\n        <div class=\"ui cards\" show.bind=\"(username == 'all')\">\r\n            <div class=\"card\">\r\n                <div class=\"content\">\r\n                    <div class=\"header\" style=\"border-bottom: 1px lightgray solid;\">\r\n                        全部用户 (${members.length}人)\r\n                    </div>\r\n                    <div class=\"description\" style=\"max-height: 200px; overflow-y: auto;\">\r\n                        <div class=\"ui middle aligned divided list\" style=\"padding-left: 0px;\">\r\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important; padding-left: 0; padding-right: 0;\">\r\n                                <div class=\"content\">\r\n                                    <div repeat.for=\"item of members\" class=\"ui basic label mapping-user group-user\" data-value=\"${item.username}\" style=\"margin-top: 3px; margin-left: 0;\" title=\"${item.username}\">${item.name ? item.name : item.username}</div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"ui cards\" show.bind=\"(username != 'all')\">\r\n            <div class=\"card\">\r\n                <div class=\"content\">\r\n                    <div class=\"header\">\r\n                        ${member.name ? member.name : member.username} <a style=\"float: right;\" href=\"#/chat/@${member.username}\"><i class=\"at icon\" style=\"margin-right: 0;\"></i>${member.username}(私聊)</a>\r\n                    </div>\r\n                    <div class=\"ui divider\"></div>\r\n                    <div class=\"meta\">\r\n                        <i class=\"wait icon\"></i>\r\n                        <span class=\"mapping-user\">${member.creatorName}</span> 创建于 <span style=\"font-style: italic;\" class=\"timeago\" title=\"${member.createDate | date}\">${member.createDate | timeago}</span>\r\n                    </div>\r\n                    <div class=\"description\">\r\n                        <div class=\"ui middle aligned divided list\">\r\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\r\n                                <div class=\"content\">\r\n                                    <a class=\"header\" style=\"display: inline;\">姓名</a> ${member.name}\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\r\n                                <div class=\"content\">\r\n                                    <a class=\"header\" style=\"display: inline;\">邮箱</a> <a href=\"mailto:${member.mails}\">${member.mails}</a>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\r\n                                <div class=\"content\">\r\n                                    <a class=\"header\" style=\"display: inline;\">状态</a> ${member.enabled ? '启用中' : '已禁用'}\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\r\n                                <div class=\"content\">\r\n                                    <a class=\"header\" style=\"display: inline;\">登录</a> 从IP ${member.loginRemoteAddress} (<span style=\"font-style: italic; color:gray;\" class=\"timeago\" title=\"${member.lastLoginDate | date}\">${member.lastLoginDate | timeago}</span>)\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"item\" style=\"padding-top: 5px!important; padding-bottom: 5px!important;\">\r\n                                <div class=\"content\">\r\n                                    <div repeat.for=\"item of member.joinChannels\" class=\"ui basic label user-channel\" data-value=\"${item.name}\" style=\"margin-top: 3px; margin-left: 0;\" title=\"${item.title}\">${item.name}</div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-content-item.css', ['module'], function(module) { module.exports = ".em-chat-content-item .textcomplete-container {\n  position: relative;\n}\n.em-chat-content-item .textcomplete-container .append-to {\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  width: 100%;\n}\n.ui.comments .em-chat-content-item.comment > .avatar ~ .content {\n  margin-left: 3em;\n}\n.ui.comments .em-chat-content-item.comment .actions > a {\n  margin-right: 5px;\n}\n.ui.comments .em-chat-content-item.comment .actions .dropdown > a .ellipsis.icon {\n  margin-right: 0;\n}\n.ui.comments .em-chat-content-item.comment .actions .dropdown .item.tms-red {\n  color: red;\n}\n.ui.comments .em-chat-content-item.comment:hover .tools {\n  display: block;\n}\n.ui.comments .em-chat-content-item.comment:hover:before {\n  width: 4px;\n}\n.ui.comments .em-chat-content-item.comment.active:before {\n  width: 4px;\n}\n.ui.comments .em-chat-content-item.comment:before {\n  content: \"\";\n  position: absolute;\n  z-index: -1;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  background: #2098D1;\n  width: 0;\n  -webkit-transition-property: width;\n  transition-property: width;\n  -webkit-transition-duration: 0.3s;\n  transition-duration: 0.3s;\n  -webkit-transition-timing-function: ease-out;\n  transition-timing-function: ease-out;\n}\n@media only screen and (max-width: 767px) {\n  .em-chat-content-item > .content > .metadata > .rating {\n    display: none!important;\n  }\n}\n.em-chat-content-item > .content > .markdown-body span.at-user {\n  cursor: pointer;\n}\n.em-chat-content-item > .content > .tools {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  display: none;\n}\n.em-chat-content-item > .content > .tools > .ui.button {\n  margin: 0;\n  background-color: rgba(224, 225, 226, 0.5);\n}\n.em-chat-content-item > .content > .tools > .ui.button:hover {\n  background-color: #e0e1e2;\n}\n"; });
-define('text!resources/elements/em-chat-msg-popup.html', ['module'], function(module) { module.exports = "<template>\n    <div ref=\"popup\" class=\"ui flowing popup transition hidden tms-chat-msg-popup\">\n        <div class=\"ui items\">\n            <div class=\"item\">\n                <div class=\"content\" style=\"width:300px; word-break: break-all;\">\n                    <a class=\"header pp-not\" href=\"javascript:void(0);\">消息#${chatMsg.id}</a>\n                    <div class=\"meta\" style=\"width:300px; word-break: break-all; font-size: 12px;\">\n                        <i class=\"wait icon\"></i>\n                        <span>\n                            ${chatMsg.creator ? (chatMsg.creator.name ? chatMsg.creator.name : chatMsg.creator.username) : ''}\n                        </span>\n                        <span>发表于</span>\n                        <span class=\"cinema timeago\" style=\"font-style: italic;\" title=\"${chatMsg.createDate | date}\">${chatMsg.createDate | timeago}</span>\n                    </div>\n                    <div class=\"ui divider\"></div>\n                    <div class=\"description markdown-body\" style=\"width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;\" innerhtml.bind=\"chatMsg.content | parseMd\"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-chat-msg-popup.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"popup\" class=\"ui flowing popup transition hidden tms-chat-msg-popup\">\r\n        <div class=\"ui items\">\r\n            <div class=\"item\">\r\n                <div class=\"content\" style=\"width:300px; word-break: break-all;\">\r\n                    <a class=\"header pp-not\" href=\"javascript:void(0);\">消息#${chatMsg.id}</a>\r\n                    <div class=\"meta\" style=\"width:300px; word-break: break-all; font-size: 12px;\">\r\n                        <i class=\"wait icon\"></i>\r\n                        <span>\r\n                            ${chatMsg.creator ? (chatMsg.creator.name ? chatMsg.creator.name : chatMsg.creator.username) : ''}\r\n                        </span>\r\n                        <span>发表于</span>\r\n                        <span class=\"cinema timeago\" style=\"font-style: italic;\" title=\"${chatMsg.createDate | date}\">${chatMsg.createDate | timeago}</span>\r\n                    </div>\r\n                    <div class=\"ui divider\"></div>\r\n                    <div class=\"description markdown-body\" style=\"width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;\" innerhtml.bind=\"chatMsg.content | parseMd\"></div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-input.css', ['module'], function(module) { module.exports = ".tms-em-chat-input.ui.segment {\n  margin: 0;\n  position: fixed;\n  bottom: 0;\n  left: 220px;\n  right: 0;\n  background-color: white;\n  padding-bottom: 22px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-input.ui.segment {\n    left: 0;\n  }\n}\n.tms-em-chat-input.ui.segment .tms-chat-status-bar .dz-preview {\n  display: block!important;\n  width: auto!important;\n  background: #e0e1e2;\n  margin: 0;\n  padding: 7px;\n}\n.tms-em-chat-input.ui.segment .ui[class*=\"left action\"].input > textarea {\n  border-top-left-radius: 0!important;\n  border-bottom-left-radius: 0!important;\n  border-left-color: transparent!important;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper {\n  width: calc(100% - 35px);\n  border: 1px solid rgba(34, 36, 38, 0.15);\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror,\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  min-height: 0;\n  border: none;\n  border-top-right-radius: .28571429rem;\n}\n.tms-em-chat-input.ui.segment .textareaWrapper .CodeMirror-scroll {\n  max-height: 300px;\n}\n.tms-em-chat-input.ui.segment .ui.input {\n  margin-right: 5px;\n}\n.tms-em-chat-input.ui.segment .ui.input i.send.icon {\n  z-index: 1;\n  right: 7px!important;\n}\n.tms-em-chat-input.ui.segment .ui.input textarea {\n  resize: none;\n  width: 100%;\n  padding-right: 2.67142857em!important;\n  margin: 0;\n  max-width: 100%;\n  outline: 0;\n  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);\n  text-align: left;\n  display: block;\n  padding: .67861429em 1em;\n  background: #FFF;\n  border: none;\n  color: rgba(0, 0, 0, 0.87);\n  box-shadow: none;\n  border-top-right-radius: .28571429rem;\n  border-bottom-right-radius: .28571429rem;\n}\n.tms-em-chat-input .CodeMirror-lines {\n  margin-right: 30px;\n}\n.tms-em-chat-input .ui.vertical.menu.popup {\n  width: 145px;\n}\n.tms-em-chat-input .ui.vertical.menu.popup a.item > i.icon {\n  float: left;\n  margin: 0 .35714286em 0 0;\n}\n@media only screen and (min-width: 768px) {\n  .tms-chat-direct .tms-content.tms-sidebar-show .tms-em-chat-input {\n    right: 392px;\n  }\n}\n.textcomplete-dropdown {\n  position: static!important;\n  border: 1px solid #ddd;\n  background-color: white;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  border-radius: 5px;\n}\n.textcomplete-dropdown li {\n  /* border-top: 1px solid #ddd; */\n  padding: 2px 5px;\n}\n.textcomplete-dropdown li:first-child {\n  border-top: none;\n  border-top-left-radius: 5px;\n  border-top-right-radius: 5px;\n}\n.textcomplete-dropdown li:last-child {\n  border-bottom-left-radius: 5px;\n  border-bottom-right-radius: 5px;\n}\n.textcomplete-dropdown li:hover,\n.textcomplete-dropdown .active {\n  background-color: #439fe0;\n}\n.textcomplete-dropdown a:hover {\n  cursor: pointer;\n}\n.textcomplete-dropdown li.textcomplete-item a {\n  color: black;\n}\n.textcomplete-dropdown li.textcomplete-item:hover a,\n.textcomplete-dropdown li.textcomplete-item.active a {\n  color: white;\n}\n"; });
 define('text!resources/elements/em-chat-schedule-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-schedule-edit.css\"></require>\r\n    <div ref=\"scheduleEditRef\" class=\"tms-schedule-edit-target\"></div>\r\n    <div ref=\"popopRef\" class=\"ui popup bottom center transition hidden em-chat-schedule-edit\">\r\n        <div class=\"ui form ${event.creator.username == loginUser.username ? '' : 'tms-disabled'}\">\r\n            <div class=\"field\">\r\n                <textarea ref=\"titleRef\" keyup.trigger=\"titleKeyupHandler($event)\" autosize value.bind=\"event.title\" rows=\"1\" placeholder=\"日程内容(ctrl+enter更新)\" style=\"width: 270px; padding-top: 5px; padding-bottom: 0;\"></textarea>\r\n            </div>\r\n            <div class=\"field tms-date-field\">\r\n                <div class=\"ui calendar\" ref=\"startRef\">\r\n                    <div class=\"ui input left icon\">\r\n                        <i class=\"calendar icon\"></i>\r\n                        <input type=\"text\" value.bind=\"startDate\" placeholder=\"开始时间\">\r\n                    </div>\r\n                </div>\r\n                <div click.delegate=\"clearStartDateHandler()\" class=\"ui button ${event.creator.username == loginUser.username ? '' : 'disabled'}\">清空</div>\r\n            </div>\r\n            <div class=\"field tms-date-field\">\r\n                <div class=\"ui calendar\" ref=\"endRef\">\r\n                    <div class=\"ui input left icon\">\r\n                        <i class=\"calendar icon\"></i>\r\n                        <input type=\"text\" value.bind=\"endDate\" placeholder=\"结束时间\">\r\n                    </div>\r\n                </div>\r\n                <div click.delegate=\"clearEndDateHandler()\" class=\"ui button ${event.creator.username == loginUser.username ? '' : 'disabled'}\">清空</div>\r\n            </div>\r\n            <div class=\"field\">\r\n                <div ref=\"actorsRef\" class=\"ui multiple search selection dropdown\">\r\n                    <input type=\"hidden\" value=\"${loginUser.username}\" name=\"actors\">\r\n                    <i class=\"dropdown icon\"></i>\r\n                    <div class=\"default text\">日程参与者</div>\r\n                    <div class=\"menu\">\r\n                        <div repeat.for=\"item of users | sortUsers:loginUser.username\" task.bind=\"initMembersUI($last)\" class=\"item\" data-value=\"${item.username}\">\r\n                            ${item.name ? item.name : item.username}\r\n                            <input type=\"hidden\" class=\"${(event.creator.username == item.username) ? 'owner' : ''}\">\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <button if.bind=\"event.creator.username == loginUser.username\" click.delegate=\"updateHandler()\" class=\"ui blue button\" type=\"button\" style=\"width: 260px;\">更新</button>\r\n            <button if.bind=\"event.creator.username == loginUser.username\" click.delegate=\"delHandler()\" class=\"ui red button\" type=\"button\" style=\"width: 260px; margin-top: 10px;\">删除</button>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"emConfirmModal\"></em-confirm-modal>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-member-popup.css', ['module'], function(module) { module.exports = ".tms-chat-member-popup .ui.cards {\n  margin-top: 0!important;\n}\n.tms-chat-member-popup .ui.cards .card {\n  margin-top: 0!important;\n}\n.tms-chat-member-popup .ui.cards .card .ui.list > .item {\n  border-radius: 0!important;\n}\n"; });
@@ -32704,7 +40051,7 @@ define('text!resources/elements/em-chat-schedule-remind.html', ['module'], funct
 define('text!resources/elements/em-chat-schedule-edit.css', ['module'], function(module) { module.exports = ".em-chat-schedule-edit .ui.form {\n  width: 300px;\n}\n.em-chat-schedule-edit .ui.form .ui.calendar {\n  width: 200px;\n}\n.em-chat-schedule-edit .ui.form .tms-date-field {\n  position: relative;\n}\n.em-chat-schedule-edit .ui.form .tms-date-field .ui.button {\n  position: absolute;\n  top: 0;\n  right: 0;\n}\n.em-chat-schedule-edit .ui.form .ui.dropdown {\n  width: 265px!important;\n  min-height: 30px;\n}\n.em-chat-schedule-edit .ui.form .ui.dropdown > a.ui.label > input.owner + i.delete.icon {\n  display: none;\n}\n.tms-schedule-edit-target {\n  display: inline-block;\n  width: 1px;\n  height: 1px;\n  position: absolute;\n  right: 188px;\n  top: 30px;\n}\n"; });
 define('text!resources/elements/em-chat-schedule.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-schedule.css\"></require>\r\n    <div class=\"em-chat-schedule\">\r\n        <div ref=\"scheduleRef\"></div>\r\n        <div ref=\"addRef\" class=\"button blue circular icon mini tms-add ui\">\r\n            <i class=\"plus icon\"></i>\r\n        </div>\r\n        <div class=\"ui popup bottom center transition hidden tms-schedule-add\">\r\n            <div class=\"ui form\">\r\n                <div class=\"field\">\r\n                    <textarea ref=\"titleRef\" keyup.trigger=\"titleKeyupHandler($event)\" autosize value.bind=\"title\" rows=\"1\" placeholder=\"日程内容(ctrl+enter添加)\" style=\"width: 270px;\"></textarea>\r\n                </div>\r\n                <div class=\"field tms-date-field\">\r\n                    <div class=\"ui calendar\" ref=\"startRef\">\r\n                        <div class=\"ui input left icon\">\r\n                            <i class=\"calendar icon\"></i>\r\n                            <input type=\"text\" value.bind=\"startDate\" placeholder=\"开始时间\">\r\n                        </div>\r\n                    </div>\r\n                    <div click.delegate=\"clearStartDateHandler()\" class=\"ui button\">清空</div>\r\n                </div>\r\n                <div class=\"field tms-date-field\">\r\n                    <div class=\"ui calendar\" ref=\"endRef\">\r\n                        <div class=\"ui input left icon\">\r\n                            <i class=\"calendar icon\"></i>\r\n                            <input type=\"text\" value.bind=\"endDate\" placeholder=\"结束时间\">\r\n                        </div>\r\n                    </div>\r\n                    <div click.delegate=\"clearEndDateHandler()\" class=\"ui button\">清空</div>\r\n                </div>\r\n                <div class=\"field\">\r\n                    <div ref=\"actorsRef\" class=\"ui multiple search selection dropdown\">\r\n                        <input type=\"hidden\" value=\"${loginUser.username}\" name=\"actors\">\r\n                        <i class=\"dropdown icon\"></i>\r\n                        <div class=\"default text\">日程参与者</div>\r\n                        <div class=\"menu\">\r\n                            <div repeat.for=\"item of users | sortUsers:loginUser.username\" task.bind=\"initMembersUI($last)\" class=\"item\" data-value=\"${item.username}\">\r\n                                ${item.name ? item.name : item.username}\r\n                                <input type=\"hidden\" class=\"${loginUser.username == item.username ? 'owner' : ''}\">\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <button click.delegate=\"addHandler()\" class=\"ui blue button\" type=\"button\" style=\"width: 260px;\">添加</button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-chat-schedule-edit login-user.bind=\"loginUser\" view-model.ref=\"scheduleEditVm\"></em-chat-schedule-edit>\r\n    <em-chat-schedule-remind events.bind=\"events\"></em-chat-schedule-remind>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-schedule-remind.css', ['module'], function(module) { module.exports = ".em-chat-schedule-remind .ui.table tr > td:first-child {\n  font-weight: bold;\n}\n"; });
-define('text!resources/elements/em-chat-share.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-chat-share.css\"></require>\n    <a ref=\"shareRef\" class=\"item\">\n        <span title=\"沟通消息分享\">分享</span>\n    </a>\n    <div class=\"ui popup bottom right transition hidden em-chat-share\">\n        <div ref=\"searchRef\" class=\"ui search\">\n            <div class=\"ui icon input\">\n                <input keyup.trigger=\"shareSearchKeyupHandler($event)\" ref=\"inputSearchRef\" style=\"width: 172px;\" class=\"prompt\" type=\"text\" placeholder=\"用户名，频道，邮箱\">\n                <i class=\"search icon\"></i>\n            </div>\n            <div class=\"results\"></div>\n        </div>\n        <div class=\"ui list\">\n            <div repeat.for=\"item of shares\" class=\"item\">\n                <div class=\"right floated content\">\n                    <i click.delegate=\"removeShareHandler(item)\" class=\"red trash link icon\"></i>\n                </div>\n                <template if.bind=\"item._type == 'user'\">\n                    <i class=\"user icon\"></i>\n                    <div class=\"content\">\n                        ${item.name} (${item.username})\n                    </div>\n                </template>\n                <template if.bind=\"item._type == 'channel'\">\n                    <i class=\"users icon\"></i>\n                    <div class=\"content\">\n                        ${item.title} (${item.name})\n                    </div>\n                </template>\n                <template if.bind=\"item._type == 'mail'\">\n                    <i class=\"mail icon\"></i>\n                    <div class=\"content\">\n                        ${item.mail}\n                    </div>\n                </template>\n            </div>\n        </div>\n        <div class=\"ui form\">\n            <div class=\"field\">\n                <textarea value.bind=\"desc\" placeholder=\"添加一个可选的说明\" rows=\"3\"></textarea>\n            </div>\n        </div>\n        <div class=\"footer\">\n            <button class=\"ui basic icon mini button tms-clipboard\" data-tooltip=\"复制沟通消息分享链接\" data-clipboard-text=\"${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + chat.id}\">\n                <i class=\"copy icon\"></i>\n            </button>\n            <a click.delegate=\"cancelHandler()\" href=\"\" class=\"btn-cancel\">取消</a>\n            <button click.delegate=\"shareHandler()\" class=\"ui basic ${shares.length == 0 || (ajaxS && ajaxS.readyState != 4) ? 'disabled' : ''} right floated mini button\">\n                确定\n            </button>\n        </div>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-chat-share.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-share.css\"></require>\r\n    <a ref=\"shareRef\" class=\"item\">\r\n        <span title=\"沟通消息分享\">分享</span>\r\n    </a>\r\n    <div class=\"ui popup bottom right transition hidden em-chat-share\">\r\n        <div ref=\"searchRef\" class=\"ui search\">\r\n            <div class=\"ui icon input\">\r\n                <input keyup.trigger=\"shareSearchKeyupHandler($event)\" ref=\"inputSearchRef\" style=\"width: 172px;\" class=\"prompt\" type=\"text\" placeholder=\"用户名，频道，邮箱\">\r\n                <i class=\"search icon\"></i>\r\n            </div>\r\n            <div class=\"results\"></div>\r\n        </div>\r\n        <div class=\"ui list\">\r\n            <div repeat.for=\"item of shares\" class=\"item\">\r\n                <div class=\"right floated content\">\r\n                    <i click.delegate=\"removeShareHandler(item)\" class=\"red trash link icon\"></i>\r\n                </div>\r\n                <template if.bind=\"item._type == 'user'\">\r\n                    <i class=\"user icon\"></i>\r\n                    <div class=\"content\">\r\n                        ${item.name} (${item.username})\r\n                    </div>\r\n                </template>\r\n                <template if.bind=\"item._type == 'channel'\">\r\n                    <i class=\"users icon\"></i>\r\n                    <div class=\"content\">\r\n                        ${item.title} (${item.name})\r\n                    </div>\r\n                </template>\r\n                <template if.bind=\"item._type == 'mail'\">\r\n                    <i class=\"mail icon\"></i>\r\n                    <div class=\"content\">\r\n                        ${item.mail}\r\n                    </div>\r\n                </template>\r\n            </div>\r\n        </div>\r\n        <div class=\"ui form\">\r\n            <div class=\"field\">\r\n                <textarea value.bind=\"desc\" placeholder=\"添加一个可选的说明\" rows=\"3\"></textarea>\r\n            </div>\r\n        </div>\r\n        <div class=\"footer\">\r\n            <button class=\"ui basic icon mini button tms-clipboard\" data-tooltip=\"复制沟通消息分享链接\" data-clipboard-text=\"${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + chat.id}\">\r\n                <i class=\"copy icon\"></i>\r\n            </button>\r\n            <a click.delegate=\"cancelHandler()\" href=\"\" class=\"btn-cancel\">取消</a>\r\n            <button click.delegate=\"shareHandler()\" class=\"ui basic ${shares.length == 0 || (ajaxS && ajaxS.readyState != 4) ? 'disabled' : ''} right floated mini button\">\r\n                确定\r\n            </button>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-schedule.css', ['module'], function(module) { module.exports = ".em-chat-schedule {\n  position: relative;\n  height: 100%;\n}\n.em-chat-schedule .tms-add {\n  position: absolute;\n  right: 170px;\n  top: 0;\n}\n.em-chat-schedule .ui.form {\n  width: 300px;\n}\n.em-chat-schedule .ui.form .ui.calendar {\n  width: 200px;\n}\n.em-chat-schedule .ui.form .tms-date-field {\n  position: relative;\n}\n.em-chat-schedule .ui.form .tms-date-field .ui.button {\n  position: absolute;\n  top: 0;\n  right: 0;\n}\n.em-chat-schedule .ui.form .ui.dropdown {\n  width: 265px!important;\n  min-height: auto;\n}\n.em-chat-schedule .ui.form .ui.dropdown > a.ui.label > input.owner + i.delete.icon {\n  display: none;\n}\n"; });
 define('text!resources/elements/em-chat-sidebar-left.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-sidebar-left.css\"></require>\r\n    <div class=\"ui left visible sidebar tms-left-sidebar\">\r\n        <div class=\"tms-header\">\r\n            <h1 class=\"ui header\"><img ref=\"logoRef\" src=\"img/tms-x32.png\" alt=\"\"><a href=\"/admin\">TMS沟通</a></h1>\r\n            <input value.bind=\"filter\" keyup.trigger=\"chatToUserFilerKeyupHanlder($event)\" type=\"text\" placeholder=\"过滤沟通频道|用户\">\r\n            <i show.bind=\"filter\" title=\"清空过滤输入\" click.delegate=\"clearFilterHandler()\" class=\"close icon link\"></i>\r\n        </div>\r\n        <div class=\"tms-body\">\r\n            <div scrollbar=\"scrollbar-macosx\">\r\n                <div ref=\"channelsRef\" class=\"tms-channels\">\r\n                    <div class=\"title\">\r\n                        <h4 class=\"ui header\"><i class=\"users icon\"></i>频道 (${channels.length})</h4>\r\n                        <i ref=\"createChannelRef\" class=\"plus link circular icon\"></i>\r\n                    </div>\r\n                    <div class=\"ui middle aligned selection list\">\r\n                        <a repeat.for=\"item of channels | sort:'title' | sortChannels\" title=\"${item.title}(${item.name})\" show.bind=\"!item.hidden\" href=\"#/chat/${item.name}\" class=\"item ${(!isAt && item.name == chatTo) ? 'active' : ''}\">\r\n                            <i class=\"hashtag icon\"></i>\r\n                            <div class=\"content\">\r\n                                <div class=\"tms-name\">${item.title}</div>\r\n                            </div>\r\n                            <div class=\"actions\">\r\n                                <div if.bind=\"item.owner.username == loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                    <i class=\"large ellipsis horizontal icon\"></i>\r\n                                    <div class=\"menu\">\r\n                                        <div class=\"item\" click.delegate=\"membersMgrHandler(item)\">成员管理</div>\r\n                                        <div class=\"item\" click.delegate=\"editHandler(item)\">编辑</div>\r\n                                        <div class=\"item\" click.delegate=\"delHandler(item)\">删除</div>\r\n                                    </div>\r\n                                </div>\r\n                                <div if.bind=\"item.owner.username != loginUser.username\" ui-dropdown class=\"ui right pointing dropdown\">\r\n                                    <i class=\"large ellipsis horizontal icon\"></i>\r\n                                    <div class=\"menu\">\r\n                                        <div class=\"item\" click.delegate=\"membersShowHandler(item)\">成员查看</div>\r\n                                        <div class=\"item\" click.delegate=\"leaveHandler(item)\">离开</div>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </a>\r\n                    </div>\r\n                </div>\r\n                <div class=\"ui divider\"></div>\r\n                <div class=\"tms-users\">\r\n                    <div class=\"title\">\r\n                        <h4 class=\"ui header\"><i class=\"user icon\"></i>用户 (${users.length})</h4>\r\n                        <!-- <i class=\"plus link circular icon\"></i> -->\r\n                    </div>\r\n                    <div ref=\"userListRef\" class=\"ui middle aligned selection list\">\r\n                        <a repeat.for=\"item of users | sortUsers:loginUser.username\" title=\"${item.name}(@${item.username})\" show.bind=\"!item.hidden\" href=\"#/chat/@${item.username}\" class=\"item ${(isAt && item.username == chatTo) ? 'active' : ''} ${!item.enabled ? 'disabled-user' : ''}\" data-id=\"${item.username}\">\r\n                            <i style=\"font-weight: bold;\" class=\"at icon\"></i>\r\n                            <div class=\"content\">\r\n                                <div class=\"tms-name\">${item.name ? item.name : item.username} ${item.username == loginUser.username ? '(自己)' : ''}</div>\r\n                            </div>\r\n                        </a>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"tms-footer\">\r\n            <div class=\"ui inverted icon menu\">\r\n                <a target=\"_blank\" href=\"#/blog\" class=\"item\"><i class=\"wikipedia icon\"></i></a>\r\n                <div click.delegate=\"switchHandler()\" class=\"ui animated fade button item\" tabindex=\"0\">\r\n                    <div class=\"visible content\">\r\n                        <i class=\"large icons\">\r\n                            <i class=\"align justify icon\"></i>\r\n                            <i class=\"corner search icon\"></i>\r\n                        </i>\r\n                    </div>\r\n                    <div class=\"hidden content\">\r\n                        CTRL+K 切换\r\n                    </div>\r\n                </div>\r\n                <div class=\"right menu\">\r\n                    <div class=\"ui dropdown icon item\" ui-dropdown>\r\n                        <i class=\"content icon\"></i>\r\n                        <div class=\"menu\">\r\n                            <div class=\"header\">\r\n                                <i class=\"linkify icon\"></i> 系统外链 <i if.bind=\"isSuper\" click.trigger=\"addChannelLinkHandler($event)\" title=\"添加系统外链\" class=\"circular icon link plus\"></i>\r\n                            </div>\r\n                            <div if.bind=\"!sysLinks || sysLinks.length == 0\" class=\"item\">暂无系统外链</div>\r\n                            <a repeat.for=\"item of sysLinks | sort:'title'\" target=\"_blank\" href=\"${item.href}\" class=\"item\">${item.title}</a>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-confirm-modal em-confirm-modal.ref=\"confirmMd\"></em-confirm-modal>\r\n    <em-chat-channel-create login-user.bind=\"loginUser\" trigger.bind=\"createChannelRef\"></em-chat-channel-create>\r\n    <em-chat-channel-edit channel.bind=\"selectedChannel\" em-chat-channel-edit.ref=\"channelEditMd\"></em-chat-channel-edit>\r\n    <em-chat-channel-members-mgr users.bind=\"users\" channel.bind=\"selectedChannel\" em-chat-channel-members-mgr.ref=\"channelMembersMgrMd\"></em-chat-channel-members-mgr>\r\n    <em-chat-channel-members-show channel.bind=\"selectedChannel\" em-chat-channel-members-show.ref=\"channelMembersShowMd\"></em-chat-channel-members-show>\r\n    <em-chat-system-link-mgr view-model.ref=\"sysLinkMgrVm\"></em-chat-system-link-mgr>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-share.css', ['module'], function(module) { module.exports = ".em-chat-share.ui.popup {\n  max-width: 100%;\n  width: 255px;\n}\n.em-chat-share.ui.popup .ui.input {\n  width: 225px;\n}\n.em-chat-share.ui.popup textarea {\n  width: 195px!important;\n}\n.em-chat-share.ui.popup .ui.search > .results .result {\n  cursor: pointer!important;\n  display: block!important;\n  color: rgba(0, 0, 0, 0.87) !important;\n  border-bottom: 1px solid rgba(34, 36, 38, 0.1) !important;\n  margin: 0!important;\n}\n.em-chat-share.ui.popup .ui.list > .item {\n  color: rgba(0, 0, 0, 0.87);\n}\n.em-chat-share:after {\n  content: '';\n  clear: both;\n}\n.em-chat-share .footer {\n  margin-top: 16px;\n}\n.em-chat-share .footer .btn-cancel {\n  float: right;\n  margin: 6px 0 0 8px!important;\n}\n"; });
@@ -32714,16 +40061,16 @@ define('text!resources/elements/em-chat-system-link-mgr.html', ['module'], funct
 define('text!resources/elements/em-chat-sidebar-right.css', ['module'], function(module) { module.exports = ".em-chat-sidebar-right .panel-wiki-dir {\n  height: 100%;\n  padding-left: 15px;\n  overflow-y: auto;\n}\n.em-chat-sidebar-right .panel-chat-schedule {\n  height: calc(100% - 10px);\n  overflow: hidden;\n}\n"; });
 define('text!resources/elements/em-chat-top-menu.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-chat-top-menu.css\"></require>\r\n    <div class=\"ui top fixed menu tms-em-chat-top-menu\">\r\n        <div ref=\"chatToDropdownRef\" class=\"ui dropdown link item ${isActiveSearch ? 'tms-hide' : ''} tms-chat-at\">\r\n            <span class=\"text\"></span>\r\n            <i class=\"dropdown icon\"></i>\r\n            <div class=\"tms-metadata\">\r\n                <div if.bind=\"!isAt\" click.trigger=\"channelLinksHandler($event)\" ref=\"channelLinksDdRef\" class=\"ui dropdown icon item tms-channel-links\" ui-dropdown>\r\n                    <i title=\"当前频道外链\" class=\"content icon\"></i>\r\n                    <div class=\"menu\">\r\n                        <div class=\"header\">\r\n                            <!-- <i class=\"linkify icon\"></i> 当前频道外链 <i if.bind=\"(isSuper || (channel.owner.username == loginUser.username))\" click.trigger=\"addChannelLinkHandler($event)\" title=\"添加频道外链\" class=\"circular icon link plus\"></i> -->\r\n                            <i class=\"linkify icon\"></i> 当前频道外链 <i click.trigger=\"addChannelLinkHandler($event)\" title=\"添加频道外链\" class=\"circular icon link plus\"></i>\r\n                        </div>\r\n                        <div if.bind=\"!channelLinks || channelLinks.length == 0\" click.trigger=\"stopImmediatePropagationHandler($event)\" class=\"item\">暂无频道外链</div>\r\n                        <a repeat.for=\"item of channelLinks | sort:'title'\" click.trigger=\"openChannelLinkHandler($event, item)\" target=\"_blank\" href=\"${item.href}\" class=\"item\">${item.title}</a>\r\n                    </div>\r\n                </div>\r\n                <a if.bind=\"!isAt\" class=\"item\" click.trigger=\"viewOrMgrUsersHandler($event)\" title=\"频道用户(${channel.members.length})\"><i class=\"users icon\"></i></a>\r\n                <a if.bind=\"!isAt && channel.privated\" class=\"item\" click.trigger=\"stopImmediatePropagationHandler($event)\" title=\"私有频道\"><i class=\"lock icon\"></i></a>\r\n                <a if.bind=\"!isAt && !channel.privated\" class=\"item\" click.trigger=\"stopImmediatePropagationHandler($event)\" title=\"公开频道\"><i class=\"unlock icon\"></i></a>\r\n                <a if.bind=\"!isAt\" class=\"item tms-channel-info\" click.trigger=\"channelInfoHandler($event)\" title=\"${channel.description} (${channel.creator.name ? channel.creator.name : channel.creator.username} 创建于 ${channel.createDate | timeago})\"><i class=\"info circle icon\"></i></a>\r\n                <a if.bind=\"isAt && chatUser.enabled\" class=\"item\" click.trigger=\"stopImmediatePropagationHandler($event)\" title=\"启用中\"><i class=\"heart icon\"></i></a>\r\n                <a if.bind=\"isAt && !chatUser.enabled\" class=\"item\" click.trigger=\"stopImmediatePropagationHandler($event)\" title=\"禁用中\"><i class=\"empty heart icon\"></i></a>\r\n                <a if.bind=\"isAt\" class=\"item\" click.trigger=\"mailToHandler($event)\" title=\"${chatUser.mails}\"><i class=\"mail icon\"></i></a>\r\n                <a if.bind=\"isAt && chatUser.lastLoginDate\" class=\"item tms-user-info\" click.trigger=\"userInfoHandler($event)\" title=\"从IP[${chatUser.loginRemoteAddress}]登录(${chatUser.lastLoginDate | timeago})\"><i class=\"info circle icon\"></i></a>\r\n                <a if.bind=\"isAt && !chatUser.lastLoginDate\" class=\"item tms-user-info\" click.trigger=\"userInfoHandler($event)\" title=\"该用户可能比较懒,暂无登录记录!\"><i class=\"info circle icon\"></i></a>\r\n            </div>\r\n            <div class=\"menu\">\r\n                <div class=\"ui icon search input\">\r\n                    <i class=\"search icon\"></i>\r\n                    <input ref=\"filterChatToUser\" type=\"text\" placeholder=\"过滤沟通频道|用户\">\r\n                </div>\r\n                <div class=\"divider\"></div>\r\n                <div class=\"header\">\r\n                    <i class=\"filter icon\"></i> 切换沟通频道|用户(Ctrl+k)\r\n                </div>\r\n                <div class=\"scrolling menu\">\r\n                    <div class=\"header\">\r\n                        <i class=\"users icon\"></i> 频道 (${channels.length}) <i ref=\"createChannelRef\" class=\"circular icon link plus\"></i>\r\n                    </div>\r\n                    <a repeat.for=\"item of channels | sort:'title' | sortChannels\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/${item.name}\" class=\"item\" title=\"${item.title}(${item.name})\" data-value=\"${item.name}\" data-id=\"${item.name}\">\r\n                        <i class=\"hashtag icon\"></i>${item.title}\r\n                        <div class=\"actions\">\r\n                            <div if.bind=\"item.owner.username == loginUser.username\" ui-dropdown class=\"ui dropdown\">\r\n                                <i class=\"large ellipsis horizontal icon\"></i>\r\n                                <div class=\"left menu transition hidden\">\r\n                                    <div class=\"item\" click.trigger=\"membersMgrHandler(item, $event)\">成员管理</div>\r\n                                    <div class=\"item\" click.trigger=\"editHandler(item, $event)\">编辑</div>\r\n                                    <div class=\"item\" click.trigger=\"delHandler(item, $event)\">删除</div>\r\n                                </div>\r\n                            </div>\r\n                            <div if.bind=\"item.owner.username != loginUser.username\" ui-dropdown class=\"ui dropdown\">\r\n                                <i class=\"large ellipsis horizontal icon\"></i>\r\n                                <div class=\"left menu transition hidden\">\r\n                                    <div class=\"item\" click.trigger=\"membersShowHandler(item, $event)\">成员查看</div>\r\n                                    <div class=\"item\" click.trigger=\"leaveHandler(item, $event)\">离开</div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </a>\r\n                    <div class=\"header\">\r\n                        <i class=\"user icon\"></i> 用户 (${users.length})\r\n                    </div>\r\n                    <a repeat.for=\"item of users | sortUsers:loginUser.username\" task.bind=\"initChatToDropdownHandler($last)\" href=\"#/chat/@${item.username}\" class=\"item ${!item.enabled ? 'disabled-user' : ''}\" title=\"${item.name}(@${item.username})\" data-value=\"${item.username}\" data-id=\"@${item.username}\">\r\n                        <i style=\"font-weight: bold;\" class=\"at icon\"></i>${item.name} ${item.username == loginUser.username ? '(自己)' : ''}\r\n                    </a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"right menu\">\r\n            <div show.bind=\"!!dir\" class=\"item tms-mobile-hide tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showWikiDirHandler($event)\" title=\"消息目录查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_DIR) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"unordered list icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-mobile-hide tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showAtHandler($event)\" title=\"@消息查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_AT) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"${ajaxAt && ajaxAt.readyState != 4 ? 'spinner loading' : 'at'} icon\"></i>\r\n                    <div show.bind=\"!!countAt\" class=\"floating ui yellow empty circular label\"></div>\r\n                    <div show.bind=\"newAtCnt > 0\" class=\"floating ui red empty circular label\"></div>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-mobile-hide tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showStowHandler($event)\" title=\"收藏消息查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_STOW) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"${ajaxStow && ajaxStow.readyState != 4 ? 'spinner loading' : 'empty star'} icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-mobile-hide tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showAttachHandler($event)\" title=\"附件查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_ATTACH) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"attach icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-mobile-hide tms-item ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <button click.delegate=\"showScheduleHandler($event)\" title=\"日程查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_SCHEDULE) ? 'active' : ''} ui icon button\">\r\n                    <i class=\"calendar outline icon\"></i>\r\n                    <div show.bind=\"!!countMyRecentSchedule\" class=\"floating ui yellow empty circular label\"></div>\r\n                </button>\r\n            </div>\r\n            <div ui-dropdown class=\"ui dropdown item tms-item\">\r\n                <i class=\"ellipsis vertical icon\"></i>\r\n                <div class=\"menu\">\r\n                    <div show.bind=\"!!dir\" class=\"item tms-item\">\r\n                        <button click.delegate=\"showWikiDirHandler($event)\" title=\"消息目录查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_DIR) ? 'active' : ''} ui icon button\">\r\n                            <i class=\"unordered list icon\"></i>\r\n                        </button>\r\n                    </div>\r\n                    <div class=\"item tms-item\">\r\n                        <button click.delegate=\"showAtHandler($event)\" title=\"@消息查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_AT) ? 'active' : ''} ui icon button\">\r\n                            <i class=\"${ajaxAt && ajaxAt.readyState != 4 ? 'spinner loading' : 'at'} icon\"></i>\r\n                            <div show.bind=\"!!countAt\" class=\"floating ui yellow empty circular label\"></div>\r\n                            <div show.bind=\"newAtCnt > 0\" class=\"floating ui red empty circular label\"></div>\r\n                        </button>\r\n                    </div>\r\n                    <div class=\"item tms-item\">\r\n                        <button click.delegate=\"showStowHandler($event)\" title=\"收藏消息查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_STOW) ? 'active' : ''} ui icon button\">\r\n                            <i class=\"${ajaxStow && ajaxStow.readyState != 4 ? 'spinner loading' : 'empty star'} icon\"></i>\r\n                        </button>\r\n                    </div>\r\n                    <div class=\"item tms-item\">\r\n                        <button click.delegate=\"showAttachHandler($event)\" title=\"附件查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_ATTACH) ? 'active' : ''} ui icon button\">\r\n                            <i class=\"attach icon\"></i>\r\n                        </button>\r\n                    </div>\r\n                    <div class=\"item tms-item\">\r\n                        <button click.delegate=\"showScheduleHandler($event)\" title=\"日程查看(ctrl+click刷新)\" class=\"basic ${isRightSidebarShow && (activeType == ACTION_TYPE_SCHEDULE) ? 'active' : ''} ui icon button\">\r\n                            <i class=\"calendar outline icon\"></i>\r\n                            <div show.bind=\"!!countMyRecentSchedule\" class=\"floating ui yellow empty circular label\"></div>\r\n                        </button>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"item tms-item\">\r\n                <button click.delegate=\"sibebarRightHandler($event)\" title=\"右侧边栏(s)\" class=\"basic ${isRightSidebarShow ? 'active' : ''} ui icon button\">\r\n                    <i class=\"columns icon\"></i>\r\n                </button>\r\n            </div>\r\n            <div class=\"item tms-search\">\r\n                <div ref=\"searchRef\" class=\"ui search\">\r\n                    <div class=\"ui left icon input\">\r\n                        <input ref=\"searchInputRef\" keyup.trigger=\"searchKeyupHandler($event)\" blur.trigger=\"searchBlurHandler()\" focus.trigger=\"searchFocusHandler()\" class=\"prompt\" type=\"text\" placeholder=\"搜索...\">\r\n                        <i class=\"${(searchingP && searchingP.readyState != 4) ? 'spinner loading' : 'search'} icon\"></i>\r\n                        <i ref=\"searchRemoveRef\" click.delegate=\"clearSearchHandler()\" class=\"remove link icon\"></i>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div ui-dropdown-hover class=\"ui top right dropdown item tms-login-user ${isActiveSearch ? 'tms-hide' : ''}\">\r\n                <!-- <i class=\"circular user icon\"></i> ${loginUser.name} -->\r\n                <em-user-avatar user.bind=\"loginUser\"></em-user-avatar>\r\n                <!-- <i class=\"dropdown icon\"></i> -->\r\n                <div class=\"menu\">\r\n                    <div class=\"header\">账户操作</div>\r\n                    <div class=\"divider\"></div>\r\n                    <a class=\"item\" click.delegate=\"userEditHandler()\"><i class=\"edit icon\"></i>修改</a>\r\n                    <a class=\"item\" click.delegate=\"logoutHandler()\"><i class=\"sign out icon\"></i>退出</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <em-user-edit user.bind=\"loginUser\" view-model.ref=\"userEditMd\"></em-user-edit>\r\n    <em-chat-channel-create login-user.bind=\"loginUser\" trigger.bind=\"createChannelRef\"></em-chat-channel-create>\r\n    <em-chat-channel-link-mgr login-user.bind=\"loginUser\" view-model.ref=\"channelLinkMgrVm\" channel.bind=\"channel\"></em-chat-channel-link-mgr>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-system-link-mgr.css', ['module'], function(module) { module.exports = "@media only screen and (min-width: 768px) {\n  .tms-em-chat-system-link-mgr .ui.form .one.wide.field {\n    padding: 0;\n  }\n}\n"; });
-define('text!resources/elements/em-checkbox.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-checkbox.css\"></require>\n    <div class=\"ui ${classes} checkbox em-checkbox\" title.bind=\"title\" ref=\"checkbox\">\n        <input type=\"checkbox\">\n        <label>${label}</label>\n    </div>\n</template>\n"; });
+define('text!resources/elements/em-checkbox.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-checkbox.css\"></require>\r\n    <div class=\"ui ${classes} checkbox em-checkbox\" title.bind=\"title\" ref=\"checkbox\">\r\n        <input type=\"checkbox\">\r\n        <label>${label}</label>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-chat-top-menu.css', ['module'], function(module) { module.exports = ".tms-em-chat-top-menu.ui.top.menu {\n  padding-left: 220px;\n  height: 60px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .tms-chat-at.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .item.tms-item:before {\n  display: none;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-login-user.tms-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item {\n  padding-left: 0;\n  padding-right: 5px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.tms-hide {\n    display: none;\n  }\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.tms-mobile-hide {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item button .ui.floating.label {\n  top: 0;\n  right: 0;\n  left: auto;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown {\n  display: none;\n  padding-left: 5px;\n  margin-right: 5px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown {\n    display: flex;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown > i.icon {\n  margin-left: 5px;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown .menu > .item .ui.button {\n  margin: 0;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-item.ui.dropdown .menu > .item .ui.button i.icon {\n  margin: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu .right.menu .item.tms-search {\n    padding-left: 10px;\n    padding-right: 10px;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search input {\n  width: 95px;\n  transition: width 0.15s ease-out 0s;\n}\n.tms-em-chat-top-menu.ui.top.menu .right.menu .ui.search i.remove.icon {\n  display: none;\n  position: absolute;\n  right: 0;\n  left: auto;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu.ui.top.menu {\n    padding-left: 0;\n  }\n}\n.tms-em-chat-top-menu.ui.top.menu .ui.basic.button {\n  box-shadow: none;\n}\n@media only screen and (min-width: 768px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown {\n    min-width: 175px;\n    padding-top: 0;\n    padding-left: 13px;\n    padding-bottom: 20px;\n  }\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown.item:before {\n    width: 0;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .text > .actions {\n  display: none;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata {\n  position: absolute;\n  display: flex;\n  top: 35px;\n  font-size: 12px;\n  left: 0;\n  height: 15px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item:before {\n  top: 5px;\n  height: 50%;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item.tms-channel-info:before {\n  width: 0;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .item.tms-user-info:before {\n  width: 0;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata {\n    display: none;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .tms-metadata .tms-channel-links .menu .header {\n  min-width: 200px;\n}\n@media only screen and (max-width: 767px) {\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .text {\n    display: none;\n  }\n  .tms-em-chat-top-menu > .tms-chat-at.ui.dropdown > .dropdown.icon {\n    margin-left: 6px;\n    margin-right: 6px;\n  }\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .header i.plus.icon {\n  position: absolute;\n  right: 5px;\n  top: 7px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item:hover .actions {\n  display: inline-block;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item .icon {\n  margin-right: 4px!important;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item > .actions {\n  display: none;\n  position: absolute;\n  right: 5px;\n  top: 10px;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item > .actions .large.ellipsis.horizontal.icon {\n  font-size: 1.3em!important;\n}\n.tms-em-chat-top-menu > .tms-chat-at.ui.dropdown .menu > .item.disabled-user {\n  text-decoration: line-through;\n  font-style: italic;\n}\n"; });
+define('text!resources/elements/em-confirm-modal.html', ['module'], function(module) { module.exports = "<template>\n    <div ref=\"md\" class=\"ui small modal nx-ui-confirm tms-md450\">\n        <div class=\"header\">\n            ${config.title}\n        </div>\n        <div class=\"content\">\n            <i if.bind=\"config.warning\" class=\"large yellow warning sign icon\" style=\"float: left;\"></i>\n            <i if.bind=\"!config.warning\" class=\"large blue info circle icon\" style=\"float: left;\"></i>\n            <p style=\"margin-left: 20px;\">\n                <span innerhtml.bind=\"config.content\"></span>\n            </p>\n        </div>\n        <div class=\"actions\">\n            <div class=\"ui cancel basic blue left floated button\">取消</div>\n            <div class=\"ui ok blue button\">确认</div>\n        </div>\n    </div>\n</template>\n"; });
 define('text!resources/elements/em-checkbox.css', ['module'], function(module) { module.exports = ""; });
-define('text!resources/elements/em-confirm-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"md\" class=\"ui small modal nx-ui-confirm tms-md450\">\r\n        <div class=\"header\">\r\n            ${config.title}\r\n        </div>\r\n        <div class=\"content\">\r\n            <i if.bind=\"config.warning\" class=\"large yellow warning sign icon\" style=\"float: left;\"></i>\r\n            <i if.bind=\"!config.warning\" class=\"large blue info circle icon\" style=\"float: left;\"></i>\r\n            <p style=\"margin-left: 20px;\">\r\n                <span innerhtml.bind=\"config.content\"></span>\r\n            </p>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <div class=\"ui cancel basic blue left floated button\">取消</div>\r\n            <div class=\"ui ok blue button\">确认</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
 define('text!resources/elements/em-dropdown.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"dropdown\" class=\"ui dropdown ${classes}\">\r\n        <input type=\"hidden\" name=\"${name}\">\r\n        <i class=\"dropdown icon\"></i>\r\n        <div class=\"default text\">${text}</div>\r\n        <div class=\"menu\">\r\n            <div repeat.for=\"item of menuItems\" task.bind=\"initDropdownHandler($last)\" class=\"item\" data-value=\"${item[valueProp]}\">${item[labelProp]}</div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(module) { module.exports = ".tms-em-hotkeys-modal ul {\n  padding-left: 30px;\n}\n.tms-em-hotkeys-modal ul.no_bullets {\n  margin: 0 0 2rem;\n}\n.tms-em-hotkeys-modal ul.no_bullets li {\n  line-height: 2rem;\n  list-style-type: none;\n  padding: 0;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.tms-em-hotkeys-modal > .content {\n  background-color: rgba(11, 7, 11, 0.78) !important;\n}\n.tms-em-hotkeys-modal .keyboard i.icon {\n  margin-right: 0px!important;\n}\n.tms-em-hotkeys-modal .subtle_silver {\n  color: #9e9ea6!important;\n}\n.tms-em-hotkeys-modal .ui.grid .column {\n  padding: 0!important;\n}\n"; });
 define('text!resources/elements/em-hotkeys-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-hotkeys-modal.css\"></require>\r\n    <div ref=\"md\" class=\"ui basic modal tms-em-hotkeys-modal\">\r\n        <i class=\"close icon\"></i>\r\n        <div class=\"content\">\r\n            <h1 class=\"ui center inverted aligned header\">键盘快捷键\r\n\t\t\t\t<span style=\"position: relative; top: -0.375rem; left: 1rem;\" aria-hidden=\"true\">\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Control\">Ctrl</span>\r\n\t\t\t\t\t<span class=\"keyboard\" aria-label=\"Question mark\">/</span>\r\n\t\t\t\t</span>\r\n            </h1>\r\n            <div class=\"ui grid\">\r\n                <div class=\"three column row\">\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>上一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow up icon\" aria-label=\"Up arrow\"></i></span></li>\r\n                            <li>下一条: <span class=\"keyboard\">Alt</span><span class=\"keyboard\"><i class=\"long arrow down icon\" aria-label=\"Down arrow\"></i></span></li>\r\n                            <li>第一条: <span class=\"keyboard\">t</span></li>\r\n                            <li>最后一条: <span class=\"keyboard\">b</span></li>\r\n                            <li>快速切换: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">k</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>\r\n                                自动补全\r\n                                <ul>\r\n                                    <li>提示: <span class=\"keyboard\">/</span></li>\r\n                                    <li>用户: <span class=\"keyboard\">@</span></li>\r\n                                    <li>表情: <span class=\"keyboard\">:</span></li>\r\n                                </ul>\r\n                            </li>\r\n                            <li>输入聚焦: <span class=\"keyboard\">r</span></li>\r\n                            <li>编辑: <span class=\"keyboard\">Ctrl</span><span class=\"keyboard\">DblClick</span></li>\r\n                            <li>编辑自己最近一条消息: <span class=\"keyboard\">e</span></li>\r\n                        </ul>\r\n                    </div>\r\n                    <div class=\"column\">\r\n                        <ul class=\"no_bullets\">\r\n                            <li>切换边栏: <span class=\"keyboard\" aria-label=\"Control\">s</span></li>\r\n                            <li>上传文件: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">u</span></li>\r\n                            <li>复制代码: <span class=\"keyboard\" aria-label=\"Control\">Ctrl</span><span class=\"keyboard\">Click</span></li>\r\n                            <li>关闭对话框: <span class=\"keyboard\" aria-label=\"Escape\">Esc</span></li>\r\n                        </ul>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!resources/elements/em-user-avatar.css', ['module'], function(module) { module.exports = ".em-user-avatar.avatar.ui.mini.circular.image {\n  width: 35px;\n  height: 35px;\n  font-size: 35px;\n  background-color: rgba(150, 178, 183, 0.4);\n  text-align: center;\n  margin: 0;\n  padding-right: 0;\n}\n.em-user-avatar .text-char {\n  display: inline-block;\n  height: 35px;\n  line-height: 35px;\n  vertical-align: top;\n}\n"; });
+define('text!resources/elements/em-hotkeys-modal.css', ['module'], function(module) { module.exports = ".tms-em-hotkeys-modal ul {\n  padding-left: 30px;\n}\n.tms-em-hotkeys-modal ul.no_bullets {\n  margin: 0 0 2rem;\n}\n.tms-em-hotkeys-modal ul.no_bullets li {\n  line-height: 2rem;\n  list-style-type: none;\n  padding: 0;\n  font-size: 1rem;\n  font-weight: 700;\n}\n.tms-em-hotkeys-modal > .content {\n  background-color: rgba(11, 7, 11, 0.78) !important;\n}\n.tms-em-hotkeys-modal .keyboard i.icon {\n  margin-right: 0px!important;\n}\n.tms-em-hotkeys-modal .subtle_silver {\n  color: #9e9ea6!important;\n}\n.tms-em-hotkeys-modal .ui.grid .column {\n  padding: 0!important;\n}\n"; });
 define('text!resources/elements/em-modal.html', ['module'], function(module) { module.exports = "<template>\r\n    <div ref=\"modal\" class=\"ui modal ${classes}\">\r\n        <i class=\"close icon\" style=\"top: 0; right: 0; color: #214262;\"></i>\r\n        <div class=\"header\">\r\n            <slot name=\"header\">modal header...</slot>\r\n        </div>\r\n        <div class=\"content\">\r\n            <div class=\"ui inverted dimmer\" style=\"background-color: rgba(255, 255, 255, 0.5) !important;\">\r\n                <div class=\"ui loader\"></div>\r\n            </div>\r\n            <slot name=\"content\">modal content...</slot>\r\n        </div>\r\n        <div class=\"actions\">\r\n            <slot name=\"actions\">\r\n                <div style=\"margin-left: 3.5px;\" class=\"ui cancel basic blue left floated button\" textcontent.bind=\"cancelLabel\">取消</div>\r\n                <div show.bind=\"showConfirm\" class=\"ui ok blue button ${(loading || disabled) ? 'disabled' : ''}\" textcontent.bind=\"confirmLabel\">确认</div>\r\n            </slot>\r\n            <div style=\"clear: both;\"></div>\r\n        </div>\r\n    </div>\r\n</template>\r\n"; });
-define('text!resources/elements/em-user-edit.css', ['module'], function(module) { module.exports = ".tms-em-user-edit .ui.form .field > label {\n  width: 45px!important;\n}\n.tms-em-user-edit .ui.form .field .user-username {\n  margin-left: 0;\n}\n.em-user-edit-modal {\n  /* Tablet & PC */\n}\n@media only screen and (min-width: 768px) {\n  .em-user-edit-modal {\n    width: 500px!important;\n    margin-left: -250px !important;\n  }\n}\n"; });
+define('text!resources/elements/em-user-avatar.css', ['module'], function(module) { module.exports = ".em-user-avatar.avatar.ui.mini.circular.image {\n  width: 35px;\n  height: 35px;\n  font-size: 35px;\n  background-color: rgba(150, 178, 183, 0.4);\n  text-align: center;\n  margin: 0;\n  padding-right: 0;\n}\n.em-user-avatar .text-char {\n  display: inline-block;\n  height: 35px;\n  line-height: 35px;\n  vertical-align: top;\n}\n"; });
 define('text!resources/elements/em-user-avatar.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-user-avatar.css\"></require>\r\n    <a ref=\"avatarRef\" css=\"background-color: ${bgColor};\" data-value=\"${user.username}\" class=\"avatar ui mini circular image em-user-avatar\">\r\n        <span css=\"color: ${color}\" class=\"text-char\">${nameChar}</span>\r\n    </a>\r\n</template>\r\n"; });
-define('text!resources/elements/em-user-edit.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./em-user-edit.css\"></require>\n    <em-modal classes=\"small em-user-edit-modal\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\n        <div slot=\"header\">个人信息编辑</div>\n        <div slot=\"content\" class=\"tms-em-user-edit\">\n            <div ref=\"frm\" class=\"ui form\">\n                <div class=\"ui form\" with.bind=\"user\">\n                    <div class=\"inline field\">\n                        <label>用户名:</label>\n                        <div class=\"ui basic label user-username\">${username}</div>\n                    </div>\n                    <div class=\"inline field\">\n                        <label>密码:</label>\n                        <input name=\"password\" value.bind=\"password\" placeholder=\"密码\" type=\"text\">\n                    </div>\n                    <div class=\"required inline field\">\n                        <label>姓名:</label>\n                        <input name=\"name\" value.bind=\"name\" placeholder=\"姓名\" type=\"text\">\n                    </div>\n                    <div class=\"required inline field\">\n                        <label>邮箱:</label>\n                        <input name=\"mail\" value.bind=\"mails\" placeholder=\"邮箱\" type=\"text\">\n                    </div>\n                </div>\n            </div>\n        </div>\n    </em-modal>\n</template>\n"; });
+define('text!resources/elements/em-user-edit.css', ['module'], function(module) { module.exports = ".tms-em-user-edit .ui.form .field > label {\n  width: 45px!important;\n}\n.tms-em-user-edit .ui.form .field .user-username {\n  margin-left: 0;\n}\n.em-user-edit-modal {\n  /* Tablet & PC */\n}\n@media only screen and (min-width: 768px) {\n  .em-user-edit-modal {\n    width: 500px!important;\n    margin-left: -250px !important;\n  }\n}\n"; });
+define('text!resources/elements/em-user-edit.html', ['module'], function(module) { module.exports = "<template>\r\n    <require from=\"./em-user-edit.css\"></require>\r\n    <em-modal classes=\"small em-user-edit-modal\" em-modal.ref=\"emModal\" onshow.call=\"showHandler($event)\" onapprove.call=\"approveHandler($event)\" confirm-label=\"更新\">\r\n        <div slot=\"header\">个人信息编辑</div>\r\n        <div slot=\"content\" class=\"tms-em-user-edit\">\r\n            <div ref=\"frm\" class=\"ui form\">\r\n                <div class=\"ui form\" with.bind=\"user\">\r\n                    <div class=\"inline field\">\r\n                        <label>用户名:</label>\r\n                        <div class=\"ui basic label user-username\">${username}</div>\r\n                    </div>\r\n                    <div class=\"inline field\">\r\n                        <label>密码:</label>\r\n                        <input name=\"password\" value.bind=\"password\" placeholder=\"密码\" type=\"text\">\r\n                    </div>\r\n                    <div class=\"required inline field\">\r\n                        <label>姓名:</label>\r\n                        <input name=\"name\" value.bind=\"name\" placeholder=\"姓名\" type=\"text\">\r\n                    </div>\r\n                    <div class=\"required inline field\">\r\n                        <label>邮箱:</label>\r\n                        <input name=\"mail\" value.bind=\"mails\" placeholder=\"邮箱\" type=\"text\">\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </em-modal>\r\n</template>\r\n"; });
 //# sourceMappingURL=app-bundle.js.map
