@@ -177,7 +177,7 @@
                         <template if.bind="item.target == 'Comment'">
                             <template if.bind="item.action == 'Create'">
                                 <div ref="mkbodyRef2" class="extra text markdown-body">
-                                    <div innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef2"></div>
+                                    <div swipebox innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef2"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
                                         <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>
@@ -185,7 +185,7 @@
                             </template>
                             <template if.bind="item.action == 'Delete'">
                                 <div ref="mkbodyRef2" class="extra text markdown-body">
-                                    <div innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef2"></div>
+                                    <div swipebox innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef2"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
                                         <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>
@@ -201,7 +201,7 @@
                             </template>
                             <template if.bind="item.action=='Update' && item.properties=='voteZan' ">
                                 <div ref="mkbodyRef2 " class="extra text markdown-body">
-                                    <div innerhtml.bind="item.oldValue | parseMd | emoji:mkbodyRef2"></div>
+                                    <div swipebox innerhtml.bind="item.oldValue | parseMd | emoji:mkbodyRef2"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
                                         <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>
