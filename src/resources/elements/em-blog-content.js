@@ -115,6 +115,9 @@ export class EmBlogContent {
 
                 let scale = sTop * 1.0 / (sHeight - $('.em-blog-content').outerHeight());
                 this.progressWidth = $('.em-blog-content').outerWidth() * scale;
+
+                this.fixDirItem();
+
             } catch (err) { this.progressWidth = 0; }
 
         }, 10));
@@ -131,6 +134,36 @@ export class EmBlogContent {
         });
 
         this.initHotkeys();
+    }
+
+    fixDirItem() {
+        let fixId = null;
+        let preId = null;
+        _.each(this.dirItemIds, (id) => {
+            if (!preId) {
+                if (utils.isElementInViewport($(`#${id}`))) {
+                    fixId = id;
+                    return false;
+                }
+            } else {
+                if (utils.isElementInViewport($(`#${id}`)) && !utils.isElementInViewport($(`#${preId}`))) {
+                    fixId = id;
+                    return false;
+                }
+            }
+        });
+
+        if (fixId) {
+            let fixDirItem = $('.em-blog-right-sidebar .panel-blog-dir').find(`.wiki-dir-item[data-id="${fixId}"]`);
+            if (fixDirItem) {
+                $('.em-blog-right-sidebar .panel-blog-dir').find(`.wiki-dir-item[data-id]`).removeClass('active');
+                fixDirItem.addClass('active');
+
+                $('.em-blog-right-sidebar .scrollbar-macosx.scroll-content.scroll-scrolly_visible').scrollTo(fixDirItem, 10, {
+                    offset: -120
+                });
+            }
+        }
     }
 
     initHotkeys() {
@@ -195,6 +228,12 @@ export class EmBlogContent {
 
     _dir() {
         this.dir = utils.dir($(this.mkbodyRef), 'tms-blog-dir-item-');
+        this.dirItemIds = [];
+        if (this.dir) {
+            $(this.dir).find('a.item.wiki-dir-item').each((index, el) => {
+                this.dirItemIds.push($(el).attr('data-id'));
+            });
+        }
         return this.dir;
     }
 
