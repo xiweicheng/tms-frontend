@@ -9131,11 +9131,11 @@ define('resources/elements/em-blog-top-menu',['exports', 'aurelia-framework', 't
                         var response = {
                             results: {
                                 blogs: {
-                                    name: '博文',
+                                    name: '博文 (' + resp.data.blogs.length + ')',
                                     results: []
                                 },
                                 comments: {
-                                    name: '评论',
+                                    name: '评论 (' + resp.data.comments.length + ')',
                                     results: []
                                 }
                             }
@@ -9152,7 +9152,7 @@ define('resources/elements/em-blog-top-menu',['exports', 'aurelia-framework', 't
                             response.results.comments.results.push({
                                 title: '#/blog/' + item.targetId + '?cid=' + item.id,
 
-                                description: '<i class="wait icon"></i>' + item.creator.name + ' 创建于 ' + tg.format(item.createDate, 'zh_CN') + '<br/>' + item.content,
+                                description: '<i class="wait icon"></i>' + item.creator.name + ' 创建于 ' + tg.format(item.createDate, 'zh_CN') + '<br/>' + utils.encodeHtml(item.content),
                                 url: '#/blog/' + item.targetId + '?cid=' + item.id
                             });
                         });
