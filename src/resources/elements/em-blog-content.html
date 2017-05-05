@@ -124,6 +124,9 @@
                                 <template if.bind="item.action == 'Update' && item.properties == 'privated'">
                                     <span>更新了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的可见性</span>
                                 </template>
+                                <template if.bind="item.action == 'Update' && item.properties == 'opened'">
+                                    <span>更新了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的可见性</span>
+                                </template>
                                 <template if.bind="item.action == 'Update' && item.properties == 'space'">
                                     <span>更新了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的所属空间</span>
                                 </template>
@@ -169,6 +172,9 @@
                             </template>
                             <template if.bind="item.action == 'Update' && item.properties == 'privated'">
                                 <div class="extra text">可见性修改为: ${item.newValue == 'true' ? '私有' : '公开'}</div>
+                            </template>
+                            <template if.bind="item.action == 'Update' && item.properties == 'opened'">
+                                <div class="extra text">可见性修改为: ${item.newValue == 'true' ? '游客(匿名访客)可见' : '游客(匿名访客)不可见'}</div>
                             </template>
                             <template if.bind="item.action == 'Update' && item.properties == 'space'">
                                 <div class="extra text">所属空间修改为: ${item.newValue}</div>
