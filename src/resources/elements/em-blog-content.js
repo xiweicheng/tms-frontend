@@ -275,11 +275,11 @@ export class EmBlogContent {
 
     getMyTags() {
         $.get('/admin/blog/tag/my', (data) => {
+            let tags = [];
             if (data.success) {
-                this.tags = data.data;
-            } else {
-                this.tags = [];
+                tags = data.data;
             }
+            this.tags = _.unionBy(tags, this.blog.tags, 'name');
 
             _.defer(() => {
                 let tags = _.map(this.blog.tags, "name");
