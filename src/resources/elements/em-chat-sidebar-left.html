@@ -24,6 +24,7 @@
                                     <i class="large ellipsis horizontal icon"></i>
                                     <div class="menu">
                                         <div class="item" click.delegate="membersMgrHandler(item)">成员管理</div>
+                                        <div class="item" click.delegate="subscribeHandler(item)">${(item.isSubscribed || isSubscribed(item)) ? '取消订阅' : '订阅频道'}</div>
                                         <div class="item" click.delegate="editHandler(item)">编辑</div>
                                         <div class="item" click.delegate="delHandler(item)">删除</div>
                                     </div>
@@ -32,6 +33,7 @@
                                     <i class="large ellipsis horizontal icon"></i>
                                     <div class="menu">
                                         <div class="item" click.delegate="membersShowHandler(item)">成员查看</div>
+                                        <div class="item" click.delegate="subscribeHandler(item)">${(item.isSubscribed || isSubscribed(item)) ? '取消订阅' : '订阅频道'}</div>
                                         <div class="item" click.delegate="leaveHandler(item)">离开</div>
                                     </div>
                                 </div>

@@ -172,4 +172,25 @@ export class EmChatSidebarLeft {
         this.sysLinkMgrVm.show();
     }
 
+    isSubscribed(item) {
+        return _.some(item.subscriber, { username: this.loginUser.username });
+    }
+
+    subscribeHandler(item) {
+
+        let isSub = this.isSubscribed(item);
+
+        $.post(`/admin/channel/${isSub ? 'unsubscribe' : 'subscribe'}`, {
+            id: item.id
+        }, (data) => {
+            if (data.success) {
+                item.subscriber = data.data.subscriber;
+                toastr.success(`${isSub ? '取消订阅' : '订阅频道'}成功!`);
+                item.isSubscribed = !isSub;
+            } else {
+                toastr.error(data.data, `${isSub ? '取消订阅' : '订阅频道'}失败!`);
+            }
+        });
+    }
+
 }
