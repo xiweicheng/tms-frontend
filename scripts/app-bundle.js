@@ -4601,7 +4601,7 @@ define('init/index',['exports', './config', 'jquery', 'jquery.scrollto', 'timeag
 
     function configure(aurelia, params) {
 
-        _config2.default.context(aurelia).initGlobalVar().initAjax().initToastr().initMarked().initAnimateCss().initEmoji().initModaal();
+        _config2.default.context(aurelia).initGlobalVar().initHttp().initAjax().initToastr().initMarked().initAnimateCss().initEmoji().initModaal();
     }
 });
 define('resources/index',['exports'], function (exports) {

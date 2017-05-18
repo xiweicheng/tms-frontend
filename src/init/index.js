@@ -13,6 +13,7 @@ export function configure(aurelia, params) {
 
     config.context(aurelia)
         .initGlobalVar()
+        .initHttp()
         .initAjax()
         .initToastr()
         .initMarked()
