@@ -5542,6 +5542,7 @@ define('resources/attributes/attr-modaal',['exports', 'aurelia-framework', 'aure
                 $(_this.element).modaal({
                     fullscreen: true,
                     overlay_close: false,
+                    animation: 'none',
 
                     before_open: function before_open() {
                         ea.publish(nsCons.EVENT_MODAAL_BEFORE_OPEN, {
