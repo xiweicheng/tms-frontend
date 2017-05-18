@@ -224,4 +224,8 @@ export class EmBlogLeftSidebar {
         }
     }
 
+    sysLinkHandler(item) {
+        $.post('/admin/link/count/inc', { id: item.id });
+        return true;
+    }
 }

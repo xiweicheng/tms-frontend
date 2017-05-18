@@ -88,6 +88,7 @@ export class EmChatChannelLinkMgr {
     attached() {}
 
     show() {
+        this.channelChanged();
         this.emModal.show({ autoDimmer: false });
     }
 

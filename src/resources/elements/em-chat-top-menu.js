@@ -444,6 +444,8 @@ export class EmChatTopMenu {
 
     openChannelLinkHandler(event, item) {
         event.stopImmediatePropagation();
+        $(this.channelLinksDdRef).dropdown('hide');
         utils.openNewWin(item.href);
+        $.post('/admin/link/count/inc', { id: item.id });
     }
 }
