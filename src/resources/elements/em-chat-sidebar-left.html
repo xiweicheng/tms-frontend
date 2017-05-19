@@ -65,7 +65,7 @@
                     <div class="visible content">
                         <i class="large icons">
                             <i class="align justify icon"></i>
-                            <i class="corner search icon"></i>
+                        <i class="corner search icon"></i>
                         </i>
                     </div>
                     <div class="hidden content">
@@ -79,8 +79,10 @@
                             <div class="header">
                                 <i class="linkify icon"></i> 系统外链 <i if.bind="isSuper" click.trigger="addChannelLinkHandler($event)" title="添加系统外链" class="circular icon link plus"></i>
                             </div>
-                            <div if.bind="!sysLinks || sysLinks.length == 0" class="item">暂无系统外链</div>
-                            <a repeat.for="item of sysLinks | sort:'title'" click.delegate="sysLinkHandler(item)" target="_blank" href="${item.href}" class="item">${item.title}</a>
+                            <div class="scrolling menu">
+                                <div if.bind="!sysLinks || sysLinks.length == 0" class="item">暂无系统外链</div>
+                                <a repeat.for="item of sysLinks | sort:'title'" click.delegate="sysLinkHandler(item)" target="_blank" href="${item.href}" class="item">${item.title}</a>
+                            </div>
                         </div>
                     </div>
                 </div>

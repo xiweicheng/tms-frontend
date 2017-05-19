@@ -8,12 +8,18 @@
                 <div if.bind="!isAt" click.trigger="channelLinksHandler($event)" ref="channelLinksDdRef" class="ui dropdown icon item tms-channel-links" ui-dropdown>
                     <i title="当前频道外链" class="content icon"></i>
                     <div class="menu">
+                        <!-- <div class="ui icon search input">
+                            <i class="search icon"></i>
+                            <input type="text" placeholder="过滤外链...">
+                        </div>
+                        <div class="divider"></div> -->
                         <div class="header">
-                            <!-- <i class="linkify icon"></i> 当前频道外链 <i if.bind="(isSuper || (channel.owner.username == loginUser.username))" click.trigger="addChannelLinkHandler($event)" title="添加频道外链" class="circular icon link plus"></i> -->
                             <i class="linkify icon"></i> 当前频道外链 <i click.trigger="addChannelLinkHandler($event)" title="添加频道外链" class="circular icon link plus"></i>
                         </div>
-                        <div if.bind="!channelLinks || channelLinks.length == 0" click.trigger="stopImmediatePropagationHandler($event)" class="item">暂无频道外链</div>
-                        <a repeat.for="item of channelLinks | sort:'title'" click.trigger="openChannelLinkHandler($event, item)" target="_blank" href="${item.href}" class="item">${item.title}</a>
+                        <div class="scrolling menu">
+                            <div if.bind="!channelLinks || channelLinks.length == 0" click.trigger="stopImmediatePropagationHandler($event)" class="item">暂无频道外链</div>
+                            <a repeat.for="item of channelLinks | sort:'title'" click.trigger="openChannelLinkHandler($event, item)" target="_blank" href="${item.href}" class="item">${item.title}</a>
+                        </div>
                     </div>
                 </div>
                 <a if.bind="!isAt" class="item" click.trigger="viewOrMgrUsersHandler($event)" title="频道用户(${channel.members.length})"><i class="users icon"></i></a>
