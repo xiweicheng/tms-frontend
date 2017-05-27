@@ -379,4 +379,8 @@ export class EmChatInput {
         return false;
     }
 
+    togglePreviewHandler() {
+        this.simplemde.togglePreview();
+    }
+
 }
