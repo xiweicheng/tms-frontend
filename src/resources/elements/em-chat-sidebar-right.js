@@ -9,11 +9,11 @@ export class EmChatSidebarRight {
 
     actionMapping = {
         [nsCons.ACTION_TYPE_DIR]: { handler: this.dirHandler, nodata: '', show: 'dir' },
-        [nsCons.ACTION_TYPE_AT]: { handler: this.atHandler, nodata: '暂无@消息', show: 'msg' },
-        [nsCons.ACTION_TYPE_STOW]: { handler: this.stowHandler, nodata: '暂无收藏消息', show: 'msg' },
+        [nsCons.ACTION_TYPE_AT]: { nodata: '暂无@消息', show: 'msg' },
+        [nsCons.ACTION_TYPE_STOW]: { nodata: '暂无收藏消息', show: 'msg' },
         [nsCons.ACTION_TYPE_ATTACH]: { handler: this.attachHandler, nodata: '', show: 'attach' },
         [nsCons.ACTION_TYPE_SCHEDULE]: { handler: this.scheduleHandler, nodata: '', show: 'schedule' },
-        [nsCons.ACTION_TYPE_SEARCH]: { handler: this.serachHandler, nodata: '无符合检索结果', show: 'msg' },
+        [nsCons.ACTION_TYPE_SEARCH]: { nodata: '无符合检索结果', show: 'msg' },
     }
 
     /**
@@ -22,9 +22,11 @@ export class EmChatSidebarRight {
     constructor() {
 
         this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, (payload) => {
-            this.actived = this.actionMapping[payload.action];
+            this.actived = _.clone(this.actionMapping[payload.action]);
             this.actived.payload = payload;
-            _.bind(this.actived.handler, this, payload)();
+            if (this.actived.handler) {
+                _.bind(this.actived.handler, this, payload)();
+            }
         });
 
     }
@@ -33,17 +35,7 @@ export class EmChatSidebarRight {
      * 当数据绑定引擎从视图解除绑定时被调用
      */
     unbind() {
-
         this.subscribe.dispose();
-    }
-
-    serachHandler(payload) {
-    }
-
-    atHandler(payload) {
-    }
-
-    stowHandler(payload) {
     }
 
     attachHandler(payload) {

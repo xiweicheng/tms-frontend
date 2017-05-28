@@ -13577,26 +13577,21 @@ define('resources/elements/em-chat-sidebar-right',['exports', 'aurelia-framework
 
             _initDefineProp(this, 'channel', _descriptor3, this);
 
-            this.actionMapping = (_actionMapping = {}, _actionMapping[nsCons.ACTION_TYPE_DIR] = { handler: this.dirHandler, nodata: '', show: 'dir' }, _actionMapping[nsCons.ACTION_TYPE_AT] = { handler: this.atHandler, nodata: '暂无@消息', show: 'msg' }, _actionMapping[nsCons.ACTION_TYPE_STOW] = { handler: this.stowHandler, nodata: '暂无收藏消息', show: 'msg' }, _actionMapping[nsCons.ACTION_TYPE_ATTACH] = { handler: this.attachHandler, nodata: '', show: 'attach' }, _actionMapping[nsCons.ACTION_TYPE_SCHEDULE] = { handler: this.scheduleHandler, nodata: '', show: 'schedule' }, _actionMapping[nsCons.ACTION_TYPE_SEARCH] = { handler: this.serachHandler, nodata: '无符合检索结果', show: 'msg' }, _actionMapping);
+            this.actionMapping = (_actionMapping = {}, _actionMapping[nsCons.ACTION_TYPE_DIR] = { handler: this.dirHandler, nodata: '', show: 'dir' }, _actionMapping[nsCons.ACTION_TYPE_AT] = { nodata: '暂无@消息', show: 'msg' }, _actionMapping[nsCons.ACTION_TYPE_STOW] = { nodata: '暂无收藏消息', show: 'msg' }, _actionMapping[nsCons.ACTION_TYPE_ATTACH] = { handler: this.attachHandler, nodata: '', show: 'attach' }, _actionMapping[nsCons.ACTION_TYPE_SCHEDULE] = { handler: this.scheduleHandler, nodata: '', show: 'schedule' }, _actionMapping[nsCons.ACTION_TYPE_SEARCH] = { nodata: '无符合检索结果', show: 'msg' }, _actionMapping);
 
 
             this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, function (payload) {
-                _this.actived = _this.actionMapping[payload.action];
+                _this.actived = _.clone(_this.actionMapping[payload.action]);
                 _this.actived.payload = payload;
-                _.bind(_this.actived.handler, _this, payload)();
+                if (_this.actived.handler) {
+                    _.bind(_this.actived.handler, _this, payload)();
+                }
             });
         }
 
         EmChatSidebarRight.prototype.unbind = function unbind() {
-
             this.subscribe.dispose();
         };
-
-        EmChatSidebarRight.prototype.serachHandler = function serachHandler(payload) {};
-
-        EmChatSidebarRight.prototype.atHandler = function atHandler(payload) {};
-
-        EmChatSidebarRight.prototype.stowHandler = function stowHandler(payload) {};
 
         EmChatSidebarRight.prototype.attachHandler = function attachHandler(payload) {
             this.chatAttachVm.fetch();
