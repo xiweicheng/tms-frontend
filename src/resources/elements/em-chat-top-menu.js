@@ -63,7 +63,7 @@ export class EmChatTopMenu {
             this.dir = payload.dir;
 
             if ((this.activeType == this.ACTION_TYPE_DIR) && this.isRightSidebarShow) {
-                ea.publish(nsCons.EVENT_CHAT_SHOW_DIR, {
+                ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
                     action: this.activeType,
                     result: this.dir
                 });
@@ -178,7 +178,7 @@ export class EmChatTopMenu {
             if (data.success) {
                 this.toggleRightSidebar(true);
 
-                ea.publish(nsCons.EVENT_CHAT_SEARCH_RESULT, {
+                ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
                     action: this.activeType,
                     result: data.data,
                     search: this.search
@@ -273,7 +273,7 @@ export class EmChatTopMenu {
                     chatChannel.chatStow = item;
                     return chatChannel;
                 });
-                ea.publish(nsCons.EVENT_CHAT_SHOW_STOW, {
+                ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
                     action: this.activeType,
                     result: _.reverse(stowChats)
                 });
@@ -298,7 +298,7 @@ export class EmChatTopMenu {
             size: 20
         }, (data) => {
             if (data.success) {
-                ea.publish(nsCons.EVENT_CHAT_SHOW_AT, {
+                ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
                     action: this.activeType,
                     result: data.data
                 });
@@ -323,7 +323,7 @@ export class EmChatTopMenu {
         }
 
         this.activeType = nsCons.ACTION_TYPE_DIR;
-        ea.publish(nsCons.EVENT_CHAT_SHOW_DIR, {
+        ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
             action: this.activeType,
             result: this.dir
         });
@@ -338,7 +338,7 @@ export class EmChatTopMenu {
         }
 
         this.activeType = nsCons.ACTION_TYPE_ATTACH;
-        ea.publish(nsCons.EVENT_CHAT_SHOW_ATTACH, {
+        ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
             action: this.activeType
         });
         this.toggleRightSidebar(true);
@@ -352,7 +352,7 @@ export class EmChatTopMenu {
         }
 
         this.activeType = nsCons.ACTION_TYPE_SCHEDULE;
-        ea.publish(nsCons.EVENT_CHAT_SHOW_SCHEDULE, {
+        ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
             action: this.activeType
         });
         this.toggleRightSidebar(true);
