@@ -66,8 +66,10 @@
                 cursor: pointer;
             }
             img {
-                max-width: 360px;
-                max-height: 360px;
+                @media only screen and (min-width: 768px) {
+                    max-width: 360px;
+                    max-height: 360px;
+                }
             }
         }
         > .tools {
