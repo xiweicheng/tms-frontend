@@ -12,6 +12,9 @@ export class EmChatContentItemFootbar {
         label: '反对',
         value: ':-1:',
     }, {
+        label: '知悉',
+        value: ':ok_hand:',
+    }, {
         label: '爱心',
         value: ':heart:',
     }, {
