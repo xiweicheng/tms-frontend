@@ -131,6 +131,12 @@ export class EmojiValueConverter {
     }
 }
 
+export class EmojiReplValueConverter {
+    toView(value) {
+        return emojify.replace(value);
+    }
+}
+
 export class Nl2brValueConverter {
     toView(value) {
         if (value) {

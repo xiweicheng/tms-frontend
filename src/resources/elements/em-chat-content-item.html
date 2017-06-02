@@ -1,6 +1,6 @@
 <template>
     <require from="./em-chat-content-item.css"></require>
-    <div repeat.for="item of chats" swipebox class="em-chat-content-item comment item ${item.id == markId ? 'active' : ''}" data-id="${item.id}" task.bind="notifyRendered($last, item)">
+    <div repeat.for="item of chats" class="em-chat-content-item comment item ${item.id == markId ? 'active' : ''}" data-id="${item.id}" task.bind="notifyRendered($last, item)">
         <em-user-avatar user.bind="item.creator"></em-user-avatar>
         <div class="content">
             <a class="author" data-value="${item.creator.username}" click.delegate="creatorNameHandler(item)">${item.creator.name}</a>
@@ -13,7 +13,7 @@
                     <i click.delegate="likeHandler(item, false)" style="cursor: pointer;" title="踩一下" class="cbutton cbutton--effect-novak thumbs ${item.isCaiVoted ? '' : 'outline'} down icon"></i> <span title="${item.voteCai}">${item.voteCaiCnt} 踩</span>
                 </div>
             </div>
-            <div ref="mkbodyRef" show.bind="!item.isEditing" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
+            <div ref="mkbodyRef" swipebox show.bind="!item.isEditing" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
             <div class="textcomplete-container" show.bind="item.isEditing">
                 <div class="append-to"></div>
             </div>
@@ -61,6 +61,7 @@
                 </button>
             </div>
         </div>
+        <em-chat-content-item-footbar chat-channel.bind="item"></em-chat-content-item-footbar>
     </div>
     <em-confirm-modal em-confirm-modal.ref="emConfirmModal"></em-confirm-modal>
 </template>

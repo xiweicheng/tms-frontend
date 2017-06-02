@@ -1,0 +1,12 @@
+<template>
+    <require from="./em-chat-content-item-footbar.css"></require>
+    <div class="em-chat-content-item-footbar">
+        <div class="ui image label" repeat.for="item of chatChannel.chatLabels"><span innerhtml.bind="item.name | emojiRepl"></span>${item.voters.length}</div>
+        <span ref="addRef" class="add-btn">+<i class="smile icon large link blue"></i></span>
+        <div class="ui popup top left transition hidden">
+            <div class="content">
+                <span class="emoji-item" repeat.for="item of emojis" data-tooltip="${item.label}" click.delegate="toggleEmojiHandler(item)" innerhtml.bind="item.value | emojiRepl"></span>
+            </div>
+        </div>
+    </div>
+</template>
