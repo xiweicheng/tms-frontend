@@ -1,8 +1,8 @@
 <template>
     <require from="./em-chat-content-item-footbar.css"></require>
     <div class="em-chat-content-item-footbar">
-        <div class="ui image label" repeat.for="item of chatChannel.chatLabels"><span innerhtml.bind="item.name | emojiRepl"></span>${item.voters.length}</div>
-        <span ref="addRef" class="add-btn">+<i class="smile icon large link blue"></i></span>
+        <div class="ui image label" repeat.for="item of chatChannel.chatLabels" if.bind="item.voters.length != 0" click.delegate="toggleEmojiHandler({value: item.name, label: item.description})" data-tooltip="${item | emojiTip & signal:'sg-emoji-refresh'}" innerhtml.bind="(item.name + item.voters.length) | emojiRepl"></div>
+        <span ref="addRef" class="add-btn ${chatChannel.chatLabels | emojiExist & signal:'sg-emoji-refresh'}">+<i class="smile icon large link"></i></span>
         <div class="ui popup top left transition hidden">
             <div class="content">
                 <span class="emoji-item" repeat.for="item of emojis" data-tooltip="${item.label}" click.delegate="toggleEmojiHandler(item)" innerhtml.bind="item.value | emojiRepl"></span>

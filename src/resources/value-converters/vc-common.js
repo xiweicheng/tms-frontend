@@ -137,6 +137,24 @@ export class EmojiReplValueConverter {
     }
 }
 
+export class EmojiExistValueConverter {
+    toView(chatLabels) {
+        if (chatLabels.length != 0) {
+            if (_.some(chatLabels, cl => cl.voters.length != 0)) {
+                return '';
+            }
+        }
+        return 'none';
+    }
+}
+
+export class EmojiTipValueConverter {
+    toView(chatLabel) {
+        let vs = _.map(chatLabel.voters, v => v.name ? v.name : v.username);
+        return `${_.join(vs, ',')}${vs.length}人表示[${chatLabel.description}]`
+    }
+}
+
 export class Nl2brValueConverter {
     toView(value) {
         if (value) {

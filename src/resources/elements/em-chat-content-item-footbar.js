@@ -6,20 +6,26 @@ export class EmChatContentItemFootbar {
     @bindable chatChannel;
 
     emojis = [{
-        label: '赞',
+        label: '赞同',
         value: ':+1:',
     }, {
-        label: '踩',
+        label: '反对',
         value: ':-1:',
     }, {
-        label: '大笑',
+        label: '爱心',
+        value: ':heart:',
+    }, {
+        label: '开心',
         value: ':laughing:',
+    }, {
+        label: '关注',
+        value: ':eyes:',
     }, {
         label: '困惑',
         value: ':confused:',
     }, {
-        label: '心动',
-        value: ':heart:',
+        label: '悲伤',
+        value: ':cry:',
     }];
 
     /**
@@ -35,8 +41,11 @@ export class EmChatContentItemFootbar {
 
     toggleEmojiHandler(item) {
         $.post('/admin/chat/channel/label/toggle', {
-            basePath: utils.getBasePath(),
+            url: utils.getUrl(),
+            meta: $(emojify.replace(item.value)).attr('src'),
+            contentHtml: utils.md2html(this.chatChannel.content),
             name: item.value,
+            desc: item.label,
             id: this.chatChannel.id,
         }, (data, textStatus, xhr) => {
             if (data.success) {
@@ -46,6 +55,7 @@ export class EmChatContentItemFootbar {
                 } else {
                     this.chatChannel.chatLabels = [...this.chatChannel.chatLabels, data.data];
                 }
+                bs.signal('sg-emoji-refresh');
             } else {
                 toastr.error(data.data);
             }
