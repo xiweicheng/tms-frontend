@@ -139,7 +139,7 @@ export class EmojiReplValueConverter {
 
 export class ChatLabelExistValueConverter {
     toView(chatLabels, type) {
-        if (chatLabels.length != 0) {
+        if (chatLabels && chatLabels.length != 0) {
             if (_.some(chatLabels, cl => (type ? cl.type == type : true) && cl.voters.length != 0)) {
                 return '';
             }

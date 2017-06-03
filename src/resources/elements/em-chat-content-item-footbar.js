@@ -3,7 +3,7 @@ import { bindable, containerless } from 'aurelia-framework';
 @containerless
 export class EmChatContentItemFootbar {
 
-    @bindable chatChannel;
+    @bindable chat;
 
     emojis = [{
         label: '赞同',
@@ -83,21 +83,21 @@ export class EmChatContentItemFootbar {
     }
 
     toggleChatLabelHandler(item) {
-        $.post('/admin/chat/channel/label/toggle', {
-            url: utils.getUrl(),
+        $.post(`/admin/chat/${nsCtx.isAt ? 'direct' : 'channel'}/label/toggle`, {
+            url: nsCtx.isAt ? utils.getBasePath() : utils.getUrl(),
             meta: item.type == 'emoji' ? $(emojify.replace(item.value)).attr('src') : item.value,
             type: item.type == 'emoji' ? 'Emoji' : 'Tag',
-            contentHtml: utils.md2html(this.chatChannel.content),
+            contentHtml: utils.md2html(this.chat.content),
             name: item.value,
             desc: item.label,
-            id: this.chatChannel.id,
+            id: this.chat.id,
         }, (data, textStatus, xhr) => {
             if (data.success) {
-                let cl = _.find(this.chatChannel.chatLabels, { id: data.data.id });
+                let cl = _.find(this.chat.chatLabels, { id: data.data.id });
                 if (cl) {
                     cl.voters = data.data.voters;
                 } else {
-                    this.chatChannel.chatLabels = [...this.chatChannel.chatLabels, data.data];
+                    this.chat.chatLabels = [...this.chat.chatLabels, data.data];
                 }
                 bs.signal('sg-chatlabel-refresh');
             } else {
