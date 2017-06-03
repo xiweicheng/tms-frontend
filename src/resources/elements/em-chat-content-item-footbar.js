@@ -8,44 +8,85 @@ export class EmChatContentItemFootbar {
     emojis = [{
         label: '赞同',
         value: ':+1:',
+        type: 'emoji'
     }, {
         label: '反对',
         value: ':-1:',
+        type: 'emoji'
     }, {
         label: '知悉',
         value: ':ok_hand:',
-    }, {
-        label: '爱心',
-        value: ':heart:',
-    }, {
-        label: '开心',
-        value: ':laughing:',
+        type: 'emoji'
     }, {
         label: '关注',
         value: ':eyes:',
+        type: 'emoji'
+    }, {
+        label: '爱心',
+        value: ':heart:',
+        type: 'emoji'
+    }, {
+        label: '开心',
+        value: ':laughing:',
+        type: 'emoji'
     }, {
         label: '困惑',
         value: ':confused:',
+        type: 'emoji'
     }, {
         label: '悲伤',
         value: ':cry:',
+        type: 'emoji'
+    }];
+
+    tags = [{
+        label: '待处理',
+        value: '待处理',
+        color: 'green',
+        type: 'tag'
+    }, {
+        label: '进行中',
+        value: '进行中',
+        color: 'yellow',
+        type: 'tag'
+    }, {
+        label: '已完成',
+        value: '已完成',
+        color: 'blue',
+        type: 'tag'
+    }, {
+        label: '已验收',
+        value: '已验收',
+        color: 'grey',
+        type: 'tag'
     }];
 
     /**
      * 当视图被附加到DOM中时被调用
      */
     attached() {
-        $(this.addRef)
+        $([this.addEmojiRef])
             .popup({
                 inline: true,
                 hoverable: true
             });
+        $([this.addTagRef])
+            .popup({
+                inline: true,
+                hoverable: true,
+                // position: 'top center',
+                onHide: () => {
+                    this.isCustomTag = false;
+                    $(this.tagRef).val('');
+                }
+            });
     }
 
-    toggleEmojiHandler(item) {
+    toggleChatLabelHandler(item) {
         $.post('/admin/chat/channel/label/toggle', {
             url: utils.getUrl(),
-            meta: $(emojify.replace(item.value)).attr('src'),
+            meta: item.type == 'emoji' ? $(emojify.replace(item.value)).attr('src') : item.value,
+            type: item.type == 'emoji' ? 'Emoji' : 'Tag',
             contentHtml: utils.md2html(this.chatChannel.content),
             name: item.value,
             desc: item.label,
@@ -58,10 +99,31 @@ export class EmChatContentItemFootbar {
                 } else {
                     this.chatChannel.chatLabels = [...this.chatChannel.chatLabels, data.data];
                 }
-                bs.signal('sg-emoji-refresh');
+                bs.signal('sg-chatlabel-refresh');
             } else {
                 toastr.error(data.data);
             }
         });
+    }
+
+    toggleCustomTagHandler() {
+        if (this.isCustomTag) {
+            let v = $(this.tagRef).val();
+            if (v) {
+                this.toggleChatLabelHandler({
+                    label: v,
+                    value: v,
+                    type: 'Tag'
+                });
+                $(this.tagRef).val('');
+            }
+        } else {
+            $(this.tagRef).focus();
+        }
+        this.isCustomTag = !this.isCustomTag;
+    }
+
+    tagKeyupHandler() {
+        this.toggleCustomTagHandler();
     }
 }

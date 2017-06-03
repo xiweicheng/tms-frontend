@@ -137,10 +137,10 @@ export class EmojiReplValueConverter {
     }
 }
 
-export class EmojiExistValueConverter {
-    toView(chatLabels) {
+export class ChatLabelExistValueConverter {
+    toView(chatLabels, type) {
         if (chatLabels.length != 0) {
-            if (_.some(chatLabels, cl => cl.voters.length != 0)) {
+            if (_.some(chatLabels, cl => (type ? cl.type == type : true) && cl.voters.length != 0)) {
                 return '';
             }
         }
@@ -148,10 +148,38 @@ export class EmojiExistValueConverter {
     }
 }
 
-export class EmojiTipValueConverter {
+export class ChatLabelTipValueConverter {
     toView(chatLabel) {
         let vs = _.map(chatLabel.voters, v => v.name ? v.name : v.username);
-        return `${_.join(vs, ',')}${vs.length}人表示[${chatLabel.description}]`
+        return `${_.join(vs, ',')}${vs.length}人${chatLabel.type == 'Emoji' ? '表示了' : '标记了'} [${chatLabel.type == 'Emoji' ? chatLabel.description : chatLabel.name}]`
+    }
+}
+
+export class ChatLabelFilterValueConverter {
+    toView(chatLabels, type = 'Emoji') {
+        return _.filter(chatLabels, { type: type });
+    }
+}
+
+export class LabelColorValueConverter {
+
+    tags = [{
+        value: '待处理',
+        color: 'green',
+    }, {
+        value: '进行中',
+        color: 'yellow',
+    }, {
+        value: '已完成',
+        color: 'blue',
+    }, {
+        value: '已验收',
+        color: 'grey',
+    }];
+
+    toView(chatLabel) {
+        let tag = _.find(this.tags, { value: chatLabel.name });
+        return tag ? tag.color : '';
     }
 }
 

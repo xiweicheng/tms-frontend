@@ -1,17 +1,27 @@
 .em-chat-content-item-footbar {
-    // min-height: 21px;
     margin-top: 8px;
     padding-top: 8px;
-    // padding-left: 50px;
+    padding-left: 50px;
     .add-btn {
         display: none;
         color: rgb(88, 96, 105);
-        // margin-left: 8px;
         &.none {
             position: absolute;
             bottom: 0;
+        }
+    }
+    .add-emoji-btn {
+        &.none {
             left: 8px;
         }
+    }
+    .add-tag-btn {
+        &.none {
+            left: 45px;
+        }
+    }
+    > .ui.label {
+        cursor: pointer;
     }
     .emoji-item {
         margin-right: 8px;
@@ -22,13 +32,22 @@
             margin-right: 0;
         }
     }
-    .ui.image.label {
-        img {
-            // height: auto;
+    .ui.popup.tags {
+        > .content {
+            width: 265px;
+            > .ui.input {
+                width: 20px;
+            }
         }
-
-        &:first-child {
-            margin-left: 50px;
+        &.customTag {
+            > .content {
+                > .ui.label {
+                    display: none;
+                }
+                > .ui.input {
+                    width: 265px;
+                }
+            }
         }
     }
 }
