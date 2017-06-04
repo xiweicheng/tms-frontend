@@ -49,6 +49,7 @@ window.nsCons = {
     EVENT_BLOG_COMMENT_CHANGED: 'event_blog_comment_changed',
     ACTION_TYPE_SEARCH: 'action_type_search',
     ACTION_TYPE_STOW: 'action_type_stow',
+    ACTION_TYPE_PIN: 'action_type_pin',
     ACTION_TYPE_AT: 'action_type_at',
     ACTION_TYPE_DIR: 'action_type_dir',
     ACTION_TYPE_ATTACH: 'action_type_attach',

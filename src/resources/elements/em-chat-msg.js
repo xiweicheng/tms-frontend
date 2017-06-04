@@ -49,6 +49,9 @@ export class EmChatMsg {
         } else if (this.actived.payload.action == nsCons.ACTION_TYPE_STOW) {
             this.chats = payload.result;
             this.last = true;
+        } else if (this.actived.payload.action == nsCons.ACTION_TYPE_PIN) {
+            this.chats = payload.result;
+            this.last = true;
         } else if (this.actived.payload.action == nsCons.ACTION_TYPE_SEARCH) {
             this.search = payload.search;
             this.page = result;
@@ -109,6 +112,22 @@ export class EmChatMsg {
                 }
             });
         }
+    }
+
+    removePinHandler(item) {
+        $.post('/admin/chat/channel/pin/toggle', {
+            id: item.id,
+            cid: this.channel.id
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                this.chats = _.reject(this.chats, {
+                    id: item.id
+                });
+                toastr.success('移除固定消息成功!');
+            } else {
+                toastr.error(data.data, '移除固定消息失败!');
+            }
+        });
     }
 
     removeStowHandler(item) {

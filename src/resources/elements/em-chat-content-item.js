@@ -347,4 +347,18 @@ export class EmChatContentItem {
             }
         });
     }
+
+    pinHandler(item) {
+        $.post('/admin/chat/channel/pin/toggle', {
+            id: item.id,
+            cid: this.channel.id
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                toastr.success(`${data.code == 200 ? '固定频道消息成功!' : '解除固定频道消息成功!'}`);
+                item.isPin = (data.code == 200);
+            } else {
+                toastr.error(data.data);
+            }
+        });
+    }
 }

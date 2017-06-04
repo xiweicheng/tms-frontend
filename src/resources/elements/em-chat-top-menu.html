@@ -23,8 +23,9 @@
                     </div>
                 </div>
                 <a if.bind="!isAt" class="item" click.trigger="viewOrMgrUsersHandler($event)" title="频道用户(${channel.members.length})"><i class="users icon"></i></a>
-                <a if.bind="!isAt && channel.privated" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="私有频道"><i class="lock icon"></i></a>
-                <a if.bind="!isAt && !channel.privated" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="公开频道"><i class="unlock icon"></i></a>
+                <!-- <a if.bind="!isAt && channel.privated" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="私有频道"><i class="lock icon"></i></a> -->
+                <!-- <a if.bind="!isAt && !channel.privated" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="公开频道"><i class="unlock icon"></i></a> -->
+                <a if.bind="!isAt" class="item ${isRightSidebarShow && (activeType == ACTION_TYPE_PIN) ? 'active' : ''}" click.trigger="showPinHandler($event)" title="固定消息查看(ctrl+click刷新)"><i class="${ajaxPin && ajaxPin.readyState != 4 ? 'spinner loading' : ''} pin icon"></i></a>
                 <a if.bind="!isAt" class="item tms-channel-info" click.trigger="channelInfoHandler($event)" title="${channel.description} (${channel.creator.name ? channel.creator.name : channel.creator.username} 创建于 ${channel.createDate | timeago})"><i class="info circle icon"></i></a>
                 <a if.bind="isAt && chatUser.enabled" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="启用中"><i class="heart icon"></i></a>
                 <a if.bind="isAt && !chatUser.enabled" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="禁用中"><i class="empty heart icon"></i></a>

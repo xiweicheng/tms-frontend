@@ -2,7 +2,7 @@
     <require from="./em-chat-sidebar-right.css"></require>
     <div class="tms-right-sidebar em-chat-sidebar-right">
         <div scrollbar="scrollbar-macosx">
-            <em-chat-msg login-user.bind="loginUser" is-at.bind="isAt" channel.bind="channel" chats.bind="chats" actived.bind="actived"></em-chat-msg>
+            <em-chat-msg login-user.bind="loginUser" is-at.bind="isAt" channel.bind="channel" actived.bind="actived"></em-chat-msg>
             <div ref="dirRef" show.bind="actived.show == 'dir'" class="panel-wiki-dir"></div>
             <div ref="attachRef" show.bind="actived.show == 'attach'" class="panel-chat-attach">
                 <em-chat-attach view-model.ref="chatAttachVm"></em-chat-attach>

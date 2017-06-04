@@ -17,6 +17,7 @@ export class EmChatTopMenu {
 
     ACTION_TYPE_SEARCH = nsCons.ACTION_TYPE_SEARCH;
     ACTION_TYPE_STOW = nsCons.ACTION_TYPE_STOW;
+    ACTION_TYPE_PIN = nsCons.ACTION_TYPE_PIN;
     ACTION_TYPE_AT = nsCons.ACTION_TYPE_AT;
     ACTION_TYPE_DIR = nsCons.ACTION_TYPE_DIR;
     ACTION_TYPE_ATTACH = nsCons.ACTION_TYPE_ATTACH;
@@ -447,5 +448,34 @@ export class EmChatTopMenu {
         $(this.channelLinksDdRef).dropdown('hide');
         utils.openNewWin(item.href);
         $.post('/admin/link/count/inc', { id: item.id });
+    }
+
+    showPinHandler(event) {
+        event.stopImmediatePropagation();
+        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_PIN) && !event.ctrlKey) {
+            this.toggleRightSidebar();
+            return;
+        }
+
+        this.activeType = nsCons.ACTION_TYPE_PIN;
+
+        this.ajaxPin = $.get('/admin/chat/channel/pin/list', {
+            cid: this.channel.id
+        }, (data) => {
+            if (data.success) {
+                let pinChats = _.map(data.data, (item) => {
+                    let chatChannel = item.chatChannel;
+                    chatChannel.chatPin = item;
+                    return chatChannel;
+                });
+                ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
+                    action: this.activeType,
+                    result: _.reverse(pinChats)
+                });
+                this.toggleRightSidebar(true);
+            } else {
+                toastr.error(data.data, '获取频道固定消息失败!');
+            }
+        });
     }
 }

@@ -14,6 +14,7 @@ export class EmChatSidebarRight {
         [nsCons.ACTION_TYPE_ATTACH]: { handler: this.attachHandler, nodata: '', show: 'attach' },
         [nsCons.ACTION_TYPE_SCHEDULE]: { handler: this.scheduleHandler, nodata: '', show: 'schedule' },
         [nsCons.ACTION_TYPE_SEARCH]: { nodata: '无符合检索结果', show: 'msg' },
+        [nsCons.ACTION_TYPE_PIN]: { nodata: '暂无频道固定消息', show: 'msg' },
     }
 
     /**
