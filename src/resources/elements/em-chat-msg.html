@@ -12,16 +12,16 @@
                     </div>
                     <div ref="mkbodyRef" class="text markdown-body ${item.isOpen ? 'tms-open' : ''}" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
                     <div class="actions">
-                        <div if.bind="item.chatStow" ui-dropdown-action style="margin-right: 5px;" class="ui icon top left pointing dropdown" title="移除收藏消息">
+                        <div if.bind="item.chatStow" ui-dropdown-action style="margin-right: 5px;" class="ui icon top left pointing dropdown" title="移除消息收藏">
                             <i class="large icons"><i class="empty star icon"></i><i class="corner remove icon"></i></i>
                             <div class="menu">
                                 <div style="color: red;" class="item" click.delegate="removeStowHandler(item)"><i class="trash outline icon"></i>确认移除</div>
                             </div>
                         </div>
-                        <div if.bind="item.chatPin" ui-dropdown-action style="margin-right: .75em;" class="ui icon top left pointing dropdown" title="移除固定消息">
+                        <div if.bind="item.chatPin" ui-dropdown-action style="margin-right: .75em;" class="ui icon top left pointing dropdown" title="解除消息固定">
                             <i class="large icons"><i class="pin icon"></i><i class="corner remove icon" style="right: -3px;"></i></i>
                             <div class="menu">
-                                <div style="color: red;" class="item" click.delegate="removePinHandler(item)"><i class="trash outline icon"></i>确认移除</div>
+                                <div style="color: red;" class="item" click.delegate="removePinHandler(item)"><i class="trash outline icon"></i>确认解除</div>
                             </div>
                         </div>
                         <a if.bind="item.chatAt" click.delegate="removeAtHandler(item)" class="tms-read" title="标记@消息已读" href=""><i class="large icons"><i class="at icon"></i><i class="corner remove icon"></i></i></a>
