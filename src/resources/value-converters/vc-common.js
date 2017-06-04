@@ -1,5 +1,9 @@
 import 'jquery-format';
 import 'timeago';
+import {
+    default as ColorHash
+} from 'color-hash';
+import tags from 'common/common-tags';
 
 let tg = timeago();
 
@@ -163,23 +167,21 @@ export class ChatLabelFilterValueConverter {
 
 export class LabelColorValueConverter {
 
-    tags = [{
-        value: '待处理',
-        color: 'green',
-    }, {
-        value: '进行中',
-        color: 'yellow',
-    }, {
-        value: '已完成',
-        color: 'blue',
-    }, {
-        value: '已验收',
-        color: 'grey',
-    }];
+    toView(chatLabel) {
+        let tag = _.find(tags, { value: chatLabel.name });
+        return tag ? tag.color : '';
+    }
+}
+
+export class LabelCssValueConverter {
 
     toView(chatLabel) {
-        let tag = _.find(this.tags, { value: chatLabel.name });
-        return tag ? tag.color : '';
+        let cs = colorHash.rgb(chatLabel.name);
+        let bgColor = `rgba(${cs[0]}, ${cs[1]}, ${cs[2]}, 0.6)`;
+        let color = `rgba(${255 - cs[0]}, ${255 - cs[1]}, ${255 - cs[2]}, 1)`;
+
+        let tag = _.find(tags, { value: chatLabel.name });
+        return !tag ? { "background-color": bgColor, "color": color } : '';
     }
 }
 

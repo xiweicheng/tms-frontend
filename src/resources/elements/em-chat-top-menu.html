@@ -107,6 +107,11 @@
             <div ui-dropdown class="ui dropdown item tms-item">
                 <i class="ellipsis vertical icon"></i>
                 <div class="menu">
+                    <div class="item tms-item" if.bind="!isAt">
+                        <button click.delegate="showPinHandler($event)" title="固定消息查看(ctrl+click刷新)" class="basic ${isRightSidebarShow && (activeType == ACTION_TYPE_PIN) ? 'active' : ''} ui icon button">
+                            <i class="${ajaxPin && ajaxPin.readyState != 4 ? 'spinner loading' : 'pin'} icon"></i>
+                        </button>
+                    </div>
                     <div show.bind="!!dir" class="item tms-item">
                         <button click.delegate="showWikiDirHandler($event)" title="消息目录查看(ctrl+click刷新)" class="basic ${isRightSidebarShow && (activeType == ACTION_TYPE_DIR) ? 'active' : ''} ui icon button">
                             <i class="unordered list icon"></i>

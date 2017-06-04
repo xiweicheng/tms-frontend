@@ -1,4 +1,5 @@
 import { bindable, containerless } from 'aurelia-framework';
+import tags from 'common/common-tags';
 
 @containerless
 export class EmChatContentItemFootbar {
@@ -39,27 +40,12 @@ export class EmChatContentItemFootbar {
         type: 'emoji'
     }];
 
-    tags = [{
-        label: '待处理',
-        value: '待处理',
-        color: 'green',
-        type: 'tag'
-    }, {
-        label: '进行中',
-        value: '进行中',
-        color: 'yellow',
-        type: 'tag'
-    }, {
-        label: '已完成',
-        value: '已完成',
-        color: 'blue',
-        type: 'tag'
-    }, {
-        label: '已验收',
-        value: '已验收',
-        color: 'grey',
-        type: 'tag'
-    }];
+    /**
+     * 构造函数
+     */
+    constructor() {
+        this.tags = tags;
+    }
 
     /**
      * 当视图被附加到DOM中时被调用
@@ -118,7 +104,7 @@ export class EmChatContentItemFootbar {
                 $(this.tagRef).val('');
             }
         } else {
-            $(this.tagRef).focus();
+            _.defer(() => $(this.tagRef).focus());
         }
         this.isCustomTag = !this.isCustomTag;
     }
