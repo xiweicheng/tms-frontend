@@ -39,7 +39,7 @@
                     <div class="menu">
                         <div class="item" if.bind="!isAt && (item.creator.username == loginUser.username)" click.delegate="openEditHandler(item)" title="${item.openEdit ? '关闭协作编辑' :'开启协作编辑'}"><i class="write icon"></i> ${item.openEdit ? '关闭' :'协作'}</div>
                         <div class="item tms-clipboard" data-clipboard-text="${item.content}" title="复制消息内容"><i class="icon copy"></i> 复制</div>
-                        <div class="item" click.delegate="pinHandler(item)" title="${item.isPin ? '固定频道消息解除' : '固定频道消息'}"><i class="pin icon"></i> ${item.isPin ? '解除固定' : '固定至频道'}</div>
+                        <div class="item" if.bind="!isAt" click.delegate="pinHandler(item)" title="${item.isPin ? '固定频道消息解除' : '固定频道消息'}"><i class="pin icon"></i> ${item.isPin ? '解除固定' : '固定至频道'}</div>
                         <!-- <div class="item tms-clipboard" data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}" title="复制消息链接"><i class="icon share"></i> 分享</div> -->
                         <a target="_blank" href="#/blog/create?${isAt ? 'cdid' : 'ccid'}=${item.id}" style="display: block; color: rgba(0,0,0,.87);" class="item">
                             <i class="wikipedia icon"></i> 转为博文
