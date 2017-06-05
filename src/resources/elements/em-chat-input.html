@@ -8,16 +8,22 @@
                 <i class="plus icon"></i>
             </div>
             <div class="ui flowing popup bottom left transition hidden vertical menu">
+                <a target="_blank" href="#/blog/create" class="item">
+                    <i class="write icon"></i>
+                    <div class="content">
+                        博文写作
+                    </div>
+                </a>
                 <a ref="btnItemUploadRef" class="item">
                     <i class="upload icon"></i>
                     <div class="content">
                         上传文件
                     </div>
                 </a>
-                <a target="_blank" href="#/blog/create" class="item">
-                    <i class="write icon"></i>
+                <a class="item" click.delegate="togglePreviewHandler()">
+                    <i class="unhide icon"></i>
                     <div class="content">
-                        博文写作
+                        切换预览
                     </div>
                 </a>
             </div>
@@ -39,6 +45,9 @@
             <div class="dz-error-mark"><span>✘</span></div>
             <div class="dz-error-message"><span data-dz-errormessage></span></div>
         </div>
+    </div>
+    <div class="tms-chat-input-help-meta">
+        <i class="info circle icon"></i> 输入支持 <b><a style="color: #d3d3d3; font-style: italic;" target="_blank" href="https://simplemde.com/markdown-guide">markdown</a></b> 语法, <b style="font-style: italic;">ctrl+v</b> 剪贴板粘图
     </div>
     <em-hotkeys-modal em-hotkeys-modal.ref="emHotkeysModal"></em-hotkeys-modal>
 </template>

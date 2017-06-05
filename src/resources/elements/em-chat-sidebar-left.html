@@ -2,7 +2,7 @@
     <require from="./em-chat-sidebar-left.css"></require>
     <div class="ui left visible sidebar tms-left-sidebar">
         <div class="tms-header">
-            <h1 class="ui header"><img ref="logoRef" src="img/tms-x32.png" alt=""><a href="/admin">TMS沟通</a></h1>
+            <h1 class="ui header"><a href="/"><img ref="logoRef" src="img/tms-x32.png" alt=""></a><a href="/admin">TMS沟通</a></h1>
             <input value.bind="filter" keyup.trigger="chatToUserFilerKeyupHanlder($event)" type="text" placeholder="过滤沟通频道|用户">
             <i show.bind="filter" title="清空过滤输入" click.delegate="clearFilterHandler()" class="close icon link"></i>
         </div>
@@ -65,7 +65,7 @@
                     <div class="visible content">
                         <i class="large icons">
                             <i class="align justify icon"></i>
-                            <i class="corner search icon"></i>
+                        <i class="corner search icon"></i>
                         </i>
                     </div>
                     <div class="hidden content">
@@ -79,8 +79,10 @@
                             <div class="header">
                                 <i class="linkify icon"></i> 系统外链 <i if.bind="isSuper" click.trigger="addChannelLinkHandler($event)" title="添加系统外链" class="circular icon link plus"></i>
                             </div>
-                            <div if.bind="!sysLinks || sysLinks.length == 0" class="item">暂无系统外链</div>
-                            <a repeat.for="item of sysLinks | sort:'title'" target="_blank" href="${item.href}" class="item">${item.title}</a>
+                            <div class="scrolling menu">
+                                <div if.bind="!sysLinks || sysLinks.length == 0" class="item">暂无系统外链</div>
+                                <a repeat.for="item of sysLinks | sort:'title'" click.delegate="sysLinkHandler(item)" target="_blank" href="${item.href}" class="item">${item.title}</a>
+                            </div>
                         </div>
                     </div>
                 </div>

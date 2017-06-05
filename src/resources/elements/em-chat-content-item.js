@@ -242,13 +242,39 @@ export class EmChatContentItem {
     }
 
     stowHandler(item) {
+
+        if (item.isStow) {
+            this.unStowHandler(item);
+            return;
+        }
+
         $.post('/admin/chat/channel/stow', {
             id: item.id
         }, (data, textStatus, xhr) => {
+            item.isStow = true;
             if (data.success) {
+                item.stowId = data.data.id;
                 toastr.success('收藏消息成功!');
             } else {
-                toastr.error(data.data, '收藏消息失败!');
+                item.stowId = (data.msgs && data.msgs.length > 0) ? data.msgs[0].id : '';
+                // toastr.error(data.data, '收藏消息失败!');
+            }
+        });
+    }
+
+    unStowHandler(item) {
+        if (!item.stowId) {
+            return;
+        }
+        $.post('/admin/chat/channel/removeStow', {
+            id: item.stowId
+        }, (data, textStatus, xhr) => {
+            item.isStow = false;
+            item.stowId = '';
+            if (data.success) {
+                toastr.success('移除收藏消息成功!');
+            } else {
+                // toastr.error(data.data, '移除收藏消息失败!');
             }
         });
     }
@@ -316,6 +342,20 @@ export class EmChatContentItem {
                 } else {
                     item.isCaiVoted = true;
                 }
+            } else {
+                toastr.error(data.data);
+            }
+        });
+    }
+
+    pinHandler(item) {
+        $.post('/admin/chat/channel/pin/toggle', {
+            id: item.id,
+            cid: this.channel.id
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                toastr.success(`${data.code == 200 ? '固定频道消息成功!' : '解除固定频道消息成功!'}`);
+                item.isPin = (data.code == 200);
             } else {
                 toastr.error(data.data);
             }

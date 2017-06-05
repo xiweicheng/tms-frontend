@@ -24,6 +24,14 @@
                 margin-bottom: 0;
             }
             .content {
+                .markdown-body {
+                    img {
+                        @media only screen and (min-width: 768px) {
+                            max-width: 360px;
+                            max-height: 360px;
+                        }
+                    }
+                }
                 .actions {}
                 .tms-blog-comment-edit-textarea {
                     width: 100%;

@@ -193,4 +193,9 @@ export class EmChatSidebarLeft {
         });
     }
 
+    sysLinkHandler(item) {
+        $.post('/admin/link/count/inc', { id: item.id });
+        return true;
+    }
+
 }

@@ -13,6 +13,10 @@ export class EmChatMsgPopup {
             this.id = payload.id;
             this.target = payload.target;
 
+            if (!this.id) {
+                return;
+            }
+
             $(this.target).popup({
                 popup: this.popup,
                 hoverable: true,

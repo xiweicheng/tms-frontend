@@ -1,19 +1,19 @@
 <template>
     <require from="./em-chat-content-item.css"></require>
-    <div repeat.for="item of chats" swipebox class="em-chat-content-item comment item ${item.id == markId ? 'active' : ''}" data-id="${item.id}" task.bind="notifyRendered($last, item)">
+    <div repeat.for="item of chats" class="em-chat-content-item comment item ${item.id == markId ? 'active' : ''}" data-id="${item.id}" task.bind="notifyRendered($last, item)">
         <em-user-avatar user.bind="item.creator"></em-user-avatar>
         <div class="content">
             <a class="author" data-value="${item.creator.username}" click.delegate="creatorNameHandler(item)">${item.creator.name}</a>
             <div class="metadata">
                 <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
-                <div show.bind="!isAt" class="rating">
+                <!-- <div show.bind="!isAt" class="rating">
                     <i click.delegate="likeHandler(item, true)" style="cursor: pointer;" title="赞一下" class="cbutton cbutton--effect-novak thumbs ${item.isZanVoted ? '' : 'outline'} up icon"></i> <span title="${item.voteZan}">${item.voteZanCnt} 赞</span>
                 </div>
                 <div show.bind="!isAt" class="rating">
                     <i click.delegate="likeHandler(item, false)" style="cursor: pointer;" title="踩一下" class="cbutton cbutton--effect-novak thumbs ${item.isCaiVoted ? '' : 'outline'} down icon"></i> <span title="${item.voteCai}">${item.voteCaiCnt} 踩</span>
-                </div>
+                </div> -->
             </div>
-            <div ref="mkbodyRef" show.bind="!item.isEditing" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
+            <div ref="mkbodyRef" swipebox show.bind="!item.isEditing" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
             <div class="textcomplete-container" show.bind="item.isEditing">
                 <div class="append-to"></div>
             </div>
@@ -30,15 +30,16 @@
                 </button>
             </div>
             <div class="actions">
-                <a if.bind="!isAt && (item.creator.username != loginUser.username)" click.delegate="replyHandler(item)" class="tms-reply" title="回复消息">回复</a>
-                <a if.bind="item.openEdit || (item.creator.username == loginUser.username)" click.delegate="editHandler(item, editTxtRef)" class="tms-edit" title="编辑消息(ctrl+dblclick)">编辑</a>
-                <a if.bind="!isAt" click.delegate="stowHandler(item)" class="tms-stow" title="收藏消息">收藏</a>
+                <a if.bind="!isAt && (item.creator.username != loginUser.username)" click.delegate="replyHandler(item)" class="tms-reply" title="回复消息"><i class="large reply icon link"></i></a>
+                <a if.bind="item.openEdit || (item.creator.username == loginUser.username)" click.delegate="editHandler(item, editTxtRef)" class="tms-edit" title="编辑消息(ctrl+dblclick)"><i class="large link edit icon"></i></a>
+                <a if.bind="!isAt" click.delegate="stowHandler(item)" class="tms-stow" title="收藏消息"><i class="large ${item.isStow ? '' : 'empty'} star link icon"></i></a>
                 <em-chat-share chat.bind="item" channel.bind="channel" is-at.bind="isAt" login-user.bind="loginUser"></em-chat-share>
                 <div ui-dropdown-action=".tms-comments-container" class="ui top right pointing dropdown">
                     <a class="text" title="更多操作"><i class="ellipsis horizontal large icon"></i></a>
                     <div class="menu">
                         <div class="item" if.bind="!isAt && (item.creator.username == loginUser.username)" click.delegate="openEditHandler(item)" title="${item.openEdit ? '关闭协作编辑' :'开启协作编辑'}"><i class="write icon"></i> ${item.openEdit ? '关闭' :'协作'}</div>
                         <div class="item tms-clipboard" data-clipboard-text="${item.content}" title="复制消息内容"><i class="icon copy"></i> 复制</div>
+                        <div class="item" if.bind="!isAt" click.delegate="pinHandler(item)" title="${item.isPin ? '固定频道消息解除' : '固定频道消息'}"><i class="pin icon"></i> ${item.isPin ? '解除固定' : '固定至频道'}</div>
                         <!-- <div class="item tms-clipboard" data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}" title="复制消息链接"><i class="icon share"></i> 分享</div> -->
                         <a target="_blank" href="#/blog/create?${isAt ? 'cdid' : 'ccid'}=${item.id}" style="display: block; color: rgba(0,0,0,.87);" class="item">
                             <i class="wikipedia icon"></i> 转为博文
@@ -61,6 +62,7 @@
                 </button>
             </div>
         </div>
+        <em-chat-content-item-footbar if.bind="!item.isEditing" chat.bind="item"></em-chat-content-item-footbar>
     </div>
     <em-confirm-modal em-confirm-modal.ref="emConfirmModal"></em-confirm-modal>
 </template>

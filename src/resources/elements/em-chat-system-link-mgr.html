@@ -27,6 +27,7 @@
                         <tr>
                             <th style="width: 180px;">标题</th>
                             <th>链接</th>
+                            <th>点击</th>
                             <th style="width: 150px;">操作</th>
                         </tr>
                     </thead>
@@ -44,6 +45,7 @@
                                     <input type="text" value.bind="item.href" placeholder="链接地址">
                                 </div>
                             </td>
+                            <td>${item.count ? item.count : 0}</td>
                             <td>
                                 <button show.bind="!item.isEditing" click.delegate="editHandler(item)" class="mini ui button">
                                     编辑

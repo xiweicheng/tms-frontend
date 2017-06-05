@@ -1,5 +1,9 @@
 import 'jquery-format';
 import 'timeago';
+import {
+    default as ColorHash
+} from 'color-hash';
+import tags from 'common/common-tags';
 
 let tg = timeago();
 
@@ -128,6 +132,56 @@ export class EmojiValueConverter {
             });
         }
         return value;
+    }
+}
+
+export class EmojiReplValueConverter {
+    toView(value) {
+        return emojify.replace(value);
+    }
+}
+
+export class ChatLabelExistValueConverter {
+    toView(chatLabels, type) {
+        if (chatLabels && chatLabels.length != 0) {
+            if (_.some(chatLabels, cl => (type ? cl.type == type : true) && cl.voters.length != 0)) {
+                return '';
+            }
+        }
+        return 'none';
+    }
+}
+
+export class ChatLabelTipValueConverter {
+    toView(chatLabel) {
+        let vs = _.map(chatLabel.voters, v => v.name ? v.name : v.username);
+        return `${_.join(vs, ',')}${vs.length}人${chatLabel.type == 'Emoji' ? '表示了' : '标记了'} [${chatLabel.type == 'Emoji' ? chatLabel.description : chatLabel.name}]`
+    }
+}
+
+export class ChatLabelFilterValueConverter {
+    toView(chatLabels, type = 'Emoji') {
+        return _.filter(chatLabels, { type: type });
+    }
+}
+
+export class LabelColorValueConverter {
+
+    toView(chatLabel) {
+        let tag = _.find(tags, { value: chatLabel.name });
+        return tag ? tag.color : '';
+    }
+}
+
+export class LabelCssValueConverter {
+
+    toView(chatLabel) {
+        let cs = colorHash.rgb(chatLabel.name);
+        let bgColor = `rgba(${cs[0]}, ${cs[1]}, ${cs[2]}, 0.6)`;
+        let color = `rgba(${255 - cs[0]}, ${255 - cs[1]}, ${255 - cs[2]}, 1)`;
+
+        let tag = _.find(tags, { value: chatLabel.name });
+        return !tag ? { "background-color": bgColor, "color": color } : '';
     }
 }
 

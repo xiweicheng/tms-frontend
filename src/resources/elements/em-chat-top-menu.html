@@ -8,17 +8,24 @@
                 <div if.bind="!isAt" click.trigger="channelLinksHandler($event)" ref="channelLinksDdRef" class="ui dropdown icon item tms-channel-links" ui-dropdown>
                     <i title="当前频道外链" class="content icon"></i>
                     <div class="menu">
+                        <!-- <div class="ui icon search input">
+                            <i class="search icon"></i>
+                            <input type="text" placeholder="过滤外链...">
+                        </div>
+                        <div class="divider"></div> -->
                         <div class="header">
-                            <!-- <i class="linkify icon"></i> 当前频道外链 <i if.bind="(isSuper || (channel.owner.username == loginUser.username))" click.trigger="addChannelLinkHandler($event)" title="添加频道外链" class="circular icon link plus"></i> -->
                             <i class="linkify icon"></i> 当前频道外链 <i click.trigger="addChannelLinkHandler($event)" title="添加频道外链" class="circular icon link plus"></i>
                         </div>
-                        <div if.bind="!channelLinks || channelLinks.length == 0" click.trigger="stopImmediatePropagationHandler($event)" class="item">暂无频道外链</div>
-                        <a repeat.for="item of channelLinks | sort:'title'" click.trigger="openChannelLinkHandler($event, item)" target="_blank" href="${item.href}" class="item">${item.title}</a>
+                        <div class="scrolling menu">
+                            <div if.bind="!channelLinks || channelLinks.length == 0" click.trigger="stopImmediatePropagationHandler($event)" class="item">暂无频道外链</div>
+                            <a repeat.for="item of channelLinks | sort:'title'" click.trigger="openChannelLinkHandler($event, item)" target="_blank" href="${item.href}" class="item">${item.title}</a>
+                        </div>
                     </div>
                 </div>
                 <a if.bind="!isAt" class="item" click.trigger="viewOrMgrUsersHandler($event)" title="频道用户(${channel.members.length})"><i class="users icon"></i></a>
-                <a if.bind="!isAt && channel.privated" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="私有频道"><i class="lock icon"></i></a>
-                <a if.bind="!isAt && !channel.privated" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="公开频道"><i class="unlock icon"></i></a>
+                <!-- <a if.bind="!isAt && channel.privated" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="私有频道"><i class="lock icon"></i></a> -->
+                <!-- <a if.bind="!isAt && !channel.privated" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="公开频道"><i class="unlock icon"></i></a> -->
+                <a if.bind="!isAt" class="item ${isRightSidebarShow && (activeType == ACTION_TYPE_PIN) ? 'active' : ''}" click.trigger="showPinHandler($event)" title="固定消息查看(ctrl+click刷新)"><i class="${ajaxPin && ajaxPin.readyState != 4 ? 'spinner loading' : ''} pin icon"></i></a>
                 <a if.bind="!isAt" class="item tms-channel-info" click.trigger="channelInfoHandler($event)" title="${channel.description} (${channel.creator.name ? channel.creator.name : channel.creator.username} 创建于 ${channel.createDate | timeago})"><i class="info circle icon"></i></a>
                 <a if.bind="isAt && chatUser.enabled" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="启用中"><i class="heart icon"></i></a>
                 <a if.bind="isAt && !chatUser.enabled" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="禁用中"><i class="empty heart icon"></i></a>
@@ -100,6 +107,11 @@
             <div ui-dropdown class="ui dropdown item tms-item">
                 <i class="ellipsis vertical icon"></i>
                 <div class="menu">
+                    <div class="item tms-item" if.bind="!isAt">
+                        <button click.delegate="showPinHandler($event)" title="固定消息查看(ctrl+click刷新)" class="basic ${isRightSidebarShow && (activeType == ACTION_TYPE_PIN) ? 'active' : ''} ui icon button">
+                            <i class="${ajaxPin && ajaxPin.readyState != 4 ? 'spinner loading' : 'pin'} icon"></i>
+                        </button>
+                    </div>
                     <div show.bind="!!dir" class="item tms-item">
                         <button click.delegate="showWikiDirHandler($event)" title="消息目录查看(ctrl+click刷新)" class="basic ${isRightSidebarShow && (activeType == ACTION_TYPE_DIR) ? 'active' : ''} ui icon button">
                             <i class="unordered list icon"></i>
