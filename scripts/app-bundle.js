@@ -11750,10 +11750,14 @@ define('resources/elements/em-chat-content-item',['exports', 'aurelia-framework'
         };
 
         EmChatContentItem.prototype.pinHandler = function pinHandler(item) {
-            $.post('/admin/chat/channel/pin/toggle', {
+            var params = {
                 id: item.id,
                 cid: this.channel.id
-            }, function (data, textStatus, xhr) {
+            };
+            if (_.isUndefined(item.isPin)) {
+                params.pin = true;
+            }
+            $.post('/admin/chat/channel/pin/toggle', params, function (data, textStatus, xhr) {
                 if (data.success) {
                     toastr.success('' + (data.code == 200 ? '固定频道消息成功!' : '解除固定频道消息成功!'));
                     item.isPin = data.code == 200;
