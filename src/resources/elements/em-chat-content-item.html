@@ -58,6 +58,12 @@
                     </div>
                 </div>
             </div>
+            <a class="chat-topic-repies" if.bind="!isAt && item.chatReplies && item.chatReplies.length > 0" click.delegate="talkHandler(item, $event)">
+                <i class="large talk outline icon link"></i>
+                <span class="reply">${item.chatReplies.length} 回复</span>
+                <span class="timeago">最后回复于 ${item.chatReplies[item.chatReplies.length - 1].updateDate | timeago}</span>
+                <span class="view">查看回复</span>
+            </a>
             <div class="tools">
                 <button show.bind="!isAt && !item.isEditing" click.delegate="refreshHandler(item)" title="刷新同步" class="mini circular ui icon button">
                     <i class="refresh icon"></i>

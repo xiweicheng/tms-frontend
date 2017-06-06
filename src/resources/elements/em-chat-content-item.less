@@ -25,6 +25,33 @@
                 }
             }
         }
+        .chat-topic-repies {
+            font-size: .875em;
+            display: block;
+            padding: 3px;
+            border: 1px transparent solid;
+            &:hover {
+                background-color: white;
+                border: 1px #e0e1e2 solid;
+                .timeago {
+                    display: none;
+                }
+                .view {
+                    display: inline;
+                }
+            }
+            .reply {
+                color: #2185d0;
+                font-weight: 600;
+            }
+            .timeago {
+                margin-left: 16px;
+            }
+            .view {
+                margin-left: 16px;
+                display: none;
+            }
+        }
         &:hover {
             .tools {
                 display: block;
