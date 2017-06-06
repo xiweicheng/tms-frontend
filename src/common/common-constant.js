@@ -15,6 +15,7 @@ window.nsCons = {
     EVENT_CHAT_LAST_ITEM_RENDERED: 'event_chat_last_item_rendered',
     EVENT_SCROLLBAR_SCROLL_TO_BOTTOM: 'event_scrollbar_scroll_to_bottom',
     EVENT_CHAT_MSG_INSERT: 'event_chat_msg_insert',
+    EVENT_CHAT_TOPIC_MSG_INSERT: 'event_chat_topic_msg_insert',
     EVENT_CHAT_MSG_POPUP_SHOW: 'event_chat_msg_popup_show',
     EVENT_CHAT_TOPIC_SHOW: 'event_chat_topic_show',
     EVENT_CHAT_MEMBER_POPUP_SHOW: 'event_chat_member_popup_show',

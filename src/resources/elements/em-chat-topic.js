@@ -8,9 +8,9 @@ export class EmChatTopic {
     @bindable channel;
     isSuper = nsCtx.isSuper;
     loginUser = nsCtx.loginUser;
+    members = [];
 
     chat = null;
-    replies = [];
 
     /**
      * 构造函数
@@ -20,11 +20,45 @@ export class EmChatTopic {
             this.chat.chatReplies.push(payload.data);
             poll.reset();
         });
+        this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_MEMBER_ADD_OR_REMOVE, (payload) => {
+            this.members = [nsCtx.memberAll, ...payload.members];
+        });
+    }
+
+    attached() {
+        $(this.commentsRef).on('dblclick', '.comment.tms-reply', (event) => {
+            if (event.ctrlKey) {
+                let chatId = $(event.currentTarget).attr('data-id');
+                let $t = $(event.currentTarget).find('.content > textarea');
+                let item = _.find(this.chat.chatReplies, { id: Number.parseInt(chatId) });
+
+                if (!this.isSuper && (item.creator.username != this.loginUser.username)) {
+                    return;
+                }
+
+                item.isEditing = true;
+                item.contentOld = item.content;
+                _.defer(() => {
+                    $t.focus().select();
+                    autosize.update($t.get(0));
+                });
+            }
+        });
     }
 
     unbind() {
         this.subscribe.dispose();
+        this.subscribe1.dispose();
         poll.stop();
+    }
+
+    channelChanged() {
+
+        if (this.channel) {
+            this.members = [nsCtx.memberAll, ...this.channel.members];
+        } else {
+            this.members = [];
+        }
     }
 
     _poll() {
@@ -68,5 +102,76 @@ export class EmChatTopic {
                 toastr.error(data.data);
             }
         });
+    }
+
+    editHandler(item, editTxtRef) {
+
+        item.isEditing = true;
+        item.contentOld = item.content;
+        _.defer(() => {
+            $(editTxtRef).focus().select();
+            autosize.update(editTxtRef);
+        });
+    }
+
+    eidtKeydownHandler(evt, item, txtRef) {
+
+        if (this.sending) {
+            return false;
+        }
+
+        if (evt.ctrlKey && evt.keyCode === 13) {
+
+            this.editSave(item, txtRef);
+
+            return false;
+        } else if (evt.ctrlKey && evt.keyCode === 85) {
+            $(txtRef).next('.tms-edit-actions').find('.upload').click();
+            return false;
+        } else if (evt.keyCode === 27) {
+            this.editCancelHandler(evt, item, txtRef);
+        }
+
+        return true;
+    }
+
+    editSave(item, txtRef) {
+
+        this.sending = true;
+
+        item.content = $(txtRef).val();
+
+        var html = utils.md2html(item.content);
+        var htmlOld = utils.md2html(item.contentOld);
+
+        $.post(`/admin/chat/channel/reply/update`, {
+            url: utils.getUrl(),
+            rid: item.id,
+            version: item.version,
+            usernames: utils.parseUsernames(item.content, this.members).join(','),
+            content: item.content,
+            diff: utils.diffS(item.contentOld, item.content),
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                toastr.success('更新消息成功!');
+                item.isEditing = false;
+                item.version = data.data.version;
+            } else {
+                toastr.error(data.data, '更新消息失败!');
+            }
+        }).always(() => {
+            this.sending = false;
+        });
+    }
+
+    editOkHandler(evt, item, txtRef) {
+        this.editSave(item, txtRef);
+        item.isEditing = false;
+    }
+
+    editCancelHandler(evt, item, txtRef) {
+        item.content = item.contentOld;
+        $(txtRef).val(item.content);
+        item.isEditing = false;
     }
 }
