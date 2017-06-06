@@ -1,0 +1,37 @@
+<template>
+    <require from="./em-chat-topic.css"></require>
+    <div class="em-chat-topic" show.bind="actived.show == 'topic'">
+        <div class="ui basic segment">
+            <div class="ui comments">
+                <div class="comment">
+                    <em-user-avatar user.bind="chat.creator"></em-user-avatar>
+                    <div class="content">
+                        <a class="author" data-value="${chat.creator.username}">${chat.creator.name}</a>
+                        <div class="metadata">
+                            <div class="date" data-timeago="${chat.createDate}" title="${chat.createDate | date}">${chat.createDate | timeago}</div>
+                        </div>
+                        <div ref="mkbodyRef" swipebox class="text markdown-body" style="max-height: none;" innerhtml.bind="chat.content | parseMd | emoji:mkbodyRef"></div>
+                        <div class="actions">
+                        </div>
+                    </div>
+                </div>
+                <div class="ui horizontal divider">
+                    ${chat.chatReplies.length} 回复
+                </div>
+                <div repeat.for="item of chat.chatReplies" class="comment">
+                    <em-user-avatar user.bind="item.creator"></em-user-avatar>
+                    <div class="content">
+                        <a class="author" data-value="${item.creator.username}">${item.creator.name}</a>
+                        <div class="metadata">
+                            <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
+                        </div>
+                        <div ref="mkbodyRef" swipebox class="text markdown-body" style="max-height: none;" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
+                        <div class="actions">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <em-chat-topic-input channel.bind="channel" chat.bind="chat"></em-chat-topic-input>
+        </div>
+    </div>
+</template>

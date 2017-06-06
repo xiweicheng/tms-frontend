@@ -1,6 +1,7 @@
 window.nsCons = {
     EVENT_APP_ROUTER_NAVIGATE: 'event_app_router_navigate',
     EVENT_CHAT_MSG_SENDED: 'event_chat_msg_sended',
+    EVENT_CHAT_TOPIC_MSG_SENDED: 'event_chat_topic_msg_sended',
     EVENT_CHAT_MSG_EDIT_UPLOAD: 'event_chat_msg_edit_upload',
     EVENT_CHAT_SIDEBAR_TOGGLE: 'event_chat_sidebar_toggle',
     EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE: 'event_chat_right_sidebar_toggle',
@@ -15,6 +16,7 @@ window.nsCons = {
     EVENT_SCROLLBAR_SCROLL_TO_BOTTOM: 'event_scrollbar_scroll_to_bottom',
     EVENT_CHAT_MSG_INSERT: 'event_chat_msg_insert',
     EVENT_CHAT_MSG_POPUP_SHOW: 'event_chat_msg_popup_show',
+    EVENT_CHAT_TOPIC_SHOW: 'event_chat_topic_show',
     EVENT_CHAT_MEMBER_POPUP_SHOW: 'event_chat_member_popup_show',
     EVENT_CHAT_MSG_WIKI_DIR: 'event_chat_msg_wiki_dir',
     EVENT_CHAT_CONTENT_SCROLL_TO: 'event_chat_content_scroll_to',
@@ -50,6 +52,7 @@ window.nsCons = {
     ACTION_TYPE_SEARCH: 'action_type_search',
     ACTION_TYPE_STOW: 'action_type_stow',
     ACTION_TYPE_PIN: 'action_type_pin',
+    ACTION_TYPE_TOPIC: 'action_type_topic',
     ACTION_TYPE_AT: 'action_type_at',
     ACTION_TYPE_DIR: 'action_type_dir',
     ACTION_TYPE_ATTACH: 'action_type_attach',

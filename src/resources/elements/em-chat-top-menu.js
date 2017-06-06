@@ -86,6 +86,10 @@ export class EmChatTopMenu {
         this.subscribe3 = ea.subscribe(nsCons.EVENT_CHANNEL_LINKS_REFRESH, (payload) => {
             this._refreshChannelLinks();
         });
+
+        this.subscribe4 = ea.subscribe(nsCons.EVENT_CHAT_TOPIC_SHOW, (payload) => {
+            this.showTopicHandler(payload);
+        });
     }
 
     /**
@@ -96,6 +100,7 @@ export class EmChatTopMenu {
         this.subscribe1.dispose();
         this.subscribe2.dispose();
         this.subscribe3.dispose();
+        this.subscribe4.dispose();
     }
 
     /**
@@ -477,5 +482,22 @@ export class EmChatTopMenu {
                 toastr.error(data.data, '获取频道固定消息失败!');
             }
         });
+    }
+
+    showTopicHandler(item) {
+        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_TOPIC)) {
+            this.toggleRightSidebar();
+            return;
+        }
+
+        this.activeType = nsCons.ACTION_TYPE_TOPIC;
+
+        ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
+            action: this.activeType,
+            result: item
+        });
+
+        this.toggleRightSidebar(true);
+
     }
 }

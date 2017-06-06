@@ -366,7 +366,7 @@ export class EmChatContentItem {
         });
     }
 
-    talkHandler(item) {
-        
+    talkHandler(item, event) {
+        ea.publish(nsCons.EVENT_CHAT_TOPIC_SHOW, item);
     }
 }
