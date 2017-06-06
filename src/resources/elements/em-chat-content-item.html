@@ -6,6 +6,7 @@
             <a class="author" data-value="${item.creator.username}" click.delegate="creatorNameHandler(item)">${item.creator.name}</a>
             <div class="metadata">
                 <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
+                <a if.bind="!isAt" click.delegate="stowHandler(item)" class="tms-stow" title="收藏该消息"><i class="${item.isStow ? '' : 'empty'} star link icon"></i></a>
                 <!-- <div show.bind="!isAt" class="rating">
                     <i click.delegate="likeHandler(item, true)" style="cursor: pointer;" title="赞一下" class="cbutton cbutton--effect-novak thumbs ${item.isZanVoted ? '' : 'outline'} up icon"></i> <span title="${item.voteZan}">${item.voteZanCnt} 赞</span>
                 </div>
@@ -31,8 +32,9 @@
             </div>
             <div class="actions">
                 <a if.bind="!isAt && (item.creator.username != loginUser.username)" click.delegate="replyHandler(item)" class="tms-reply" title="回复消息"><i class="large reply icon link"></i></a>
+                <a if.bind="!isAt" click.delegate="talkHandler(item)" class="tms-reply" title="话题讨论"><i class="large talk outline icon link"></i></a>
                 <a if.bind="item.openEdit || (item.creator.username == loginUser.username)" click.delegate="editHandler(item, editTxtRef)" class="tms-edit" title="编辑消息(ctrl+dblclick)"><i class="large link edit icon"></i></a>
-                <a if.bind="!isAt" click.delegate="stowHandler(item)" class="tms-stow" title="收藏消息"><i class="large ${item.isStow ? '' : 'empty'} star link icon"></i></a>
+                <!-- <a if.bind="!isAt" click.delegate="stowHandler(item)" class="tms-stow" title="收藏消息"><i class="large ${item.isStow ? '' : 'empty'} star link icon"></i></a> -->
                 <em-chat-share chat.bind="item" channel.bind="channel" is-at.bind="isAt" login-user.bind="loginUser"></em-chat-share>
                 <div ui-dropdown-action=".tms-comments-container" class="ui top right pointing dropdown">
                     <a class="text" title="更多操作"><i class="ellipsis horizontal large icon"></i></a>

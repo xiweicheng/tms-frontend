@@ -365,4 +365,8 @@ export class EmChatContentItem {
             }
         });
     }
+
+    talkHandler(item) {
+        
+    }
 }
