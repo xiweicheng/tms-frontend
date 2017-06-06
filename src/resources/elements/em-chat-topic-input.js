@@ -294,7 +294,7 @@ export class EmChatTopicInput {
             url: utils.getUrl(),
             usernames: utils.parseUsernames(content, this.members).join(','),
             content: content,
-            contentHtml: utils.md2html(content),
+            contentHtml: utils.md2html(content, true),
             id: this.chat.id
         }, (data, textStatus, xhr) => {
             if (data.success) {

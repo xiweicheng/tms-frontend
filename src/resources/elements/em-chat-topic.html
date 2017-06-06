@@ -2,7 +2,7 @@
     <require from="./em-chat-topic.css"></require>
     <div class="em-chat-topic" show.bind="actived.show == 'topic'">
         <div class="ui basic segment">
-            <div class="ui comments">
+            <div class="ui minimal comments">
                 <div class="comment">
                     <em-user-avatar user.bind="chat.creator"></em-user-avatar>
                     <div class="content">
@@ -27,6 +27,12 @@
                         </div>
                         <div ref="mkbodyRef2" swipebox class="text markdown-body" style="max-height: none;" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef2"></div>
                         <div class="actions">
+                            <div if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown" title="删除回复">
+                                删除
+                                <div class="menu">
+                                    <div style="color: red;" class="item" click.delegate="removeHandler(item)"><i class="trash outline icon"></i>确认删除</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

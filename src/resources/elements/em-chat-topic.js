@@ -6,6 +6,8 @@ export class EmChatTopic {
 
     @bindable actived;
     @bindable channel;
+    isSuper = nsCtx.isSuper;
+    loginUser = nsCtx.loginUser;
 
     chat = null;
     replies = [];
@@ -56,5 +58,15 @@ export class EmChatTopic {
 
         this.chat = this.actived.payload.result;
         this._poll();
+    }
+
+    removeHandler(item) {
+        $.post('/admin/chat/channel/reply/remove', { rid: item.id }, (data, textStatus, xhr) => {
+            if (data.success) {
+                this.chat.chatReplies = _.reject(this.chat.chatReplies, { id: data.data });
+            } else {
+                toastr.error(data.data);
+            }
+        });
     }
 }
