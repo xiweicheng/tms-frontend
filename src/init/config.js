@@ -181,7 +181,8 @@ export class Config {
         let exceptUrls = [
             '/chat/channel/latest',
             '/chat/direct/latest',
-            '/chat/channel/poll'
+            '/chat/channel/poll',
+            '/chat/channel/reply/poll',
         ];
 
         $(document).ajaxSend(function(event, jqxhr, settings) {

@@ -240,9 +240,9 @@ export class EmChatTopMenu {
 
     toggleRightSidebar(asShow) {
         if (_.isUndefined(asShow)) {
-            this.isRightSidebarShow = !this.isRightSidebarShow;
+            this.isRightSidebarShow = nsCtx.isRightSidebarShow = !this.isRightSidebarShow;
         } else {
-            this.isRightSidebarShow = asShow;
+            this.isRightSidebarShow = nsCtx.isRightSidebarShow = asShow;
         }
 
         ea.publish(nsCons.EVENT_CHAT_SIDEBAR_TOGGLE, {

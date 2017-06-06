@@ -61,7 +61,7 @@ export class ChatDirect {
 
         this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_SIDEBAR_TOGGLE, (payload) => {
 
-            this.isRightSidebarShow = payload.isShow;
+            this.isRightSidebarShow = nsCtx.isRightSidebarShow = payload.isShow;
             if (this.isRightSidebarShow) {
                 let wid = $(this.contentRef).width() - 392;
                 $(this.contentBodyRef).width(wid);
