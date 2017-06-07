@@ -718,8 +718,28 @@ export class ChatDirect {
     gotoChatItem(item) {
 
         if (item.chatAt.chatReply) {
-            window.location = wurl('path') + `#/chat/${item.chatAt.chatChannel.channel.name}?id=${item.chatAt.chatChannel.id}&rid=${item.id}`;
-            window.location.reload();
+
+            let chat = _.find(this.chats, c => _.some(c.chatReplies, { id: item.id }));
+
+            if (chat) {
+                this.scrollToAfterImgLoaded(chat.id);
+                _.defer(() => ea.publish(nsCons.EVENT_CHAT_TOPIC_SHOW, {
+                    chat: chat,
+                    rid: item.id
+                }));
+            } else {
+                let chatTo = item.chatAt.chatChannel.channel.name;
+
+                if (this.chatTo == chatTo) { // 当前定位消息就在当前聊天对象里,只是没有获取显示出来
+                    this.activate({
+                        id: item.chatAt.chatChannel.id,
+                        rid: item.id,
+                        username: chatTo
+                    }, this.routeConfig);
+                } else { // 定位消息在非当前聊天对象中
+                    window.location = wurl('path') + `#/chat/${chatTo}?id=${item.chatAt.chatChannel.id}&rid=${item.id}`;
+                }
+            }
             return;
         }
 
@@ -746,7 +766,6 @@ export class ChatDirect {
                 }, this.routeConfig);
             } else { // 定位消息在非当前聊天对象中
                 window.location = wurl('path') + `#/chat/${chatId}?id=${item.id}`;
-                window.location.reload();
             }
         }
 
