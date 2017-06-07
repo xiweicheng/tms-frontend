@@ -13,6 +13,7 @@
                         </div>
                         <div ref="mkbodyRef" swipebox class="text markdown-body" style="max-height: none;" innerhtml.bind="chat.content | parseMd | emoji:mkbodyRef"></div>
                         <div class="actions">
+                            <a if.bind="!isAt" click.delegate="replyHandler()" class="tms-reply" title="回复此话题消息"><i class="large reply icon link"></i></a>
                         </div>
                     </div>
                 </div>

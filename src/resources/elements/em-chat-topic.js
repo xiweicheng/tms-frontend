@@ -30,7 +30,7 @@ export class EmChatTopic {
     }
 
     scrollToBottom() {
-        _.defer(() => ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_SCROLL_TO, {}));
+        _.defer(() => ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_SCROLL_TO, 'max'));
     }
 
     attached() {
@@ -182,5 +182,10 @@ export class EmChatTopic {
         item.content = item.contentOld;
         $(txtRef).val(item.content);
         item.isEditing = false;
+    }
+
+    replyHandler() {
+        this.scrollToBottom();
+        _.defer(() => ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_INSERT, { content: '' }));
     }
 }
