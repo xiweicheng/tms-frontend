@@ -19,6 +19,7 @@ export class EmChatTopic {
         this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_TOPIC_MSG_SENDED, (payload) => {
             if (!_.some(this.chat.chatReplies, { id: payload.data.id })) {
                 this.chat.chatReplies.push(payload.data);
+                this.scrollToBottom();
             }
 
             poll.reset();
@@ -26,6 +27,10 @@ export class EmChatTopic {
         this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_MEMBER_ADD_OR_REMOVE, (payload) => {
             this.members = [nsCtx.memberAll, ...payload.members];
         });
+    }
+
+    scrollToBottom() {
+        _.defer(() => ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_SCROLL_TO, {}));
     }
 
     attached() {
@@ -77,6 +82,7 @@ export class EmChatTopic {
                 if (data.success) {
                     if (data.data.length > 0) {
                         this.chat.chatReplies = _.unionBy(this.chat.chatReplies, data.data, 'id');
+                        this.scrollToBottom();
                         resetCb();
                     }
                 } else {

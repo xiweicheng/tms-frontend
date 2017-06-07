@@ -31,6 +31,10 @@ export class EmChatSidebarRight {
             }
         });
 
+        this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_SCROLL_TO, (payload) => {
+            $('div[ref="scrollbarRef"]').scrollTo('max', 120);
+        });
+
     }
 
     /**
@@ -38,6 +42,7 @@ export class EmChatSidebarRight {
      */
     unbind() {
         this.subscribe.dispose();
+        this.subscribe1.dispose();
     }
 
     attachHandler(payload) {
