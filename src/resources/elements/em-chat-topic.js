@@ -17,7 +17,10 @@ export class EmChatTopic {
      */
     constructor() {
         this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_TOPIC_MSG_SENDED, (payload) => {
-            this.chat.chatReplies.push(payload.data);
+            if (!_.some(this.chat.chatReplies, { id: payload.data.id })) {
+                this.chat.chatReplies.push(payload.data);
+            }
+
             poll.reset();
         });
         this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_MEMBER_ADD_OR_REMOVE, (payload) => {
