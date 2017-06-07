@@ -20,7 +20,7 @@
                 <div class="ui horizontal divider">
                     ${chat.chatReplies.length} 回复
                 </div>
-                <div repeat.for="item of chat.chatReplies" class="comment tms-reply" data-id="${item.id}">
+                <div repeat.for="item of chat.chatReplies" class="comment tms-reply ${item.id == rid ? 'active' : ''}" data-id="${item.id}" task.bind="notifyRendered($last, item)">
                     <em-user-avatar user.bind="item.creator"></em-user-avatar>
                     <div class="content">
                         <a class="author" data-value="${item.creator.username}">${item.creator.name}</a>

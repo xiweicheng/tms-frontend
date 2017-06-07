@@ -110,9 +110,15 @@ export class ChatDirect {
         this.subscribe8 = ea.subscribe(nsCons.EVENT_CHAT_LAST_ITEM_RENDERED, (payload) => {
 
             if (payload.item.__scroll) {
+                this.replyId && ea.publish(nsCons.EVENT_CHAT_TOPIC_SHOW, {
+                    chat: _.find(this.chats, { id: +this.markId }),
+                    rid: this.replyId
+                });
                 this.scrollToAfterImgLoaded(this.markId ? this.markId : 'b');
                 delete payload.item.__scroll;
                 this.markId = null;
+                this.replyId = null;
+
             }
 
         });
@@ -164,6 +170,7 @@ export class ChatDirect {
         this._reset();
 
         this.markId = params.id;
+        this.replyId = params.rid;
         this.routeConfig = routeConfig;
 
         if (this.chatId) {
@@ -178,6 +185,10 @@ export class ChatDirect {
 
         if (this.markId) {
             history.replaceState(null, '', utils.removeUrlQuery('id'));
+        }
+
+        if (this.replyId) {
+            history.replaceState(null, '', utils.removeUrlQuery('rid'));
         }
 
         return Promise.all([chatService.loginUser(false).then((user) => {
@@ -706,6 +717,12 @@ export class ChatDirect {
 
     gotoChatItem(item) {
 
+        if (item.chatAt.chatReply) {
+            window.location = wurl('path') + `#/chat/${item.chatAt.chatChannel.channel.name}?id=${item.chatAt.chatChannel.id}&rid=${item.id}`;
+            window.location.reload();
+            return;
+        }
+
         let chat = _.find(this.chats, { id: item.id });
         if (chat) {
             this.scrollToAfterImgLoaded(item.id);
@@ -729,6 +746,7 @@ export class ChatDirect {
                 }, this.routeConfig);
             } else { // 定位消息在非当前聊天对象中
                 window.location = wurl('path') + `#/chat/${chatId}?id=${item.id}`;
+                window.location.reload();
             }
         }
 

@@ -485,10 +485,6 @@ export class EmChatTopMenu {
     }
 
     showTopicHandler(item) {
-        // if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_TOPIC)) {
-        //     this.toggleRightSidebar();
-        //     return;
-        // }
 
         this.activeType = nsCons.ACTION_TYPE_TOPIC;
 

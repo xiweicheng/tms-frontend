@@ -9,6 +9,7 @@ export class EmChatTopic {
     isSuper = nsCtx.isSuper;
     loginUser = nsCtx.loginUser;
     members = [];
+    offset = 0;
 
     chat = null;
 
@@ -30,7 +31,41 @@ export class EmChatTopic {
     }
 
     scrollToBottom() {
-        _.defer(() => ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_SCROLL_TO, 'max'));
+        this.scrollTo('max');
+    }
+
+    scrollTo(to) {
+        _.defer(() => ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_SCROLL_TO, to));
+    }
+
+    _scrollTo(to) {
+        if (to == 'b') {
+            $(this.commentsRef).closest('.scroll-content').scrollTo('max');
+        } else if (to == 't') {
+            $(this.commentsRef).closest('.scroll-content').scrollTo(0);
+        } else {
+            if (_.some(this.chat.chatReplies, { id: +to })) {
+                $(this.commentsRef).closest('.scroll-content').scrollTo(`.comment[data-id="${to}"]`, {
+                    offset: this.offset
+                });
+                $(this.commentsRef).find(`.comment[data-id]`).removeClass('active');
+                $(this.commentsRef).find(`.comment[data-id=${to}]`).addClass('active');
+            } else {
+                $(this.commentsRef).closest('.scroll-content').scrollTo('max');
+                toastr.warning(`消息[${to}]不存在,可能已经被删除!`);
+            }
+        }
+    }
+
+    scrollToAfterImgLoaded(to) {
+        _.defer(() => {
+            new ImagesLoaded(this.commentsRef).always(() => {
+                this._scrollTo(to);
+            });
+
+            this._scrollTo(to);
+        });
+
     }
 
     attached() {
@@ -99,8 +134,24 @@ export class EmChatTopic {
             return;
         }
 
-        this.chat = this.actived.payload.result;
+        this.chat = this.actived.payload.result.chat;
+        let lst = _.last(this.chat.chatReplies);
+        lst && (lst.__scroll = true);
+        this.rid = this.actived.payload.result.rid;
         this._poll();
+    }
+
+    notifyRendered(last, item) {
+        if (last) {
+            _.defer(() => {
+                if (item.__scroll) {
+                    this.scrollToAfterImgLoaded(this.rid ? this.rid : 'b');
+                    delete item.__scroll;
+                    // this.rid = null;
+
+                }
+            });
+        }
     }
 
     removeHandler(item) {

@@ -40,6 +40,11 @@ export class EmChatMsg {
         if (this.actived.payload.action == nsCons.ACTION_TYPE_AT) {
             this.page = result;
             this.chats = _.map(result.content, (item) => {
+                if (item.chatReply) {
+                    let chat = item.chatReply;
+                    chat.chatAt = item;
+                    return chat;
+                }
                 let chatChannel = item.chatChannel;
                 chatChannel.chatAt = item;
                 return chatChannel;
