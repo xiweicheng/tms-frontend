@@ -166,8 +166,8 @@ export class EmChatContentItem {
 
         item.content = $(txtRef).val();
 
-        var html = utils.md2html(item.content);
-        var htmlOld = utils.md2html(item.contentOld);
+        var html = utils.md2html(item.content, true);
+        var htmlOld = utils.md2html(item.contentOld, true);
 
         let url;
         let data;
@@ -332,7 +332,7 @@ export class EmChatContentItem {
         $.post('/admin/chat/channel/vote', {
             id: item.id,
             url: utils.getUrl(),
-            contentHtml: utils.md2html(item.content),
+            contentHtml: utils.md2html(item.content, true),
             type: isLike ? 'Zan' : 'Cai'
         }, (data, textStatus, xhr) => {
             if (data.success) {

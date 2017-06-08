@@ -529,7 +529,7 @@ export class EmBlogWrite {
                     content: content,
                     spaceId: '',
                     privated: false,
-                    contentHtml: utils.md2html(content)
+                    contentHtml: utils.md2html(content, true)
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
                         this.blog = data.data;
@@ -558,7 +558,7 @@ export class EmBlogWrite {
             this.sending = true;
             $('#blog-save-btn i').show();
 
-            var html = utils.md2html(content);
+            var html = utils.md2html(content, true);
             let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
 
             $.post('/admin/blog/update', {

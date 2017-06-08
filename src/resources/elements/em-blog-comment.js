@@ -442,7 +442,7 @@ export class EmBlogComment {
 
         this.sending = true;
 
-        var html = utils.md2html(content);
+        var html = utils.md2html(content, true);
         let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
 
         $.post(`/admin/blog/comment/create`, {
@@ -659,8 +659,8 @@ export class EmBlogComment {
 
         item.content = $(txtRef).val();
 
-        var html = utils.md2html(item.content);
-        var htmlOld = utils.md2html(item.contentOld);
+        var html = utils.md2html(item.content, true);
+        var htmlOld = utils.md2html(item.contentOld, true);
 
         let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
         $.post(`/admin/blog/comment/update`, {
@@ -698,7 +698,7 @@ export class EmBlogComment {
         $.post('/admin/blog/comment/vote', {
             cid: item.id,
             url: utils.getBasePath(),
-            contentHtml: utils.md2html(item.content),
+            contentHtml: utils.md2html(item.content, true),
             type: this.isZanDone(item) ? 'Cai' : 'Zan'
         }, (data, textStatus, xhr) => {
             if (data.success) {

@@ -414,7 +414,7 @@ export class EmBlogContent {
         $.post('/admin/blog/vote', {
             id: this.blog.id,
             url: utils.getBasePath(),
-            contentHtml: utils.md2html(this.blog.content),
+            contentHtml: utils.md2html(this.blog.content, true),
             type: this.isZanDone() ? 'Cai' : 'Zan'
         }, (data, textStatus, xhr) => {
             if (data.success) {

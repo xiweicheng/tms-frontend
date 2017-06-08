@@ -118,7 +118,7 @@ export class EmChatShare {
             href: `${this.basePath}#/chat/${this.isAt ? ('@' + this.loginUser.username) : this.channel.name}?id=${this.chat.id}`,
             id: this.chat.id,
             desc: this.desc,
-            html: utils.md2html(this.chat.content),
+            html: utils.md2html(this.chat.content, true),
             users: _.chain(this.shares).filter(item => item._type == 'user').map('username').join().value(),
             channels: _.chain(this.shares).filter(item => item._type == 'channel').map('name').join().value(),
             mails: _.chain(this.shares).filter(item => item._type == 'mail').map('mail').join().value()

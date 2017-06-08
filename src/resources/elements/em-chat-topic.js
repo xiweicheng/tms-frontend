@@ -201,8 +201,8 @@ export class EmChatTopic {
 
         item.content = $(txtRef).val();
 
-        var html = utils.md2html(item.content);
-        var htmlOld = utils.md2html(item.contentOld);
+        var html = utils.md2html(item.content, true);
+        var htmlOld = utils.md2html(item.contentOld, true);
 
         $.post(`/admin/chat/channel/reply/update`, {
             url: utils.getUrl(),

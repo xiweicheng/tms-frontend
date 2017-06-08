@@ -73,7 +73,7 @@ export class EmChatContentItemFootbar {
             url: nsCtx.isAt ? utils.getBasePath() : utils.getUrl(),
             meta: item.type == 'emoji' ? $(emojify.replace(item.value)).attr('src') : item.value,
             type: item.type == 'emoji' ? 'Emoji' : 'Tag',
-            contentHtml: utils.md2html(this.chat.content),
+            contentHtml: utils.md2html(this.chat.content, true),
             name: item.value,
             desc: item.label,
             id: this.chat.id,
