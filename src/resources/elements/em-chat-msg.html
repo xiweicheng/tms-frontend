@@ -9,22 +9,23 @@
                     <a class="author" data-value="${item.creator.username}">${item.creator.name}</a>
                     <div class="metadata">
                         <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
+                        <!-- <div style="cursor: pointer;" click.delegate="gotoChatHandler(item)" class="tms-goto" title="定位到消息"><i class="large crosshairs icon"></i></div> -->
                     </div>
                     <div ref="mkbodyRef" class="text markdown-body ${item.isOpen ? 'tms-open' : ''}" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
                     <div class="actions">
                         <div if.bind="item.chatStow" ui-dropdown-action style="margin-right: 5px;" class="ui icon top left pointing dropdown" title="移除消息收藏">
-                            <i class="large icons"><i class="empty star icon"></i><i class="corner remove icon"></i></i>
+                            <i class="large icons"><i class="empty star icon"></i><i class="corner red remove icon"></i></i>
                             <div class="menu">
                                 <div style="color: red;" class="item" click.delegate="removeStowHandler(item)"><i class="trash outline icon"></i>确认移除</div>
                             </div>
                         </div>
                         <div if.bind="item.chatPin" ui-dropdown-action style="margin-right: .75em;" class="ui icon top left pointing dropdown" title="解除消息固定">
-                            <i class="large icons"><i class="pin icon"></i><i class="corner remove icon" style="right: -3px;"></i></i>
+                            <i class="large icons"><i class="pin icon"></i><i class="corner red remove icon" style="right: -3px;"></i></i>
                             <div class="menu">
                                 <div style="color: red;" class="item" click.delegate="removePinHandler(item)"><i class="trash outline icon"></i>确认解除</div>
                             </div>
                         </div>
-                        <a if.bind="item.chatAt" click.delegate="removeAtHandler(item)" class="tms-read" title="标记@消息已读" href=""><i class="large icons"><i class="at icon"></i><i class="corner remove icon"></i></i></a>
+                        <a if.bind="item.chatAt" click.delegate="removeAtHandler(item)" class="tms-read" title="标记@消息已读" href=""><i class="large icons"><i class="at icon"></i><i class="corner remove red icon"></i></i></a>
                         <a click.delegate="gotoChatHandler(item)" class="tms-goto" href="" title="定位到消息"><i class="large crosshairs icon"></i></a>
                         <a class="tms-copy tms-clipboard" data-clipboard-text="${item.content}" title="复制消息内容到剪贴板"><i class="copy icon large"></i></a>
                         <a class="tms-share tms-clipboard" data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}" title="复制消息链接到剪贴板"><i class="share alternate icon large"></i></a>

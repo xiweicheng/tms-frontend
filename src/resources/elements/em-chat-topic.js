@@ -45,7 +45,7 @@ export class EmChatTopic {
             $(this.commentsRef).closest('.scroll-content').scrollTo(0);
         } else {
             if (_.some(this.chat.chatReplies, { id: +to })) {
-                $(this.commentsRef).closest('.scroll-content').scrollTo(`.comment[data-id="${to}"]`, {
+                $(this.commentsRef).closest('.scroll-content').scrollTo(`.tms-reply.comment[data-id="${to}"]`, {
                     offset: this.offset
                 });
                 $(this.commentsRef).find(`.comment[data-id]`).removeClass('active');

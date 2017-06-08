@@ -381,7 +381,7 @@ export class ChatDirect {
             $(this.commentsRef).parent('.scroll-content').scrollTo(0);
         } else {
             if (_.some(this.chats, { id: +to })) {
-                $(this.commentsRef).parent('.scroll-content').scrollTo(`.comment[data-id="${to}"]`, {
+                $(this.commentsRef).parent('.scroll-content').scrollTo(`.em-chat-content-item.comment[data-id="${to}"]`, {
                     offset: this.offset
                 });
                 $(this.commentsRef).find(`.comment[data-id]`).removeClass('active');

@@ -3,7 +3,7 @@
     <div class="em-blog-comment">
         <div class="ui minimal comments" ref="blogCommentsRef">
             <h3 title="快速评论 (r)" class="ui dividing header"><i class="blue comments outline icon"></i> ${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>
-            <div repeat.for="item of comments" class="comment" data-id="${item.id}">
+            <div repeat.for="item of comments" class="comment tms-blog-comment" data-id="${item.id}">
                 <em-user-avatar user.bind="item.creator"></em-user-avatar>
                 <div class="content">
                     <a class="author" data-value=${item.creator.username}>${item.creator.name}</a>

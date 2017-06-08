@@ -575,7 +575,7 @@ export class EmBlogComment {
             $('.em-blog-content').scrollTo(0);
         } else {
             if (_.some(this.comments, { id: +to })) {
-                $('.em-blog-content').scrollTo(`.comment[data-id="${to}"]`, {
+                $('.em-blog-content').scrollTo(`.tms-blog-comment.comment[data-id="${to}"]`, {
                     offset: this.offset
                 });
                 $('.em-blog-content').find(`.comment[data-id]`).removeClass('active');
