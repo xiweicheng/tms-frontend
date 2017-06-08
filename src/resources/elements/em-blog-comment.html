@@ -13,7 +13,7 @@
                             <i click.delegate="rateHandler(item)" style="cursor: pointer;" title="赞一下" class="cbutton cbutton--effect-novak thumbs ${item.voteZan && item.voteZan.split(',').includes(loginUser.username) ? '' : 'outline'} up icon"></i> <span title="${item.voteZan}">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>
                         </div>
                     </div>
-                    <div swipebox show.bind="!item.isEditing" ref="mkbodyRef" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
+                    <div fancybox show.bind="!item.isEditing" ref="mkbodyRef" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
                     <div class="textcomplete-container" show.bind="item.isEditing">
                         <div class="append-to"></div>
                     </div>

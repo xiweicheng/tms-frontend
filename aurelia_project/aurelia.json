@@ -130,6 +130,15 @@
             ]
           },
           {
+            "name": "fancybox",
+            "path": "../node_modules/@fancyapps/fancybox",
+            "main": "dist/jquery.fancybox.min",
+            "deps": ["jquery"],
+            "resources": [
+              "dist/jquery.fancybox.min.css"
+            ]
+          },
+          {
             "name": "simplemde",
             "path": "../node_modules/simplemde",
             "main": "dist/simplemde.min",

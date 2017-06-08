@@ -14,7 +14,7 @@
         <a click.delegate="tabClickHandler('Image')" class="active item" data-tab="Image"><i show.bind="!ajax || ajax.readyState == 4 || type == 'Attachment'" class="file image outline icon"></i><i show.bind="ajax && ajax.readyState != 4 && type == 'Image'" class="spinner loading icon"></i>图片${(page && type == 'Image') ? '(' + page.totalElements + ')' : ''}</a>
         <a click.delegate="tabClickHandler('Attachment')" class="item" data-tab="Attachment"><i show.bind="!ajax || ajax.readyState == 4 || type == 'Image'" class="file outline icon"></i><i show.bind="ajax && ajax.readyState != 4 && type == 'Attachment'" class="spinner loading icon"></i>文件${(page && type == 'Attachment') ? '(' + page.totalElements + ')' : ''}</a>
     </div>
-    <div swipebox class="ui active tab basic segment em-chat-attach" data-tab="Image">
+    <div fancybox class="ui active tab basic segment em-chat-attach" data-tab="Image">
         <h1 if.bind="!attachs || attachs.length == 0" class="centered ui header">暂无图片</h1>
         <div if.bind="type == 'Image'" class="ui small bordered images">
             <img repeat.for="item of attachs" if.bind="item.type == 'Image'" src="/${item.path + item.uuidName}" alt="${item.name}" title="${item.username | userName}上传于${item.createDate | timeago}">

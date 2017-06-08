@@ -31,6 +31,7 @@ export function configure(aurelia) {
         'resources/attributes/attr-textcomplete',
         'resources/attributes/attr-scrollbar',
         'resources/attributes/attr-modaal',
+        'resources/attributes/attr-fancybox',
         'resources/elements/em-modal',
         'resources/elements/em-dropdown',
         'resources/elements/em-checkbox',
