@@ -24,32 +24,24 @@ export class AttrFancyboxCustomAttribute {
             });
 
             $.fancybox.open(imgs, {
-                // i18n: {
-                //     'en': {
-                //         CLOSE: 'Close',
-                //         NEXT: 'Next',
-                //         PREV: 'Previous',
-                //         ERROR: 'The requested content cannot be loaded. <br/> Please try again later.',
-                //         PLAY_START: 'Start slideshow',
-                //         PLAY_STOP: 'Pause slideshow',
-                //         FULL_SCREEN: 'Full screen',
-                //         THUMBS: 'Thumbnails'
-                //     },
-                //     'zh': {
-                //         CLOSE: '关闭',
-                //         NEXT: '下一张',
-                //         PREV: '上一张',
-                //         ERROR: '请求内容不能加载. <br/> 请稍后重试.',
-                //         PLAY_START: '开始幻灯片',
-                //         PLAY_STOP: '暂停幻灯片',
-                //         FULL_SCREEN: '全屏',
-                //         THUMBS: '缩略图'
-                //     }
-                // },
-                // lang: 'zh',
-                // loop: false,
-                // animationEffect: "zoom-in-out", // false zoom fade zoom-in-out
-                // transitionEffect: "zoom-in-out", // false fade slide circular tube zoom-in-out rotate
+                i18n: {
+                    'zh': {
+                        CLOSE: '关闭',
+                        NEXT: '下一张',
+                        PREV: '上一张',
+                        ERROR: '请求内容不能加载. <br/> 请稍后重试.',
+                        PLAY_START: '开始幻灯片',
+                        PLAY_STOP: '暂停幻灯片',
+                        FULL_SCREEN: '全屏',
+                        THUMBS: '缩略图'
+                    }
+                },
+                lang: 'zh',
+                loop: true,
+                animationEffect: "zoom-in-out", // false zoom fade zoom-in-out
+                transitionEffect: "slide", // false fade slide circular tube zoom-in-out rotate
+                arrows: true,
+                infobar: true,
             }, initialIndexOnArray);
 
         });
