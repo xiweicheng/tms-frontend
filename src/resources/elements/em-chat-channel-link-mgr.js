@@ -9,7 +9,7 @@ export class EmChatChannelLinkMgr {
 
     links = [];
 
-    channelChanged(news, old) {
+    getChannelLinks(news, old) {
         if (this.channel) {
             $.get('/admin/link/listBy', {
                 channelId: this.channel.id
@@ -77,18 +77,10 @@ export class EmChatChannelLinkMgr {
     }
 
     showHandler() {
-        this._reset();
+        this.getChannelLinks();
     }
 
-    _reset() {}
-
-    /**
-     * 当视图被附加到DOM中时被调用
-     */
-    attached() {}
-
     show() {
-        this.channelChanged();
         this.emModal.show({ autoDimmer: false });
     }
 

@@ -73,7 +73,8 @@ export class ChatDirect {
         });
 
         this.subscribe3 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_CREATED, (payload) => {
-            this.channels.splice(0, 0, payload.channel);
+            // this.channels.splice(0, 0, payload.channel);
+            this.channels.push(payload.channel);
         });
 
         this.subscribe4 = ea.subscribe(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, (payload) => {
@@ -191,13 +192,13 @@ export class ChatDirect {
             history.replaceState(null, '', utils.removeUrlQuery('rid'));
         }
 
-        return Promise.all([chatService.loginUser(false).then((user) => {
+        return Promise.all([chatService.loginUser(true).then((user) => {
                 this.loginUser = user;
                 nsCtx.loginUser = user;
                 nsCtx.isSuper = utils.isSuperUser(this.loginUser);
                 nsCtx.isAdmin = utils.isAdminUser(this.loginUser);
             }),
-            chatService.listUsers(false).then((users) => {
+            chatService.listUsers(true).then((users) => {
                 this.users = users;
                 nsCtx.users = users;
                 window.tmsUsers = users;
@@ -223,7 +224,7 @@ export class ChatDirect {
 
                 }
             }),
-            chatService.listChannels(false).then((channels) => {
+            chatService.listChannels(true).then((channels) => {
                 this.channels = channels;
                 nsCtx.channels = channels;
                 if (!this.isAt) {

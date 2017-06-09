@@ -96,7 +96,7 @@ export class Blog {
                 nsCtx.isSuper = utils.isSuperUser(user);
                 nsCtx.isAdmin = utils.isAdminUser(user);
             }),
-            chatService.listUsers().then((users) => {
+            chatService.listUsers(true).then((users) => {
                 nsCtx.users = users;
                 window.tmsUsers = users;
             })
