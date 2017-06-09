@@ -2,7 +2,7 @@
     <require from="./em-chat-sidebar-left.css"></require>
     <div class="ui left visible sidebar tms-left-sidebar">
         <div class="tms-header">
-            <h1 class="ui header"><a href="/"><img ref="logoRef" src="img/tms-x32.png" alt=""></a><a href="/admin">TMS沟通</a></h1>
+            <h1 class="ui header"><a href="/"><img ref="logoRef" src="img/tms-x32.png" alt=""></a><a style="margin-left: 16px;" href="/admin">TMS沟通</a></h1>
             <input value.bind="filter" keyup.trigger="chatToUserFilerKeyupHanlder($event)" type="text" placeholder="过滤沟通频道|用户">
             <i show.bind="filter" title="清空过滤输入" click.delegate="clearFilterHandler()" class="close icon link"></i>
         </div>
