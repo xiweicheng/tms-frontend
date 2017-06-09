@@ -61,6 +61,12 @@ export class EmChatChannelLinkMgr {
     }
 
     updateHandler(item) {
+
+        if (item.oldTitle == item.title && item.oldHref == item.href) {
+            item.isEditing = false;
+            return;
+        }
+        
         $.post('/admin/link/update', {
             id: item.id,
             title: item.title,
