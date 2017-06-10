@@ -121,10 +121,21 @@ export class EmChatTopic {
                         resetCb();
                     }
                 } else {
-                    toastr.error(data.data);
+                    // toastr.error(data.data);
                     stopCb();
                 }
             });
+        });
+    }
+
+    _getFollowers() {
+        $.get('/admin/chat/channel/follower/list', {
+            id: this.chat.id
+        }, (data) => {
+            if (data.success) {
+                this.followers = data.data;
+                this.isFollower = _.some(this.followers, f => f.creator.username == this.loginUser.username);
+            }
         });
     }
 
@@ -139,6 +150,7 @@ export class EmChatTopic {
         lst && (lst.__scroll = true);
         this.rid = this.actived.payload.result.rid;
         this._poll();
+        this._getFollowers();
     }
 
     notifyRendered(last, item) {
@@ -238,5 +250,18 @@ export class EmChatTopic {
     replyHandler() {
         this.scrollToBottom();
         _.defer(() => ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_INSERT, { content: '' }));
+    }
+
+    followerHandler() {
+        $.post(`/admin/chat/channel/follower/${this.isFollower ? 'remove' : 'add'}`, {
+            id: this.chat.id
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                toastr.success(`${this.isFollower ? '取消' : ''}关注话题成功!`);
+                this.isFollower = !this.isFollower;
+            } else {
+                toastr.error(data.data);
+            }
+        });
     }
 }
