@@ -1,6 +1,6 @@
 <template>
     <require from="./em-chat-sidebar-left.css"></require>
-    <div ref="sidebar" class="ui left ${!isMobile ? 'visible' : ''} ${isLeftBarHide ? 'hide-bar' : ''} sidebar tms-left-sidebar">
+    <div ref="sidebar" class="ui left visible ${isLeftBarHide ? 'hide-bar' : ''} sidebar tms-left-sidebar">
         <div class="tms-header">
             <h1 class="ui header"><a href="/"><img ref="logoRef" src="img/tms-x32.png" alt=""></a><a style="margin-left: 16px;" href="/admin">TMS沟通</a></h1>
             <input value.bind="filter" keyup.trigger="chatToUserFilerKeyupHanlder($event)" type="text" placeholder="过滤沟通频道|用户">
