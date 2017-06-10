@@ -215,4 +215,14 @@ export class EmChatSidebarLeft {
         return true;
     }
 
+    channelHandler() {
+        ea.publish(nsCons.EVENT_CHAT_TOGGLE_LEFT_SIDEBAR, true); // 移动端,切换沟通对象时,隐藏左侧边栏
+        return true;
+    }
+
+    userHandler() {
+        ea.publish(nsCons.EVENT_CHAT_TOGGLE_LEFT_SIDEBAR, true); // 移动端,切换沟通对象时,隐藏左侧边栏
+        return true;
+    }
+
 }
