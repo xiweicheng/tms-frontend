@@ -1,9 +1,10 @@
 <template>
     <require from="./chat-direct.css"></require>
-    <div ref="chatContainerRef" class="tms-chat-direct">
+    <div ref="chatContainerRef" class="tms-chat-direct ${isLeftBarHide ? 'hide-bar' : ''}">
         <em-chat-top-menu users.bind="users" chat-user.bind="user" login-user.bind="loginUser" channels.bind="channels" channel.bind="channel" login-user.bind="loginUser" chat-id.bind="chatId" chat-to.bind="chatTo" is-at.bind="isAt"></em-chat-top-menu>
         <em-chat-sidebar-left users.bind="users" login-user.bind="loginUser" channels.bind="channels" chat-to.bind="chatTo" is-at.bind="isAt"></em-chat-sidebar-left>
         <div ref="contentRef" class="tms-content ${isRightSidebarShow ? 'tms-sidebar-show' : ''}">
+            <div click.delegate="dimmerHandler()" class="ui inverted dimmer"></div>
             <div ref="contentBodyRef" class="tms-content-body">
                 <div ref="scrollbarRef" class="tms-comments-container" scrollbar>
                     <div ref="commentsRef" class="ui basic segment minimal selection list segment comments">

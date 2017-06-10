@@ -156,8 +156,18 @@
         }
     }
     @media only screen and (max-width: 767px) {
-        .tms-left-sidebar {
-            display: none;
+        .tms-content > .ui.dimmer {
+            display: block;
+            opacity: 1;
+            z-index: 1;
+        }
+        &.hide-bar {
+            .tms-content > .ui.dimmer {
+                display: none;
+            }
+        }
+        .tms-left-sidebar.hide-bar {
+            left: -220px;
         }
         .tms-right-sidebar {
             position: fixed;

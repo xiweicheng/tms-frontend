@@ -10,6 +10,8 @@ export class EmChatSidebarLeft {
     @bindable isAt;
     filter = '';
     isSuper = nsCtx.isSuper;
+    isMobile = utils.isMobile();
+    isLeftBarHide = true;
 
     usersChanged() {
         this._filter();
@@ -35,6 +37,17 @@ export class EmChatSidebarLeft {
         this.subscribe1 = ea.subscribe(nsCons.EVENT_SYSTEM_LINKS_REFRESH, (payload) => {
             this._refreshSysLinks();
         });
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_TOGGLE_LEFT_SIDEBAR, (payload) => {
+            if (payload) {
+                this.isLeftBarHide = payload;
+            } else {
+                this.isLeftBarHide = !this.isLeftBarHide;
+            }
+            // $(this.sidebar)
+            //     .sidebar('setting', 'transition', 'overlay')
+            //     .sidebar('toggle');
+
+        });
     }
 
     _refreshSysLinks() {
@@ -53,6 +66,7 @@ export class EmChatSidebarLeft {
     unbind() {
         this.subscribe.dispose();
         this.subscribe1.dispose();
+        this.subscribe2.dispose();
     }
 
     bind(bindingCtx, overrideCtx) {
@@ -66,6 +80,9 @@ export class EmChatSidebarLeft {
         $(this.logoRef).on('mouseenter', (event) => {
             $(this.logoRef).animateCss('flip');
         });
+        // $(this.sidebar).sidebar({
+
+        // });
     }
 
     _filter() {

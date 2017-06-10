@@ -496,4 +496,8 @@ export class EmChatTopMenu {
         this.toggleRightSidebar(true);
 
     }
+
+    toggleLeftBarHandler() {
+        ea.publish(nsCons.EVENT_CHAT_TOGGLE_LEFT_SIDEBAR, null);
+    }
 }

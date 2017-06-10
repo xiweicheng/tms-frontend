@@ -25,6 +25,7 @@ export class ChatDirect {
     users = [];
     channels = [];
     chatTo = null;
+    isLeftBarHide = true;
 
     /**
      * 构造函数
@@ -137,6 +138,16 @@ export class ChatDirect {
             this.scrollTo(payload.target);
 
         });
+
+        this.subscribe11 = ea.subscribe(nsCons.EVENT_CHAT_TOGGLE_LEFT_SIDEBAR, (payload) => {
+
+            if (payload) {
+                this.isLeftBarHide = payload;
+            } else {
+                this.isLeftBarHide = !this.isLeftBarHide;
+            }
+
+        });
     }
 
     /**
@@ -154,6 +165,7 @@ export class ChatDirect {
         this.subscribe8.dispose();
         this.subscribe9.dispose();
         this.subscribe10.dispose();
+        this.subscribe11.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();
@@ -782,4 +794,7 @@ export class ChatDirect {
         }
     }
 
+    dimmerHandler() {
+        ea.publish(nsCons.EVENT_CHAT_TOGGLE_LEFT_SIDEBAR, true);
+    }
 }
