@@ -54,13 +54,20 @@ export class EmChatContentItemFootbar {
         $([this.addEmojiRef])
             .popup({
                 inline: true,
-                hoverable: true
+                hoverable: true,
+                delay: {
+                    show: 500,
+                    hide: 300
+                }
             });
         $([this.addTagRef])
             .popup({
                 inline: true,
                 hoverable: true,
-                // position: 'top center',
+                delay: {
+                    show: 500,
+                    hide: 300
+                },
                 onHide: () => {
                     this.isCustomTag = false;
                     $(this.tagRef).val('');

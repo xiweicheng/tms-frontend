@@ -42,11 +42,37 @@ export class EmChatContentItem {
         // 消息popup
         $('.tms-chat-direct').on('mouseenter', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', (event) => {
             event.preventDefault();
-            var $a = $(event.currentTarget);
-            ea.publish(nsCons.EVENT_CHAT_MSG_POPUP_SHOW, {
-                id: utils.urlQuery('id', $a.attr('href')),
-                target: event.currentTarget
-            });
+            let target = event.currentTarget;
+
+            if (this.hoverMsgTimeoutRef) {
+                if (this.hoverMsgTarget === target) {
+                    return;
+                } else {
+                    clearTimeout(this.hoverMsgTimeoutRef);
+                    this.hoverMsgTimeoutRef = null;
+                }
+            }
+
+            this.hoverMsgTarget = target;
+
+            this.hoverMsgTimeoutRef = setTimeout(() => {
+                ea.publish(nsCons.EVENT_CHAT_MSG_POPUP_SHOW, {
+                    id: utils.urlQuery('id', $(target).attr('href')),
+                    target: target
+                });
+                this.hoverMsgTimeoutRef = null;
+            }, 500);
+
+        });
+
+        $('.tms-chat-direct').on('mouseleave', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', (event) => {
+            event.preventDefault();
+            if (this.hoverMsgTimeoutRef) {
+                if (this.hoverMsgTarget === event.currentTarget) {
+                    clearTimeout(this.hoverMsgTimeoutRef);
+                    this.hoverMsgTimeoutRef = null;
+                }
+            }
         });
 
         // wiki dir
@@ -67,12 +93,40 @@ export class EmChatContentItem {
         // 用户信息popup
         $('.tms-chat-direct').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
             event.preventDefault();
-            var $a = $(event.currentTarget);
-            ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {
-                channel: this.channel,
-                username: $a.attr('data-value'),
-                target: event.currentTarget
-            });
+            let target = event.currentTarget;
+
+            if (this.hoverTimeoutRef) {
+                if (this.hoverUserTarget === target) {
+                    return;
+                } else {
+                    clearTimeout(this.hoverTimeoutRef);
+                    this.hoverTimeoutRef = null;
+                }
+            }
+
+            this.hoverUserTarget = target;
+
+            this.hoverTimeoutRef = setTimeout(() => {
+                ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {
+                    channel: this.channel,
+                    username: $(target).attr('data-value'),
+                    target: target
+                });
+                this.hoverTimeoutRef = null;
+            }, 500);
+
+        });
+
+        // 用户信息popup
+        $('.tms-chat-direct').on('mouseleave', 'span[data-value].at-user:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+            event.preventDefault();
+            if (this.hoverTimeoutRef) {
+                if (this.hoverUserTarget === event.currentTarget) {
+                    clearTimeout(this.hoverTimeoutRef);
+                    this.hoverTimeoutRef = null;
+                }
+            }
+
         });
 
         this.initHotkeys();

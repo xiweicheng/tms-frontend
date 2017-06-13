@@ -17,7 +17,7 @@ export class EmChatMsgPopup {
                 return;
             }
 
-            $(this.target).popup({
+            $(this.target).popup('is hidden') && $(this.target).popup({
                 popup: this.popup,
                 hoverable: true,
                 inline: false,
