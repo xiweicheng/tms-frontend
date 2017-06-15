@@ -7,7 +7,7 @@
                 <div class="header"><i class="icon alarm ${chatAlarm.off ? 'mute' : ''} outline"></i> 桌面通知设置</div>
                 <div class="item ${chatAlarm.off ? 'disabled' : ''}" click.delegate="alarmHandler('ats')"><i class="icon toggle ${chatAlarm.ats && !chatAlarm.off ? 'on' : 'off'}"></i>提醒@消息</div>
                 <div class="item ${chatAlarm.off ? 'disabled' : ''}" click.delegate="alarmHandler('news')"><i class="icon toggle ${chatAlarm.news && !chatAlarm.off ? 'on' : 'off'}"></i>提醒新消息</div>
-                <div class="item" click.delegate="alarmHandler('off')"><i class="icon toggle ${chatAlarm.off ? 'on' : 'off'}"></i>静音不提醒</div>
+                <div class="item" click.delegate="alarmHandler('off')"><i class="icon toggle ${chatAlarm.off ? 'on' : 'off'}"></i>静默不提醒</div>
             </div>
         </div>
     </div>
