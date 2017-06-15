@@ -16,6 +16,11 @@
                             <a if.bind="!isAt" click.delegate="followerHandler()" class="tms-follower" title="${isFollower ? '取消关注此话题消息' : '关注此话题消息'}"><i class="large ${isFollower ? 'hide' : 'unhide'} icon link"></i></a>
                             <a if.bind="!isAt" click.delegate="replyHandler()" class="tms-reply" title="回复此话题消息"><i class="large reply icon link"></i></a>
                         </div>
+                        <div class="tools">
+                            <button click.delegate="refreshHandler()" title="刷新同步" class="mini circular ui icon button">
+                                <i class="refresh icon"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="ui horizontal divider">

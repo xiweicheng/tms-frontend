@@ -264,4 +264,13 @@ export class EmChatTopic {
             }
         });
     }
+
+    refreshHandler() {
+        $.get('/admin/chat/channel/get', {
+            id: this.chat.id
+        }, (data) => {
+            _.extend(this.chat, data.data);
+            toastr.success('刷新同步成功!');
+        });
+    }
 }
