@@ -23,6 +23,8 @@ export class EmChatTopic {
                 this.scrollToBottom();
             }
 
+            this.isFollower = true; // 回复话题会自动关注该话题
+
             poll.reset();
         });
         this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_MEMBER_ADD_OR_REMOVE, (payload) => {
@@ -271,6 +273,20 @@ export class EmChatTopic {
         }, (data) => {
             _.extend(this.chat, data.data);
             toastr.success('刷新同步成功!');
+        });
+    }
+
+    refreshReplyHandler(item) {
+        $.get('/admin/chat/channel/reply/get', {
+            rid: item.id
+        }, (data) => {
+            if (item.version != data.data.version) {
+                _.extend(item, data.data);
+                toastr.success('刷新同步成功!');
+            } else {
+                item.chatReplies = data.data.chatReplies;
+                toastr.info('消息内容暂无变更!');
+            }
         });
     }
 }

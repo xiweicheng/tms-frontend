@@ -58,10 +58,18 @@
                                 </div>
                             </a>
                         </div>
+                        <div class="tools">
+                            <button click.delegate="refreshReplyHandler(item)" title="刷新同步" class="mini circular ui icon button">
+                                <i class="refresh icon"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             <em-chat-topic-input channel.bind="channel" chat.bind="chat"></em-chat-topic-input>
+            <div style="font-size: 12px; color: lightgray; position: relative; left: 13px; top: -20px; display: inline-block;">
+                <i class="info circle icon"></i> 回复话题消息会自动关注话题,接收话题更新邮件通知
+            </div>
         </div>
     </div>
 </template>
