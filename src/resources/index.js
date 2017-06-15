@@ -60,6 +60,7 @@ export function configure(aurelia) {
         'resources/elements/em-chat-content-item-footbar',
         'resources/elements/em-chat-topic',
         'resources/elements/em-chat-topic-input',
+        'resources/elements/em-chat-settings',
         'resources/elements/em-blog-write',
         'resources/elements/em-blog-left-sidebar',
         'resources/elements/em-blog-right-sidebar',

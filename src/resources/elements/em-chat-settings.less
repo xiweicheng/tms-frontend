@@ -1,0 +1,16 @@
+@import '../../variables';
+.em-chat-settings {
+    position: fixed;
+    top: 22px;
+    left: 185px;
+    display: inline-block;
+    z-index: 102;
+    color: @sidebar-font-color;
+    -webkit-transition: all .15s ease-out 0s;
+    transition: all .15s ease-out 0s;
+    @media only screen and (max-width: 767px) {
+        &.hidden {
+            left: -15px;
+        }
+    }
+}
