@@ -730,7 +730,7 @@ export class ChatDirect {
 
     gotoChatItem(item) {
 
-        if (item.chatAt.chatReply) {
+        if (item.chatAt && item.chatAt.chatReply) {
 
             let chat = _.find(this.chats, c => _.some(c.chatReplies, { id: item.id }));
 
