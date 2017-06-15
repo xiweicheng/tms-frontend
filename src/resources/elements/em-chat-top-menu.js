@@ -275,6 +275,11 @@ export class EmChatTopMenu {
         this.ajaxStow = $.get('/admin/chat/channel/getStows', (data) => {
             if (data.success) {
                 let stowChats = _.map(data.data, (item) => {
+                    if (item.chatReply) {
+                        let chat = item.chatReply;
+                        chat.chatStow = item;
+                        return chat;
+                    }
                     let chatChannel = item.chatChannel;
                     chatChannel.chatStow = item;
                     return chatChannel;

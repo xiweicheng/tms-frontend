@@ -32,6 +32,7 @@
                         <a class="author" data-value="${item.creator.username}">${item.creator.name}</a>
                         <div class="metadata">
                             <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
+                            <a click.delegate="stowHandler(item)" class="tms-stow" title="收藏该消息"><i class="${item.isStow ? '' : 'empty'} star link icon"></i></a>
                         </div>
                         <div ref="mkbodyRef2" show.bind="!item.isEditing" fancybox class="text markdown-body" style="max-height: none;" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef2"></div>
                         <div class="textcomplete-container" show.bind="item.isEditing">

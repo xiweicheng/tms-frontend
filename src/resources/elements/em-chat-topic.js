@@ -289,4 +289,42 @@ export class EmChatTopic {
             }
         });
     }
+
+    stowHandler(item) {
+        if (item.isStow) {
+            this.unStowHandler(item);
+            return;
+        }
+
+        $.post('/admin/chat/channel/stow', {
+            id: this.chat.id,
+            rid: item.id
+        }, (data, textStatus, xhr) => {
+            item.isStow = true;
+            if (data.success) {
+                item.stowId = data.data.id;
+                toastr.success('收藏消息成功!');
+            } else {
+                item.stowId = (data.msgs && data.msgs.length > 0) ? data.msgs[0].id : '';
+                // toastr.error(data.data, '收藏消息失败!');
+            }
+        });
+    }
+
+    unStowHandler(item) {
+        if (!item.stowId) {
+            return;
+        }
+        $.post('/admin/chat/channel/removeStow', {
+            id: item.stowId
+        }, (data, textStatus, xhr) => {
+            item.isStow = false;
+            item.stowId = '';
+            if (data.success) {
+                toastr.success('移除收藏消息成功!');
+            } else {
+                // toastr.error(data.data, '移除收藏消息失败!');
+            }
+        });
+    }
 }
