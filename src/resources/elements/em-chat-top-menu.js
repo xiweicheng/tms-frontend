@@ -323,6 +323,7 @@ export class EmChatTopMenu {
     logoutHandler() {
         $.post('/admin/logout').always(() => {
             utils.redirect2Login();
+            window.location.reload();
         });
     }
 

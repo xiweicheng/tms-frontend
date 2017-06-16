@@ -660,6 +660,24 @@ export class CommonUtils {
         s = s.replace(/<br>/g, "\n");
         return s;
     }
+
+    getAlarm() {
+
+        let chatAlarm = {
+            ats: 1,
+            news: 1,
+            off: 0,
+        };
+
+        if (localStorage) {
+            let alarm = localStorage.getItem(nsCons.KEY_CHAT_ALARM);
+            if (alarm) {
+                _.extend(chatAlarm, JSON.parse(alarm));
+            }
+        }
+
+        return chatAlarm;
+    }
 }
 
 export default new CommonUtils();

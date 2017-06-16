@@ -126,6 +126,7 @@ export class EmChatTopic {
             }, (data) => {
                 if (data.success) {
                     if (data.data.length > 0) {
+                        this._checkNeedNotify(data);
                         this.chat.chatReplies = _.unionBy(this.chat.chatReplies, data.data, 'id');
                         this.scrollToBottom();
                         resetCb();
@@ -136,6 +137,29 @@ export class EmChatTopic {
                 }
             });
         });
+    }
+
+    _checkNeedNotify(data) {
+
+        if (data.data.length == 0) {
+            return false;
+        }
+
+        let hasOwn = _.some(data.data, (item) => {
+            return item.creator.username == this.loginUser.username;
+        });
+
+        let alarm = utils.getAlarm();
+        if (!hasOwn && !alarm.off && alarm.news) {
+            push.create('TMS沟通频道消息通知', {
+                body: `频道[${this.channel.title}]有新的话题回复消息了!`,
+                icon: {
+                    x16: 'img/tms-x16.ico',
+                    x32: 'img/tms-x32.png'
+                },
+                timeout: 5000
+            });
+        }
     }
 
     _getFollowers() {

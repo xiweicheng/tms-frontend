@@ -444,7 +444,7 @@ export class ChatDirect {
         }, (data) => {
             if (data.success) {
 
-                let alarm = this._getAlarm();
+                let alarm = utils.getAlarm();
 
                 if (this.countAt && data.data.countAt > this.countAt && !alarm.off && alarm.ats) {
                     let cnt = data.data.countAt - this.countAt;
@@ -520,24 +520,6 @@ export class ChatDirect {
         });
     }
 
-    _getAlarm() {
-
-        let chatAlarm = {
-            ats: 1,
-            news: 1,
-            off: 0,
-        };
-
-        if (localStorage) {
-            let alarm = localStorage.getItem(nsCons.KEY_CHAT_ALARM);
-            if (alarm) {
-                _.extend(chatAlarm, JSON.parse(alarm));
-            }
-        }
-
-        return chatAlarm;
-    }
-
     _checkNeedNotify(data) {
 
         if (data.data.length == 0) {
@@ -548,7 +530,7 @@ export class ChatDirect {
             return item.creator.username == this.loginUser.username;
         });
 
-        let alarm = this._getAlarm();
+        let alarm = utils.getAlarm();
         if (!hasOwn && !alarm.off && alarm.news) {
             push.create('TMS沟通频道消息通知', {
                 body: `频道[${this.channel.title}]有新消息了!`,
