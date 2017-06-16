@@ -34,28 +34,11 @@ export class EmChatSidebarLeft {
         this.subscribe = ea.subscribe(nsCons.EVENT_CHANNEL_ACTIONS, (payload) => {
             this[payload.action](payload.item);
         });
-        this.subscribe1 = ea.subscribe(nsCons.EVENT_SYSTEM_LINKS_REFRESH, (payload) => {
-            this._refreshSysLinks();
-        });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_TOGGLE_LEFT_SIDEBAR, (payload) => {
             if (payload) {
                 this.isLeftBarHide = payload;
             } else {
                 this.isLeftBarHide = !this.isLeftBarHide;
-            }
-            // $(this.sidebar)
-            //     .sidebar('setting', 'transition', 'overlay')
-            //     .sidebar('toggle');
-
-        });
-    }
-
-    _refreshSysLinks() {
-        $.get('/admin/link/listByApp', (data) => {
-            if (data.success) {
-                this.sysLinks = data.data;
-            } else {
-                this.sysLinks = [];
             }
         });
     }
@@ -65,12 +48,7 @@ export class EmChatSidebarLeft {
      */
     unbind() {
         this.subscribe.dispose();
-        this.subscribe1.dispose();
         this.subscribe2.dispose();
-    }
-
-    bind(bindingCtx, overrideCtx) {
-        this._refreshSysLinks();
     }
 
     /**
@@ -80,9 +58,6 @@ export class EmChatSidebarLeft {
         $(this.logoRef).on('mouseenter', (event) => {
             $(this.logoRef).animateCss('flip');
         });
-        // $(this.sidebar).sidebar({
-
-        // });
     }
 
     _filter() {
@@ -185,10 +160,6 @@ export class EmChatSidebarLeft {
         ea.publish(nsCons.EVENT_SWITCH_CHAT_TO, {});
     }
 
-    addChannelLinkHandler(event) {
-        this.sysLinkMgrVm.show();
-    }
-
     isSubscribed(item) {
         return _.some(item.subscriber, { username: this.loginUser.username });
     }
@@ -208,11 +179,6 @@ export class EmChatSidebarLeft {
                 toastr.error(data.data, `${isSub ? '取消订阅' : '订阅频道'}失败!`);
             }
         });
-    }
-
-    sysLinkHandler(item) {
-        $.post('/admin/link/count/inc', { id: item.id });
-        return true;
     }
 
     channelHandler() {

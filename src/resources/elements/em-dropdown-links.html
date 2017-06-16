@@ -1,0 +1,27 @@
+<template>
+    <require from="./em-dropdown-links.css"></require>
+    <div ref="ddRef" class="ui dropdown icon item em-dropdown-links">
+        <i class="content icon"></i>
+        <div class="menu">
+            <div class="ui icon search input">
+                <i class="search icon"></i>
+                <input type="text" placeholder="过滤查找...">
+            </div>
+            <div class="scrolling menu">
+                <div class="header">
+                    <i class="linkify icon"></i> 系统外链 (${sysLinks.length}) <i if.bind="isSuper" click.trigger="addChannelLinkHandler($event)" title="添加系统外链" class="circular icon link plus"></i>
+                </div>
+                <div class="divider"></div>
+                <div if.bind="!sysLinks || sysLinks.length == 0" class="item">暂无系统外链</div>
+                <a repeat.for="item of sysLinks | sort:'title'" click.delegate="sysLinkHandler(item)" target="_blank" href="${item.href}" data-value="${item.href}" data-id="${item.id}" class="item">${item.title}</a>
+                <div class="header">
+                    <i class="hashtag icon"></i> 频道外链 (${channelLinks.length})
+                </div>
+                <div class="divider"></div>
+                <div if.bind="!channelLinks || channelLinks.length == 0" class="item">暂无频道外链</div>
+                <a repeat.for="item of channelLinks | sort:'title'" click.delegate="sysLinkHandler(item)" target="_blank" href="${item.href}" data-value="${item.href}" data-id="${item.id}" class="item">${item.title}</a>
+            </div>
+        </div>
+    </div>
+    <em-chat-system-link-mgr view-model.ref="sysLinkMgrVm"></em-chat-system-link-mgr>
+</template>

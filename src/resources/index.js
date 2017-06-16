@@ -34,6 +34,7 @@ export function configure(aurelia) {
         'resources/attributes/attr-fancybox',
         'resources/elements/em-modal',
         'resources/elements/em-dropdown',
+        'resources/elements/em-dropdown-links',
         'resources/elements/em-checkbox',
         'resources/elements/em-confirm-modal',
         'resources/elements/em-hotkeys-modal',

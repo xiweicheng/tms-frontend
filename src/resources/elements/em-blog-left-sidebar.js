@@ -75,20 +75,20 @@ export class EmBlogLeftSidebar {
     attached() {
 
         this.refresh();
-        this._refreshSysLinks();
+        // this._refreshSysLinks();
         this._refreshBlogStows();
     }
 
 
-    _refreshSysLinks() {
-        $.get('/admin/link/listByApp', (data) => {
-            if (data.success) {
-                this.sysLinks = data.data;
-            } else {
-                this.sysLinks = [];
-            }
-        });
-    }
+    // _refreshSysLinks() {
+    //     $.get('/admin/link/listByApp', (data) => {
+    //         if (data.success) {
+    //             this.sysLinks = data.data;
+    //         } else {
+    //             this.sysLinks = [];
+    //         }
+    //     });
+    // }
 
     _refreshBlogStows() {
         $.get('/admin/blog/stow/listMy', (data) => {
@@ -224,8 +224,8 @@ export class EmBlogLeftSidebar {
         }
     }
 
-    sysLinkHandler(item) {
-        $.post('/admin/link/count/inc', { id: item.id });
-        return true;
-    }
+    // sysLinkHandler(item) {
+    //     $.post('/admin/link/count/inc', { id: item.id });
+    //     return true;
+    // }
 }
