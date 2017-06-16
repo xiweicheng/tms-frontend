@@ -12,6 +12,7 @@ export class EmChatTopic {
     offset = 0;
 
     chat = null;
+    basePath = utils.getBasePath();
 
     /**
      * 构造函数
@@ -88,6 +89,13 @@ export class EmChatTopic {
                     autosize.update($t.get(0));
                 });
             }
+        });
+
+        $(this.commentsRef).on('click', '.markdown-body .at-user', (event) => {
+            event.preventDefault();
+            ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_INSERT, {
+                content: `{~${$(event.currentTarget).attr('data-value')}} `
+            });
         });
     }
 

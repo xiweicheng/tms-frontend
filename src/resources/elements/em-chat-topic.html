@@ -13,8 +13,9 @@
                         </div>
                         <div ref="mkbodyRef" fancybox class="text markdown-body" style="max-height: none;" innerhtml.bind="chat.content | parseMd | emoji:mkbodyRef"></div>
                         <div class="actions">
-                            <a if.bind="!isAt" click.delegate="followerHandler()" class="tms-follower" title="${isFollower ? '取消关注此话题消息' : '关注此话题消息'}"><i class="large ${isFollower ? 'hide' : 'unhide'} icon link"></i></a>
-                            <a if.bind="!isAt" click.delegate="replyHandler()" class="tms-reply" title="回复此话题消息"><i class="large reply icon link"></i></a>
+                            <a style="margin-right: 5px;" if.bind="!isAt" click.delegate="followerHandler()" class="tms-follower" title="${isFollower ? '取消关注此话题消息' : '关注此话题消息'}"><i class="large ${isFollower ? 'hide' : 'unhide'} icon link"></i></a>
+                            <a style="margin-right: 5px;" if.bind="!isAt" data-clipboard-text="${basePath + '#/chat/' + channel.name + '?id=' + chat.id}" class="tms-clipboard" title="复制分享消息链接"><i class="large link external share icon"></i></a>
+                            <a style="margin-right: 5px;" if.bind="!isAt" click.delegate="replyHandler()" class="tms-reply" title="回复此话题消息"><i class="large reply icon link"></i></a>
                         </div>
                         <div class="tools">
                             <button click.delegate="refreshHandler()" title="刷新同步" class="mini circular ui icon button">
@@ -24,7 +25,7 @@
                     </div>
                 </div>
                 <div class="ui horizontal divider">
-                    ${chat.chatReplies.length} 回复
+                    <i class="talk outline icon"></i> ${chat.chatReplies.length} 回复
                 </div>
                 <div repeat.for="item of chat.chatReplies" class="comment tms-reply ${item.id == rid ? 'active' : ''}" data-id="${item.id}" task.bind="notifyRendered($last, item)">
                     <em-user-avatar user.bind="item.creator"></em-user-avatar>
@@ -52,7 +53,8 @@
                         </div>
                         <div class="actions">
                             <a style="margin-right: 5px;" if.bind="!isAt && (item.creator.username == loginUser.username)" click.delegate="editHandler(item, editTxtRef)" class="tms-edit" title="编辑回复内容(ctrl+dblclick)"><i class="large link edit icon"></i></a>
-                            <a style="margin-right: 0;" if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown" title="删除回复">
+                            <a style="margin-right: 5px;" if.bind="!isAt" data-clipboard-text="${basePath + '#/chat/' + channel.name + '?id=' + chat.id + '&rid=' + item.id}" class="tms-clipboard" title="复制分享消息链接"><i class="large link external share icon"></i></a>
+                            <a style="margin-right: 0; color: red;" if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action class="ui icon top right pointing dropdown" title="删除回复">
                                 <i class="large trash outline icon"></i>
                                 <div class="menu">
                                     <div style="color: red;" class="item" click.delegate="removeHandler(item)"><i class="trash outline icon"></i>确认删除</div>
@@ -68,7 +70,7 @@
                 </div>
             </div>
             <em-chat-topic-input channel.bind="channel" chat.bind="chat"></em-chat-topic-input>
-            <div style="font-size: 12px; color: lightgray; position: relative; left: 13px; top: -20px; display: inline-block;">
+            <div style="font-size: 12px; color: lightgray; position: relative; left: 13px; top: -16px; display: inline-block;">
                 <i class="info circle icon"></i> 回复话题消息会自动关注话题,接收话题更新邮件通知
             </div>
         </div>

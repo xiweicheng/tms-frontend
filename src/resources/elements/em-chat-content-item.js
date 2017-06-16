@@ -32,7 +32,7 @@ export class EmChatContentItem {
      * 当视图被附加到DOM中时被调用
      */
     attached() {
-        $('.tms-chat-direct').on('click', '.markdown-body .at-user', (event) => {
+        $('.tms-content-body').on('click', '.markdown-body .at-user', (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_CHAT_MSG_INSERT, {
                 content: `{~${$(event.currentTarget).attr('data-value')}} `
