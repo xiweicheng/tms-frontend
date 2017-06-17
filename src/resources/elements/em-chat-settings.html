@@ -1,8 +1,23 @@
 <template>
     <require from="./em-chat-settings.css"></require>
     <div class="em-chat-settings ${barHide ? 'hidden' : ''}">
+        <div class="em-custom-theme">
+            <span ref="themeRef"><i class="theme icon my-theme" title="自定义主题设置"></i></span>
+            <div class="ui popup" style="min-width: 137px;">
+                <div class="ui icon buttons">
+                    <button ref="bgRef" title="自定义背景色" class="ui icon button"><i class="circle icon"></i></button>
+                    <button ref="colorRef" title="自定义字体颜色" class="ui icon button"><i class="selected radio icon"></i></button>
+                    <a ui-dropdown-action class="ui icon top right pointing dropdown button" title="清除自定义主题">
+                        <i class="remove circle outline icon"></i>
+                        <div class="menu">
+                            <div style="color: red;" class="item" click.delegate="clearThemeHandler()"><i class="remove circle outline icon"></i>确认清除</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
         <div ui-dropdown class="ui icon top right pointing dropdown">
-            <i class="settings icon"></i>
+            <i class="settings icon my-theme"></i>
             <div class="menu">
                 <div class="header"><i class="icon alarm ${chatAlarm.off ? 'mute' : ''} outline"></i> 桌面通知设置</div>
                 <div class="item ${chatAlarm.off ? 'disabled' : ''}" click.delegate="alarmHandler('ats')"><i class="icon toggle ${chatAlarm.ats && !chatAlarm.off ? 'on' : 'off'}"></i>提醒@消息</div>

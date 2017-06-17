@@ -66,6 +66,7 @@ window.nsCons = {
     STR_EMOJI_SEARCH_URL: 'http://emoji.muan.co/',
     KEY_REMEMBER_LAST_CHAT_TO: 'tms/remember_last_chat_to',
     KEY_CHAT_ALARM: 'tms/chat_alarm',
+    KEY_CHAT_SIDEBAR_THEME: 'tms/chat_sidebar_theme',
     KEY_LOGIN_USERNAME: 'tms/login_username',
     KEY_BLOG_COMMON_SPACE: 'tms/blog/common_space',
 }

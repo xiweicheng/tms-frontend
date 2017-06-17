@@ -36,6 +36,7 @@
     "requirejs": "^2.3.2",
     "semantic-ui-calendar": "0.0.6",
     "simplemde": "github:xiweicheng/simplemde-markdown-editor#master",
+    "tinycolorpicker": "github:xiweicheng/tinyColorPicker#master",
     "swipebox": "^1.4.6",
     "text": "github:requirejs/text#latest",
     "timeago.js": "^2.0.2",

@@ -2,7 +2,7 @@
     <require from="./em-chat-sidebar-left.css"></require>
     <div ref="sidebar" class="ui left visible ${isLeftBarHide ? 'hide-bar' : ''} sidebar tms-left-sidebar">
         <div class="tms-header">
-            <h1 class="ui header" style="font-size: 20px;"><a href="/"><img ref="logoRef" src="img/tms-x32.png" alt=""></a><a style="margin-left: 16px;" href="/admin">TMS沟通</a></h1>
+            <h1 class="ui header" style="font-size: 20px;"><a href="/"><img ref="logoRef" src="img/tms-x32.png" alt=""></a><a class="my-theme" style="margin-left: 16px;" href="/admin">TMS沟通</a></h1>
             <input value.bind="filter" keyup.trigger="chatToUserFilerKeyupHanlder($event)" type="text" placeholder="过滤沟通频道|用户">
             <i show.bind="filter" title="清空过滤输入" click.delegate="clearFilterHandler()" class="close icon link"></i>
         </div>
@@ -10,14 +10,14 @@
             <div scrollbar="scrollbar-macosx">
                 <div ref="channelsRef" class="tms-channels">
                     <div class="title">
-                        <h4 class="ui header"><i class="users icon"></i>频道 (${channels.length})</h4>
-                        <i ref="createChannelRef" class="plus link circular icon"></i>
+                        <h4 class="ui header my-theme"><i class="users icon my-theme"></i>频道 (${channels.length})</h4>
+                        <i ref="createChannelRef" class="plus link circular icon my-theme"></i>
                     </div>
                     <div class="ui middle aligned selection list">
                         <a repeat.for="item of channels | sort:'title' | sortChannels" click.delegate="channelHandler()" title="${item.title}(${item.name})" show.bind="!item.hidden" href="#/chat/${item.name}" class="item ${(!isAt && item.name == chatTo) ? 'active' : ''}">
-                            <i class="hashtag icon"></i>
+                            <i class="hashtag icon my-theme"></i>
                             <div class="content">
-                                <div class="tms-name">${item.title}</div>
+                                <div class="tms-name my-theme">${item.title}</div>
                             </div>
                             <div class="actions">
                                 <div if.bind="item.owner.username == loginUser.username" ui-dropdown class="ui right pointing dropdown">
@@ -44,14 +44,14 @@
                 <div class="ui divider"></div>
                 <div class="tms-users">
                     <div class="title">
-                        <h4 class="ui header"><i class="user icon"></i>用户 (${users.length})</h4>
+                        <h4 class="ui header my-theme"><i class="user icon my-theme"></i>用户 (${users.length})</h4>
                         <!-- <i class="plus link circular icon"></i> -->
                     </div>
                     <div ref="userListRef" class="ui middle aligned selection list">
                         <a repeat.for="item of users | sortUsers:loginUser.username" click.delegate="userHandler()" title="${item.name}(@${item.username})" show.bind="!item.hidden" href="#/chat/@${item.username}" class="item ${(isAt && item.username == chatTo) ? 'active' : ''} ${!item.enabled ? 'disabled-user' : ''}" data-id="${item.username}">
-                            <i style="font-weight: bold;" class="at icon"></i>
+                            <i style="font-weight: bold;" class="at icon my-theme"></i>
                             <div class="content">
-                                <div class="tms-name">${item.name ? item.name : item.username} ${item.username == loginUser.username ? '(自己)' : ''}</div>
+                                <div class="tms-name my-theme">${item.name ? item.name : item.username} ${item.username == loginUser.username ? '(自己)' : ''}</div>
                             </div>
                         </a>
                     </div>
@@ -60,15 +60,15 @@
         </div>
         <div class="tms-footer">
             <div class="ui inverted icon menu">
-                <a target="_blank" href="#/blog" class="item"><i class="wikipedia icon"></i></a>
+                <a target="_blank" href="#/blog" class="item"><i class="wikipedia icon my-theme"></i></a>
                 <div click.delegate="switchHandler()" class="ui animated fade button item" tabindex="0">
-                    <div class="visible content">
+                    <div class="visible content my-theme">
                         <i class="large icons">
-                            <i class="align justify icon"></i>
+                            <i class="align justify icon my-theme"></i>
                         <i class="corner search icon"></i>
                         </i>
                     </div>
-                    <div class="hidden content">
+                    <div class="hidden content my-theme">
                         CTRL+K 切换
                     </div>
                 </div>

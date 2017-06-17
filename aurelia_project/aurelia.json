@@ -130,6 +130,12 @@
             ]
           },
           {
+            "name": "tinycolorpicker",
+            "path": "../node_modules/tinyColorPicker",
+            "main": "jqColorPicker.min",
+            "deps": ["jquery"]
+          },
+          {
             "name": "fancybox",
             "path": "../node_modules/@fancyapps/fancybox",
             "main": "dist/jquery.fancybox.min",
