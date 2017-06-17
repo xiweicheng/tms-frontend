@@ -38,3 +38,5 @@ http://gromo.github.io/jquery.scrollbar/demo/basic.html
 https://github.com/gromo/jquery.scrollbar  
 https://github.com/zenozeng/color-hash  
 https://github.com/Nickersoft/push.js  
+https://github.com/PitPik/tinyColorPicker  
+http://fancyapps.com/fancybox/3/  
