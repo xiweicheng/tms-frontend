@@ -20,6 +20,7 @@ export class EmDropdownLinks {
      */
     attached() {
         $(this.ddRef).dropdown({
+            fullTextSearch: true,
             action: (text, value, element) => {
                 $(this.ddRef).dropdown('hide');
                 $.post('/admin/link/count/inc', { id: $(element).attr('data-id') });

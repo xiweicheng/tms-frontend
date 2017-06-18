@@ -11,6 +11,7 @@ export class EmChatChannelMembersMgr {
      */
     constructor() {
         this.membersOpts = {
+            fullTextSearch: true,
             onAdd: (addedValue, addedText, $addedChoice) => {
                 this.emModal.showDimmer();
                 $.post('/admin/channel/addMember', {
