@@ -77,13 +77,40 @@ export class EmBlogComment {
 
         // 消息popup
         $('.em-blog-comment .comments').on('mouseenter', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', (event) => {
+
             event.preventDefault();
-            var $a = $(event.currentTarget);
-            let cid = utils.urlQuery('cid', $a.attr('href'));
-            cid && ea.publish(nsCons.EVENT_BLOG_COMMENT_POPUP_SHOW, {
-                id: cid,
-                target: event.currentTarget
-            });
+            let target = event.currentTarget;
+            let cid = utils.urlQuery('cid', $(target).attr('href'));
+
+            if (this.hoverTimeoutRef) {
+                if (this.hoverUserTarget === target) {
+                    return;
+                } else {
+                    clearTimeout(this.hoverTimeoutRef);
+                    this.hoverTimeoutRef = null;
+                }
+            }
+            this.hoverUserTarget = target;
+
+            this.hoverTimeoutRef = setTimeout(() => {
+                cid && ea.publish(nsCons.EVENT_BLOG_COMMENT_POPUP_SHOW, {
+                    id: cid,
+                    target: target
+                });
+                this.hoverTimeoutRef = null;
+            }, 500);
+
+        });
+
+        // 消息popup
+        $('.em-blog-comment .comments').on('mouseleave', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', (event) => {
+            event.preventDefault();
+            if (this.hoverTimeoutRef) {
+                if (this.hoverUserTarget === event.currentTarget) {
+                    clearTimeout(this.hoverTimeoutRef);
+                    this.hoverTimeoutRef = null;
+                }
+            }
         });
 
         $('.em-blog-comment .comments').on('dblclick', '.comment', (event) => {
