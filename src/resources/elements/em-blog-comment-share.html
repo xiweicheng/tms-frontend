@@ -1,12 +1,12 @@
-<template>
+ <template>
     <require from="./em-blog-comment-share.css"></require>
     <a ref="shareRef" class="item">
-        <span title="博文评论分享">分享</span>
+        <span title="博文评论分享"><i class="share alternate link icon large"></i></span>
     </a>
     <div class="ui popup bottom right transition hidden em-blog-comment-share">
         <div ref="searchRef" class="ui search">
             <div class="ui icon input">
-                <input keyup.trigger="shareSearchKeyupHandler($event)" ref="inputSearchRef" style="width: 172px;" class="prompt" type="text" placeholder="用户名，频道，邮箱">
+                <input keyup.trigger="shareSearchKeyupHandler($event)" ref="inputSearchRef" style="width: 172px; border-radius: .28571429rem;" class="prompt" type="text" placeholder="用户名，频道，邮箱">
                 <i class="search icon"></i>
             </div>
             <div class="results"></div>
