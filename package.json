@@ -40,7 +40,7 @@
     "swipebox": "^1.4.6",
     "text": "github:requirejs/text#latest",
     "timeago.js": "^2.0.2",
-    "tms-semantic-ui": "^2.2.4",
+    "tms-semantic-ui": "^3.2.10",
     "toastr": "^2.1.2",
     "wurl": "^2.1.0"
   },
