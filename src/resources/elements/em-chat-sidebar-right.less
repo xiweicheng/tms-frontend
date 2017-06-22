@@ -1,11 +1,38 @@
 .em-chat-sidebar-right {
+    margin-top: 0!important;
+    padding-top: 0!important;
+    .tms-header {
+        background-color: #F7F7F7;
+        border-bottom: .0625rem solid #E8E8E8;
+        padding: 8px 8px;
+        position: relative;
+        .ui.header {
+            color: #2C2D30;
+            margin: 0;
+            font-size: 18px;
+            font-weight: 900;
+        }
+        i.close.icon {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+        }
+    }
+    .tms-scroll-wrapper {
+        height: e("calc(100% - 40px)");
+    }
     .panel-wiki-dir {
-    	height: 100%;
+    	padding-top: 8px;
+        height: 100%;
         padding-left: 15px;
         overflow-y: auto;
     }
+    .panel-chat-attach {
+    	padding-top: 8px;
+    }
     .panel-chat-schedule {
-    	height: e("calc(100% - 10px)");
-    	overflow: hidden;
+    	padding-top: 8px;
+        height: e("calc(100% - 10px)");
+        overflow: hidden;
     }
 }

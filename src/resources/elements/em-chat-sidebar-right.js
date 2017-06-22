@@ -8,14 +8,14 @@ export class EmChatSidebarRight {
     @bindable channel;
 
     actionMapping = {
-        [nsCons.ACTION_TYPE_DIR]: { handler: this.dirHandler, nodata: '', show: 'dir' },
-        [nsCons.ACTION_TYPE_AT]: { nodata: '暂无@消息', show: 'msg' },
-        [nsCons.ACTION_TYPE_STOW]: { nodata: '暂无收藏消息', show: 'msg' },
-        [nsCons.ACTION_TYPE_ATTACH]: { handler: this.attachHandler, nodata: '', show: 'attach' },
-        [nsCons.ACTION_TYPE_SCHEDULE]: { handler: this.scheduleHandler, nodata: '', show: 'schedule' },
-        [nsCons.ACTION_TYPE_SEARCH]: { nodata: '无符合检索结果', show: 'msg' },
-        [nsCons.ACTION_TYPE_PIN]: { nodata: '暂无频道固定消息', show: 'msg' },
-        [nsCons.ACTION_TYPE_TOPIC]: { nodata: '', show: 'topic' },
+        [nsCons.ACTION_TYPE_DIR]: { handler: this.dirHandler, nodata: '', show: 'dir', icon: 'unordered list', title: '消息目录' },
+        [nsCons.ACTION_TYPE_AT]: { nodata: '暂无@消息', show: 'msg', icon: 'at', title: '我的消息' },
+        [nsCons.ACTION_TYPE_STOW]: { nodata: '暂无收藏消息', show: 'msg', icon: 'empty star', title: '我的收藏' },
+        [nsCons.ACTION_TYPE_ATTACH]: { handler: this.attachHandler, nodata: '', show: 'attach', icon: 'attach', title: '频道附件' },
+        [nsCons.ACTION_TYPE_SCHEDULE]: { handler: this.scheduleHandler, nodata: '', show: 'schedule', icon: 'calendar outline', title: '我的日程' },
+        [nsCons.ACTION_TYPE_SEARCH]: { nodata: '无符合检索结果', show: 'msg', icon: 'search', title: '检索结果' },
+        [nsCons.ACTION_TYPE_PIN]: { nodata: '暂无频道固定消息', show: 'msg', icon: 'pin', title: '频道固定消息' },
+        [nsCons.ACTION_TYPE_TOPIC]: { nodata: '', show: 'topic', icon: 'talk outline', title: '话题讨论' },
     }
 
     /**
@@ -55,6 +55,10 @@ export class EmChatSidebarRight {
 
     scheduleHandler(payload) {
         this.chatScheduleVm.show();
+    }
+
+    closeHandler() {
+        ea.publish(nsCons.EVENT_CHAT_TOGGLE_RIGHT_SIDEBAR, {});
     }
 
 }

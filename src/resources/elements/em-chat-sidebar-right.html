@@ -1,7 +1,16 @@
 <template>
     <require from="./em-chat-sidebar-right.css"></require>
     <div class="tms-right-sidebar em-chat-sidebar-right">
-        <div ref="scrollbarRef" scrollbar="scrollbar-macosx">
+        <div class="tms-header">
+            <h2 class="ui header">
+              <i class="${actived.icon} icon" style="font-size: 1em;"></i>
+              <div class="content">
+                ${actived.title}
+              </div>
+            </h2>
+            <i click.delegate="closeHandler()" title="关闭右侧边栏" class="large grey link close icon"></i>
+        </div>
+        <div ref="scrollbarRef" class="tms-scroll-wrapper" scrollbar="scrollbar-macosx">
             <em-chat-msg login-user.bind="loginUser" is-at.bind="isAt" channel.bind="channel" actived.bind="actived"></em-chat-msg>
             <div ref="dirRef" show.bind="actived.show == 'dir'" class="panel-wiki-dir"></div>
             <div ref="attachRef" show.bind="actived.show == 'attach'" class="panel-chat-attach">

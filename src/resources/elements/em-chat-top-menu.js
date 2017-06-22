@@ -90,6 +90,10 @@ export class EmChatTopMenu {
         this.subscribe4 = ea.subscribe(nsCons.EVENT_CHAT_TOPIC_SHOW, (payload) => {
             this.showTopicHandler(payload);
         });
+
+        this.subscribe5 = ea.subscribe(nsCons.EVENT_CHAT_TOGGLE_RIGHT_SIDEBAR, (payload) => {
+            this.toggleRightSidebar();
+        });
     }
 
     /**
@@ -101,6 +105,7 @@ export class EmChatTopMenu {
         this.subscribe2.dispose();
         this.subscribe3.dispose();
         this.subscribe4.dispose();
+        this.subscribe5.dispose();
     }
 
     /**
