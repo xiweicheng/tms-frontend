@@ -70,4 +70,5 @@ window.nsCons = {
     KEY_CHAT_SIDEBAR_THEME: 'tms/chat_sidebar_theme',
     KEY_LOGIN_USERNAME: 'tms/login_username',
     KEY_BLOG_COMMON_SPACE: 'tms/blog/common_space',
+    KEY_BLOG_SEARCH_RECENT: 'tms/blog/search_recent',
 }

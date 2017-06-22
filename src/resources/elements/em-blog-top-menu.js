@@ -1,6 +1,7 @@
 import { bindable, containerless } from 'aurelia-framework';
 import 'timeago';
 let tg = timeago();
+import search from 'common/common-search';
 
 @containerless
 export class EmBlogTopMenu {
@@ -8,6 +9,11 @@ export class EmBlogTopMenu {
     isHide = true;
 
     loginUser = nsCtx.loginUser;
+
+    recentSearchs = {
+        blogs: [],
+        comments: []
+    };
 
     /**
      * 构造函数
@@ -41,27 +47,18 @@ export class EmBlogTopMenu {
                 type: 'category',
                 minCharacters: 2,
                 selectFirstResult: true,
+                // showNoResults: true,
                 onSelect: (result, response) => {
                     $(this.searchRef).search('hide results');
                     _.defer(() => {
                         $(this.searchRef).find('input').blur();
                         ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, { to: result.url });
                     });
+                    search.add(result);
                     return false;
                 },
                 apiSettings: {
                     onResponse: function(resp) {
-                        // var response = {
-                        //     results: []
-                        // };
-                        // $.each(resp.data, (index, item) => {
-                        //     response.results.push({
-                        //         title: item.title,
-                        //         // description: utils.abbreviate(item.content, 65),
-                        //         description: `<i class="wait icon"></i>${item.creator.name} 创建于 ${tg.format(item.createDate, 'zh_CN')}`,
-                        //         url: `#/blog/${item.id}`
-                        //     });
-                        // });
                         var response = {
                             results: {
                                 blogs: {
@@ -76,6 +73,8 @@ export class EmBlogTopMenu {
                         };
                         $.each(resp.data.blogs, (index, item) => {
                             response.results.blogs.results.push({
+                                type: 'blog',
+                                id: item.id,
                                 title: item.title,
                                 // description: utils.abbreviate(item.content, 65),
                                 description: `<i class="wait icon"></i>${item.creator.name} 创建于 ${tg.format(item.createDate, 'zh_CN')}`,
@@ -84,6 +83,8 @@ export class EmBlogTopMenu {
                         });
                         $.each(resp.data.comments, (index, item) => {
                             response.results.comments.results.push({
+                                type: 'comment',
+                                id: item.id,
                                 title: `#/blog/${item.targetId}?cid=${item.id}`,
                                 // description: item.content,
                                 description: `<i class="wait icon"></i>${item.creator.name} 创建于 ${tg.format(item.createDate, 'zh_CN')}<br/>${utils.encodeHtml(item.content)}`,
@@ -119,6 +120,25 @@ export class EmBlogTopMenu {
 
     searchFocusHandler() {
         this.isSearchFocus = true;
+
+        let v = $(this.searchRef).find('input').val();
+        if (!v) {
+            let resp = {
+                results: {
+                    blogs: {
+                        name: `博文 (${search.blogs.size()})`,
+                        results: _.reverse(search.blogs.list())
+                    },
+                    comments: {
+                        name: `评论 (${search.comments.size()})`,
+                        results: _.reverse(search.comments.list())
+                    }
+                }
+            };
+            // console.log(resp);
+            let html = $(this.searchRef).search('generate results', resp);
+            $(this.searchRef).search('add results', html); //.search('show results');
+        }
     }
 
     toggleHandler(isHide) {
