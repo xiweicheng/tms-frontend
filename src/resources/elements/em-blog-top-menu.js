@@ -120,24 +120,26 @@ export class EmBlogTopMenu {
 
     searchFocusHandler() {
         this.isSearchFocus = true;
+        this.showRecentSearchResults();
+    }
 
+    showRecentSearchResults() {
         let v = $(this.searchRef).find('input').val();
         if (!v) {
             let resp = {
                 results: {
                     blogs: {
                         name: `博文 (${search.blogs.size()})`,
-                        results: _.reverse(search.blogs.list())
+                        results: _.reverse([...search.blogs.list()])
                     },
                     comments: {
                         name: `评论 (${search.comments.size()})`,
-                        results: _.reverse(search.comments.list())
+                        results: _.reverse([...search.comments.list()])
                     }
                 }
             };
-            // console.log(resp);
             let html = $(this.searchRef).search('generate results', resp);
-            $(this.searchRef).search('add results', html); //.search('show results');
+            _.defer(() => $(this.searchRef).search('add results', html));
         }
     }
 
@@ -163,5 +165,6 @@ export class EmBlogTopMenu {
         if (event.keyCode == 27) {
             $(this.searchRef).search('set value', '');
         }
+        this.showRecentSearchResults();
     }
 }
