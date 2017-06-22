@@ -33,7 +33,7 @@ class Search {
     comments;
 
     constructor() {
-        this.blogs = new SearchItems(3);
+        this.blogs = new SearchItems();
         this.comments = new SearchItems();
         let s = this._load();
         this.blogs.put(...s.blogs);
