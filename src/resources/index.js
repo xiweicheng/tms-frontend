@@ -14,7 +14,6 @@ export function configure(aurelia) {
         'resources/value-converters/vc-common',
         'resources/binding-behaviors/bb-key',
         'resources/attributes/attr-task',
-        'resources/attributes/attr-swipebox',
         'resources/attributes/attr-pastable',
         'resources/attributes/attr-autosize',
         'resources/attributes/attr-dropzone',

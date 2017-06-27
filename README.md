@@ -26,7 +26,6 @@ https://github.com/lgarron/clipboard.js
 https://www.npmjs.com/package/dropzone https://github.com/enyo/dropzone  
 https://github.com/layerssss/paste.js  
 https://github.com/hustcc/timeago.js  
-https://www.npmjs.com/package/swipebox  
 http://www.jacklmoore.com/autosize/  
 https://www.npmjs.com/package/jquery.hotkeys  
 https://github.com/jeresig/jquery.hotkeys  

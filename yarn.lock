@@ -4889,10 +4889,6 @@ supports-color@^2.0.0:
   version "2.0.0"
   resolved "http://registry.npm.taobao.org/supports-color/download/supports-color-2.0.0.tgz#535d045ce6b6363fa40117084629995e9df324c7"
 
-swipebox@^1.4.6:
-  version "1.4.6"
-  resolved "http://registry.npm.taobao.org/swipebox/download/swipebox-1.4.6.tgz#8b879af681a9d2bdad019bc92f5f35b6db5928db"
-
 table@^3.7.8:
   version "3.8.3"
   resolved "http://registry.npm.taobao.org/table/download/table-3.8.3.tgz#2bbc542f0fda9861a755d3947fefd8b3f513855f"

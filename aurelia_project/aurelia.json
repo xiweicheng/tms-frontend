@@ -121,15 +121,6 @@
             ]
           },
           {
-            "name": "swipebox",
-            "path": "../node_modules/swipebox",
-            "main": "src/js/jquery.swipebox.min",
-            "deps": ["jquery"],
-            "resources": [
-              "src/css/swipebox.min.css"
-            ]
-          },
-          {
             "name": "tinycolorpicker",
             "path": "../node_modules/tinyColorPicker",
             "main": "jqColorPicker.min",
