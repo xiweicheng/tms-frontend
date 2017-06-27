@@ -17,7 +17,17 @@
     <div fancybox class="ui active tab basic segment em-chat-attach" data-tab="Image">
         <h1 if.bind="!attachs || attachs.length == 0" class="centered ui header">暂无图片</h1>
         <div if.bind="type == 'Image'" class="ui small bordered images">
-            <img repeat.for="item of attachs" if.bind="item.type == 'Image'" src="/${item.path + item.uuidName}" alt="${item.name}" title="${item.username | userName}上传于${item.createDate | timeago}">
+            <span class="img-wrapper" repeat.for="item of attachs" if.bind="item.type == 'Image'">
+                <img src="/${item.path + item.uuidName}" alt="${item.name}" title="${item.username | userName}上传于${item.createDate | timeago}">
+                <div class="actions">
+                    <div if.bind="isSuper || item.username == loginUser.username" ui-dropdown-action class="ui icon top right pointing dropdown" title="删除附件">
+                        <i class="red large trash outline icon" style="margin-right: 0;"></i>
+                        <div class="menu">
+                            <div style="color: red;" class="item" click.delegate="delHandler(item)"><i class="trash outline icon"></i>确认删除</div>
+                        </div>
+                    </div>
+                </div>
+            </span>
             <div if.bind="page && !page.last" click.delegate="moreHandler()" class="basic ui button"><i show.bind="ajax && ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
         </div>
     </div>
@@ -25,6 +35,14 @@
         <h1 if.bind="!attachs || attachs.length == 0" class="centered ui header">暂无文件</h1>
         <div if.bind="type == 'Attachment'" class="divided list selection ui">
             <div repeat.for="item of attachs" if.bind="item.type == 'Attachment'" class="item">
+                <div class="right floated content">
+                    <div if.bind="isSuper || item.username == loginUser.username" ui-dropdown-action class="ui icon top right pointing dropdown" title="删除附件">
+                        <i class="red large trash outline icon" style="margin-right: 0;"></i>
+                        <div class="menu">
+                            <div style="color: red;" class="item" click.delegate="delHandler(item)"><i class="trash outline icon"></i>确认删除</div>
+                        </div>
+                    </div>
+                </div>
                 <i class="file outline icon"></i>
                 <div class="content">
                     <div class="header"><a href="/admin/file/download/${item.id}">${item.name}</a></div>

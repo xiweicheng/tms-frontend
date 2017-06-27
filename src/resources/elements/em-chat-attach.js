@@ -5,6 +5,8 @@ export class EmChatAttach {
 
     type = 'Image'; //Image | Attachment
     search = '';
+    isSuper = nsCtx.isSuper;
+    loginUser = nsCtx.loginUser;
 
     /**
      * 当视图被附加到DOM中时被调用
@@ -69,6 +71,19 @@ export class EmChatAttach {
             this.fetch();
         }
         return true;
+    }
+
+    delHandler(item) {
+        $.post('/admin/file/delete', { id: item.id }, (data, textStatus, xhr) => {
+            if (data.success) {
+                this.attachs = _.reject(this.attachs, { id: item.id });
+                this.page.totalElements--;
+                this.moreCnt--;
+                toastr.success('删除附件成功!');
+            } else {
+                toastr.error(data.data);
+            }
+        });
     }
 
 }
