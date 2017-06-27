@@ -86,10 +86,11 @@ export class EmChatMsg {
     searchMoreHandler() {
 
         if (this.actived.payload.action == nsCons.ACTION_TYPE_SEARCH) {
-            this.searchMoreP = $.get('/admin/chat/direct/search', {
+            this.searchMoreP = $.get(`/admin/chat/${nsCtx.isAt ? 'direct' : 'channel'}/search`, {
                 search: this.search,
                 size: this.page.size,
-                page: this.page.number + 1
+                page: this.page.number + 1,
+                channelId: !nsCtx.isAt ? this.channel.id : null,
             }, (data) => {
                 if (data.success) {
                     this.chats = _.concat(this.chats, data.data.content);
