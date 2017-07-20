@@ -54,13 +54,20 @@ export class EmChatContentItemFootbar {
         $([this.addEmojiRef])
             .popup({
                 inline: true,
-                hoverable: true
+                hoverable: true,
+                delay: {
+                    show: 500,
+                    hide: 300
+                }
             });
         $([this.addTagRef])
             .popup({
                 inline: true,
                 hoverable: true,
-                // position: 'top center',
+                delay: {
+                    show: 500,
+                    hide: 300
+                },
                 onHide: () => {
                     this.isCustomTag = false;
                     $(this.tagRef).val('');
@@ -73,7 +80,7 @@ export class EmChatContentItemFootbar {
             url: nsCtx.isAt ? utils.getBasePath() : utils.getUrl(),
             meta: item.type == 'emoji' ? $(emojify.replace(item.value)).attr('src') : item.value,
             type: item.type == 'emoji' ? 'Emoji' : 'Tag',
-            contentHtml: utils.md2html(this.chat.content),
+            contentHtml: utils.md2html(this.chat.content, true),
             name: item.value,
             desc: item.label,
             id: this.chat.id,

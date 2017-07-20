@@ -86,6 +86,14 @@ export class EmChatTopMenu {
         this.subscribe3 = ea.subscribe(nsCons.EVENT_CHANNEL_LINKS_REFRESH, (payload) => {
             this._refreshChannelLinks();
         });
+
+        this.subscribe4 = ea.subscribe(nsCons.EVENT_CHAT_TOPIC_SHOW, (payload) => {
+            this.showTopicHandler(payload);
+        });
+
+        this.subscribe5 = ea.subscribe(nsCons.EVENT_CHAT_TOGGLE_RIGHT_SIDEBAR, (payload) => {
+            this.toggleRightSidebar();
+        });
     }
 
     /**
@@ -96,6 +104,8 @@ export class EmChatTopMenu {
         this.subscribe1.dispose();
         this.subscribe2.dispose();
         this.subscribe3.dispose();
+        this.subscribe4.dispose();
+        this.subscribe5.dispose();
     }
 
     /**
@@ -235,9 +245,9 @@ export class EmChatTopMenu {
 
     toggleRightSidebar(asShow) {
         if (_.isUndefined(asShow)) {
-            this.isRightSidebarShow = !this.isRightSidebarShow;
+            this.isRightSidebarShow = nsCtx.isRightSidebarShow = !this.isRightSidebarShow;
         } else {
-            this.isRightSidebarShow = asShow;
+            this.isRightSidebarShow = nsCtx.isRightSidebarShow = asShow;
         }
 
         ea.publish(nsCons.EVENT_CHAT_SIDEBAR_TOGGLE, {
@@ -270,6 +280,11 @@ export class EmChatTopMenu {
         this.ajaxStow = $.get('/admin/chat/channel/getStows', (data) => {
             if (data.success) {
                 let stowChats = _.map(data.data, (item) => {
+                    if (item.chatReply) {
+                        let chat = item.chatReply;
+                        chat.chatStow = item;
+                        return chat;
+                    }
                     let chatChannel = item.chatChannel;
                     chatChannel.chatStow = item;
                     return chatChannel;
@@ -313,6 +328,7 @@ export class EmChatTopMenu {
     logoutHandler() {
         $.post('/admin/logout').always(() => {
             utils.redirect2Login();
+            window.location.reload();
         });
     }
 
@@ -477,5 +493,22 @@ export class EmChatTopMenu {
                 toastr.error(data.data, '获取频道固定消息失败!');
             }
         });
+    }
+
+    showTopicHandler(item) {
+
+        this.activeType = nsCons.ACTION_TYPE_TOPIC;
+
+        ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
+            action: this.activeType,
+            result: item
+        });
+
+        this.toggleRightSidebar(true);
+
+    }
+
+    toggleLeftBarHandler() {
+        ea.publish(nsCons.EVENT_CHAT_TOGGLE_LEFT_SIDEBAR, null);
     }
 }

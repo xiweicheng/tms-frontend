@@ -20,13 +20,16 @@ export class EmChatMemberPopup {
                 }
                 this.members = this.channel.members;
             } else {
+                if (!this.username) {
+                    return;
+                }
                 this.member = utils.getUser(this.username);
                 let user = utils.getUser(this.member.creator);
                 this.member.creatorName = (user && (!!user.name)) ? user.name : this.member.creator;
             }
             _.defer(() => {
 
-                $(this.target).popup({
+                $(this.target).popup('is hidden') && $(this.target).popup({
                     popup: this.popup,
                     hoverable: true,
                     inline: false,

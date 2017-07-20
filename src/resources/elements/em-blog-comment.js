@@ -77,13 +77,40 @@ export class EmBlogComment {
 
         // 消息popup
         $('.em-blog-comment .comments').on('mouseenter', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', (event) => {
+
             event.preventDefault();
-            var $a = $(event.currentTarget);
-            let cid = utils.urlQuery('cid', $a.attr('href'));
-            cid && ea.publish(nsCons.EVENT_BLOG_COMMENT_POPUP_SHOW, {
-                id: cid,
-                target: event.currentTarget
-            });
+            let target = event.currentTarget;
+            let cid = utils.urlQuery('cid', $(target).attr('href'));
+
+            if (this.hoverTimeoutRef) {
+                if (this.hoverUserTarget === target) {
+                    return;
+                } else {
+                    clearTimeout(this.hoverTimeoutRef);
+                    this.hoverTimeoutRef = null;
+                }
+            }
+            this.hoverUserTarget = target;
+
+            this.hoverTimeoutRef = setTimeout(() => {
+                cid && ea.publish(nsCons.EVENT_BLOG_COMMENT_POPUP_SHOW, {
+                    id: cid,
+                    target: target
+                });
+                this.hoverTimeoutRef = null;
+            }, 500);
+
+        });
+
+        // 消息popup
+        $('.em-blog-comment .comments').on('mouseleave', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', (event) => {
+            event.preventDefault();
+            if (this.hoverTimeoutRef) {
+                if (this.hoverUserTarget === event.currentTarget) {
+                    clearTimeout(this.hoverTimeoutRef);
+                    this.hoverTimeoutRef = null;
+                }
+            }
         });
 
         $('.em-blog-comment .comments').on('dblclick', '.comment', (event) => {
@@ -442,7 +469,7 @@ export class EmBlogComment {
 
         this.sending = true;
 
-        var html = utils.md2html(content);
+        var html = utils.md2html(content, true);
         let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
 
         $.post(`/admin/blog/comment/create`, {
@@ -575,7 +602,7 @@ export class EmBlogComment {
             $('.em-blog-content').scrollTo(0);
         } else {
             if (_.some(this.comments, { id: +to })) {
-                $('.em-blog-content').scrollTo(`.comment[data-id="${to}"]`, {
+                $('.em-blog-content').scrollTo(`.tms-blog-comment.comment[data-id="${to}"]`, {
                     offset: this.offset
                 });
                 $('.em-blog-content').find(`.comment[data-id]`).removeClass('active');
@@ -659,8 +686,8 @@ export class EmBlogComment {
 
         item.content = $(txtRef).val();
 
-        var html = utils.md2html(item.content);
-        var htmlOld = utils.md2html(item.contentOld);
+        var html = utils.md2html(item.content, true);
+        var htmlOld = utils.md2html(item.contentOld, true);
 
         let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
         $.post(`/admin/blog/comment/update`, {
@@ -698,7 +725,7 @@ export class EmBlogComment {
         $.post('/admin/blog/comment/vote', {
             cid: item.id,
             url: utils.getBasePath(),
-            contentHtml: utils.md2html(item.content),
+            contentHtml: utils.md2html(item.content, true),
             type: this.isZanDone(item) ? 'Cai' : 'Zan'
         }, (data, textStatus, xhr) => {
             if (data.success) {

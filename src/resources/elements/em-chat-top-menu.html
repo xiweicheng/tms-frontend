@@ -1,6 +1,7 @@
 <template>
     <require from="./em-chat-top-menu.css"></require>
     <div class="ui top fixed menu tms-em-chat-top-menu">
+        <a class="icon item toggle-bar" click.delegate="toggleLeftBarHandler()"><i class="large sidebar icon"></i></a>
         <div ref="chatToDropdownRef" class="ui dropdown link item ${isActiveSearch ? 'tms-hide' : ''} tms-chat-at">
             <span class="text"></span>
             <i class="dropdown icon"></i>

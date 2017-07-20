@@ -3,24 +3,25 @@
     <em-modal classes="small" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
         <div slot="header">频道外链管理</div>
         <div slot="content" class="tms-em-chat-channel-link-mgr">
-            <div class="ui segment">
-                <div class="ui form">
-                    <div class="field required">
-                        <label>添加频道外链</label>
-                        <div class="fields">
-                            <div class="five wide field">
-                                <input type="text" value.bind="title" name="title" placeholder="链接标题">
-                            </div>
-                            <div class="ten wide field">
-                                <input type="text" value.bind="href" name="href" placeholder="链接地址">
-                            </div>
-                            <div class="one wide field">
-                                <button title="添加外链" click.delegate="addHandler()" class="circular ui icon blue button" type="button"><i class="plus icon"></i></button>
-                            </div>
+            <!-- <div class="ui segment"> -->
+            <div class="ui form">
+                <div class="field required">
+                    <label>添加频道外链</label>
+                    <div class="fields">
+                        <div class="five wide field">
+                            <input type="text" value.bind="title" name="title" placeholder="链接标题">
+                        </div>
+                        <div class="ten wide field">
+                            <input type="text" value.bind="href" name="href" placeholder="链接地址">
+                        </div>
+                        <div class="one wide field">
+                            <button title="添加外链" click.delegate="addHandler()" class="circular ui icon blue button" type="button"><i class="plus icon"></i></button>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- </div> -->
+            <div class="ui divider"></div>
             <div style="max-height: 275px; overflow: auto;">
                 <table class="ui very basic striped compact table">
                     <thead>
@@ -55,6 +56,7 @@
                                 <button if.bind="item.creator.username == loginUser.username || channel.owner.username == loginUser.username" click.delegate="updateHandler(item)" show.bind="item.isEditing" class="mini green ui button">
                                     更新
                                 </button>
+                                <!-- <a class="btn-delete" if.bind="item.creator.username == loginUser.username || channel.owner.username == loginUser.username" click.delegate="delHandler(item)">删除</a> -->
                                 <button if.bind="item.creator.username == loginUser.username || channel.owner.username == loginUser.username" click.delegate="delHandler(item)" class="mini ui red button">
                                     删除
                                 </button>

@@ -117,7 +117,7 @@ export class EmBlogCommentShare {
             href: `${this.basePath}#/blog/${this.blog.id}?cid=${this.comment.id}`,
             id: this.comment.id,
             desc: this.desc,
-            html: utils.md2html(this.comment.content),
+            html: utils.md2html(this.comment.content, true),
             users: _.chain(this.shares).filter(item => item._type == 'user').map('username').join().value(),
             channels: _.chain(this.shares).filter(item => item._type == 'channel').map('name').join().value(),
             mails: _.chain(this.shares).filter(item => item._type == 'mail').map('mail').join().value()

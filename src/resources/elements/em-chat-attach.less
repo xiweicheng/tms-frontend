@@ -14,19 +14,50 @@
         }
     }
     &.ui.menu {
-    	margin-top: 0;
+        margin-top: 0;
         display: -webkit-box;
         display: -ms-flexbox;
         display: flex;
         > .item {
             -webkit-box-flex: 1;
-                -ms-flex: 1;
-                    flex: 1;
+            -ms-flex: 1;
+            flex: 1;
             display: block!important;
             text-align: center;
         }
     }
     &.tms-attach-search-input {
-    	padding: 0 10px;
+        padding: 0 10px;
+    }
+    .ui.small.images img {
+        width: 170px;
+    }
+    .img-wrapper {
+        position: relative;
+        font-size: 12px;
+        display: inline-block;
+        .actions {
+            display: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        &:hover {
+            .actions {
+                display: inline-block;
+            }
+        }
+    }
+    .ui.divided.selection.list {
+        > .item {
+            .right.floated.content {
+                display: none;
+            }
+            &:hover {
+                .right.floated.content {
+                    display: inline-block;
+                }
+            }
+        }
     }
 }

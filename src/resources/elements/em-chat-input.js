@@ -303,7 +303,7 @@ export class EmChatInput {
 
         this.sending = true;
 
-        var html = utils.md2html(content);
+        var html = utils.md2html(content, true);
 
         let url;
         let data;
@@ -318,10 +318,11 @@ export class EmChatInput {
             };
         } else {
             url = `/admin/chat/channel/create`;
+            let usernames = utils.parseUsernames(content, this.members).join(',');
             data = {
                 url: utils.getUrl(),
                 channelId: this.channel.id,
-                usernames: utils.parseUsernames(content, this.members).join(','),
+                usernames: usernames,
                 content: content,
                 contentHtml: html
             };

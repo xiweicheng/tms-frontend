@@ -84,6 +84,9 @@
         }
         .ui.basic.button {
             box-shadow: none;
+            &:hover {
+                background-color: rgba(0, 0, 0, .03)!important
+            }
         }
     }
     > .tms-chat-at {
@@ -173,6 +176,16 @@
                     }
                 }
             }
+        }
+    }
+    @media only screen and (min-width: 768px) {
+        a.item.toggle-bar {
+            display: none!important;
+        }
+    }
+    @media only screen and (max-width: 767px) {
+        div.dropdown.tms-chat-at {
+            display: none!important;
         }
     }
 }

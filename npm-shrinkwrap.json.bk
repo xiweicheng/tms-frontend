@@ -294,11 +294,6 @@
       "from": "simplemde@>=1.11.2 <2.0.0",
       "resolved": "https://registry.npm.taobao.org/simplemde/download/simplemde-1.11.2.tgz"
     },
-    "swipebox": {
-      "version": "1.4.6",
-      "from": "swipebox@>=1.4.6 <2.0.0",
-      "resolved": "https://registry.npm.taobao.org/swipebox/download/swipebox-1.4.6.tgz"
-    },
     "text": {
       "version": "2.0.15",
       "from": "requirejs/text#latest",

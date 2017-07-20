@@ -54,11 +54,36 @@ export class Blog {
         // 用户信息popup
         $('.tms-blog').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
             event.preventDefault();
-            var $a = $(event.currentTarget);
-            ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {
-                username: $a.attr('data-value'),
-                target: event.currentTarget
-            });
+            let target = event.currentTarget;
+
+            if (this.hoverTimeoutRef) {
+                if (this.hoverUserTarget === target) {
+                    return;
+                } else {
+                    clearTimeout(this.hoverTimeoutRef);
+                    this.hoverTimeoutRef = null;
+                }
+            }
+            this.hoverUserTarget = target;
+
+            this.hoverTimeoutRef = setTimeout(() => {
+                ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {
+                    username: $(target).attr('data-value'),
+                    target: target
+                });
+                this.hoverTimeoutRef = null;
+            }, 500);
+        });
+
+        // 用户信息popup
+        $('.tms-blog').on('mouseleave', 'span[data-value].at-user:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+            event.preventDefault();
+            if (this.hoverTimeoutRef) {
+                if (this.hoverUserTarget === event.currentTarget) {
+                    clearTimeout(this.hoverTimeoutRef);
+                    this.hoverTimeoutRef = null;
+                }
+            }
         });
 
         $('.tms-blog .em-blog-content').on('click', 'a.avatar[data-value], a.author[data-value], .at-user[data-value]', (event) => {
@@ -96,7 +121,7 @@ export class Blog {
                 nsCtx.isSuper = utils.isSuperUser(user);
                 nsCtx.isAdmin = utils.isAdminUser(user);
             }),
-            chatService.listUsers().then((users) => {
+            chatService.listUsers(true).then((users) => {
                 nsCtx.users = users;
                 window.tmsUsers = users;
             })

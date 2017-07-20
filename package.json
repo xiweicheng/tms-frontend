@@ -8,6 +8,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@fancyapps/fancybox": "^3.1.20",
     "aurelia-animator-css": "^1.0.0",
     "aurelia-bootstrapper": "^1.0.0",
     "aurelia-fetch-client": "^1.0.0",
@@ -34,11 +35,11 @@
     "push.js": "0.0.11",
     "requirejs": "^2.3.2",
     "semantic-ui-calendar": "0.0.6",
-    "simplemde": "^1.11.2",
-    "swipebox": "^1.4.6",
+    "simplemde": "github:xiweicheng/simplemde-markdown-editor#master",
+    "tinycolorpicker": "github:xiweicheng/tinyColorPicker#master",
     "text": "github:requirejs/text#latest",
     "timeago.js": "^2.0.2",
-    "tms-semantic-ui": "^2.2.4",
+    "tms-semantic-ui": "^3.2.10",
     "toastr": "^2.1.2",
     "wurl": "^2.1.0"
   },

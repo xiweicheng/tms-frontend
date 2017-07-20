@@ -55,7 +55,7 @@ export class EmBlogSave {
 
     approveHandler(modal) {
 
-        var html = utils.md2html(this.blogInfo.content);
+        var html = utils.md2html(this.blogInfo.content, true);
         let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
 
         let spaceId = $(this.spacesRef).dropdown('get value');

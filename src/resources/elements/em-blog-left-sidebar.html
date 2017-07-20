@@ -84,7 +84,8 @@
                     <i click.delegate="clearFilterHandler()" class="remove link icon ${!filter ? 'tms-hidden' : ''}"></i>
                 </div>
                 <div class="right menu">
-                    <div class="ui dropdown icon item" ui-dropdown>
+                    <em-dropdown-links></em-dropdown-links>
+                    <!-- <div class="ui dropdown icon item" ui-dropdown>
                         <i class="content icon"></i>
                         <div class="menu">
                             <div class="header">
@@ -95,7 +96,7 @@
                                 <a repeat.for="item of sysLinks | sort:'title'" click.delegate="sysLinkHandler(item)" target="_blank" href="${item.href}" class="item">${item.title}</a>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

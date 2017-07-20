@@ -1,0 +1,52 @@
+.em-chat-topic {
+    .ui.comments {
+        .comment {
+            padding-left: 3px;
+            padding-bottom: 3px;
+            &:hover {
+                background-color: rgba(0, 0, 0, .03);
+                &:before {
+                    width: 4px;
+                }
+            }
+            &.active {
+                background-color: rgba(0, 0, 0, .03);
+                &:before {
+                    width: 4px;
+                }
+            }
+            &:before {
+                content: "";
+                position: absolute;
+                z-index: -1;
+                top: 0;
+                left: -4px;
+                bottom: 0;
+                background: #2098D1;
+                width: 0;
+                -webkit-transition-property: width;
+                transition-property: width;
+                -webkit-transition-duration: 0.3s;
+                transition-duration: 0.3s;
+                -webkit-transition-timing-function: ease-out;
+                transition-timing-function: ease-out;
+            }
+            .content {
+                > .markdown-body span.at-user {
+                    cursor: pointer;
+                }
+                .tools {
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    display: none;
+                }
+                &:hover {
+                    .tools {
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+}

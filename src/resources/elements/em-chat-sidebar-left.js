@@ -10,6 +10,8 @@ export class EmChatSidebarLeft {
     @bindable isAt;
     filter = '';
     isSuper = nsCtx.isSuper;
+    isMobile = utils.isMobile();
+    isLeftBarHide = true;
 
     usersChanged() {
         this._filter();
@@ -32,17 +34,11 @@ export class EmChatSidebarLeft {
         this.subscribe = ea.subscribe(nsCons.EVENT_CHANNEL_ACTIONS, (payload) => {
             this[payload.action](payload.item);
         });
-        this.subscribe1 = ea.subscribe(nsCons.EVENT_SYSTEM_LINKS_REFRESH, (payload) => {
-            this._refreshSysLinks();
-        });
-    }
-
-    _refreshSysLinks() {
-        $.get('/admin/link/listByApp', (data) => {
-            if (data.success) {
-                this.sysLinks = data.data;
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_TOGGLE_LEFT_SIDEBAR, (payload) => {
+            if (payload) {
+                this.isLeftBarHide = payload;
             } else {
-                this.sysLinks = [];
+                this.isLeftBarHide = !this.isLeftBarHide;
             }
         });
     }
@@ -52,11 +48,7 @@ export class EmChatSidebarLeft {
      */
     unbind() {
         this.subscribe.dispose();
-        this.subscribe1.dispose();
-    }
-
-    bind(bindingCtx, overrideCtx) {
-        this._refreshSysLinks();
+        this.subscribe2.dispose();
     }
 
     /**
@@ -168,10 +160,6 @@ export class EmChatSidebarLeft {
         ea.publish(nsCons.EVENT_SWITCH_CHAT_TO, {});
     }
 
-    addChannelLinkHandler(event) {
-        this.sysLinkMgrVm.show();
-    }
-
     isSubscribed(item) {
         return _.some(item.subscriber, { username: this.loginUser.username });
     }
@@ -193,8 +181,13 @@ export class EmChatSidebarLeft {
         });
     }
 
-    sysLinkHandler(item) {
-        $.post('/admin/link/count/inc', { id: item.id });
+    channelHandler() {
+        ea.publish(nsCons.EVENT_CHAT_TOGGLE_LEFT_SIDEBAR, true); // 移动端,切换沟通对象时,隐藏左侧边栏
+        return true;
+    }
+
+    userHandler() {
+        ea.publish(nsCons.EVENT_CHAT_TOGGLE_LEFT_SIDEBAR, true); // 移动端,切换沟通对象时,隐藏左侧边栏
         return true;
     }
 

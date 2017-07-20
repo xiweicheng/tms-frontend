@@ -1,0 +1,78 @@
+<template>
+    <require from="./em-chat-topic.css"></require>
+    <div class="em-chat-topic" show.bind="actived.show == 'topic'">
+        <div class="ui basic segment" style="padding-top: 8px;">
+            <div ref="commentsRef" class="ui minimal comments">
+                <div class="comment">
+                    <em-user-avatar user.bind="chat.creator"></em-user-avatar>
+                    <div class="content">
+                        <a class="author" data-value="${chat.creator.username}">${chat.creator.name}</a>
+                        <div class="metadata">
+                            <div class="date" data-timeago="${chat.createDate}" title="${chat.createDate | date}">${chat.createDate | timeago}</div>
+                            <span title="${'频道: ' + chat.channel.title}"><a href="#/chat/${chat.channel.name}?id=${chat.id}">#${chat.channel.name}</a></span>
+                        </div>
+                        <div ref="mkbodyRef" fancybox class="text markdown-body" style="max-height: none;" innerhtml.bind="chat.content | parseMd | emoji:mkbodyRef"></div>
+                        <div class="actions">
+                            <a style="margin-right: 5px;" if.bind="!isAt" click.delegate="followerHandler()" class="tms-follower" title="${isFollower ? '取消关注此话题消息' : '关注此话题消息'}"><i class="large ${isFollower ? 'hide' : 'unhide'} icon link"></i></a>
+                            <a style="margin-right: 5px;" if.bind="!isAt" data-clipboard-text="${basePath + '#/chat/' + channel.name + '?id=' + chat.id}" class="tms-clipboard" title="复制分享消息链接"><i class="large link external share icon"></i></a>
+                            <a style="margin-right: 5px;" if.bind="!isAt" click.delegate="replyHandler()" class="tms-reply" title="回复此话题消息"><i class="large reply icon link"></i></a>
+                        </div>
+                        <div class="tools">
+                            <button click.delegate="refreshHandler()" title="刷新同步" class="mini circular ui icon button">
+                                <i class="refresh icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui horizontal divider">
+                    <i class="talk outline icon"></i> ${chat.chatReplies.length} 回复
+                </div>
+                <div repeat.for="item of chat.chatReplies" class="comment tms-reply ${item.id == rid ? 'active' : ''}" data-id="${item.id}" task.bind="notifyRendered($last, item)">
+                    <em-user-avatar user.bind="item.creator"></em-user-avatar>
+                    <div class="content">
+                        <a class="author" data-value="${item.creator.username}">${item.creator.name}</a>
+                        <div class="metadata">
+                            <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
+                            <a click.delegate="stowHandler(item)" class="tms-stow" title="收藏该消息"><i class="${item.isStow ? '' : 'empty'} star link icon"></i></a>
+                        </div>
+                        <div ref="mkbodyRef2" show.bind="!item.isEditing" fancybox class="text markdown-body" style="max-height: none;" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef2"></div>
+                        <div class="textcomplete-container" show.bind="item.isEditing">
+                            <div class="append-to"></div>
+                        </div>
+                        <textarea ref="editTxtRef" data-id="${item.id}" textcomplete.bind="members" pastable autosize dropzone keydown.trigger="eidtKeydownHandler($event, item, editTxtRef)" show.bind="item.isEditing" value.bind="item.content & oneWay" class="tms-edit-textarea" rows="1"></textarea>
+                        <div show.bind="item.isEditing" class="ui compact icon buttons tms-edit-actions">
+                            <button click.delegate="editOkHandler($event, item, editTxtRef)" title="保存 (ctrl+enter)" class="ui left attached compact icon button">
+                                <i class="checkmark icon"></i>
+                            </button>
+                            <button click.delegate="editCancelHandler($event, item, editTxtRef)" title="取消 (esc)" class="ui attached compact icon button">
+                                <i class="remove icon"></i>
+                            </button>
+                            <button dropzone="clickable.bind: !0; target.bind: editTxtRef" title="上传 (ctrl+u)" class="ui right attached compact icon button">
+                                <i class="upload icon"></i>
+                            </button>
+                        </div>
+                        <div class="actions">
+                            <a style="margin-right: 5px;" if.bind="!isAt && (item.creator.username == loginUser.username)" click.delegate="editHandler(item, editTxtRef)" class="tms-edit" title="编辑回复内容(ctrl+dblclick)"><i class="large link edit icon"></i></a>
+                            <a style="margin-right: 5px;" if.bind="!isAt" data-clipboard-text="${basePath + '#/chat/' + channel.name + '?id=' + chat.id + '&rid=' + item.id}" class="tms-clipboard" title="复制分享消息链接"><i class="large link external share icon"></i></a>
+                            <a style="margin-right: 0; color: red;" if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action class="ui icon top right pointing dropdown" title="删除回复">
+                                <i class="large trash outline icon"></i>
+                                <div class="menu">
+                                    <div style="color: red;" class="item" click.delegate="removeHandler(item)"><i class="trash outline icon"></i>确认删除</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="tools">
+                            <button click.delegate="refreshReplyHandler(item)" title="刷新同步" class="mini circular ui icon button">
+                                <i class="refresh icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <em-chat-topic-input channel.bind="channel" chat.bind="chat"></em-chat-topic-input>
+            <div style="font-size: 12px; color: lightgray; position: relative; left: 13px; top: -16px; display: inline-block;">
+                <i class="info circle icon"></i> 回复话题消息会自动关注话题,接收话题更新邮件通知
+            </div>
+        </div>
+    </div>
+</template>

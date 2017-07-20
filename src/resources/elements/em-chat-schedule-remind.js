@@ -39,7 +39,7 @@ export class EmChatScheduleRemind {
                     if (start > now && start < (now + this.headOffset)) {
                         this.event = event;
                         this.reminded.push(event.id);
-                        this._desktopPuh();
+                        this._desktopPush();
                         this.show();
                     }
                 }
@@ -48,7 +48,7 @@ export class EmChatScheduleRemind {
         }, this.interval);
     }
 
-    _desktopPuh() {
+    _desktopPush() {
         push.create('TMS日程提醒通知', {
             body: `内容: ${this.event.title}`,
             icon: {

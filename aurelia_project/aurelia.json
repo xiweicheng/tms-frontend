@@ -121,12 +121,18 @@
             ]
           },
           {
-            "name": "swipebox",
-            "path": "../node_modules/swipebox",
-            "main": "src/js/jquery.swipebox.min",
+            "name": "tinycolorpicker",
+            "path": "../node_modules/tinyColorPicker",
+            "main": "jqColorPicker.min",
+            "deps": ["jquery"]
+          },
+          {
+            "name": "fancybox",
+            "path": "../node_modules/@fancyapps/fancybox",
+            "main": "dist/jquery.fancybox.min",
             "deps": ["jquery"],
             "resources": [
-              "src/css/swipebox.min.css"
+              "dist/jquery.fancybox.min.css"
             ]
           },
           {

@@ -9,7 +9,7 @@ export class EmChatChannelLinkMgr {
 
     links = [];
 
-    channelChanged(news, old) {
+    getChannelLinks(news, old) {
         if (this.channel) {
             $.get('/admin/link/listBy', {
                 channelId: this.channel.id
@@ -61,6 +61,12 @@ export class EmChatChannelLinkMgr {
     }
 
     updateHandler(item) {
+
+        if (item.oldTitle == item.title && item.oldHref == item.href) {
+            item.isEditing = false;
+            return;
+        }
+        
         $.post('/admin/link/update', {
             id: item.id,
             title: item.title,
@@ -77,18 +83,10 @@ export class EmChatChannelLinkMgr {
     }
 
     showHandler() {
-        this._reset();
+        this.getChannelLinks();
     }
 
-    _reset() {}
-
-    /**
-     * 当视图被附加到DOM中时被调用
-     */
-    attached() {}
-
     show() {
-        this.channelChanged();
         this.emModal.show({ autoDimmer: false });
     }
 
