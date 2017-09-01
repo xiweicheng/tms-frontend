@@ -227,18 +227,20 @@ export class UaValueConverter {
 
 export class Ua2ValueConverter {
     toView(value) {
+
+        let s = '';
         if (value) {
 
             var ua = new UA(value);
             let type = ua.device.type;
             if (type === 'mobile') {
-                return '手机';
+                s = `手机`;
             } else if (type === 'tablet') {
-                return '平板';
+                s = '平板';
             } else if (type === 'desktop') {
-                return '电脑';
+                s = '电脑';
             }
         }
-        return '电脑';
+        return `${s} (${ua.device.manufacturer ? ua.device.manufacturer + ' ' : ''}${ua.device.model ? ua.device.model + ' ' : ''}${ua.os.name} ${ua.browser.name}[${ua.engine.name}])`;
     }
 }
