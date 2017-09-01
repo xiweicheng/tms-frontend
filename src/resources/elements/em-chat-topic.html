@@ -8,7 +8,7 @@
                     <div class="content">
                         <a class="author" data-value="${chat.creator.username}">${chat.creator.name}</a>
                         <div class="metadata">
-                            <i class="${chat.ua | ua} icon large" style="margin-right: 0;" title="发自于${chat.ua | ua2}"></i>
+                            <i if.bind="chat.ua" class="${chat.ua | ua} icon large" style="margin-right: 0;" title="发自于${chat.ua | ua2}"></i>
                             <div class="date" data-timeago="${chat.createDate}" title="${chat.createDate | date}">${chat.createDate | timeago}</div>
                             <span title="${'频道: ' + chat.channel.title}"><a href="#/chat/${chat.channel.name}?id=${chat.id}">#${chat.channel.name}</a></span>
                         </div>
@@ -33,7 +33,7 @@
                     <div class="content">
                         <a class="author" data-value="${item.creator.username}">${item.creator.name}</a>
                         <div class="metadata">
-                            <i class="${item.ua | ua} icon large" style="margin-right: 0;" title="发自于${item.ua | ua2}"></i>
+                            <i if.bind="item.ua" class="${item.ua | ua} icon large" style="margin-right: 0;" title="发自于${item.ua | ua2}"></i>
                             <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
                             <a click.delegate="stowHandler(item)" class="tms-stow" title="收藏该消息"><i class="${item.isStow ? '' : 'empty'} star link icon"></i></a>
                         </div>
