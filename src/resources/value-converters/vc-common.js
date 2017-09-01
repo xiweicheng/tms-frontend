@@ -4,6 +4,10 @@ import {
     default as ColorHash
 } from 'color-hash';
 import tags from 'common/common-tags';
+import {
+    default as UA
+}
+from 'ua-device';
 
 let tg = timeago();
 
@@ -200,5 +204,41 @@ export class DiffHtmlValueConverter {
             return utils.diffHtml(value);
         }
         return value;
+    }
+}
+
+export class UaValueConverter {
+    toView(value) {
+        if (value) {
+
+            var ua = new UA(value);
+            let type = ua.device.type;
+            if (type === 'mobile') {
+                return 'mobile';
+            } else if (type === 'tablet') {
+                return 'tablet';
+            } else if (type === 'desktop') {
+                return 'laptop';
+            }
+        }
+        return 'laptop';
+    }
+}
+
+export class Ua2ValueConverter {
+    toView(value) {
+        if (value) {
+
+            var ua = new UA(value);
+            let type = ua.device.type;
+            if (type === 'mobile') {
+                return '手机';
+            } else if (type === 'tablet') {
+                return '平板';
+            } else if (type === 'desktop') {
+                return '电脑';
+            }
+        }
+        return '电脑';
     }
 }

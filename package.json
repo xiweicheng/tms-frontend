@@ -36,11 +36,12 @@
     "requirejs": "^2.3.2",
     "semantic-ui-calendar": "0.0.6",
     "simplemde": "github:xiweicheng/simplemde-markdown-editor#master",
-    "tinycolorpicker": "github:xiweicheng/tinyColorPicker#master",
     "text": "github:requirejs/text#latest",
     "timeago.js": "^2.0.2",
+    "tinycolorpicker": "github:xiweicheng/tinyColorPicker#master",
     "tms-semantic-ui": "^3.2.10",
     "toastr": "^2.1.2",
+    "ua-device": "github:xiweicheng/ua-device#merged",
     "wurl": "^2.1.0"
   },
   "peerDependencies": {},

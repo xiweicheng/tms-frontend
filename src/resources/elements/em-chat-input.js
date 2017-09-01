@@ -314,6 +314,7 @@ export class EmChatInput {
                 path: wurl('path'),
                 chatTo: this.chatTo,
                 content: content,
+                ua: navigator.userAgent,
                 contentHtml: html
             };
         } else {
@@ -324,6 +325,7 @@ export class EmChatInput {
                 channelId: this.channel.id,
                 usernames: usernames,
                 content: content,
+                ua: navigator.userAgent,
                 contentHtml: html
             };
         }
