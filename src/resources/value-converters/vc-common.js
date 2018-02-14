@@ -4,6 +4,10 @@ import {
     default as ColorHash
 } from 'color-hash';
 import tags from 'common/common-tags';
+import {
+    default as UA
+}
+from 'ua-device';
 
 let tg = timeago();
 
@@ -200,5 +204,43 @@ export class DiffHtmlValueConverter {
             return utils.diffHtml(value);
         }
         return value;
+    }
+}
+
+export class UaValueConverter {
+    toView(value) {
+        if (value) {
+
+            var ua = new UA(value);
+            let type = ua.device.type;
+            if (type === 'mobile') {
+                return 'mobile';
+            } else if (type === 'tablet') {
+                return 'tablet';
+            } else if (type === 'desktop') {
+                return 'laptop';
+            }
+        }
+        return 'laptop';
+    }
+}
+
+export class Ua2ValueConverter {
+    toView(value) {
+
+        let s = '';
+        if (value) {
+
+            var ua = new UA(value);
+            let type = ua.device.type;
+            if (type === 'mobile') {
+                s = `手机`;
+            } else if (type === 'tablet') {
+                s = '平板';
+            } else if (type === 'desktop') {
+                s = '电脑';
+            }
+        }
+        return `${s} (${ua.device.manufacturer ? ua.device.manufacturer + ' ' : ''}${ua.device.model ? ua.device.model + ' ' : ''}${ua.os.name} ${ua.browser.name}[${ua.engine.name}])`;
     }
 }

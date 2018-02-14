@@ -121,6 +121,11 @@
             ]
           },
           {
+            "name": "ua-device",
+            "path": "../node_modules/ua-device",
+            "main": "ua-device"
+          },
+          {
             "name": "tinycolorpicker",
             "path": "../node_modules/tinyColorPicker",
             "main": "jqColorPicker.min",
