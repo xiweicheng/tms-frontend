@@ -50,6 +50,8 @@ export class EmBlogSave {
             if (data.success) {
                 this.spaces = data.data;
             }
+        }).fail(() => {
+            this.emModal.hide();
         });
     }
 

@@ -78,8 +78,14 @@ export class ParseMdValueConverter {
 }
 
 export class SortValueConverter {
-    toView(value, prop) {
-        return _.isArray(value) ? _.sortBy(value, prop) : value;
+    toView(value, prop, reverse = false) {
+        return _.isArray(value) ? (!reverse ? _.sortBy(value, prop) : _.reverse(_.sortBy(value, prop))) : value;
+    }
+}
+
+export class TakeValueConverter {
+    toView(value, count, tail = false) {
+        return _.isArray(value) ? (!tail ? _.take(value, count) : _.takeRight(value, count)) : value;
     }
 }
 
