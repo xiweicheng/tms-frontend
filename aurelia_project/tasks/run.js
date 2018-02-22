@@ -33,11 +33,12 @@ let serve = gulp.series(
                         next();
                     },
                     proxyMiddleware(['/free', '/admin', '/upload', '/lib'], {
-                        target: 'http://translation.sh1.newtouch.com',
+                        // target: 'http://translation.sh1.newtouch.com',
                         // target: 'http://tms000.sh1.newtouch.com',
-                        // target: 'https://xiweicheng.com',
+                        target: 'https://xiweicheng.com',
                         // target: 'http://localhost',
-                        changeOrigin: true
+                        changeOrigin: true,
+                        secure: false
                     }),
                 ]
             }

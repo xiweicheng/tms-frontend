@@ -18,6 +18,11 @@ export class EmBlogLeftSidebar {
         open: false
     };
 
+    spaceRecent = {
+        name: '最近更新',
+        open: false
+    };
+
     /**
      * 构造函数
      */

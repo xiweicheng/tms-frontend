@@ -70,7 +70,7 @@ export class Config {
                             });
 
                             if (resp.status == 401) {
-                                toastr.error('用户未登录!');
+                                toastr.error('用户未登录或者会话超时!');
                                 utils.redirect2Login();
                                 return;
                             }
@@ -207,6 +207,7 @@ export class Config {
         // });
         $(document).ajaxError(function(event, xhr, settings) {
             if (xhr && xhr.status == 401) {
+                toastr.error('用户未登录或者会话超时!');
                 utils.redirect2Login();
             }
         });
