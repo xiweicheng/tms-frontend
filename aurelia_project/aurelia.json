@@ -127,7 +127,7 @@
           },
           {
             "name": "tinycolorpicker",
-            "path": "../node_modules/tinyColorPicker",
+            "path": "../node_modules/tinycolorpicker",
             "main": "jqColorPicker.min",
             "deps": ["jquery"]
           },

@@ -38,7 +38,7 @@
     "simplemde": "github:xiweicheng/simplemde-markdown-editor#master",
     "text": "github:requirejs/text#latest",
     "timeago.js": "^2.0.2",
-    "tinycolorpicker": "github:xiweicheng/tinyColorPicker#master",
+    "tinycolorpicker": "github:xiweicheng/tinycolorpicker#master",
     "tms-semantic-ui": "^3.2.10",
     "toastr": "^2.1.2",
     "ua-device": "github:xiweicheng/ua-device#merged",
