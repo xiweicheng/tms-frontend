@@ -183,6 +183,7 @@ export class EmBlogLeftSidebar {
 
     clearFilterHandler() {
         this.filter = '';
+        $(this.filterInputRef).focus();
         this._doFilerDebounce();
     }
 

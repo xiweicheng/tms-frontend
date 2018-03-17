@@ -99,7 +99,7 @@
                 <em-blog-space-create></em-blog-space-create>
                 <div class="item tms-search">
                     <div class="ui transparent left icon input">
-                        <input keyup.trigger="filterKeyupHandler($event)" value.bind="filter" type="text" placeholder="过滤查找...">
+                        <input ref="filterInputRef" keyup.trigger="filterKeyupHandler($event)" value.bind="filter" type="text" placeholder="过滤查找...">
                         <i class="search icon"></i>
                     </div>
                     <i click.delegate="clearFilterHandler()" class="remove link icon ${!filter ? 'tms-hidden' : ''}"></i>
