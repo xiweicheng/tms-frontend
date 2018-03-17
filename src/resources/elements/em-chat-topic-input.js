@@ -217,7 +217,7 @@ export class EmChatTopicInput {
             },
             template: (value, term) => {
                 let user = _.find(this.members, { username: value });
-                return `${user.name} - ${user.mails} (${user.username})`;
+                return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
             },
             replace: (value) => {
                 return `$1{~${value}}`;

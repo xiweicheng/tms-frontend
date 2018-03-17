@@ -189,7 +189,7 @@ export class CommonUtils {
 
         var txt = plainText;
         $.each(this.parseUsers(plainText), function(index, user) {
-            txt = txt.replace(new RegExp(`{~${user.username}}`, 'g'), `<span data-value="${user.username}" class="at-user">**\`@${user.name}\`**</span>`);
+            txt = txt.replace(new RegExp(`{~${user.username}}`, 'g'), `<span data-value="${user.username}" class="at-user">**\`@${user.name ? user.name : user.username}\`**</span>`);
         });
 
         return txt;
