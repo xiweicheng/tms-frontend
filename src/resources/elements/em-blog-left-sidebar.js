@@ -217,6 +217,15 @@ export class EmBlogLeftSidebar {
             this.spaceStow.open = true;
         }
 
+        // 最近20条过滤目录展开控制
+        let recent20 = _.takeRight(_.sortBy(this.blogs, 'updateDate'), 20);
+
+        if (!_.some(recent20, b => !b._hidden)) {
+            this.spaceRecent.open = false;
+        } else {
+            this.spaceRecent.open = true;
+        }
+
         if (!this.filter) {
             _.each(this.spaces, s => {
                 if (_.find(s.blogs, { id: +nsCtx.blogId })) {
@@ -226,7 +235,9 @@ export class EmBlogLeftSidebar {
                 }
             });
             this.spaceStow.open = false;
+            this.spaceRecent.open = false;
         }
+
     }
 
     // sysLinkHandler(item) {
