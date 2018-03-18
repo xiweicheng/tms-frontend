@@ -45,7 +45,7 @@
             <button class="ui basic icon mini button tms-clipboard" data-tooltip="复制博文分享链接" data-clipboard-text="${basePath}#/blog/${blog.id}">
                 <i class="copy icon"></i>
             </button>
-            <button show.bind="blog.opened" class="ui basic icon mini button tms-clipboard" data-tooltip="复制游客访问链接" data-clipboard-text="${basePath}#/${blog.id}">
+            <button show.bind="blog.opened" class="ui basic icon mini button tms-clipboard" data-tooltip="复制游客访问链接" data-clipboard-text="${baseUrl}/#/blog/${blog.id}">
                 <i class="copy icon"></i>
             </button>
             <a click.delegate="cancelHandler()" href="" class="btn-cancel">取消</a>
