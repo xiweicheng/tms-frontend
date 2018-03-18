@@ -48,30 +48,32 @@
                         <i class="users icon"></i> 频道 (${channels.length}) <i ref="createChannelRef" class="circular icon link plus"></i>
                     </div>
                     <a repeat.for="item of channels | sort:'title' | sortChannels" task.bind="initChatToDropdownHandler($last)" href="#/chat/${item.name}" class="item" title="${item.title}(${item.name})" data-value="${item.name}" data-id="${item.name}">
-                        <i class="hashtag icon"></i>${item.title}
-                        <div class="actions">
+                        <i class="hashtag icon"></i>${item.title ? item.title : item.name}
+                        <!-- <div class="actions">
                             <div if.bind="item.owner.username == loginUser.username" ui-dropdown class="ui dropdown">
                                 <i class="large ellipsis horizontal icon"></i>
-                                <div class="left menu transition hidden">
+                                <div class="left menu">
                                     <div class="item" click.trigger="membersMgrHandler(item, $event)">成员管理</div>
+                                    <div class="item" click.trigger="subscribeHandler(item)">${(item.isSubscribed || isSubscribed(item)) ? '取消订阅' : '订阅频道'}</div>
                                     <div class="item" click.trigger="editHandler(item, $event)">编辑</div>
                                     <div class="item" click.trigger="delHandler(item, $event)">删除</div>
                                 </div>
                             </div>
                             <div if.bind="item.owner.username != loginUser.username" ui-dropdown class="ui dropdown">
                                 <i class="large ellipsis horizontal icon"></i>
-                                <div class="left menu transition hidden">
+                                <div class="left menu">
                                     <div class="item" click.trigger="membersShowHandler(item, $event)">成员查看</div>
+                                    <div class="item" click.trigger="subscribeHandler(item)">${(item.isSubscribed || isSubscribed(item)) ? '取消订阅' : '订阅频道'}</div>
                                     <div class="item" click.trigger="leaveHandler(item, $event)">离开</div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </a>
                     <div class="header">
                         <i class="user icon"></i> 用户 (${users.length})
                     </div>
                     <a repeat.for="item of users | sortUsers:loginUser.username" task.bind="initChatToDropdownHandler($last)" href="#/chat/@${item.username}" class="item ${!item.enabled ? 'disabled-user' : ''}" title="${item.name}(@${item.username})" data-value="@${item.username}" data-id="@${item.username}">
-                        <i style="font-weight: bold;" class="at icon"></i>${item.name} ${item.username == loginUser.username ? '(自己)' : ''}
+                        <i style="font-weight: bold;" class="at icon"></i>${item.name ? item.name : item.username} ${item.username == loginUser.username ? '(自己)' : ''}
                     </a>
                 </div>
             </div>
