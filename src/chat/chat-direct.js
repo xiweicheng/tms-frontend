@@ -221,7 +221,7 @@ export class ChatDirect {
                     });
 
                     if (this.user) {
-                        let name = this.user ? this.user.name : this.chatTo;
+                        let name = this.user ? (this.user.name ? this.user.name : this.user.username) : this.chatTo;
                         routeConfig.navModel.setTitle(`${name} | 私聊 | TMS`);
 
                         this.listChatDirect(true);
