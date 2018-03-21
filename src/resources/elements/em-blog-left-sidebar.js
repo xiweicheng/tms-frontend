@@ -34,6 +34,11 @@ export class EmBlogLeftSidebar {
                 ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, { to: `#/blog/${payload.blog.id}` });
             } else if (payload.action == 'updated') {
                 _.extend(_.find(this.blogs, { id: payload.blog.id }), payload.blog);
+                // 同步更新收藏博文
+                let bs = _.find(this.blogStows, { id: payload.blog.id });
+                if (bs) {
+                    _.extend(bs.blog, payload.blog);
+                }
                 this.calcTree();
             } else if (payload.action == 'deleted') {
                 this.blogStows = _.reject(this.blogStows, bs => bs.blog.id == payload.blog.id);
@@ -178,6 +183,7 @@ export class EmBlogLeftSidebar {
 
     clearFilterHandler() {
         this.filter = '';
+        $(this.filterInputRef).focus();
         this._doFilerDebounce();
     }
 
@@ -217,6 +223,15 @@ export class EmBlogLeftSidebar {
             this.spaceStow.open = true;
         }
 
+        // 最近20条过滤目录展开控制
+        let recent20 = _.takeRight(_.sortBy(this.blogs, 'updateDate'), 20);
+
+        if (!_.some(recent20, b => !b._hidden)) {
+            this.spaceRecent.open = false;
+        } else {
+            this.spaceRecent.open = true;
+        }
+
         if (!this.filter) {
             _.each(this.spaces, s => {
                 if (_.find(s.blogs, { id: +nsCtx.blogId })) {
@@ -226,7 +241,9 @@ export class EmBlogLeftSidebar {
                 }
             });
             this.spaceStow.open = false;
+            this.spaceRecent.open = false;
         }
+
     }
 
     // sysLinkHandler(item) {

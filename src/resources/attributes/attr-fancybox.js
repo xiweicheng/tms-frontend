@@ -42,6 +42,15 @@ export class AttrFancyboxCustomAttribute {
                 transitionEffect: "slide", // false fade slide circular tube zoom-in-out rotate
                 arrows: true,
                 infobar: true,
+                buttons: [
+                    'slideShow',
+                    'fullScreen',
+                    'thumbs',
+                    // 'share',
+                    'download',
+                    'zoom',
+                    'close'
+                ],
             }, initialIndexOnArray);
 
         });

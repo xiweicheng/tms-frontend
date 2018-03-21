@@ -9,6 +9,7 @@ export class EmBlogShare {
     @bindable blog;
 
     basePath = utils.getBasePath();
+    baseUrl = utils.getBaseUrl();
 
     /**
      * 当视图被附加到DOM中时被调用
