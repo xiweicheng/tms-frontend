@@ -42,7 +42,22 @@ export class ChatDirect {
                 toastr.error('复制到剪贴板失败!');
             });
 
+        $(window).resize((event) => {
+            this.doResize();
+        });
+
         this.initSubscribeEvent();
+    }
+
+    doResize() {
+        if (nsCtx.isRightSidebarShow) {
+            let wid = $(this.contentRef).width() - 392;
+            $(this.contentBodyRef).width(wid);
+            $(this.contentBodyRef).children('.scroll-wrapper').width(wid);
+        } else {
+            $(this.contentBodyRef).css('width', '100%');
+            $(this.contentBodyRef).children('.scroll-wrapper').css('width', '100%');
+        }
     }
 
     initSubscribeEvent() {
@@ -63,14 +78,7 @@ export class ChatDirect {
         this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_SIDEBAR_TOGGLE, (payload) => {
 
             this.isRightSidebarShow = nsCtx.isRightSidebarShow = payload.isShow;
-            if (this.isRightSidebarShow) {
-                let wid = $(this.contentRef).width() - 392;
-                $(this.contentBodyRef).width(wid);
-                $(this.contentBodyRef).children('.scroll-wrapper').width(wid);
-            } else {
-                $(this.contentBodyRef).css('width', '100%');
-                $(this.contentBodyRef).children('.scroll-wrapper').css('width', '100%');
-            }
+            this.doResize();
         });
 
         this.subscribe3 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_CREATED, (payload) => {
