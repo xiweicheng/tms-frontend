@@ -1,1 +1,25 @@
-.em-chat-todo {}
+.em-chat-todo {
+    .ui.list {
+        .item {
+            .content {
+                text-overflow: ellipsis;
+                overflow: hidden;
+                max-width: 300px;
+            }
+            .actions {
+            	display: none;
+            	position: absolute;
+            	right: 10px;
+            	> i.icon {
+            		margin-right: 0;
+            	}
+            }
+
+            &:hover {
+            	.actions {
+            		display: inline-block;
+            	}
+            }
+        }
+    }
+}
