@@ -6,10 +6,10 @@
                 <input ref="todoInputRef" value.bind="title" type="text" keyup.delegate="addTodoHandler() & key" placeholder="输入待办事项...">
                 <i class="${(ajax && ajax.readyState != 4) ? 'spinner loading' : 'plus'} link icon" click.delegate="addTodoHandler()"></i>
             </div>
-            <h4 class="ui horizontal divider header">
+            <h5 class="ui horizontal divider yellow header">
 			  <!-- <i class="square outline icon"></i> -->
 			  进行中（${todos.length}）
-			</h4>
+			</h5>
             <div class="ui middle aligned divided selection relaxed list">
                 <div repeat.for="item of todos | sort:'id':true" class="item">
                     <div class="actions">
@@ -22,16 +22,16 @@
                             </div>
                         </div>
                     </div>
-                    <i click.delegate="statusToggleHandler(item)" class="${item.status == 'Doing' ? 'checkmark box' : 'square outline'} large link icon"></i>
-                    <div class="content" title="${item.title}">
+                    <i click.delegate="statusToggleHandler(item)" class="${item.status == 'Doing' ? 'red checkmark box' : 'square outline'} large link icon"></i>
+                    <div class="content ${item.status == 'Doing' ? 'red' : ''}" title="${item.title}">
                         ${item.title}
                     </div>
                 </div>
             </div>
-            <h4 class="ui horizontal divider header">
+            <h5 class="ui horizontal divider green header">
 			  <!-- <i class="check circle icon"></i> -->
 			  已完成（${dones.length}）
-			</h4>
+			</h5>
             <div class="ui middle aligned divided selection relaxed list">
                 <div repeat.for="item of dones | sort:'updateDate':true" class="item">
                     <div class="actions">

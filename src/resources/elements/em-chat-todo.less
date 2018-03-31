@@ -5,20 +5,23 @@
                 text-overflow: ellipsis;
                 overflow: hidden;
                 max-width: 300px;
+                &.red {
+                    color: red;
+                }
             }
             .actions {
-            	display: none;
-            	position: absolute;
-            	right: 10px;
-            	> i.icon {
-            		margin-right: 0;
-            	}
+                display: none;
+                position: absolute;
+                right: 10px;
+                >i.icon {
+                    margin-right: 0;
+                }
             }
 
             &:hover {
-            	.actions {
-            		display: inline-block;
-            	}
+                .actions {
+                    display: inline-block;
+                }
             }
         }
     }
