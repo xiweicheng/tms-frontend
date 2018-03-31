@@ -63,6 +63,7 @@ window.nsCons = {
     ACTION_TYPE_DIR: 'action_type_dir',
     ACTION_TYPE_ATTACH: 'action_type_attach',
     ACTION_TYPE_SCHEDULE: 'action_type_schedule',
+    ACTION_TYPE_TODO: 'action_type_todo',
     NUM_TEXT_COMPLETE_MAX_COUNT: 20,
     STR_EMOJI_SEARCH_URL: 'http://emoji.muan.co/',
     KEY_REMEMBER_LAST_CHAT_TO: 'tms/remember_last_chat_to',

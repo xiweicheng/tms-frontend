@@ -21,6 +21,7 @@ export class EmChatTopMenu {
     ACTION_TYPE_DIR = nsCons.ACTION_TYPE_DIR;
     ACTION_TYPE_ATTACH = nsCons.ACTION_TYPE_ATTACH;
     ACTION_TYPE_SCHEDULE = nsCons.ACTION_TYPE_SCHEDULE;
+    ACTION_TYPE_TODO = nsCons.ACTION_TYPE_TODO;
 
     countAt = null;
     newAtCnt = 0;
@@ -368,6 +369,20 @@ export class EmChatTopMenu {
         }
 
         this.activeType = nsCons.ACTION_TYPE_SCHEDULE;
+        ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
+            action: this.activeType
+        });
+        this.toggleRightSidebar(true);
+    }
+
+    showTodoHandler(event) {
+
+        if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_TODO) && !event.ctrlKey) {
+            this.toggleRightSidebar();
+            return;
+        }
+
+        this.activeType = nsCons.ACTION_TYPE_TODO;
         ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
             action: this.activeType
         });

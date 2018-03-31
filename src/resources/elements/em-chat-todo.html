@@ -1,0 +1,63 @@
+<template>
+    <require from="./em-chat-todo.css"></require>
+    <div class="em-chat-todo" show.bind="actived.show == 'todo'">
+        <div class="ui basic segment">
+            <div class="ui big fluid icon input">
+                <input ref="todoInputRef" value.bind="title" type="text" keyup.delegate="addTodoHandler() & key" placeholder="输入待办事项...">
+                <i class="${(ajax && ajax.readyState != 4) ? 'spinner loading' : 'plus'} link icon" click.delegate="addTodoHandler()"></i>
+            </div>
+            <h5 class="ui horizontal divider yellow header">
+			  <!-- <i class="square outline icon"></i> -->
+			  进行中（${todos.length}）
+			</h5>
+            <div class="ui middle aligned divided selection relaxed list">
+                <div repeat.for="item of todos | sort:'id':true" class="item">
+                    <div class="actions" show.bind="!item.isEditing">
+                        <i click.delegate="statusDoneHandler(item)" class="large check circle link icon" title="标记已经完成"></i>
+                        <i class="tms-copy tms-clipboard copy link icon large" data-clipboard-text="${item.title}" title="复制到剪贴板"></i>
+                        <div ui-dropdown-action class="ui icon right center pointing dropdown" title="删除待办事项">
+                            <i class="red large trash outline icon" style="margin-right: 0;"></i>
+                            <div class="menu">
+                                <div style="color: red;" class="item" click.delegate="delHandler(item, 'todo')"><i class="trash outline icon"></i>确认删除</div>
+                            </div>
+                        </div>
+                    </div>
+                    <i show.bind="!item.isEditing" click.delegate="statusToggleHandler(item)" class="${item.status == 'Doing' ? 'red checkmark box' : 'square outline'} large link icon"></i>
+                    <div show.bind="!item.isEditing" dblclick.delegate="editHandler(item, editInputRef)" class="content ${item.status == 'Doing' ? 'red' : ''}" title="${item.title}">
+                        ${item.title}
+                    </div>
+                    <div show.bind="item.isEditing" class="ui transparent icon fluid input">
+                        <input ref="editInputRef" type="text" value.bind="item.title" keyup.delegate="updateHandler(item) & key" blur.trigger="updateHandler(item)">
+                        <i class="plus link icon" click.delegate="updateHandler(item)"></i>
+                    </div>
+                </div>
+            </div>
+            <h5 class="ui horizontal divider green header">
+			  <!-- <i class="check circle icon"></i> -->
+			  已完成（${dones.length}）
+			</h5>
+            <div class="ui middle aligned divided selection relaxed list">
+                <div repeat.for="item of dones | sort:'updateDate':true" class="item">
+                    <div show.bind="!item.isEditing" class="actions">
+                        <i click.delegate="statusNewHandler(item)" class="large square outline link icon" title="标记未完成"></i>
+                        <i class="tms-copy tms-clipboard copy link icon large" data-clipboard-text="${item.title}" title="复制到剪贴板"></i>
+                        <div ui-dropdown-action class="ui icon right center pointing dropdown" title="删除完成事项">
+                            <i class="red large trash outline icon" style="margin-right: 0;"></i>
+                            <div class="menu">
+                                <div style="color: red;" class="item" click.delegate="delHandler(item, 'done')"><i class="trash outline icon"></i>确认删除</div>
+                            </div>
+                        </div>
+                    </div>
+                    <i show.bind="!item.isEditing" class="large check circle icon"></i>
+                    <div show.bind="!item.isEditing" dblclick.delegate="editHandler(item, editInputRef)" class="content" title="${item.title}">
+                        ${item.title}
+                    </div>
+                    <div show.bind="item.isEditing" class="ui transparent icon fluid input">
+                        <input ref="editInputRef" type="text" value.bind="item.title" keyup.delegate="updateHandler(item) & key" blur.trigger="updateHandler(item)">
+                        <i class="plus link icon" click.delegate="updateHandler(item)"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
