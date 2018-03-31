@@ -1,0 +1,47 @@
+<template>
+    <require from="./em-chat-todo.css"></require>
+    <div class="em-chat-todo" show.bind="actived.show == 'todo'">
+        <div class="ui basic segment" style="padding-top: 8px;">
+            <div class="ui big fluid icon input">
+                <input type="text" placeholder="输入待办事项...">
+                <i class="plus link icon"></i>
+            </div>
+            <h4 class="ui horizontal divider header">
+			  <i class="square outline icon"></i>
+			  正在进行
+			</h4>
+            <div class="ui middle aligned divided list">
+                <div class="item">
+                    <i class="square outline icon"></i>
+                    <div class="content">
+                        xxxxxxxxxxxxxxxxxxxxxxxxxxxx...
+                    </div>
+                </div>
+                <div class="item">
+                    <i class="checkmark box icon"></i>
+                    <div class="content">
+                        xxxxxxxxxxxxxxxxxxxxxxxxxxxx...
+                    </div>
+                </div>
+            </div>
+            <h4 class="ui horizontal divider header">
+			  <i class="check circle icon"></i>
+			  已经完成
+			</h4>
+            <div class="ui middle aligned divided list">
+                <div class="item">
+                    <i class="check circle icon"></i>
+                    <div class="content">
+                        xxxxxxxxxxxxxxxxxxxxxxxxxxxx...
+                    </div>
+                </div>
+                <div class="item">
+                    <i class="check circle icon"></i>
+                    <div class="content">
+                        xxxxxxxxxxxxxxxxxxxxxxxxxxxx...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

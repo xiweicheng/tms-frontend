@@ -59,7 +59,7 @@ export class EmChatSidebarRight {
     }
 
     todoHandler(payload) {
-        this.chatScheduleVm.show();
+        // this.chatScheduleVm.show();
     }
 
     closeHandler() {
