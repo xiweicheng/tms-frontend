@@ -16,6 +16,7 @@ export class EmChatSidebarRight {
         [nsCons.ACTION_TYPE_SEARCH]: { nodata: '无符合检索结果', show: 'msg', icon: 'search', title: '检索结果' },
         [nsCons.ACTION_TYPE_PIN]: { nodata: '暂无频道固定消息', show: 'msg', icon: 'pin', title: '频道固定消息' },
         [nsCons.ACTION_TYPE_TOPIC]: { nodata: '', show: 'topic', icon: 'talk outline', title: '话题讨论' },
+        [nsCons.ACTION_TYPE_TODO]: { handler: this.todoHandler, nodata: '暂无待办事项', show: 'todo', icon: 'tasks', title: '待办事项' },
     }
 
     /**
@@ -54,6 +55,10 @@ export class EmChatSidebarRight {
     }
 
     scheduleHandler(payload) {
+        this.chatScheduleVm.show();
+    }
+
+    todoHandler(payload) {
         this.chatScheduleVm.show();
     }
 
