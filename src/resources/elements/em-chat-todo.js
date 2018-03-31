@@ -30,8 +30,8 @@ export class EmChatTodo {
 
     addTodoHandler() {
 
-    	$(this.todoInputRef).focus();
-    	
+        $(this.todoInputRef).focus();
+
         if (!this.title) {
             toastr.error('请输入待办事项内容！');
             return;
@@ -89,6 +89,26 @@ export class EmChatTodo {
                 }
             } else {
                 toastr.error(data.data, '删除待办事项失败！');
+            }
+        });
+    }
+
+    editHandler(item, inputRef) {
+        item.isEditing = true;
+        item.oldTitle = item.title;
+        _.defer(() => $(inputRef).focus());
+    }
+
+    updateHandler(item) {
+        item.isEditing = false;
+        if (!_.trim(item.title) || item.title == item.oldTitle) {
+        	item.title = item.oldTitle
+            return;
+        }
+        $.post('/admin/todo/update', { id: item.id, title: item.title }, (data, textStatus, xhr) => {
+            if (data.success) {} else {
+                item.title = item.oldTitle;
+                toastr.error(data.data, '更新待办事项失败！');
             }
         });
     }
