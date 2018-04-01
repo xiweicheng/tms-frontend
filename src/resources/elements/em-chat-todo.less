@@ -19,10 +19,20 @@
                     margin-right: 0;
                 }
             }
-
+            >.timeago {
+                font-style: italic;
+                position: absolute;
+                right: 15px;
+                font-size: 12px;
+                margin-top: 3px;
+                color: #eeeeee;
+            }
             &:hover {
                 .actions {
                     display: inline-block;
+                }
+                .timeago{
+                	display: none;
                 }
             }
             >.ui.form {
@@ -30,15 +40,16 @@
                 textarea {
                     box-sizing: border-box;
                     background-color: transparent;
+                    margin-top: 6px;
                 }
             }
             i.icon {
-            	&.square {
-            		padding-right: 6px;
-            	}
-            	&.checkmark {
-            		padding-right: 3px;
-            	}
+                &.square {
+                    padding-right: 6px;
+                }
+                &.checkmark {
+                    padding-right: 3px;
+                }
             }
             i.angle.icon {
                 // padding-left: .28571429em;
