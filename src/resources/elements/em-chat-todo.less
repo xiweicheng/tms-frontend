@@ -5,8 +5,7 @@
                 text-overflow: ellipsis;
                 overflow: hidden;
                 max-width: 300px;
-                min-width: 300px;
-                // width: 300px;
+                min-width: 300px; // width: 300px;
                 white-space: nowrap;
                 &.red {
                     color: red;
@@ -24,6 +23,31 @@
             &:hover {
                 .actions {
                     display: inline-block;
+                }
+            }
+            >.ui.form {
+                // transition: all 0.15s ease-out 0s;
+                textarea {
+                    box-sizing: border-box;
+                    background-color: transparent;
+                }
+            }
+            i.icon {
+            	&.square {
+            		padding-right: 6px;
+            	}
+            	&.checkmark {
+            		padding-right: 3px;
+            	}
+            }
+            i.angle.icon {
+                // padding-left: .28571429em;
+                padding-left: 4px;
+                padding-right: 4px;
+                padding-top: 3px;
+                &.down {
+                    padding-left: 2px;
+                    padding-right: 2px;
                 }
             }
         }

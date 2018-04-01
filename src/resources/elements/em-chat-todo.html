@@ -23,12 +23,18 @@
                         </div>
                     </div>
                     <i show.bind="!item.isEditing" click.delegate="statusToggleHandler(item)" class="${item.status == 'Doing' ? 'red checkmark box' : 'square outline'} large link icon"></i>
+                    <i show.bind="!item.isEditing" class="angle ${item.isOpen ? 'down' : 'right'} link icon" click.delegate="editContentHandler(item, editTextAreaRef)"></i>
                     <div show.bind="!item.isEditing" dblclick.delegate="editHandler(item, editInputRef)" class="content ${item.status == 'Doing' ? 'red' : ''}" title="${item.title}">
                         ${item.title}
                     </div>
                     <div show.bind="item.isEditing" class="ui transparent icon fluid input">
                         <input ref="editInputRef" type="text" value.bind="item.title" keyup.delegate="updateHandler(item) & key" blur.trigger="updateHandler(item)">
                         <i class="plus link icon" click.delegate="updateHandler(item)"></i>
+                    </div>
+                    <div class="ui form" show.bind="item.isOpen">
+                        <div class="field">
+                            <textarea ref="editTextAreaRef" value.bind="item.content" autosize rows="2" keyup.delegate="updateDescHandler(item) & key:'enter':'ctrl'" blur.trigger="updateDescHandler(item)" placeholder="待办事项备注..."></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -49,12 +55,18 @@
                         </div>
                     </div>
                     <i show.bind="!item.isEditing" class="large check circle icon"></i>
+                    <i show.bind="!item.isEditing" class="angle ${item.isOpen ? 'down' : 'right'} link icon" click.delegate="editContentHandler(item, editTextAreaRef)"></i>
                     <div show.bind="!item.isEditing" dblclick.delegate="editHandler(item, editInputRef)" class="content" title="${item.title}">
                         ${item.title}
                     </div>
                     <div show.bind="item.isEditing" class="ui transparent icon fluid input">
                         <input ref="editInputRef" type="text" value.bind="item.title" keyup.delegate="updateHandler(item) & key" blur.trigger="updateHandler(item)">
                         <i class="plus link icon" click.delegate="updateHandler(item)"></i>
+                    </div>
+                    <div class="ui form" show.bind="item.isOpen">
+                        <div class="field">
+                            <textarea ref="editTextAreaRef" value.bind="item.content" autosize rows="2" keyup.delegate="updateDescHandler(item) & key:'enter':'ctrl'" blur.trigger="updateDescHandler(item)" placeholder="待办事项备注..."></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
