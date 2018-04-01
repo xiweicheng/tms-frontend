@@ -99,15 +99,44 @@ export class EmChatTodo {
         _.defer(() => $(inputRef).focus());
     }
 
+    editContentHandler(item, textareaRef) {
+        item.isOpen = !item.isOpen;
+        if (item.isOpen) {
+            item.oldContent = item.content;
+            _.defer(() => {
+                $(textareaRef).focus()
+                if (item.content) {
+                    autosize.update(textareaRef);
+                }
+            });
+        }
+    }
+
     updateHandler(item) {
         item.isEditing = false;
         if (!_.trim(item.title) || item.title == item.oldTitle) {
-        	item.title = item.oldTitle
+            item.title = item.oldTitle
             return;
         }
         $.post('/admin/todo/update', { id: item.id, title: item.title }, (data, textStatus, xhr) => {
-            if (data.success) {} else {
+            if (data.success) {
+                toastr.success('更新待办事项内容成功！');
+            } else {
                 item.title = item.oldTitle;
+                toastr.error(data.data, '更新待办事项失败！');
+            }
+        });
+    }
+
+    updateDescHandler(item) {
+        if (item.content == item.oldContent) {
+            return;
+        }
+        $.post('/admin/todo/update', { id: item.id, content: item.content }, (data, textStatus, xhr) => {
+            if (data.success) {
+                toastr.success('更新待办事项描述成功！');
+            } else {
+                item.content = item.oldContent;
                 toastr.error(data.data, '更新待办事项失败！');
             }
         });
