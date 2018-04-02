@@ -47,6 +47,13 @@ export class EmChatTodo {
         });
     }
 
+    addTodoKeyupHandler(event) {
+
+        if (event.keyCode == 13) {
+            this.addTodoHandler();
+        }
+    }
+
     statusToggleHandler(item) {
         $.post('/admin/todo/update', { id: item.id, status: item.status == 'New' ? 'Doing' : "New" }, (data, textStatus, xhr) => {
             if (data.success) {

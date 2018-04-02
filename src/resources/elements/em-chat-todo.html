@@ -3,7 +3,7 @@
     <div class="em-chat-todo" show.bind="actived.show == 'todo'">
         <div class="ui basic segment">
             <div class="ui big fluid icon input">
-                <input ref="todoInputRef" value.bind="title" type="text" keyup.delegate="addTodoHandler() & key" placeholder="输入待办事项...">
+                <input ref="todoInputRef" value.bind="title" type="text" keyup.delegate="addTodoKeyupHandler($event)" placeholder="输入待办事项...">
                 <i class="${(ajax && ajax.readyState != 4) ? 'spinner loading' : 'plus'} link icon" click.delegate="addTodoHandler()"></i>
             </div>
             <h5 class="ui horizontal divider yellow header">
@@ -24,7 +24,7 @@
                     </div>
                     <span data-timeago="${item.updateDate}" class="timeago" title="更新于 ${item.updateDate | date}">${item.updateDate | timeago}</span>
                     <i show.bind="!item.isEditing" click.delegate="statusToggleHandler(item)" class="${item.status == 'Doing' ? 'red checkmark box' : 'square outline'} large link icon"></i>
-                    <i show.bind="!item.isEditing" class="angle ${item.isOpen ? 'down' : 'right'} link icon" click.delegate="editContentHandler(item, editTextAreaRef)"></i>
+                    <i show.bind="!item.isEditing" class="angle ${item.isOpen ? 'down' : 'right'} ${item.content ? 'black' : ''} link icon" click.delegate="editContentHandler(item, editTextAreaRef)"></i>
                     <div show.bind="!item.isEditing" dblclick.delegate="editHandler(item, editInputRef)" class="content ${item.status == 'Doing' ? 'red' : ''}" title="${item.title}">
                         ${item.title}
                     </div>
@@ -57,7 +57,7 @@
                     </div>
                     <span data-timeago="${item.updateDate}" class="timeago" title="更新于${item.updateDate | date}">${item.updateDate | timeago}</span>
                     <i show.bind="!item.isEditing" class="large check circle icon"></i>
-                    <i show.bind="!item.isEditing" class="angle ${item.isOpen ? 'down' : 'right'} link icon" click.delegate="editContentHandler(item, editTextAreaRef)"></i>
+                    <i show.bind="!item.isEditing" class="angle ${item.isOpen ? 'down' : 'right'} ${item.content ? 'black' : ''} link icon" click.delegate="editContentHandler(item, editTextAreaRef)"></i>
                     <div show.bind="!item.isEditing" dblclick.delegate="editHandler(item, editInputRef)" class="content" title="${item.title}">
                         ${item.title}
                     </div>
