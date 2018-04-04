@@ -2,7 +2,7 @@
     margin-top: 32px;
     margin-bottom: 32px;
     .ui.comments {
-        > .ui.dividing.header {
+        >.ui.dividing.header {
             margin-bottom: 0;
         }
         max-width: 100%;
@@ -20,7 +20,7 @@
                     width: 4px;
                 }
             }
-            > .ui.divider {
+            >.ui.divider {
                 margin-bottom: 0;
             }
             .content {
@@ -38,6 +38,12 @@
                 .actions {}
                 .tms-blog-comment-edit-textarea {
                     width: 100%;
+                    box-sizing: border-box;
+                    padding: 8px;
+                    border: 1px solid rgba(34, 36, 38, .15);
+                    outline: 0;
+                    border-radius: .28571429rem;
+                    box-shadow: 0 0 0 0 transparent inset;
                 }
                 .textcomplete-container {
                     position: relative;
@@ -48,12 +54,12 @@
                         width: 100%;
                     }
                 }
-                > .tools {
+                >.tools {
                     position: absolute;
                     right: 0;
                     bottom: 0;
                     display: none;
-                    > .ui.button {
+                    >.ui.button {
                         margin: 0;
                         background-color: rgba(224, 225, 226, 0.5);
                         &:hover {
