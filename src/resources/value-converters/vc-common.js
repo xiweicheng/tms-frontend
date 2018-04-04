@@ -187,6 +187,18 @@ export class FilterValueConverter {
     }
 }
 
+export class CountValueConverter {
+    toView(items, search, prop = null) {
+        return _.size(_.filter(items, (item) => {
+            if (!prop) {
+                return _.includes(item, search);
+            } else {
+                return _.includes(item[prop], search);
+            }
+        }));
+    }
+}
+
 export class LabelColorValueConverter {
 
     toView(chatLabel) {
