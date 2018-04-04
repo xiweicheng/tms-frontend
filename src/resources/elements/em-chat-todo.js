@@ -8,6 +8,7 @@ export class EmChatTodo {
     title;
     todos = [];
     dones = [];
+    todoFilter = '';
 
     activedChanged(newValue, oldValue) {
         if (!newValue || this.actived.payload.action != nsCons.ACTION_TYPE_TODO) {
@@ -150,6 +151,21 @@ export class EmChatTodo {
                 toastr.error(data.data, '更新待办事项失败！');
             }
         });
+    }
+
+    searchFocusHandler() {
+        $(this.searchRemoveRef).show();
+    }
+
+    searchBlurHandler() {
+        if (!this.todoFilter) {
+            $(this.searchRemoveRef).hide();
+        }
+    }
+
+    clearSearchHandler() {
+        this.todoFilter = '';
+        $(this.searchInputRef).focus();
     }
 
 }

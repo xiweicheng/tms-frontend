@@ -1,11 +1,21 @@
 .em-chat-todo {
+    .filter-wrapper {
+        position: relative;
+        top: 10px;
+        .ui.input>i.remove.icon {
+            display: none;
+            position: absolute;
+            right: 0;
+            left: auto;
+        }
+    }
     .ui.list {
         .item {
             .content {
                 text-overflow: ellipsis;
                 overflow: hidden;
                 max-width: 300px;
-                min-width: 300px; // width: 300px;
+                min-width: 300px;
                 white-space: nowrap;
                 &.red {
                     color: red;
@@ -31,8 +41,8 @@
                 .actions {
                     display: inline-block;
                 }
-                .timeago{
-                	display: none;
+                .timeago {
+                    display: none;
                 }
             }
             >.ui.form {
