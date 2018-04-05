@@ -83,6 +83,17 @@ export class SortValueConverter {
     }
 }
 
+export class SortTodoValueConverter {
+    toView(value) {
+        if (_.isArray(value)) {
+            let sorts = _.reverse(_.sortBy(_.filter(value, { sortIndex: 1 }), 'updateDate'));
+            let unSorts = _.reverse(_.sortBy(_.reject(value, { sortIndex: 1 }), 'id'));
+            return [...sorts, ...unSorts];
+        }
+        return value;
+    }
+}
+
 export class TakeValueConverter {
     toView(value, count, tail = false) {
         return _.isArray(value) ? (!tail ? _.take(value, count) : _.takeRight(value, count)) : value;

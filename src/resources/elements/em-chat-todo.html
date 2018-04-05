@@ -18,10 +18,15 @@
               进行中（${todos | count:todoFilter:'title'}）
             </h5>
             <div class="ui middle aligned divided selection relaxed list">
-                <div repeat.for="item of todos | filter:todoFilter:'title' | sort:'id':true" class="item">
+                <div repeat.for="item of todos | filter:todoFilter:'title' | sortTodo" class="item">
                     <div class="actions" show.bind="!item.isEditing">
                         <i click.delegate="statusDoneHandler(item)" class="large check circle link icon" title="标记已经完成"></i>
                         <i class="tms-copy tms-clipboard copy link icon large" data-clipboard-text="${item.title}" title="复制到剪贴板"></i>
+                        <i show.bind="!item.sortIndex" click.delegate="topHandler(item)" class="arrow up link icon large" title="置顶待办事项"></i>
+                        <i show.bind="item.sortIndex" click.delegate="topHandler(item)" class="icons link large" title="取消置顶待办事项">
+                            <i class="arrow icon puzzle up"></i>
+                        <i class="corner red icon remove"></i>
+                        </i>
                         <div ui-dropdown-action class="ui icon right center pointing dropdown" title="删除待办事项">
                             <i class="red large trash outline icon" style="margin-right: 0;"></i>
                             <div class="menu">

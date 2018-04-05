@@ -153,6 +153,19 @@ export class EmChatTodo {
         });
     }
 
+    topHandler(item) {
+        $.post('/admin/todo/update', { id: item.id, sortIndex: item.sortIndex ? 0 : 1 }, (data, textStatus, xhr) => {
+            if (data.success) {
+                item.updateDate = data.data.updateDate;
+                item.sortIndex = data.data.sortIndex;
+                toastr.success(`${item.sortIndex ? '' : '取消'}置顶待办事项成功！`);
+                this.todos = [...this.todos];
+            } else {
+                toastr.error(data.data, `${!item.sortIndex ? '' : '取消'}置顶待办事项失败！`);
+            }
+        });
+    }
+
     searchFocusHandler() {
         $(this.searchRemoveRef).show();
     }
