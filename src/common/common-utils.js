@@ -300,42 +300,53 @@ export class CommonUtils {
             return false;
         }
 
-        var pre = null;
-
-        var link = {
+        var rootNode = {
             pre: null,
+            name: null,
             arr: []
         };
-        var current = link;
-        $headers.each(function(index, h) {
+
+        var current = rootNode;
+
+        $headers.each((index, h) => {
             var name = h.nodeName;
-            if (!pre) {
+            if (!current.name) {
                 current.arr.push(h);
-                pre = name;
+                current.name = name;
             } else {
-                if (pre < name) {
+                if (current.name < name) {
                     var last = current;
                     current = {
                         pre: last,
+                        name: name,
                         arr: [h]
                     };
                     last.arr.push(current);
-                    pre = name;
-                } else if (pre == name) {
+                } else if (current.name == name) {
                     current.arr.push(h);
                 } else {
-                    current = current.pre ? current.pre : current;
+                    current = this.preNode(current, name);
                     current.arr.push(h);
-                    pre = name;
                 }
             }
         });
 
-        return link;
+        return rootNode;
+    }
+
+    preNode(node, name) {
+        if (!node.pre) {
+            return node;
+        }
+        if (node.pre.name <= name) {
+            return node.pre;
+        } else {
+            return this.preNode(node.pre, name);
+        }
     }
 
     generateDir(link, uid) {
-        var $list = $('<div class="ui bulleted list"></div>');
+        var $list = $('<div class="ui bulleted list" data-name=""></div>');
         this.prodDir($list, link, uid);
         return $list;
     }
@@ -348,7 +359,7 @@ export class CommonUtils {
     prodDir($list, link, uid) {
         $.each(link.arr, (index, item) => {
             if (item.hasOwnProperty('arr')) {
-                var $l = $('<div class="list"></div>');
+                var $l = $(`<div class="list" data-name="${item.name}"></div>`);
                 $list.append($l);
                 this.prodDir($l, item, uid);
             } else {
