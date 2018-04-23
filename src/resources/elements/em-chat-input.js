@@ -225,17 +225,17 @@ export class EmChatInput {
             // http://codemirror.net/doc/manual.html#api
             // https://github.com/yuku-t/jquery-textcomplete/blob/master/packages/jquery-textcomplete/doc/how_to_use.md
             match: /(^|\s?)@(\w*)$/,
-            // context: (text) => {
-            //     console.log(text);
-            //     let cm = this.simplemde.codemirror;
-            //     let cursor = cm.getCursor();
-            //     let txt = cm.getRange({
-            //         line: cursor.line,
-            //         ch: 0
-            //     }, cursor);
-            //     console.log(txt);
-            //     return txt;
-            // },
+            context: (text) => {
+                console.log(text);
+                let cm = this.simplemde.codemirror;
+                let cursor = cm.getCursor();
+                let txt = cm.getRange({
+                    line: cursor.line,
+                    ch: 0
+                }, cursor);
+                console.log(txt);
+                return txt;
+            },
             search: (term, callback) => {
                 callback($.map(this.members, (member) => {
                     return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
@@ -246,7 +246,27 @@ export class EmChatInput {
                 return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
             },
             replace: (value) => {
-                return `$1{~${value}}`;
+                let mk = '@';
+                let cm = this.simplemde.codemirror;
+
+                var cursor = cm.getCursor();
+                var line = cm.getLine(cursor.line);
+                var mkIndex = line.lastIndexOf(mk);
+                var atFrom = mkIndex + mk.length;
+                if (mkIndex > -1 && cursor.ch >= atFrom) {
+
+                    cm.replaceRange(`{~${value}}`, {
+                        line: cursor.line,
+                        ch: atFrom - 1
+                    }, {
+                        line: cursor.line,
+                        ch: cursor.ch
+                    });
+                }
+
+                console.log(txt);
+                return undefined;
+                // return `$1{~${value}}`;
             }
         }, { // emoji
             match: /(^|\s):([\+\-\w]*)$/,
