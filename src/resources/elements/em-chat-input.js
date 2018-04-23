@@ -223,6 +223,17 @@ export class EmChatInput {
             }
         }, { // @user
             match: /(^|\s?)@(\w*)$/,
+            // context: (text) => {
+            //     console.log(text);
+            //     let cm = this.simplemde.codemirror;
+            //     let cursor = cm.getCursor();
+            //     let txt = cm.getRange({
+            //         line: cursor.line,
+            //         ch: 0
+            //     }, cursor);
+            //     console.log(txt);
+            //     return txt;
+            // },
             search: (term, callback) => {
                 callback($.map(this.members, (member) => {
                     return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
