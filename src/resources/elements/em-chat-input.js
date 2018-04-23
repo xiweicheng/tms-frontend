@@ -222,7 +222,7 @@ export class EmChatInput {
                 }
             }
         }, { // @user
-            match: /(^|\s)@(\w*)$/,
+            match: /(^|\s?)@(\w*)$/,
             search: (term, callback) => {
                 callback($.map(this.members, (member) => {
                     return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
