@@ -222,6 +222,8 @@ export class EmChatInput {
                 }
             }
         }, { // @user
+            // http://codemirror.net/doc/manual.html#api
+            // https://github.com/yuku-t/jquery-textcomplete/blob/master/packages/jquery-textcomplete/doc/how_to_use.md
             match: /(^|\s?)@(\w*)$/,
             // context: (text) => {
             //     console.log(text);
