@@ -338,7 +338,18 @@ export class EmBlogComment {
     initTextcomplete() {
 
         $(this.$chatMsgInputRef).textcomplete([{ // @user
-            match: /(^|\s)@(\w*)$/,
+            match: /(^|\s?)@(\w*)$/,
+            context: (text) => {
+                // console.log(text);
+                let cm = this.simplemde.codemirror;
+                let cursor = cm.getCursor();
+                let txt = cm.getRange({
+                    line: cursor.line,
+                    ch: 0
+                }, cursor);
+                // console.log(txt);
+                return txt;
+            },
             search: (term, callback) => {
                 callback($.map(nsCtx.users, (member) => {
                     return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
@@ -349,7 +360,20 @@ export class EmBlogComment {
                 return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
             },
             replace: (value) => {
-                return `$1{~${value}}`;
+                let cm = this.simplemde.codemirror;
+                let cursor = cm.getCursor();
+                let txt = cm.getRange({
+                    line: cursor.line,
+                    ch: 0
+                }, cursor);
+
+                cm.replaceRange(txt.replace(/@(\w*)$/, `{~${value}} `), {
+                    line: cursor.line,
+                    ch: 0
+                }, cursor);
+
+                // console.log(txt);
+                // return `$1{~${value}}`;
             }
         }, { // emoji
             match: /(^|\s):([\+\-\w]*)$/,
