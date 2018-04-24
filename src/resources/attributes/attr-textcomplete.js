@@ -51,7 +51,7 @@ export class AttrTextcompleteCustomAttribute {
                     }
                 }
             }, { // @user
-                match: /(^|\s)@(\w*)$/,
+                match: /(^|\s?)@(\w*)$/,
                 search: (term, callback) => {
                     callback($.map(this.members, (member) => {
                         return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
@@ -62,7 +62,7 @@ export class AttrTextcompleteCustomAttribute {
                     return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
                 },
                 replace: (value) => {
-                    return `$1{~${value}}`;
+                    return `$1{~${value}} `;
                 }
             }, { // emoji
                 match: /(^|\s):([\+\-\w]*)$/,
