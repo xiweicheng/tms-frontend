@@ -1,51 +1,132 @@
 <template>
     <require from="./em-chat-channel-members-mgr.css"></require>
     <em-modal classes="small" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)" confirm-label="确定">
-        <div slot="header">频道成员管理</div>
+        <div slot="header">频道成员|分组管理</div>
         <div slot="content" class="tms-em-chat-channel-members-mgr">
-            <div ref="frm" class="ui form">
-                <div class="field">
-                    <label>频道成员(${channel.members.length})</label>
-                    <div ref="membersRef" class="ui fluid multiple search selection dropdown">
-                        <input type="hidden" name="members">
-                        <i class="dropdown icon"></i>
-                        <div class="default text"></div>
-                        <div class="menu">
-                            <div repeat.for="item of users | sortUsers:channel.owner.username" task.bind="initMembersUI($last)" class="item" data-value="${item.username}">
-                                <!-- <input type="hidden" class="${!item.enabled ? 'disabled-user' : ''}"> -->
-                                <span class="${channel.owner.username == item.username ? 'owner' : ''} ${!item.enabled ? 'disabled-user' : ''}">${item.name ? item.name : item.username}</span>
-                                <!-- <input type="hidden" class="${channel.owner.username == item.username ? 'owner' : ''}"> -->
+            <div ui-tab class="ui pointing secondary menu">
+                <a class="item active" data-tab="channel-members">成员管理</a>
+                <a class="item" data-tab="channel-groups">分组管理</a>
+            </div>
+            <div class="ui tab segment active" data-tab="channel-members">
+                <div ref="frm" class="ui form">
+                    <div class="field">
+                        <label>频道成员(${channel.members.length})</label>
+                        <div ref="membersRef" class="ui fluid multiple search selection dropdown">
+                            <input type="hidden" name="members">
+                            <i class="dropdown icon"></i>
+                            <div class="default text"></div>
+                            <div class="menu">
+                                <div repeat.for="item of users | sortUsers:channel.owner.username" task.bind="initMembersUI($last)" class="item" data-value="${item.username}">
+                                    <!-- <input type="hidden" class="${!item.enabled ? 'disabled-user' : ''}"> -->
+                                    <span class="${channel.owner.username == item.username ? 'owner' : ''} ${!item.enabled ? 'disabled-user' : ''}">${item.name ? item.name : item.username}</span>
+                                    <!-- <input type="hidden" class="${channel.owner.username == item.username ? 'owner' : ''}"> -->
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="member-table">
+                    <table class="ui very basic striped compact table">
+                        <thead>
+                            <tr>
+                                <th><i class="at icon" style="margin-right: 0;"></i>用户名</th>
+                                <th>姓名</th>
+                                <th>邮箱</th>
+                                <th>登录</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr repeat.for="item of channel.members | sort:'username'">
+                                <td><i class="at icon" style="margin-right: 0;"></i>${item.username}</td>
+                                <td>${item.name}</td>
+                                <td>${item.mails}</td>
+                                <td title="${item.lastLoginDate | date}">${item.lastLoginDate | timeago}</td>
+                                <td if.bind="item.enabled">
+                                    <div class="ui green tag label">启用中</div>
+                                </td>
+                                <td if.bind="!item.enabled">
+                                    <div class="ui red tag label">已停用</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="member-table">
-                <table class="ui very basic striped compact table">
-                    <thead>
-                        <tr>
-                            <th><i class="at icon" style="margin-right: 0;"></i>用户名</th>
-                            <th>姓名</th>
-                            <th>邮箱</th>
-                            <th>登录</th>
-                            <th>状态</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr repeat.for="item of channel.members | sort:'username'">
-                            <td><i class="at icon" style="margin-right: 0;"></i>${item.username}</td>
-                            <td>${item.name}</td>
-                            <td>${item.mails}</td>
-                            <td title="${item.lastLoginDate | date}">${item.lastLoginDate | timeago}</td>
-                            <td if.bind="item.enabled">
-                                <div class="ui green tag label">启用中</div>
-                            </td>
-                            <td if.bind="!item.enabled">
-                                <div class="ui red tag label">已停用</div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="ui tab segment" data-tab="channel-groups">
+                <div if.bind="channel.owner.username == loginUser.username" class="ui form">
+                    <div class="field required">
+                        <label>添加频道分组</label>
+                        <div class="fields">
+                            <div class="six wide field">
+                                <input type="text" value.bind="name" name="name" placeholder="标识（小写字母数组-_组合）">
+                            </div>
+                            <div class="nine wide field">
+                                <input type="text" value.bind="title" name="title" placeholder="描述（可选）">
+                            </div>
+                            <div class="one wide field">
+                                <button title="添加频道分组" click.delegate="addHandler()" class="circular ui icon blue button ${isSending ? 'disabled' : ''}" type="button"><i class="plus icon"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui divider"></div>
+                <div style="max-height: 275px; overflow: auto;">
+                    <table class="ui very basic striped compact table">
+                        <thead>
+                            <tr>
+                                <th style="width: 120px;"><i class="at icon" style="margin-right: 0;"></i>标识</th>
+                                <th style="width: 120px;">描述</th>
+                                <th>成员</th>
+                                <th style="width: 40px;"></th>
+                                <th style="width: 150px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr repeat.for="item of channel.channelGroups | sort:'name'" show.bind="item.status != 'Deleted'">
+                                <td if.bind="!item.isEditing"><i class="at icon" style="margin-right: 0;"></i>${item.name}</td>
+                                <td if.bind="item.isEditing">
+                                    <div class="ui fluid input">
+                                        <input type="text" value.bind="item.name" placeholder="分组标识">
+                                    </div>
+                                </td>
+                                <td if.bind="!item.isEditing">${item.title}</td>
+                                <td if.bind="item.isEditing">
+                                    <div class="ui fluid input">
+                                        <input type="text" value.bind="item.title" placeholder="分组描述">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div ref="grpMembersRef" class="ui fluid multiple search selection dropdown ${(item.creator.username == loginUser.username || channel.owner.username == loginUser.username) ? '' : 'disabled'}">
+                                        <input type="hidden" name="members">
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">
+                                            <div repeat.for="member of channel.members | sort:'username'" task.bind="initGrpMembersUI($last, grpMembersRef, item)" class="item" data-value="${member.username}">
+                                                <span>${member.name ? member.name : member.username}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span data-tooltip="${item.creator.name ? item.creator.name : item.creator.username} 添加于 ${item.createDate | timeago}"><i class="info circle icon"></i></span></td>
+                                <td>
+                                    <button if.bind="item.creator.username == loginUser.username || channel.owner.username == loginUser.username" show.bind="!item.isEditing" click.delegate="editHandler(item)" class="mini ui button">
+                                        编辑
+                                    </button>
+                                    <button if.bind="item.creator.username == loginUser.username || channel.owner.username == loginUser.username" click.delegate="updateHandler(item)" show.bind="item.isEditing" class="mini green ui button">
+                                        更新
+                                    </button>
+                                    <a if.bind="item.creator.username == loginUser.username || channel.owner.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon right center pointing dropdown red button" title="删除频道分组">
+                                    删除
+                                    <div class="menu">
+                                        <div style="color: red;" class="item" click.delegate="delHandler(item)"><i class="trash outline icon"></i>确认删除</div>
+                                    </div>
+                                </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </em-modal>
