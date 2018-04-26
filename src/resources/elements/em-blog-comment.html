@@ -17,7 +17,7 @@
                     <div class="textcomplete-container" show.bind="item.isEditing">
                         <div class="append-to"></div>
                     </div>
-                    <textarea ref="editTxtRef" data-id="${item.id}" textcomplete.bind="users" pastable autosize dropzone keydown.trigger="eidtKeydownHandler($event, item, editTxtRef)" show.bind="item.isEditing" value.bind="item.content & oneWay" class="tms-blog-comment-edit-textarea" rows="1"></textarea>
+                    <textarea ref="editTxtRef" data-id="${item.id}" textcomplete.bind="{users: users, channel: null}" pastable autosize dropzone keydown.trigger="eidtKeydownHandler($event, item, editTxtRef)" show.bind="item.isEditing" value.bind="item.content & oneWay" class="tms-blog-comment-edit-textarea" rows="1"></textarea>
                     <div show.bind="item.isEditing" class="ui compact icon buttons tms-blog-comment-edit-actions">
                         <button click.delegate="editOkHandler($event, item, editTxtRef)" title="保存 (ctrl+enter)" class="ui left attached compact icon button">
                             <i class="checkmark icon"></i>

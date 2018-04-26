@@ -338,9 +338,9 @@ export class EmBlogWrite {
                 // callback($.map(nsCtx.users, (member) => {
                 //     return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
                 // }));
-                return $.map(this.members, (member) => {
+                callback($.map(nsCtx.users, (member) => {
                     return (member.enabled && member.username.indexOf(term) >= 0) ? member : null;
-                });
+                }));
             },
             template: (value, term) => {
                 // let user = _.find(nsCtx.users, { username: value });
