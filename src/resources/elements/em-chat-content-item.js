@@ -38,6 +38,12 @@ export class EmChatContentItem {
                 content: `{~${$(event.currentTarget).attr('data-value')}} `
             });
         });
+        $('.tms-content-body').on('click', '.markdown-body .at-group', (event) => {
+            event.preventDefault();
+            ea.publish(nsCons.EVENT_CHAT_MSG_INSERT, {
+                content: `{!~${$(event.currentTarget).attr('data-value')}} `
+            });
+        });
 
         // 消息popup
         $('.tms-chat-direct').on('mouseenter', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', (event) => {
@@ -91,7 +97,7 @@ export class EmChatContentItem {
         });
 
         // 用户信息popup
-        $('.tms-chat-direct').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+        $('.tms-chat-direct').on('mouseenter', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
             event.preventDefault();
             let target = event.currentTarget;
 
@@ -110,6 +116,7 @@ export class EmChatContentItem {
                 ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {
                     channel: this.channel,
                     username: $(target).attr('data-value'),
+                    type: $(target).attr('class'),
                     target: target
                 });
                 this.hoverTimeoutRef = null;
@@ -118,7 +125,7 @@ export class EmChatContentItem {
         });
 
         // 用户信息popup
-        $('.tms-chat-direct').on('mouseleave', 'span[data-value].at-user:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+        $('.tms-chat-direct').on('mouseleave', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
             event.preventDefault();
             if (this.hoverTimeoutRef) {
                 if (this.hoverUserTarget === event.currentTarget) {
@@ -243,7 +250,7 @@ export class EmChatContentItem {
                 url: utils.getUrl(),
                 id: item.id,
                 version: item.version,
-                usernames: utils.parseUsernames(item.content, this.members).join(','),
+                usernames: utils.parseUsernames(item.content, this.members, this.channel).join(','),
                 content: item.content,
                 diff: utils.diffS(item.contentOld, item.content),
                 // contentHtml: html,

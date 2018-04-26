@@ -14,18 +14,25 @@ export class EmChatMemberPopup {
             this.channel = payload.channel;
             this.username = payload.username;
             this.target = payload.target;
-            if (this.username == 'all') {
-                if (!this.channel) {
-                    return;
-                }
-                this.members = this.channel.members;
+            this.type = _.includes(payload.type, 'at-group') ? 'at-group' : 'at-user';
+            if (this.type == 'at-group') {
+                this.group = _.find(_.reject(this.channel.channelGroups, { status: 'Deleted' }), { name: this.username });
+                this.members = this.group.members;
             } else {
-                if (!this.username) {
-                    return;
+                this.group = null;
+                if (this.username == 'all') {
+                    if (!this.channel) {
+                        return;
+                    }
+                    this.members = this.channel.members;
+                } else {
+                    if (!this.username) {
+                        return;
+                    }
+                    this.member = utils.getUser(this.username);
+                    let user = utils.getUser(this.member.creator);
+                    this.member.creatorName = (user && (!!user.name)) ? user.name : this.member.creator;
                 }
-                this.member = utils.getUser(this.username);
-                let user = utils.getUser(this.member.creator);
-                this.member.creatorName = (user && (!!user.name)) ? user.name : this.member.creator;
             }
             _.defer(() => {
 

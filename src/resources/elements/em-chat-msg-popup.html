@@ -13,7 +13,7 @@
                         <span class="cinema timeago" style="font-style: italic;" title="${chatMsg.createDate | date}">${chatMsg.createDate | timeago}</span>
                     </div>
                     <div class="ui divider"></div>
-                    <div class="description markdown-body" style="width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;" innerhtml.bind="chatMsg.content | parseMd"></div>
+                    <div ref="mkbodyRef" class="description markdown-body" style="width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;" innerhtml.bind="chatMsg.content | parseMd:channel | emoji:mkbodyRef"></div>
                 </div>
             </div>
         </div>

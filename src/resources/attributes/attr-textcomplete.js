@@ -27,7 +27,8 @@ export class AttrTextcompleteCustomAttribute {
 
     valueChanged() {
         if (this.value) {
-            this.members = this.value;
+            this.members = this.value.users;
+            this.channel = this.value.channel;
             $(this.element).textcomplete([{ // chat msg help
                 match: /(|\b)(\/.*)$/,
                 search: (term, callback) => {
@@ -53,16 +54,30 @@ export class AttrTextcompleteCustomAttribute {
             }, { // @user
                 match: /(^|\s?)@(\w*)$/,
                 search: (term, callback) => {
-                    callback($.map(this.members, (member) => {
-                        return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
-                    }));
+                    // callback($.map(this.members, (member) => {
+                    //     return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
+                    // }));
+                    let users = $.map(this.members, (member) => {
+                        return (member.enabled && member.username.indexOf(term) >= 0) ? member : null;
+                    });
+                    let groups = $.map(this.channel.channelGroups, (grp) => {
+                        return ((grp.status != 'Deleted') && grp.name.indexOf(term) >= 0) ? grp : null;
+                    });
+                    callback([...users, ...groups]);
                 },
                 template: (value, term) => {
-                    let user = _.find(this.members, { username: value });
-                    return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
+                    // let user = _.find(this.members, { username: value });
+                    // return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
+                    if (value.username) { // @user
+                        // let user = _.find(this.members, { username: value });
+                        return `${value.name ? value.name : value.username} - ${value.mails} (${value.username})`;
+                    } else { // @group
+                        return `${value.name} - ${value.title} (${value.members.length}人)`;
+                    }
                 },
                 replace: (value) => {
-                    return `$1{~${value}} `;
+                    // return `$1{~${value}} `;
+                    return `$1{${value.username ? '' : '!'}~${value.username ? value.username : value.name}} `;
                 }
             }, { // emoji
                 match: /(^|\s):([\+\-\w]*)$/,

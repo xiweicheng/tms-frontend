@@ -209,18 +209,53 @@ export class EmChatTopicInput {
                 }
             }
         }, { // @user
-            match: /(^|\s)@(\w*)$/,
+            match: /(^|\s?)@(\w*)$/,
+            context: (text) => {
+                // console.log(text);
+                let cm = this.simplemde.codemirror;
+                let cursor = cm.getCursor();
+                let txt = cm.getRange({
+                    line: cursor.line,
+                    ch: 0
+                }, cursor);
+                // console.log(txt);
+                return txt;
+            },
             search: (term, callback) => {
-                callback($.map(this.members, (member) => {
-                    return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
-                }));
+                // callback($.map(this.members, (member) => {
+                //     return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
+                // }));
+                let users = $.map(this.members, (member) => {
+                    return (member.enabled && member.username.indexOf(term) >= 0) ? member : null;
+                });
+                let groups = $.map(this.channel.channelGroups, (grp) => {
+                    return ((grp.status != 'Deleted') && grp.name.indexOf(term) >= 0) ? grp : null;
+                });
+                callback([...users, ...groups]);
             },
             template: (value, term) => {
-                let user = _.find(this.members, { username: value });
-                return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
+                // let user = _.find(this.members, { username: value });
+                // return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
+                if (value.username) { // @user
+                    // let user = _.find(this.members, { username: value });
+                    return `${value.name ? value.name : value.username} - ${value.mails} (${value.username})`;
+                } else { // @group
+                    return `${value.name} - ${value.title} (${value.members.length}人)`;
+                }
             },
             replace: (value) => {
-                return `$1{~${value}}`;
+                // return `$1{~${value}}`;
+                let cm = this.simplemde.codemirror;
+                let cursor = cm.getCursor();
+                let txt = cm.getRange({
+                    line: cursor.line,
+                    ch: 0
+                }, cursor);
+
+                cm.replaceRange(txt.replace(/@(\w*)$/, `{${value.username ? '' : '!'}~${value.username ? value.username : value.name}} `), {
+                    line: cursor.line,
+                    ch: 0
+                }, cursor);
             }
         }, { // emoji
             match: /(^|\s):([\+\-\w]*)$/,
@@ -292,7 +327,7 @@ export class EmChatTopicInput {
 
         $.post(`/admin/chat/channel/reply/add`, {
             url: utils.getUrl(),
-            usernames: utils.parseUsernames(content, this.members).join(','),
+            usernames: utils.parseUsernames(content, this.members, this.channel).join(','),
             content: content,
             ua: navigator.userAgent,
             contentHtml: utils.md2html(content, true),

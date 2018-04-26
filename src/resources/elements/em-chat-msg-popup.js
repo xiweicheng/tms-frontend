@@ -4,6 +4,7 @@ import { bindable, containerless } from 'aurelia-framework';
 export class EmChatMsgPopup {
 
     chatMsg;
+    @bindable channel;
 
     /**
      * 构造函数

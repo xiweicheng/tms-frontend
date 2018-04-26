@@ -322,18 +322,44 @@ export class EmBlogWrite {
     initTextcomplete() {
 
         $(this.$chatMsgInputRef).textcomplete([{ // @user
-            match: /(^|\s)@(\w*)$/,
+            match: /(^|\s?)@(\w*)$/,
+            context: (text) => {
+                // console.log(text);
+                let cm = this.simplemde.codemirror;
+                let cursor = cm.getCursor();
+                let txt = cm.getRange({
+                    line: cursor.line,
+                    ch: 0
+                }, cursor);
+                // console.log(txt);
+                return txt;
+            },
             search: (term, callback) => {
-                callback($.map(nsCtx.users, (member) => {
-                    return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
-                }));
+                // callback($.map(nsCtx.users, (member) => {
+                //     return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
+                // }));
+                return $.map(this.members, (member) => {
+                    return (member.enabled && member.username.indexOf(term) >= 0) ? member : null;
+                });
             },
             template: (value, term) => {
-                let user = _.find(nsCtx.users, { username: value });
-                return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
+                // let user = _.find(nsCtx.users, { username: value });
+                // return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
+                return `${value.name ? value.name : value.username} - ${value.mails} (${value.username})`;
             },
             replace: (value) => {
-                return `$1{~${value}}`;
+                // return `$1{~${value}}`;
+                let cm = this.simplemde.codemirror;
+                let cursor = cm.getCursor();
+                let txt = cm.getRange({
+                    line: cursor.line,
+                    ch: 0
+                }, cursor);
+
+                cm.replaceRange(txt.replace(/@(\w*)$/, `{~${value.username}} `), {
+                    line: cursor.line,
+                    ch: 0
+                }, cursor);
             }
         }, { // emoji
             match: /(^|\s):([\+\-\w]*)$/,

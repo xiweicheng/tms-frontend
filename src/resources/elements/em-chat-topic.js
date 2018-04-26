@@ -97,6 +97,13 @@ export class EmChatTopic {
                 content: `{~${$(event.currentTarget).attr('data-value')}} `
             });
         });
+
+        $(this.commentsRef).on('click', '.markdown-body .at-group', (event) => {
+            event.preventDefault();
+            ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_INSERT, {
+                content: `{!~${$(event.currentTarget).attr('data-value')}} `
+            });
+        });
     }
 
     unbind() {
@@ -254,7 +261,7 @@ export class EmChatTopic {
             url: utils.getUrl(),
             rid: item.id,
             version: item.version,
-            usernames: utils.parseUsernames(item.content, this.members).join(','),
+            usernames: utils.parseUsernames(item.content, this.members, this.channel).join(','),
             content: item.content,
             diff: utils.diffS(item.contentOld, item.content),
         }, (data, textStatus, xhr) => {

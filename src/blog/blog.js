@@ -93,6 +93,13 @@ export class Blog {
             });
         });
 
+        $('.tms-blog .em-blog-content').on('click', '.at-group[data-value]', (event) => {
+            event.preventDefault();
+            ea.publish(nsCons.EVENT_BLOG_COMMENT_MSG_INSERT, {
+                content: `{!~${$(event.currentTarget).attr('data-value')}} `
+            });
+        });
+
     }
 
     /**

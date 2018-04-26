@@ -72,8 +72,8 @@ export class TimeagoValueConverter {
  * markdown内容解析处理
  */
 export class ParseMdValueConverter {
-    toView(value) {
-        return value ? marked(utils.preParse(value)) : '';
+    toView(value, channel = null) {
+        return value ? marked(utils.preParse(value, channel)) : '';
     }
 }
 

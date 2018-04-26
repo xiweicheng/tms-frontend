@@ -185,16 +185,22 @@ export class CommonUtils {
      * @param  {[type]} plainText [description]
      * @return {[type]}           [description]
      */
-    preParse(plainText) {
+    preParse(plainText, channel) {
 
         var txt = plainText;
         $.each(this.parseUsers(plainText), function(index, user) {
             txt = txt.replace(new RegExp(`{~${user.username}}`, 'g'), `<span data-value="${user.username}" class="at-user">**\`@${user.name ? user.name : user.username}\`**</span>`);
         });
 
+        $.each(this.parseGroups(plainText, channel), function(index, grp) {
+            var members = _.join(_.map(grp.members, (u) => {
+                return u.name ? u.name : u.username;
+            }), ' | ');
+            txt = txt.replace(new RegExp(`{!~${grp.name}}`, 'g'), `<span data-value="${grp.name}" class="at-group">**\`@${grp.name}\`**</span>`);
+        });
+
         return txt;
     }
-
 
     /**
      * 解析@users
@@ -217,6 +223,31 @@ export class CommonUtils {
         return users;
     }
 
+    /**
+     * 解析@grouos
+     * @param  {[type]} plainText [description]
+     * @return {[type]}           [description]
+     */
+    parseGroups(plainText, channel) {
+        if (!channel) {
+            return [];
+        }
+        var groups = [];
+        var atR = /\{!~([^\}]*)\}/g;
+        var rs = atR.exec(plainText);
+        let cGrps = _.reject(channel.channelGroups, { status: 'Deleted' });
+        while (rs) {
+            let grp = _.find(cGrps, { name: rs[1] });
+            let isNotExists = !_.some(groups, { name: rs[1] });
+            if (grp && isNotExists) {
+                groups.push(grp);
+            }
+            rs = atR.exec(plainText);
+        }
+
+        return groups;
+    }
+
     getUser(username) {
         return _.find(tmsUsers, { username: username });
     }
@@ -226,13 +257,21 @@ export class CommonUtils {
      * @param  {[type]} plainText [description]
      * @return {[type]}           [description]
      */
-    parseUsernames(plainText, members) {
+    parseUsernames(plainText, members, channel = null) {
         let users = this.parseUsers(plainText);
         let isExitsAll = _.some(users, { username: 'all' });
+
         if (isExitsAll) {
             return _.without(_.map(members, 'username'), 'all');
         }
-        return _.map(users, 'username');;
+
+        let groups = this.parseGroups(plainText, channel);
+
+        let grpMembers = _.flatten(_.map(groups, (grp) => {
+            return _.map(_.reject(grp.members, { status: 'Deleted' }), 'username');
+        }));
+
+        return _.union(_.map(users, 'username'), grpMembers);
     }
 
     /**

@@ -237,13 +237,21 @@ export class EmChatInput {
                 return txt;
             },
             search: (term, callback) => {
-                callback($.map(this.members, (member) => {
-                    return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
-                }));
+                let users = $.map(this.members, (member) => {
+                    return (member.enabled && member.username.indexOf(term) >= 0) ? member : null;
+                });
+                let groups = $.map(this.channel.channelGroups, (grp) => {
+                    return ((grp.status != 'Deleted') && grp.name.indexOf(term) >= 0) ? grp : null;
+                });
+                callback([...users, ...groups]);
             },
             template: (value, term) => {
-                let user = _.find(this.members, { username: value });
-                return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
+                if (value.username) { // @user
+                    // let user = _.find(this.members, { username: value });
+                    return `${value.name ? value.name : value.username} - ${value.mails} (${value.username})`;
+                } else { // @group
+                    return `${value.name} - ${value.title} (${value.members.length}人)`;
+                }
             },
             replace: (value) => {
                 let cm = this.simplemde.codemirror;
@@ -253,7 +261,7 @@ export class EmChatInput {
                     ch: 0
                 }, cursor);
 
-                cm.replaceRange(txt.replace(/@(\w*)$/, `{~${value}} `), {
+                cm.replaceRange(txt.replace(/@(\w*)$/, `{${value.username ? '' : '!'}~${value.username ? value.username : value.name}} `), {
                     line: cursor.line,
                     ch: 0
                 }, cursor);
@@ -345,7 +353,7 @@ export class EmChatInput {
             };
         } else {
             url = `/admin/chat/channel/create`;
-            let usernames = utils.parseUsernames(content, this.members).join(',');
+            let usernames = utils.parseUsernames(content, this.members, this.channel).join(',');
             data = {
                 url: utils.getUrl(),
                 channelId: this.channel.id,
