@@ -7,7 +7,7 @@
                 <a class="item active" data-tab="channel-members">成员管理</a>
                 <a class="item" data-tab="channel-groups">分组管理</a>
             </div>
-            <div class="ui tab segment active" data-tab="channel-members">
+            <div class="ui tab segment active" style="margin-bottom: 0;" data-tab="channel-members">
                 <div ref="frm" class="ui form">
                     <div class="field">
                         <label>频道成员(${channel.members.length})</label>
@@ -71,14 +71,14 @@
                     </div>
                 </div>
                 <div class="ui divider"></div>
-                <div style="max-height: 275px; overflow: auto;">
+                <div style="min-height: 285px; max-height: 285px; overflow: auto;">
                     <table class="ui very basic striped compact table">
                         <thead>
                             <tr>
                                 <th style="width: 120px;"><i class="at icon" style="margin-right: 0;"></i>标识</th>
                                 <th style="width: 120px;">描述</th>
-                                <th>成员</th>
                                 <th style="width: 40px;"></th>
+                                <th>成员</th>
                                 <th style="width: 150px;">操作</th>
                             </tr>
                         </thead>
@@ -96,6 +96,7 @@
                                         <input type="text" value.bind="item.title" placeholder="分组描述">
                                     </div>
                                 </td>
+                                <td><span data-tooltip="${item.creator.name ? item.creator.name : item.creator.username} 添加于 ${item.createDate | timeago}"><i class="info circle icon"></i></span></td>
                                 <td>
                                     <div ref="grpMembersRef" class="ui fluid multiple search selection dropdown ${(item.creator.username == loginUser.username || channel.owner.username == loginUser.username) ? '' : 'disabled'}">
                                         <input type="hidden" name="members">
@@ -103,12 +104,11 @@
                                         <div class="default text"></div>
                                         <div class="menu">
                                             <div repeat.for="member of channel.members | sort:'username'" task.bind="initGrpMembersUI($last, grpMembersRef, item)" class="item" data-value="${member.username}">
-                                                <span>${member.name ? member.name : member.username}</span>
+                                                <span class="${!member.enabled ? 'disabled-user' : ''}">${member.name ? member.name : member.username}</span>
                                             </div>
                                         </div>
                                     </div>
                                 </td>
-                                <td><span data-tooltip="${item.creator.name ? item.creator.name : item.creator.username} 添加于 ${item.createDate | timeago}"><i class="info circle icon"></i></span></td>
                                 <td>
                                     <button if.bind="item.creator.username == loginUser.username || channel.owner.username == loginUser.username" show.bind="!item.isEditing" click.delegate="editHandler(item)" class="mini ui button">
                                         编辑
@@ -116,7 +116,7 @@
                                     <button if.bind="item.creator.username == loginUser.username || channel.owner.username == loginUser.username" click.delegate="updateHandler(item)" show.bind="item.isEditing" class="mini green ui button">
                                         更新
                                     </button>
-                                    <a if.bind="item.creator.username == loginUser.username || channel.owner.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon right center pointing dropdown red button" title="删除频道分组">
+                                    <a if.bind="item.creator.username == loginUser.username || channel.owner.username == loginUser.username" ui-dropdown-action style="padding-left: 18px; padding-right: 18px;" class="ui icon right center pointing dropdown red mini button" title="删除频道分组">
                                     删除
                                     <div class="menu">
                                         <div style="color: red;" class="item" click.delegate="delHandler(item)"><i class="trash outline icon"></i>确认删除</div>
