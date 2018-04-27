@@ -221,6 +221,7 @@ export class EmChatTopMenu {
                         window.location = wurl('path') + `#/chat/${$choice.attr('data-id')}`;
                     }
                 });
+                $(this.chatToDropdownRef).off('focus'); // fix 点击展示模态框，当模特框关闭后，其获取焦点后，自动展示下拉菜单问题
             });
         }
     }
