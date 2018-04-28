@@ -44,7 +44,7 @@ export class Config {
         window.http = this.aurelia.container.root.get(HttpClient);
         http.configure(config => {
             config
-            // .withBaseUrl(nsParam.baseUrl)
+                // .withBaseUrl(nsParam.baseUrl)
                 .withDefaults({
                     credentials: 'same-origin',
                     headers: {
@@ -126,7 +126,7 @@ export class Config {
             let out;
             let isChatLink = /\/chat\/.+\?id=.+/g.test(wurl('hash', href));
             let isCommentLink = /\/blog\/.+\?cid=.+/g.test(wurl('hash', href));
-            if (isChatLink || isCommentLink || (utils.isAbsUrl(href) && (wurl('hostname', href) != wurl('hostname')))) {
+            if (isChatLink || isCommentLink || (utils.isAbsUrl(href) && ((wurl('hostname', href) + wurl('port', href)) != (wurl('hostname') + wurl('port'))))) {
                 out = '<a target="_blank" href="' + href + '"';
             } else {
                 out = '<a href="' + href + '"';
