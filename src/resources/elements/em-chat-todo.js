@@ -10,6 +10,8 @@ export class EmChatTodo {
     dones = [];
     todoFilter = '';
 
+    last = true;
+
     activedChanged(newValue, oldValue) {
         if (!newValue || this.actived.payload.action != nsCons.ACTION_TYPE_TODO) {
             return;
@@ -19,14 +21,31 @@ export class EmChatTodo {
     }
 
     listMy() {
-        this.ajax = $.get('/admin/todo/listMy', {}, (data) => {
+
+        this.ajax = $.get('/admin/todo/listMy/undone', {}, (data) => {
             if (data.success) {
-                this.todos = _.reject(data.data, { status: 'Done' });
-                this.dones = _.filter(data.data, { status: 'Done' });
+                this.todos = data.data;
             } else {
                 toastr.error(data.data, '获取待办事项列表失败！');
             }
         });
+
+        this.ajaxDone = $.get('/admin/todo/listMy/done', {
+            size: 20,
+            page: 0,
+        }, (data) => {
+            if (data.success) {
+
+                this.dones = data.data.content;
+
+                this.page = data.data;
+                this.last = data.data.last;
+                this.moreCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
+            } else {
+                toastr.error(data.data, '获取待办事项列表失败！');
+            }
+        });
+
     }
 
     addTodoHandler() {
@@ -179,6 +198,24 @@ export class EmChatTodo {
     clearSearchHandler() {
         this.todoFilter = '';
         $(this.searchInputRef).focus();
+    }
+
+    loadMoreHandler() {
+        this.searchMoreP = $.get('/admin/todo/listMy/done', {
+            size: this.page.size,
+            page: this.page.number + 1
+        }, (data) => {
+            if (data.success) {
+
+                this.dones = [...this.dones, ...data.data.content];
+
+                this.page = data.data;
+                this.last = data.data.last;
+                this.moreCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
+            } else {
+                toastr.error(data.data, '获取待办事项列表失败！');
+            }
+        });
     }
 
 }
