@@ -24,6 +24,7 @@ window.nsCons = {
     EVENT_CHAT_CONTENT_SCROLL_TO: 'event_chat_content_scroll_to',
     EVENT_CHAT_RIGHT_SIDEBAR_SCROLL_TO: 'event_chat_right_sidebar_scroll_to',
     EVENT_CHAT_POLL_UPDATE: 'event_chat_poll_update',
+    EVENT_CHAT_MSG_POLL_UPDATE: 'event_chat_msg_poll_update',
     EVENT_CHAT_REPLY_SCROLL_TO: 'event_chat_reply_scroll_to',
     EVENT_CHAT_TOGGLE_LEFT_SIDEBAR: 'event_chat_toggle_left_sidebar',
     EVENT_CHAT_TOGGLE_RIGHT_SIDEBAR: 'event_chat_toggle_right_sidebar',

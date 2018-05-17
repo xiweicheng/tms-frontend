@@ -156,6 +156,43 @@ export class ChatDirect {
             }
 
         });
+
+        this.subscribe12 = ea.subscribe(nsCons.EVENT_CHAT_MSG_POLL_UPDATE, (payload) => {
+
+            _.forEach(payload, (msg) => {
+                let chat = _.find(this.chats, { id: msg.id });
+                if (!chat) {
+                    return;
+                }
+                if (msg.action == 'Update') {
+                    if (chat.version != msg.version) {
+                        $.get('/admin/chat/channel/get', {
+                            id: chat.id
+                        }, (data) => {
+                            _.extend(chat, data.data);
+                            toastr.success(`频道消息[${chat.id}]有更新，请注意关注！`);
+                            let alarm = utils.getAlarm();
+                            if (!alarm.off && alarm.news) {
+                                push.create('TMS沟通频道消息通知', {
+                                    body: `频道消息[${chat.id}]有更新，请注意关注！`,
+                                    icon: {
+                                        x16: 'img/tms-x16.ico',
+                                        x32: 'img/tms-x32.png'
+                                    },
+                                    timeout: 5000
+                                });
+                            }
+                            // TODO 自动滚动定位到更新消息，或者显示更新图标，让用户手动触发定位到更新消息
+                        });
+                    }
+                } else if (msg.action == 'Delete') {
+                    this.chats = _.reject(this.chats, { id: chat.id });
+                    // toastr.success(`频道消息[id=${chat.id}]被删除，请注意关注！`);
+                }
+            });
+
+        });
+
     }
 
     /**
@@ -174,6 +211,7 @@ export class ChatDirect {
         this.subscribe9.dispose();
         this.subscribe10.dispose();
         this.subscribe11.dispose();
+        this.subscribe12.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();
@@ -470,6 +508,10 @@ export class ChatDirect {
                     countAt: data.data.countAt,
                     countMyRecentSchedule: data.data.countMyRecentSchedule
                 });
+
+                if (data.data.chatMsgItems && data.data.chatMsgItems.length > 0) {
+                    ea.publish(nsCons.EVENT_CHAT_MSG_POLL_UPDATE, data.data.chatMsgItems);
+                }
             }
         }).always(() => {
             this.pollOnGoing = false;
