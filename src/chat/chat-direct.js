@@ -493,10 +493,9 @@ export class ChatDirect {
 
                 let alarm = utils.getAlarm();
 
-                if (this.countAt && data.data.countAt > this.countAt && !alarm.off && alarm.ats) {
-                    let cnt = data.data.countAt - this.countAt;
+                if (this.countAt && (data.data.countAt > this.countAt) && !alarm.off && alarm.ats) {
                     push.create('TMS沟通@消息通知', {
-                        body: `你有${cnt}条新的@消息!`,
+                        body: `你有${data.data.countAt - this.countAt}条新的@消息!`,
                         icon: {
                             x16: 'img/tms-x16.ico',
                             x32: 'img/tms-x32.png'

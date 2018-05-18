@@ -30,7 +30,7 @@ export class EmChatAttach {
             name: nsCtx.chatTo,
             type: this.type,
             page: this.page ? (nextPage ? this.page.number + 1 : this.page.number) : 0,
-            size: 10,
+            size: 20,
             search: this.search
         }, (data) => {
             this.page = data.data;
