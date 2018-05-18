@@ -33,7 +33,10 @@ export class AttrFancyboxCustomAttribute {
                         PLAY_START: '开始幻灯片',
                         PLAY_STOP: '暂停幻灯片',
                         FULL_SCREEN: '全屏',
-                        THUMBS: '缩略图'
+                        THUMBS: '缩略图',
+                        DOWNLOAD: '下载',
+                        SHARE: '分享',
+                        ZOOM: '缩放'
                     }
                 },
                 lang: 'zh',
