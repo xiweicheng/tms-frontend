@@ -170,11 +170,12 @@ export class ChatDirect {
                             id: chat.id
                         }, (data) => {
                             _.extend(chat, data.data);
-                            toastr.success(`频道消息[${chat.id}]有更新，请注意关注！`);
+                            this.scrollToAfterImgLoaded(chat.id);
+                            toastr.success(`频道消息[#${chat.id}]有更新，请注意关注！`);
                             let alarm = utils.getAlarm();
                             if (!alarm.off && alarm.news) {
                                 push.create('TMS沟通频道消息通知', {
-                                    body: `频道消息[${chat.id}]有更新，请注意关注！`,
+                                    body: `频道消息[#${chat.id}]有更新，请注意关注！`,
                                     icon: {
                                         x16: 'img/tms-x16.ico',
                                         x32: 'img/tms-x32.png'

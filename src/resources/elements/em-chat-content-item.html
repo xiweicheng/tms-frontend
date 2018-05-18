@@ -7,6 +7,7 @@
             <div class="metadata">
                 <i if.bind="item.ua" class="${item.ua | ua} icon large" style="margin-right: 0;" title="发自于${item.ua | ua2}"></i>
                 <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
+                <div class="tms-clipboard" style="cursor: pointer;" data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}" title="复制沟通消息分享链接">#${item.id}</div>
                 <a if.bind="!isAt" click.delegate="stowHandler(item)" class="tms-stow" title="收藏该消息"><i class="${item.isStow ? '' : 'empty'} star link icon"></i></a>
             </div>
             <div ref="mkbodyRef" fancybox show.bind="!item.isEditing" class="text markdown-body" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
