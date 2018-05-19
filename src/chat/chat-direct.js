@@ -170,19 +170,24 @@ export class ChatDirect {
                             id: chat.id
                         }, (data) => {
                             _.extend(chat, data.data);
-                            this.scrollToAfterImgLoaded(chat.id);
-                            let isOwn = chat.creator.username == this.loginUser.username;
-                            !isOwn && (toastr.success(`频道消息[#${chat.id}]有更新，请注意关注！`));
-                            let alarm = utils.getAlarm();
-                            if (!alarm.off && alarm.news && !isOwn) {
-                                push.create('TMS沟通频道消息通知', {
-                                    body: `频道消息[#${chat.id}]有更新，请注意关注！`,
-                                    icon: {
-                                        x16: 'img/tms-x16.ico',
-                                        x32: 'img/tms-x32.png'
-                                    },
-                                    timeout: 5000
-                                });
+
+                            let isOwn = msg.username == this.loginUser.username;
+
+                            if (!isOwn) {
+                                this.scrollToAfterImgLoaded(chat.id);
+                                toastr.success(`频道消息[#${chat.id}]有更新，请注意关注！`);
+
+                                let alarm = utils.getAlarm();
+                                if (!alarm.off && alarm.news) {
+                                    push.create('TMS沟通频道消息通知', {
+                                        body: `频道消息[#${chat.id}]有更新，请注意关注！`,
+                                        icon: {
+                                            x16: 'img/tms-x16.ico',
+                                            x32: 'img/tms-x32.png'
+                                        },
+                                        timeout: 5000
+                                    });
+                                }
                             }
                             // TODO 自动滚动定位到更新消息，或者显示更新图标，让用户手动触发定位到更新消息
                         });
@@ -195,7 +200,8 @@ export class ChatDirect {
 
         });
 
-    }
+        }
+
 
     /**
      * 当数据绑定引擎从视图解除绑定时被调用
