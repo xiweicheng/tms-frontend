@@ -171,9 +171,10 @@ export class ChatDirect {
                         }, (data) => {
                             _.extend(chat, data.data);
                             this.scrollToAfterImgLoaded(chat.id);
-                            toastr.success(`频道消息[#${chat.id}]有更新，请注意关注！`);
+                            let isOwn = chat.creator.username == this.loginUser.username;
+                            !isOwn && (toastr.success(`频道消息[#${chat.id}]有更新，请注意关注！`));
                             let alarm = utils.getAlarm();
-                            if (!alarm.off && alarm.news) {
+                            if (!alarm.off && alarm.news && !isOwn) {
                                 push.create('TMS沟通频道消息通知', {
                                     body: `频道消息[#${chat.id}]有更新，请注意关注！`,
                                     icon: {
