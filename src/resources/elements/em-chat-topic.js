@@ -26,7 +26,7 @@ export class EmChatTopic {
 
             this.isFollower = true; // 回复话题会自动关注该话题
 
-            poll.reset();
+            // poll.reset();
         });
         this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_MEMBER_ADD_OR_REMOVE, (payload) => {
             this.members = [nsCtx.memberAll, ...payload.members];
@@ -109,7 +109,7 @@ export class EmChatTopic {
     unbind() {
         this.subscribe.dispose();
         this.subscribe1.dispose();
-        poll.stop();
+        // poll.stop();
     }
 
     channelChanged() {
@@ -182,7 +182,7 @@ export class EmChatTopic {
 
     activedChanged(newValue, oldValue) {
         if (!newValue || this.actived.payload.action != nsCons.ACTION_TYPE_TOPIC) {
-            poll.stop();
+            // poll.stop();
             return;
         }
 
@@ -190,7 +190,7 @@ export class EmChatTopic {
         let lst = _.last(this.chat.chatReplies);
         lst && (lst.__scroll = true);
         this.rid = this.actived.payload.result.rid;
-        this._poll();
+        // this._poll();
         this._getFollowers();
     }
 
@@ -202,6 +202,8 @@ export class EmChatTopic {
                     delete item.__scroll;
                     // this.rid = null;
 
+                } else {
+                    this.scrollToAfterImgLoaded('b');
                 }
             });
         }

@@ -512,6 +512,7 @@ export class ChatDirect {
 
                 if (data.data.chatMsgItems && data.data.chatMsgItems.length > 0) {
                     ea.publish(nsCons.EVENT_CHAT_MSG_POLL_UPDATE, data.data.chatMsgItems);
+                    poll.reset();
                 }
             }
         }).always(() => {
