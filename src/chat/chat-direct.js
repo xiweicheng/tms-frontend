@@ -164,44 +164,55 @@ export class ChatDirect {
                 if (!chat) {
                     return;
                 }
-                if (msg.action == 'Update') {
-                    if (chat.version != msg.version) {
-                        $.get('/admin/chat/channel/get', {
-                            id: chat.id
-                        }, (data) => {
-                            _.extend(chat, data.data);
 
-                            let isOwn = msg.username == this.loginUser.username;
-
-                            if (!isOwn) {
-                                this.scrollToAfterImgLoaded(chat.id);
-                                toastr.success(`频道消息[#${chat.id}]有更新，请注意关注！`);
-
-                                let alarm = utils.getAlarm();
-                                if (!alarm.off && alarm.news) {
-                                    push.create('TMS沟通频道消息通知', {
-                                        body: `频道消息[#${chat.id}]有更新，请注意关注！`,
-                                        icon: {
-                                            x16: 'img/tms-x16.ico',
-                                            x32: 'img/tms-x32.png'
-                                        },
-                                        timeout: 5000
-                                    });
-                                }
-                            }
-                            // TODO 自动滚动定位到更新消息，或者显示更新图标，让用户手动触发定位到更新消息
-                        });
+                if (msg.type == 'Content') {
+                    if (msg.action == 'Delete') {
+                        this.chats = _.reject(this.chats, { id: chat.id });
+                    } else {
+                        this.updateNotify(chat, msg, `频道消息[#${chat.id}]消息内容有更新，请注意关注！`);
                     }
-                } else if (msg.action == 'Delete') {
-                    this.chats = _.reject(this.chats, { id: chat.id });
-                    // toastr.success(`频道消息[id=${chat.id}]被删除，请注意关注！`);
+                } else if (msg.type == 'Label') {
+                    this.updateNotify(chat, msg, `频道消息[#${chat.id}]表情|标签有更新，请注意关注！`);
+                } else if (msg.type == 'Reply') {
+                    // if (msg.action == 'Create' || msg.action == 'Update') {
+                    this.updateNotify(chat, msg, `频道消息[#${chat.id}]话题回复有更新，请注意关注！`);
+                    // } 
                 }
             });
 
         });
 
-        }
+    }
 
+    updateNotify(chat, msg, message) {
+        if (chat.version != msg.version) {
+            $.get('/admin/chat/channel/get', {
+                id: chat.id
+            }, (data) => {
+                _.extend(chat, data.data);
+
+                let isOwn = msg.username == this.loginUser.username;
+
+                if (!isOwn) {
+                    this.scrollToAfterImgLoaded(chat.id);
+                    toastr.success(message);
+
+                    let alarm = utils.getAlarm();
+                    if (!alarm.off && alarm.news) {
+                        push.create('TMS沟通频道消息通知', {
+                            body: message,
+                            icon: {
+                                x16: 'img/tms-x16.ico',
+                                x32: 'img/tms-x32.png'
+                            },
+                            timeout: 5000
+                        });
+                    }
+                }
+                // TODO 自动滚动定位到更新消息，或者显示更新图标，让用户手动触发定位到更新消息
+            });
+        }
+    }
 
     /**
      * 当数据绑定引擎从视图解除绑定时被调用
