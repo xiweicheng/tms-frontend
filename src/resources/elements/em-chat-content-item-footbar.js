@@ -40,6 +40,8 @@ export class EmChatContentItemFootbar {
         type: 'emoji'
     }];
 
+    myTags = nsCtx.myTags;
+
     /**
      * 构造函数
      */
@@ -103,12 +105,14 @@ export class EmChatContentItemFootbar {
         if (this.isCustomTag) {
             let v = $(this.tagRef).val();
             if (v) {
-                this.toggleChatLabelHandler({
-                    label: v,
-                    value: v,
-                    type: 'Tag'
-                });
+                let tag = { label: v, value: v, type: 'tag' }
+                this.toggleChatLabelHandler(tag);
                 $(this.tagRef).val('');
+
+                if (!_.some(this.myTags, tag)) {
+                    this.myTags.splice(0, 0, tag);
+                }
+
             }
         } else {
             _.defer(() => $(this.tagRef).focus());

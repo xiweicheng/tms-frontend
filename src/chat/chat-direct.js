@@ -323,6 +323,10 @@ export class ChatDirect {
                         }
                     }
                 }
+            }),
+            chatService.listMyTags(true).then(tags => {
+                this.myTags = tags;
+                nsCtx.myTags = tags;
             })
         ]);
 

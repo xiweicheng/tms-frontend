@@ -47,6 +47,27 @@ class ChatService {
 
         return this.channels;
     }
+
+    async listMyTags(useCache) {
+
+        if (!useCache || !this.myTags) {
+
+            await $.get('/admin/chat/channel/label/listMy', (data) => {
+                if (data.success) {
+                    this.myTags = _.map(data.data, item => {
+                        return {
+                            label: item,
+                            value: item,
+                            type: 'tag'
+                        }
+                    })
+                }
+            });
+
+        }
+
+        return this.myTags;
+    }
 }
 
 export default new ChatService();

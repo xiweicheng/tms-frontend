@@ -15,6 +15,24 @@
         <span ref="addTagRef" class="add-btn add-tag-btn ${chat.chatLabels | chatLabelExist & signal:'sg-chatlabel-refresh'}">+<i class="tags icon large link"></i></span>
         <div class="ui popup top left transition hidden tags ${isCustomTag ? 'customTag' : ''}">
             <div class="content">
+                <div show.bind="!isCustomTag" ui-dropdown class="ui left pointing dropdown mini icon">
+                    <i class="ellipsis vertical icon"></i>
+                    <div class="menu">
+                        <div class="ui left search icon input">
+                            <i class="search icon" style="padding-top: 0; padding-bottom: 0;"></i>
+                            <input type="text" name="search" placeholder="查找标签...">
+                        </div>
+                        <div class="header">
+                            <i class="tags icon"></i> 消息标签
+                        </div>
+                        <div class="scrolling menu">
+                            <div class="item" repeat.for="item of myTags" click.delegate="toggleChatLabelHandler(item)">
+                                <div class="ui green empty circular label" style="width: 0; height: 0;" data-value="${item.value}"></div>
+                                ${item.label}
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div repeat.for="item of tags" class="ui small ${item.color} label" data-tooltip="${item.label}" click.delegate="toggleChatLabelHandler(item)">${item.value}</div>
                 <div if.bind="isCustomTag" class="ui ${!isCustomTag ? 'transparent' : ''} icon input">
                     <input ref="tagRef" keyup.trigger="tagKeyupHandler() & key" type="text" placeholder="">
