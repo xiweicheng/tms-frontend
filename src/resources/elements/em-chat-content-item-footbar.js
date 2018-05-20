@@ -99,6 +99,11 @@ export class EmChatContentItemFootbar {
                 toastr.error(data.data);
             }
         });
+
+        if (_.some(this.myTags, item)) {
+            this.myTags.splice(_.findIndex(this.myTags, item), 1);
+            this.myTags.splice(0, 0, item);
+        }
     }
 
     toggleCustomTagHandler() {
