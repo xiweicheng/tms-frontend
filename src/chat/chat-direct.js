@@ -165,18 +165,19 @@ export class ChatDirect {
                     return;
                 }
 
+                let updater = utils.getUser(msg.username);
+                let updaterName = updater ? (updater.name ? updater.name : updater.username) : '';
+
                 if (msg.type == 'Content') {
                     if (msg.action == 'Delete') {
                         this.chats = _.reject(this.chats, { id: chat.id });
                     } else {
-                        this.updateNotify(chat, msg, `频道消息[#${chat.id}]消息内容有更新，请注意关注！`);
+                        this.updateNotify(chat, msg, `【${updaterName}】更新了消息[#${chat.id}]的消息内容，请注意关注！`);
                     }
                 } else if (msg.type == 'Label') {
-                    this.updateNotify(chat, msg, `频道消息[#${chat.id}]表情|标签有更新，请注意关注！`);
+                    this.updateNotify(chat, msg, (msg.action != 'Delete' ? `【${updaterName}】更新了消息[#${chat.id}]的表情标签，请注意关注！` : null));
                 } else if (msg.type == 'Reply') {
-                    // if (msg.action == 'Create' || msg.action == 'Update') {
-                    this.updateNotify(chat, msg, `频道消息[#${chat.id}]话题回复有更新，请注意关注！`);
-                    // } 
+                    this.updateNotify(chat, msg, (msg.action != 'Delete' ? `【${updaterName}】更新了消息[#${chat.id}]的话题回复，请注意关注！` : null));
                 }
             });
 
@@ -193,7 +194,7 @@ export class ChatDirect {
 
                 let isOwn = msg.username == this.loginUser.username;
 
-                if (!isOwn) {
+                if (!isOwn && message) {
                     this.scrollToAfterImgLoaded(chat.id);
                     toastr.success(message);
 
