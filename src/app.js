@@ -13,6 +13,49 @@ export class App {
         });
     }
 
+    attached() {
+
+        // table export
+        $('body').on('mouseenter', '.markdown-body table', (event) => {
+            event.preventDefault();
+
+            let $table = $(event.currentTarget);
+
+            if (!$table.parent().is('.export-table-wrapper')) {
+
+                let uid = new Date().getTime();
+
+                $table.attr('id', `export-table-${uid}`);
+
+                $table.wrap(`<div class="export-table-wrapper"></div>`);
+
+                $table.after($(`<i class="export-btn download link icon" title="下载表格为CSV"></i>`));
+            }
+
+            $table.parent().children('.export-btn').show();
+
+        });
+
+        $('body').on('mouseleave', '.markdown-body table', (event) => {
+            event.preventDefault();
+
+            if ($(event.toElement).is('.export-btn')) return;
+
+            let $table = $(event.currentTarget);
+
+            if ($table.parent().is('.export-table-wrapper')) {
+                $table.parent().children('.export-btn').hide();
+            }
+
+        });
+
+        $('body').on('click', '.markdown-body .export-table-wrapper .export-btn', event => {
+            event.preventDefault();
+            let $item = $(event.currentTarget);
+            tableExport($item.parents('.export-table-wrapper').children('table').attr('id'), `tms-export-table_${$.format.date(new Date(), "yyyy-MM-dd_hhmmss") }`, 'csv');
+        });
+    }
+
     /**
      * 当数据绑定引擎从视图解除绑定时被调用
      */

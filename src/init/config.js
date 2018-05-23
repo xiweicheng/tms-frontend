@@ -33,6 +33,9 @@ import {
     default as ColorHash
 } from 'color-hash';
 import 'modaal';
+import {
+    default as tableExport
+} from 'table-export';
 
 export class Config {
 
@@ -225,6 +228,7 @@ export class Config {
         window.bs = this.aurelia.container.root.get(BindingSignaler);
         window.ea = this.aurelia.container.root.get(EventAggregator);
         window.colorHash = new ColorHash();
+        window.tableExport = tableExport;
         return this;
     }
 

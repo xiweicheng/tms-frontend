@@ -92,6 +92,7 @@
           "autosize",
           "clipboard-js",
           "moment",
+          "table-export",
           {
             "name": "color-hash",
             "path": "../node_modules/color-hash",
