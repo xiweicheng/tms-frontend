@@ -91,6 +91,8 @@ export class EmChatTopicInput {
             return this.$chatMsgInputRef
         }, true);
 
+        this.initCsvDropzone();
+
         $(this.chatBtnRef).popup({
             inline: true,
             hoverable: true,
@@ -101,6 +103,50 @@ export class EmChatTopicInput {
             }
         });
 
+    }
+
+    initCsvDropzone() {
+
+        let _this = this;
+
+        $($(this.btnItemCsvRef).children().andSelf()).dropzone({
+            url: "/admin/file/csv2md",
+            paramName: 'file',
+            clickable: true,
+            dictDefaultMessage: '',
+            maxFilesize: 10,
+            acceptedFiles: '.csv',
+            addRemoveLinks: true,
+            previewsContainer: this.chatStatusBarRef,
+            previewTemplate: this.previewTemplateRef.innerHTML,
+            dictCancelUpload: '取消上传',
+            dictCancelUploadConfirmation: '确定要取消上传吗?',
+            dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
+            init: function() {
+                this.on("sending", function(file, xhr, formData) {
+
+                });
+                this.on("success", function(file, data) {
+                    if (data.success) {
+
+                        $.each(data.data, function(index, item) {
+                            _this.insertContent(`\n${item}`);
+
+                        });
+                        toastr.success('CSV转换表格成功!');
+                    } else {
+                        toastr.error(data.data, 'CSV转换表格失败!');
+                    }
+
+                });
+                this.on("error", function(file, errorMessage, xhr) {
+                    toastr.error(errorMessage, '上传失败!');
+                });
+                this.on("complete", function(file) {
+                    this.removeFile(file);
+                });
+            }
+        });
     }
 
     initUploadDropzone(domRef, getInputTargetCb, clickable) {
