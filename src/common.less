@@ -10,7 +10,7 @@ code.nx {
 .markdown-body {
     .pre-code-wrapper {
         position: relative;
-        > i.copy.icon {
+        >i.copy.icon {
             display: none;
             position: absolute;
             top: 0;
@@ -18,10 +18,13 @@ code.nx {
             cursor: pointer;
         }
         &:hover {
-            > i.copy.icon {
+            >i.copy.icon {
                 display: block;
             }
         }
+    }
+    .export-table-wrapper:first-child table {
+        margin-top: 0;
     }
 }
 
@@ -100,6 +103,7 @@ code.nx {
     opacity: 0;
     pointer-events: none;
 }
+
 
 
 /* Novak */
