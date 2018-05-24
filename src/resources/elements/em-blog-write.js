@@ -235,6 +235,11 @@ export class EmBlogWrite {
                     action: function(editor) {},
                     className: "fa fa-upload",
                     title: "上传文件",
+                }, {
+                    name: "csv2md",
+                    action: function(editor) {},
+                    className: "fa fa-file-excel-o",
+                    title: "上传CSV转表格",
                 }, "|", {
                     name: "preview",
                     action: SimpleMDE.togglePreview,
@@ -311,8 +316,54 @@ export class EmBlogWrite {
             return this.$chatMsgInputRef
         }, true);
 
+        this.initCsvDropzone();
+
         this.blogTitleInputKeyupInit();
 
+    }
+
+    initCsvDropzone() {
+
+        let _this = this;
+
+        $($('.editor-toolbar .fa.fa-file-excel-o', '#txt-blog-write-wrapper')).dropzone({
+            url: "/admin/file/csv2md",
+            paramName: 'file',
+            clickable: true,
+            dictDefaultMessage: '',
+            maxFilesize: 10,
+            acceptedFiles: '.csv',
+            addRemoveLinks: true,
+            previewsContainer: '.em-blog-write .dropzone-previews',
+            previewTemplate: $('.em-blog-write .preview-template')[0].innerHTML,
+            dictCancelUpload: '取消上传',
+            dictCancelUploadConfirmation: '确定要取消上传吗?',
+            dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
+            init: function() {
+                this.on("sending", function(file, xhr, formData) {
+
+                });
+                this.on("success", function(file, data) {
+                    if (data.success) {
+
+                        $.each(data.data, function(index, item) {
+                            _this.insertContent(`\n${item}`);
+
+                        });
+                        toastr.success('CSV转换表格成功!');
+                    } else {
+                        toastr.error(data.data, 'CSV转换表格失败!');
+                    }
+
+                });
+                this.on("error", function(file, errorMessage, xhr) {
+                    toastr.error(errorMessage, '上传失败!');
+                });
+                this.on("complete", function(file) {
+                    this.removeFile(file);
+                });
+            }
+        });
     }
 
     close() {
