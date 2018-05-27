@@ -352,7 +352,7 @@ export class EmBlogComment {
             clickable: true,
             dictDefaultMessage: '',
             maxFilesize: 10,
-            acceptedFiles: '.csv',
+            acceptedFiles: '.csv,.xls,.xlsx',
             addRemoveLinks: true,
             previewsContainer: '.em-blog-comment .dropzone-previews',
             previewTemplate: $('.em-blog-comment .preview-template')[0].innerHTML,

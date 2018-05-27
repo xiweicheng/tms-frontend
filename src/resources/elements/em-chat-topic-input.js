@@ -115,7 +115,7 @@ export class EmChatTopicInput {
             clickable: true,
             dictDefaultMessage: '',
             maxFilesize: 10,
-            acceptedFiles: '.csv',
+            acceptedFiles: '.csv,.xls,.xlsx',
             addRemoveLinks: true,
             previewsContainer: this.chatStatusBarRef,
             previewTemplate: this.previewTemplateRef.innerHTML,

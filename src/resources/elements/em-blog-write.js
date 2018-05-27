@@ -332,7 +332,7 @@ export class EmBlogWrite {
             clickable: true,
             dictDefaultMessage: '',
             maxFilesize: 10,
-            acceptedFiles: '.csv',
+            acceptedFiles: '.csv,.xls,.xlsx',
             addRemoveLinks: true,
             previewsContainer: '.em-blog-write .dropzone-previews',
             previewTemplate: $('.em-blog-write .preview-template')[0].innerHTML,
