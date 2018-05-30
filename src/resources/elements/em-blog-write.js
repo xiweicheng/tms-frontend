@@ -239,7 +239,7 @@ export class EmBlogWrite {
                     name: "csv2md",
                     action: function(editor) {},
                     className: "fa fa-file-excel-o",
-                    title: "上传CSV转表格",
+                    title: "上传Excel|CSV转Markdown表格",
                 }, "|", {
                     name: "preview",
                     action: SimpleMDE.togglePreview,

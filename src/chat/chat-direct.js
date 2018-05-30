@@ -195,10 +195,12 @@ export class ChatDirect {
                 let isOwn = msg.username == this.loginUser.username;
 
                 if (!isOwn && message) {
-                    this.scrollToAfterImgLoaded(chat.id);
-                    toastr.success(message);
 
                     let alarm = utils.getAlarm();
+                    if (!alarm.off) this.scrollToAfterImgLoaded(chat.id);
+
+                    toastr.success(message);
+
                     if (!alarm.off && alarm.news) {
                         push.create('TMS沟通频道消息通知', {
                             body: message,
@@ -580,7 +582,12 @@ export class ChatDirect {
                 this._checkNeedNotify(data);
 
                 this.chats = _.unionBy(this.chats, data.data, 'id');
-                this.scrollToAfterImgLoaded('b');
+
+                let hasOwn = _.some(data.data, (item) => {
+                    return item.creator.username == this.loginUser.username;
+                });
+                let alarm = utils.getAlarm();
+                if (!alarm.off || hasOwn) this.scrollToAfterImgLoaded('b');
             } else {
                 toastr.error(data.data, '轮询获取消息失败!');
             }

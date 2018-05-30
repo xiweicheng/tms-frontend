@@ -29,7 +29,7 @@ export class App {
 
                 $table.wrap(`<div class="export-table-wrapper"></div>`);
 
-                $table.after($(`<i class="export-btn download link icon" title="下载表格为CSV"></i>`));
+                $table.after($(`<i class="export-btn download link icon" title="下载为CSV表格文件"></i>`));
             }
 
             $table.parent().children('.export-btn').show();
