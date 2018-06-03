@@ -57,6 +57,9 @@ export class EmChatScheduleRemind {
             },
             timeout: 5000
         });
+
+        let alarm = utils.getAlarm();
+        (!alarm.off && alarm.audio) && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
     }
 
     showHandler() {

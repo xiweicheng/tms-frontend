@@ -210,6 +210,7 @@ export class ChatDirect {
                             },
                             timeout: 5000
                         });
+                        alarm.audio && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
                     }
                 }
                 // TODO 自动滚动定位到更新消息，或者显示更新图标，让用户手动触发定位到更新消息
@@ -464,18 +465,18 @@ export class ChatDirect {
             return;
         }
         if (to == 'b') {
-            $(this.commentsRef).parent('.scroll-content').scrollTo('max');
+            $(this.commentsRef).parent().scrollTo('max');
         } else if (to == 't') {
-            $(this.commentsRef).parent('.scroll-content').scrollTo(0);
+            $(this.commentsRef).parent().scrollTo(0);
         } else {
             if (_.some(this.chats, { id: +to })) {
-                $(this.commentsRef).parent('.scroll-content').scrollTo(`.em-chat-content-item.comment[data-id="${to}"]`, {
+                $(this.commentsRef).parent().scrollTo(`.em-chat-content-item.comment[data-id="${to}"]`, {
                     offset: this.offset
                 });
                 $(this.commentsRef).find(`.comment[data-id]`).removeClass('active');
                 $(this.commentsRef).find(`.comment[data-id=${to}]`).addClass('active');
             } else {
-                $(this.commentsRef).parent('.scroll-content').scrollTo('max');
+                $(this.commentsRef).parent().scrollTo('max');
                 toastr.warning(`消息[${to}]不存在,可能已经被删除!`);
             }
         }
@@ -527,6 +528,8 @@ export class ChatDirect {
                         },
                         timeout: 5000
                     });
+
+                    alarm.audio && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
                 }
                 this.countAt = data.data.countAt;
                 ea.publish(nsCons.EVENT_CHAT_POLL_UPDATE, {
@@ -621,6 +624,8 @@ export class ChatDirect {
                 },
                 timeout: 5000
             });
+
+            alarm.audio && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
         }
     }
 
@@ -786,7 +791,7 @@ export class ChatDirect {
 
     scrollTo(target, duration = 0, onAfter) {
         this.focusedComment = target;
-        $(this.commentsRef).parent('.scroll-content').scrollTo(target, duration, {
+        $(this.commentsRef).parent().scrollTo(target, duration, {
             offset: this.offset,
             onAfter: onAfter
         });

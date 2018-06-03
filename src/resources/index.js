@@ -81,5 +81,6 @@ export function configure(aurelia) {
         'resources/elements/em-user-avatar',
         'resources/elements/em-user-edit',
         'resources/elements/em-blog-comment-share',
+        'resources/elements/em-audio-alert',
     ]);
 }
