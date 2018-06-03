@@ -210,6 +210,7 @@ export class ChatDirect {
                             },
                             timeout: 5000
                         });
+
                         alarm.audio && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
                     }
                 }
