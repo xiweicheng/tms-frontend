@@ -221,7 +221,11 @@ export class EmChatTopicInput {
                 table: ["", "\n\n| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n\n"],
             },
             previewRender: (plainText, preview) => { // Async method
-                return this.simplemde.markdown(utils.preParse(plainText, this.channel));
+                if (emojify) {
+                    plainText = emojify.replace(plainText);
+                }
+                return marked(utils.preParse(plainText, this.channel));
+                // return this.simplemde.markdown(utils.preParse(plainText, this.channel));
             },
         });
 
