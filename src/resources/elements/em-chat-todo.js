@@ -149,6 +149,7 @@ export class EmChatTodo {
         $.post('/admin/todo/update', { id: item.id, title: item.title }, (data, textStatus, xhr) => {
             if (data.success) {
                 item.updateDate = data.data.updateDate;
+                item.oldTitle = data.data.title;
                 toastr.success('更新待办事项内容成功！');
             } else {
                 item.title = item.oldTitle;
@@ -164,6 +165,7 @@ export class EmChatTodo {
         $.post('/admin/todo/update', { id: item.id, content: item.content }, (data, textStatus, xhr) => {
             if (data.success) {
                 item.updateDate = data.data.updateDate;
+                item.oldContent = data.data.content;
                 toastr.success('更新待办事项描述成功！');
             } else {
                 item.content = item.oldContent;

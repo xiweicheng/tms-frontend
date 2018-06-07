@@ -12,7 +12,7 @@ export class EmChatSettings {
     chatAlarm = {
         ats: 1,
         news: 1,
-        audio: 0,
+        audio: 1,
         off: 0,
     };
 
