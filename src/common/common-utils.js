@@ -716,6 +716,7 @@ export class CommonUtils {
         let chatAlarm = {
             ats: 1,
             news: 1,
+            audio: 1,
             off: 0,
         };
 
