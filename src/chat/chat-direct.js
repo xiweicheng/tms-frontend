@@ -241,6 +241,19 @@ export class ChatDirect {
         poll.stop();
     }
 
+    _initSock() {
+        // var socket = new SockJS('http://localhost:8080/ws');
+        var socket = new SockJS('/ws');
+        var stompClient = Stomp.over(socket);
+        stompClient.connect({}, (frame) => {
+            // 注册发送消息
+            stompClient.subscribe('/channel/update', (msg) => {
+                console.log(JSON.parse(msg.body));
+            });
+
+        });
+    }
+
     /**
      * 在视图模型(ViewModel)展示前执行一些自定义代码逻辑
      * @param  {[object]} params                参数
@@ -273,6 +286,8 @@ export class ChatDirect {
         if (this.replyId) {
             history.replaceState(null, '', utils.removeUrlQuery('rid'));
         }
+
+        this._initSock();
 
         return Promise.all([chatService.loginUser(true).then((user) => {
                 this.loginUser = user;

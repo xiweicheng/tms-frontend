@@ -32,13 +32,14 @@ let serve = gulp.series(
                         res.setHeader('Access-Control-Allow-Origin', '*');
                         next();
                     },
-                    proxyMiddleware(['/free', '/admin', '/upload', '/lib'], {
+                    proxyMiddleware(['/free', '/admin', '/upload', '/lib', '/ws'], {
                         // target: 'http://translation.sh1.newtouch.com',
                         // target: 'http://tms000.sh1.newtouch.com',
                         // target: 'https://xiweicheng.com',
                         target: 'http://localhost:8080',
                         // target: 'http://localhost',
                         changeOrigin: true,
+                        ws: true,
                         secure: false
                     }),
                 ]
