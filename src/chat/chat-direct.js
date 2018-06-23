@@ -47,6 +47,29 @@ export class ChatDirect {
         });
 
         this.initSubscribeEvent();
+
+    }
+
+    _initSock() {
+        // FYI: https://stomp-js.github.io/stomp-websocket/codo/class/Client.html
+        // var socket = new SockJS('http://localhost:8080/ws');
+        let socket = new SockJS('/ws');
+        window.stompClient = Stomp.over(socket);
+        // window.stompClient.debug = () => {};
+        stompClient.debug = (msg) => { console.log(msg) };
+        window.stompClient.connect({}, (frame) => {
+            // 注册发送消息
+            stompClient.subscribe('/channel/update', (msg) => {
+                ea.publish(nsCons.EVENT_WS_CHANNEL_UPDATE, JSON.parse(msg.body));
+            });
+            stompClient.subscribe('/channel/online', (msg) => {
+                ea.publish(nsCons.EVENT_WS_CHANNEL_ONLINE, JSON.parse(msg.body));
+            });
+        }, (err) => {
+            utils.errorAutoTry(() => {
+                this._initSock();
+            });
+        });
     }
 
     doResize() {
@@ -676,6 +699,8 @@ export class ChatDirect {
 
         this.initHotkeys();
         this.initFocusedComment();
+
+        this._initSock();
 
         $(this.scrollbarRef).on('mouseenter', '.em-chat-content-item', (event) => {
             event.preventDefault();
