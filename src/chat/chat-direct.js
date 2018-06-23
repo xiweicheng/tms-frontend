@@ -183,6 +183,18 @@ export class ChatDirect {
 
         });
 
+        this.subscribe13 = ea.subscribe(nsCons.EVENT_WS_CHANNEL_UPDATE, (payload) => {
+
+            // 频道聊天
+            if (this.channel && (payload.username != this.loginUser.username)) {
+                if ((payload.cmd == 'R') && (payload.id == this.channel.id)) {
+                    console.log('ws: poll reset');
+                    poll.reset();
+                }
+            }
+
+        });
+
     }
 
     updateNotify(chat, msg, message) {
@@ -236,22 +248,10 @@ export class ChatDirect {
         this.subscribe10.dispose();
         this.subscribe11.dispose();
         this.subscribe12.dispose();
+        this.subscribe13.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();
-    }
-
-    _initSock() {
-        // var socket = new SockJS('http://localhost:8080/ws');
-        var socket = new SockJS('/ws');
-        var stompClient = Stomp.over(socket);
-        stompClient.connect({}, (frame) => {
-            // 注册发送消息
-            stompClient.subscribe('/channel/update', (msg) => {
-                console.log(JSON.parse(msg.body));
-            });
-
-        });
     }
 
     /**
@@ -286,8 +286,6 @@ export class ChatDirect {
         if (this.replyId) {
             history.replaceState(null, '', utils.removeUrlQuery('rid'));
         }
-
-        this._initSock();
 
         return Promise.all([chatService.loginUser(true).then((user) => {
                 this.loginUser = user;

@@ -7,6 +7,7 @@ export class App {
     constructor() {
         this.init();
         this.initCalendar();
+        this._initSock();
 
         this.subscribe = ea.subscribe(nsCons.EVENT_APP_ROUTER_NAVIGATE, (payload) => {
             this.router && this.router.navigate(`${payload.to}`);
@@ -61,6 +62,27 @@ export class App {
      */
     unbind() {
         this.subscribe.dispose();
+    }
+
+    _initSock() {
+        // FYI: https://stomp-js.github.io/stomp-websocket/codo/class/Client.html
+        // var socket = new SockJS('http://localhost:8080/ws');
+        let socket = new SockJS('/ws');
+        window.stompClient = Stomp.over(socket);
+        window.stompClient.debug = () => {};
+        // stompClient.debug = (msg) => { console.log(msg) };
+        window.stompClient.connect({}, (frame) => {
+            // 注册发送消息
+            stompClient.subscribe('/channel/update', (msg) => {
+                // console.log(JSON.parse(msg.body));
+                ea.publish(nsCons.EVENT_WS_CHANNEL_UPDATE, JSON.parse(msg.body));
+            });
+
+        }, (err) => {
+            utils.errorAutoTry(() => {
+                this._initSock();
+            });
+        });
     }
 
     init() {

@@ -113,15 +113,16 @@ export class CommonUtils {
      * @param  {Function} callback 重试回调
      * @return {[type]}            [description]
      */
-    errorAutoTry(callback, time) {
+    errorAutoTry(callback, time, msg) {
 
         if (this.isRunning || this.isLoginPage()) {
             return;
         }
 
         let cnt = time ? time : 10;
+        let err = msg ? msg : `网络连接错误`;
         let timer = null;
-        let $t = toastr.error(`网络连接错误,${cnt}秒后自动重试!`, null, {
+        let $t = toastr.error(`${err},${cnt}秒后自动重试!`, null, {
             "closeButton": false,
             "timeOut": "0",
             "preventDuplicates": false,
@@ -140,7 +141,7 @@ export class CommonUtils {
                 callback && callback();
                 return;
             }
-            $t && $t.find('.toast-message').text(`网络连接错误,${cnt}秒后自动重试!`);
+            $t && $t.find('.toast-message').text(`${err},${cnt}秒后自动重试!`);
             cnt--;
         }, 1000);
     }
