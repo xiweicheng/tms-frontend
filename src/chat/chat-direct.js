@@ -63,7 +63,20 @@ export class ChatDirect {
                 ea.publish(nsCons.EVENT_WS_CHANNEL_UPDATE, JSON.parse(msg.body));
             });
             stompClient.subscribe('/channel/online', (msg) => {
-                ea.publish(nsCons.EVENT_WS_CHANNEL_ONLINE, JSON.parse(msg.body));
+                let online = JSON.parse(msg.body);
+                ea.publish(nsCons.EVENT_WS_CHANNEL_ONLINE, online);
+                _.each(this.users, user => {
+                    if (user.username == online.username) {
+                        if (online.cmd == 'ON') {
+                            user.onlineStatus = 'Online';
+                            user.onlineDate = new Date().getTime();
+                        } else if (online.cmd == 'OFF') {
+                            user.onlineStatus = 'Offline';
+                            user.onlineDate = null;
+                        }
+                        return false;
+                    }
+                });
             });
         }, (err) => {
             utils.errorAutoTry(() => {
