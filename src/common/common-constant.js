@@ -58,6 +58,7 @@ window.nsCons = {
     EVENT_BLOG_COMMENT_CHANGED: 'event_blog_comment_changed',
     EVENT_WS_CHANNEL_UPDATE: 'event_ws_channel_update',
     EVENT_WS_CHANNEL_ONLINE: 'event_ws_channel_online',
+    EVENT_WS_DIRECT_UPDATE: 'event_ws_direct_update',
     EVENT_AUDIO_ALERT: 'event_audio_alert',
     ACTION_TYPE_SEARCH: 'action_type_search',
     ACTION_TYPE_STOW: 'action_type_stow',

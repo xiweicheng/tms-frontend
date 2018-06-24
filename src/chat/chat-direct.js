@@ -71,12 +71,19 @@ export class ChatDirect {
                             user.onlineStatus = 'Online';
                             user.onlineDate = new Date().getTime();
                         } else if (online.cmd == 'OFF') {
-                            user.onlineStatus = 'Offline';
-                            user.onlineDate = null;
+                            delete user['onlineStatus'];
+                            delete user['onlineDate'];
+                            // user.onlineStatus = 'Offline';
+                            // user.onlineDate = null;
                         }
                         return false;
                     }
                 });
+                this.users = [...this.users];
+            });
+            stompClient.subscribe('/user/direct/update', (msg) => {
+                let body = JSON.parse(msg.body);
+                ea.publish(nsCons.EVENT_WS_DIRECT_UPDATE, body);
             });
         }, (err) => {
             utils.errorAutoTry(() => {
@@ -222,8 +229,8 @@ export class ChatDirect {
         this.subscribe13 = ea.subscribe(nsCons.EVENT_WS_CHANNEL_UPDATE, (payload) => {
 
             // 频道聊天
-            if (this.channel && (payload.username != this.loginUser.username)) {
-                if (payload.id == this.channel.id) {
+            if (payload.username != this.loginUser.username) {
+                if (this.channel && (payload.id == this.channel.id)) {
                     if (payload.cmd == 'R') {
                         console.log('ws: poll reset');
                         poll.reset();
@@ -233,6 +240,8 @@ export class ChatDirect {
                         let channel = _.find(this.channels, { id: payload.id });
                         if (channel) {
                             channel.newMsgCnt = _.isNumber(channel.newMsgCnt) ? (channel.newMsgCnt + 1) : 1;
+
+                            this.updateNotifyChannel(null, `【${channel.title ? channel.title : channel.name}】频道有新消息，请注意关注！`);
                         }
                     }
                 }
@@ -240,6 +249,77 @@ export class ChatDirect {
 
         });
 
+        this.subscribe14 = ea.subscribe(nsCons.EVENT_WS_DIRECT_UPDATE, (payload) => {
+
+            let updater = utils.getUser(payload.username);
+            let updaterName = updater ? (updater.name ? updater.name : updater.username) : '';
+
+            // 私聊聊天
+            if (this.user && (this.user.username == payload.username)) {
+                if (payload.cmd == 'C') {
+                    console.log('ws: poll reset');
+                    poll.reset();
+                } else if (payload.cmd == 'U') {
+                    $.get('/admin/chat/direct/get', { id: payload.id }, (data) => {
+                        let chat = _.find(this.chats, { id: payload.id });
+                        chat && (_.extend(chat, data.data));
+
+                        this.updateNotifyDirect(chat, `【${updaterName}】更新了消息[#${payload.id}]的消息内容，请注意关注！`);
+                    });
+                } else if (payload.cmd == 'D') {
+                    this.chats = _.reject(this.chats, { id: payload.id });
+                }
+            } else {
+                let user = _.find(this.users, { username: payload.username });
+                if (user) {
+                    user.newMsgCnt = _.isNumber(user.newMsgCnt) ? (user.newMsgCnt + 1) : 1;
+
+                    this.updateNotifyDirect(null, `【${updaterName}】有私聊到您的新消息，请注意关注！`);
+                }
+            }
+
+        });
+
+    }
+
+    updateNotifyDirect(chat, message) {
+        let alarm = utils.getAlarm();
+        if (!alarm.off && chat) this.scrollToAfterImgLoaded(chat.id);
+
+        toastr.success(message);
+
+        if (!alarm.off && alarm.news) {
+            push.create('TMS沟通私聊消息通知', {
+                body: message,
+                icon: {
+                    x16: 'img/tms-x16.ico',
+                    x32: 'img/tms-x32.png'
+                },
+                timeout: 5000
+            });
+
+            alarm.audio && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
+        }
+    }
+
+    updateNotifyChannel(chat, message) {
+        let alarm = utils.getAlarm();
+        if (!alarm.off && chat) this.scrollToAfterImgLoaded(chat.id);
+
+        toastr.success(message);
+
+        if (!alarm.off && alarm.news) {
+            push.create('TMS沟通频道消息通知', {
+                body: message,
+                icon: {
+                    x16: 'img/tms-x16.ico',
+                    x32: 'img/tms-x32.png'
+                },
+                timeout: 5000
+            });
+
+            alarm.audio && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
+        }
     }
 
     updateNotify(chat, msg, message) {
@@ -252,24 +332,7 @@ export class ChatDirect {
                 let isOwn = msg.username == this.loginUser.username;
 
                 if (!isOwn && message) {
-
-                    let alarm = utils.getAlarm();
-                    if (!alarm.off) this.scrollToAfterImgLoaded(chat.id);
-
-                    toastr.success(message);
-
-                    if (!alarm.off && alarm.news) {
-                        push.create('TMS沟通频道消息通知', {
-                            body: message,
-                            icon: {
-                                x16: 'img/tms-x16.ico',
-                                x32: 'img/tms-x32.png'
-                            },
-                            timeout: 5000
-                        });
-
-                        alarm.audio && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
-                    }
+                    this.updateNotifyChannel(chat, message);
                 }
                 // TODO 自动滚动定位到更新消息，或者显示更新图标，让用户手动触发定位到更新消息
             });
@@ -294,6 +357,7 @@ export class ChatDirect {
         this.subscribe11.dispose();
         this.subscribe12.dispose();
         this.subscribe13.dispose();
+        this.subscribe14.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();
@@ -351,6 +415,8 @@ export class ChatDirect {
                     if (this.user) {
                         let name = this.user ? (this.user.name ? this.user.name : this.user.username) : this.chatTo;
                         routeConfig.navModel.setTitle(`${name} | 私聊 | TMS`);
+
+                        this.user.newMsgCnt = 0;
 
                         this.listChatDirect(true);
                     } else {
@@ -677,14 +743,23 @@ export class ChatDirect {
 
         let alarm = utils.getAlarm();
         if (!hasOwn && !alarm.off && alarm.news) {
-            push.create('TMS沟通频道消息通知', {
+            this.channel && (push.create('TMS沟通频道消息通知', {
                 body: `频道[${this.channel.title}]有新消息了!`,
                 icon: {
                     x16: 'img/tms-x16.ico',
                     x32: 'img/tms-x32.png'
                 },
                 timeout: 5000
-            });
+            }));
+
+            this.user && (push.create('TMS沟通私聊消息通知', {
+                body: `用户[${this.user.name ? this.user.name : this.user.username}]有新消息了!`,
+                icon: {
+                    x16: 'img/tms-x16.ico',
+                    x32: 'img/tms-x32.png'
+                },
+                timeout: 5000
+            }));
 
             alarm.audio && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
         }
