@@ -215,7 +215,7 @@ export class ChatDirect {
                     if (msg.action == 'Delete') {
                         this.chats = _.reject(this.chats, { id: chat.id });
                     } else {
-                        this.updateNotify(chat, msg, `【${updaterName}】更新了消息[#${chat.id}]的消息内容，请注意关注！`);
+                        this.updateNotify(chat, msg, `【${updaterName}】更新了消息[#${chat.id}]的内容，请注意关注！`);
                     }
                 } else if (msg.type == 'Label') {
                     this.updateNotify(chat, msg, (msg.action != 'Delete' ? `【${updaterName}】更新了消息[#${chat.id}]的表情标签，请注意关注！` : null));
@@ -241,7 +241,7 @@ export class ChatDirect {
                         if (channel) {
                             channel.newMsgCnt = _.isNumber(channel.newMsgCnt) ? (channel.newMsgCnt + 1) : 1;
 
-                            this.updateNotifyChannel(null, `【${channel.title ? channel.title : channel.name}】频道有新消息，请注意关注！`);
+                            this.updateNotifyChannel(null, `【${channel.title ? channel.title : channel.name}】频道有消息更新，请注意关注！`);
                         }
                     }
                 }
@@ -264,7 +264,7 @@ export class ChatDirect {
                         let chat = _.find(this.chats, { id: payload.id });
                         chat && (_.extend(chat, data.data));
 
-                        this.updateNotifyDirect(chat, `【${updaterName}】更新了消息[#${payload.id}]的消息内容，请注意关注！`);
+                        this.updateNotifyDirect(chat, `【${updaterName}】更新了消息[#${payload.id}]的内容，请注意关注！`);
                     });
                 } else if (payload.cmd == 'D') {
                     this.chats = _.reject(this.chats, { id: payload.id });
@@ -274,7 +274,7 @@ export class ChatDirect {
                 if (user) {
                     user.newMsgCnt = _.isNumber(user.newMsgCnt) ? (user.newMsgCnt + 1) : 1;
 
-                    this.updateNotifyDirect(null, `【${updaterName}】有私聊到您的新消息，请注意关注！`);
+                    this.updateNotifyDirect(null, `【${updaterName}】私聊有消息更新，请注意关注！`);
                 }
             }
 
