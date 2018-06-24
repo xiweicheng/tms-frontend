@@ -223,9 +223,18 @@ export class ChatDirect {
 
             // 频道聊天
             if (this.channel && (payload.username != this.loginUser.username)) {
-                if ((payload.cmd == 'R') && (payload.id == this.channel.id)) {
-                    console.log('ws: poll reset');
-                    poll.reset();
+                if (payload.id == this.channel.id) {
+                    if (payload.cmd == 'R') {
+                        console.log('ws: poll reset');
+                        poll.reset();
+                    }
+                } else {
+                    if (payload.cmd == 'R') {
+                        let channel = _.find(this.channels, { id: payload.id });
+                        if (channel) {
+                            channel.newMsgCnt = _.isNumber(channel.newMsgCnt) ? (channel.newMsgCnt + 1) : 1;
+                        }
+                    }
                 }
             }
 
@@ -366,6 +375,8 @@ export class ChatDirect {
 
                     if (this.channel) {
                         routeConfig.navModel.setTitle(`${this.channel.title} | 频道 | TMS`);
+
+                        this.channel.newMsgCnt = 0;
 
                         this.listChatChannel(true);
                     } else {

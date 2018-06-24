@@ -26,6 +26,7 @@ let serve = gulp.series(
             open: false,
             port: 9000,
             logLevel: 'silent',
+            ghostMode: false,
             server: {
                 baseDir: ['.'],
                 middleware: [historyApiFallback(), function(req, res, next) {

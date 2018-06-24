@@ -105,7 +105,7 @@ export class SortUsersValueConverter {
         if (_.isArray(value) && username) {
             let user = _.find(value, { username: username });
             if (user) {
-                return [user, ..._.reject(value, { username: username })];
+                return [user, ..._.sortBy(_.reject(value, { username: username }), 'onlineStatus')];
             }
         }
         return value;
