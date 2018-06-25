@@ -58,6 +58,8 @@ export class ChatDirect {
         // window.stompClient.debug = () => {};
         stompClient.debug = (msg) => { console.log(msg) };
         window.stompClient.connect({}, (frame) => {
+            // 同步在线用户
+            this.getOnlineUsers();
             // 注册发送消息
             stompClient.subscribe('/channel/update', (msg) => {
                 ea.publish(nsCons.EVENT_WS_CHANNEL_UPDATE, JSON.parse(msg.body));
@@ -73,8 +75,6 @@ export class ChatDirect {
                         } else if (online.cmd == 'OFF') {
                             delete user['onlineStatus'];
                             delete user['onlineDate'];
-                            // user.onlineStatus = 'Offline';
-                            // user.onlineDate = null;
                         }
                         return false;
                     }
@@ -89,6 +89,24 @@ export class ChatDirect {
             utils.errorAutoTry(() => {
                 this._initSock();
             });
+        });
+    }
+
+    getOnlineUsers() {
+        $.get('/admin/user/online', (data) => {
+            if (data.success) {
+                let onlines = data.data;
+                _.each(this.users, user => {
+                    let online = _.find(onlines, { username: user.username });
+                    if (online) {
+                        user.onlineStatus = 'Online';
+                        user.onlineDate = online.date;
+                    } else {
+                        delete user['onlineStatus'];
+                        delete user['onlineDate'];
+                    }
+                });
+            }
         });
     }
 
