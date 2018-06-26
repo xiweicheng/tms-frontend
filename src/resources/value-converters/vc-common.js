@@ -77,6 +77,16 @@ export class ParseMdValueConverter {
     }
 }
 
+/**
+ * 在线状态值转换器
+ */
+export class OnlineValueConverter {
+    toView(value, onlines) {
+        if (!value || !onlines) return '';
+        return _.some(onlines, { username: value.username }) ? '(在线)' : '';
+    }
+}
+
 export class SortValueConverter {
     toView(value, prop, reverse = false) {
         return _.isArray(value) ? (!reverse ? _.sortBy(value, prop) : _.reverse(_.sortBy(value, prop))) : value;
@@ -105,7 +115,7 @@ export class SortUsersValueConverter {
         if (_.isArray(value) && username) {
             let user = _.find(value, { username: username });
             if (user) {
-                return [user, ..._.sortBy(_.reject(value, { username: username }), ['onlineStatus', 'name', 'username'])];
+                return [user, ..._.sortBy(_.reject(value, { username: username }), ['onlineStatus', 'name'])];
             }
         }
         return value;

@@ -39,7 +39,7 @@
                         <tbody>
                             <tr repeat.for="item of channel.members | sort:'username'">
                                 <td><i class="at icon" style="margin-right: 0;"></i>${item.username}</td>
-                                <td>${item.name}</td>
+                                <td>${item.name} ${item | online:onlines}</td>
                                 <td>${item.mails}</td>
                                 <td title="${item.lastLoginDate | date}">${item.lastLoginDate | timeago}</td>
                                 <td if.bind="item.enabled">

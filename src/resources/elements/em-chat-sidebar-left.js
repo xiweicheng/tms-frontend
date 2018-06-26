@@ -8,6 +8,7 @@ export class EmChatSidebarLeft {
     @bindable channels;
     @bindable chatTo;
     @bindable isAt;
+    @bindable onlines;
     filter = '';
     isSuper = nsCtx.isSuper;
     isMobile = utils.isMobile();

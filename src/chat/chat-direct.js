@@ -25,6 +25,7 @@ export class ChatDirect {
     users = [];
     channels = [];
     chatTo = null;
+    onlines = [];
     isLeftBarHide = true;
 
     /**
@@ -95,9 +96,9 @@ export class ChatDirect {
     getOnlineUsers() {
         $.get('/admin/user/online', (data) => {
             if (data.success) {
-                let onlines = data.data;
+                this.onlines = data.data;
                 _.each(this.users, user => {
-                    let online = _.find(onlines, { username: user.username });
+                    let online = _.find(this.onlines, { username: user.username });
                     if (online) {
                         user.onlineStatus = 'Online';
                         user.onlineDate = online.date;

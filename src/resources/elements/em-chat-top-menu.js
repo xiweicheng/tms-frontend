@@ -11,6 +11,7 @@ export class EmChatTopMenu {
     @bindable chatId;
     @bindable chatTo;
     @bindable isAt;
+    @bindable onlines;
     isRightSidebarShow = false;
     activeType = ''; // 触发激活的操作类型: search | stow | at | attach
 

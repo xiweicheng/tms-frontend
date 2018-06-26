@@ -5,6 +5,7 @@ export class EmChatChannelMembersMgr {
 
     @bindable channel;
     @bindable users;
+    @bindable onlines;
 
     @bindable name;
     @bindable title;
