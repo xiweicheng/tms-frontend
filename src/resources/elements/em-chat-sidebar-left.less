@@ -31,10 +31,10 @@
             margin-top: 10px;
             padding-top: 5px;
             box-shadow: 0px -1px 1px -1px rgba(65, 131, 196, 0.5);
-            > .item {
+            >.item {
                 padding-left: 16px;
                 border-radius: 0;
-                > .icon+.content {
+                >.icon+.content {
                     padding: 0;
                 }
                 &.active {
@@ -47,6 +47,12 @@
                     text-decoration: line-through;
                     font-style: italic;
                 }
+                .ui.empty.circular.label {
+                    width: 0.1em;
+                    height: 0.1em;
+                    top: 10px;
+                    left: 20px;
+                }
             }
         }
         .tms-name {
@@ -55,7 +61,13 @@
             text-overflow: ellipsis;
             max-width: 160px;
         }
-        .tms-users {}
+        .tms-users {
+            .ui.list {
+                a.item {
+                    position: relative;
+                }
+            }
+        }
         .tms-channels {
             .ui.list {
                 a.item {
@@ -90,7 +102,7 @@
             color: @sidebar-font-color;
         }
         .tms-header {
-            > input {
+            >input {
                 background-color: transparent;
                 border: 1px rgba(103, 104, 104, 0.5) solid;
                 font-size: 12px;

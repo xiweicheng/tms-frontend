@@ -327,6 +327,7 @@ export class EmChatTopMenu {
     }
 
     logoutHandler() {
+        window.stompClient.disconnect(() => {});
         $.post('/admin/logout').always(() => {
             utils.redirect2Login();
             window.location.reload();

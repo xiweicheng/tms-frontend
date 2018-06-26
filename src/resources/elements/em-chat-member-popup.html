@@ -44,7 +44,7 @@
                             </div>
                             <div class="item" style="padding-top: 5px!important; padding-bottom: 5px!important;">
                                 <div class="content">
-                                    <a class="header" style="display: inline;">状态</a> ${member.enabled ? '启用中' : '已禁用'}
+                                    <a class="header" style="display: inline;">状态</a> ${member.enabled ? '启用中' : '已禁用'} ${member.onlineStatus == 'Online' ? '(在线)' : ''} ${member.onlineDate | timeago}${member.onlineDate ? '上线' : ''}
                                 </div>
                             </div>
                             <div class="item" style="padding-top: 5px!important; padding-bottom: 5px!important;">
