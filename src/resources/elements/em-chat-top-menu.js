@@ -37,6 +37,7 @@ export class EmChatTopMenu {
 
     chatToChanged() {
         $(this.chatToDropdownRef).dropdown('set selected', this.chatId).dropdown('hide');
+        _.delay(() => $(this.chatToDropdownRef).dropdown('set selected', this.chatId).dropdown('hide'), 1000); // 解决在线状态没有显示问题
     }
 
     channelChanged() {

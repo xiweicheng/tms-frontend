@@ -94,7 +94,7 @@ export class Config {
     initToastr() {
 
         // toastr弹出消息提示插件全局配置设置
-        toastr.options.positionClass = 'toast-bottom-center';
+        toastr.options.positionClass = 'toast-top-center';
         toastr.options.preventDuplicates = true;
 
         return this;

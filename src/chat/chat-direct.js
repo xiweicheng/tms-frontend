@@ -275,6 +275,9 @@ export class ChatDirect {
 
             // 私聊聊天
             if (this.user && (this.user.username == payload.username)) {
+
+                if (payload.username == this.loginUser.username) return;
+
                 if (payload.cmd == 'C') {
                     console.log('ws: poll reset');
                     poll.reset();
