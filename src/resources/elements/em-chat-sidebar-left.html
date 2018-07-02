@@ -17,7 +17,7 @@
                         <a repeat.for="item of channels | sort:'title' | sortChannels" click.delegate="channelHandler()" title="${item.title}(${item.name})" show.bind="!item.hidden" href="#/chat/${item.name}" class="item ${(!isAt && item.name == chatTo) ? 'active' : ''}">
                             <i class="hashtag icon my-theme"></i>
                             <div class="content">
-                                <div class="tms-name my-theme">${item.title}</div>
+                                <div class="tms-name my-theme">${item.title} (${item.members.length})</div>
                                 <div show.bind="item.newMsgCnt && item.newMsgCnt > 0" class="floating ui red empty circular label"></div>
                             </div>
                             <div class="actions">
@@ -45,7 +45,7 @@
                 <div class="ui divider"></div>
                 <div class="tms-users">
                     <div class="title">
-                        <h4 class="ui header my-theme"><i class="user icon my-theme"></i>用户 (${onlines.length} / ${users.length})</h4>
+                        <h4 class="ui header my-theme"><i class="user icon my-theme"></i>用户 (${users | count:'Online':'onlineStatus'} / ${users.length})</h4>
                         <!-- <i class="plus link circular icon"></i> -->
                     </div>
                     <div ref="userListRef" class="ui middle aligned selection list">
