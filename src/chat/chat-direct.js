@@ -259,6 +259,7 @@ export class ChatDirect {
                         let channel = _.find(this.channels, { id: payload.id });
                         if (channel) {
                             channel.newMsgCnt = _.isNumber(channel.newMsgCnt) ? (channel.newMsgCnt + 1) : 1;
+                            this.saveNewMsgCnt(channel.name, channel.newMsgCnt);
 
                             this.updateNotifyChannel(null, `【${channel.title ? channel.title : channel.name}】频道有消息更新，请注意关注！`);
                         }
@@ -295,6 +296,7 @@ export class ChatDirect {
                 let user = _.find(this.users, { username: payload.username });
                 if (user) {
                     user.newMsgCnt = _.isNumber(user.newMsgCnt) ? (user.newMsgCnt + 1) : 1;
+                    this.saveNewMsgCnt(`@${user.username}`, user.newMsgCnt);
 
                     this.updateNotifyDirect(null, `【${updaterName}】私聊有消息更新，请注意关注！`);
                 }
@@ -302,6 +304,52 @@ export class ChatDirect {
 
         });
 
+    }
+
+    getNewMsgCnt() {
+        if (!window.localStorage) return {};
+
+        let item = localStorage.getItem(nsCons.KEY_CHAT_NEW_MSG_CNT);
+        if (!item) return {};
+
+        item = JSON.parse(item);
+
+        if (!this.loginUser) return {};
+
+        let loginItem = item[this.loginUser.username];
+        if (!loginItem) return {};
+
+        return loginItem;
+    }
+
+    saveNewMsgCnt(chatTo, cnt) {
+        if (!window.localStorage) return;
+
+        let item = localStorage.getItem(nsCons.KEY_CHAT_NEW_MSG_CNT);
+        item = !item ? {} : JSON.parse(item);
+
+        let loginItem = item[this.loginUser.username];
+        loginItem = loginItem ? loginItem : {};
+        item[this.loginUser.username] = loginItem;
+
+        loginItem[chatTo] = cnt;
+        localStorage.setItem(nsCons.KEY_CHAT_NEW_MSG_CNT, JSON.stringify(item));
+    }
+
+    clearNewMsgCnt(chatTo) {
+        if (!window.localStorage) return;
+
+        let item = localStorage.getItem(nsCons.KEY_CHAT_NEW_MSG_CNT);
+        if (!item) return;
+
+        item = JSON.parse(item);
+
+        let loginItem = item[this.loginUser.username];
+        if (!loginItem) return;
+
+        delete loginItem[chatTo];
+
+        localStorage.setItem(nsCons.KEY_CHAT_NEW_MSG_CNT, JSON.stringify(item));
     }
 
     updateNotifyDirect(chat, message) {
@@ -418,6 +466,8 @@ export class ChatDirect {
             history.replaceState(null, '', utils.removeUrlQuery('rid'));
         }
 
+        let newMsgCntItem = localStorage ? localStorage.getItem(nsCons.KEY_CHAT_NEW_MSG_CNT) : {};
+
         return Promise.all([chatService.loginUser(true).then((user) => {
                 this.loginUser = user;
                 nsCtx.loginUser = user;
@@ -428,6 +478,14 @@ export class ChatDirect {
                 this.users = users;
                 nsCtx.users = users;
                 window.tmsUsers = users;
+
+                let newMsgCntItem = this.getNewMsgCnt();
+                _.each(this.users, u => {
+                    if (newMsgCntItem[`@${u.username}`]) {
+                        u.newMsgCnt = newMsgCntItem[`@${u.username}`];
+                    }
+                });
+
                 if (this.isAt) {
                     this.channel = null;
                     this.user = _.find(this.users, {
@@ -436,9 +494,10 @@ export class ChatDirect {
 
                     if (this.user) {
                         let name = this.user ? (this.user.name ? this.user.name : this.user.username) : this.chatTo;
-                        routeConfig.navModel.setTitle(`${name} | 私聊 | TMS`);
+                        routeConfig.navModel.setTitle(`${(this.loginUser && (this.loginUser.username == this.user.username)) ? '我' : name} | 私聊 | TMS`);
 
                         this.user.newMsgCnt = 0;
+                        this.clearNewMsgCnt(`@${this.user.username}`);
 
                         this.listChatDirect(true);
                     } else {
@@ -455,6 +514,14 @@ export class ChatDirect {
             chatService.listChannels(true).then((channels) => {
                 this.channels = channels;
                 nsCtx.channels = channels;
+
+                let newMsgCntItem = this.getNewMsgCnt();
+                _.each(this.channels, c => {
+                    if (newMsgCntItem[`${c.name}`]) {
+                        c.newMsgCnt = newMsgCntItem[`${c.name}`];
+                    }
+                });
+
                 if (!this.isAt) {
                     this.user = null;
                     this.channel = _.find(this.channels, {
@@ -465,6 +532,7 @@ export class ChatDirect {
                         routeConfig.navModel.setTitle(`${this.channel.title} | 频道 | TMS`);
 
                         this.channel.newMsgCnt = 0;
+                        this.clearNewMsgCnt(this.channel.name);
 
                         this.listChatChannel(true);
                     } else {

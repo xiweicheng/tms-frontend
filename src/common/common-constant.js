@@ -77,4 +77,5 @@ window.nsCons = {
     KEY_LOGIN_USERNAME: 'tms/login_username',
     KEY_BLOG_COMMON_SPACE: 'tms/blog/common_space',
     KEY_BLOG_SEARCH_RECENT: 'tms/blog/search_recent',
+    KEY_CHAT_NEW_MSG_CNT: 'tms/chat/new_msg_cnt',
 }
