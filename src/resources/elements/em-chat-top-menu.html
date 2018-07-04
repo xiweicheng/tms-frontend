@@ -48,7 +48,7 @@
                         <i class="users icon"></i> 频道 (${channels.length}) <i ref="createChannelRef" class="circular icon link plus"></i>
                     </div>
                     <a repeat.for="item of channels | sort:'title' | sortChannels" task.bind="initChatToDropdownHandler($last)" href="#/chat/${item.name}" class="item" title="${item.title}(${item.name})" data-value="${item.name}" data-id="${item.name}">
-                        <i class="hashtag icon"></i>${item.title ? item.title : item.name}
+                        <i class="hashtag icon"></i>${item.title ? item.title : item.name} (${item.members.length})
                         <!-- <div class="actions">
                             <div if.bind="item.owner.username == loginUser.username" ui-dropdown class="ui dropdown">
                                 <i class="large ellipsis horizontal icon"></i>

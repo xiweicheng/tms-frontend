@@ -3,7 +3,7 @@
     <div class="em-chat-todo" show.bind="actived.show == 'todo'">
         <div class="ui basic segment">
             <div class="ui big fluid icon input">
-                <input ref="todoInputRef" value.bind="title" type="text" keyup.delegate="addTodoKeyupHandler($event)" placeholder="输入待办事项...">
+                <input ref="todoInputRef" value.bind="title" type="text" keyup.delegate="addTodoKeyupHandler($event)" placeholder="输入个人待办事项...">
                 <i class="${(ajax && ajax.readyState != 4) ? 'spinner loading' : 'plus'} link icon" click.delegate="addTodoHandler()"></i>
             </div>
             <div class="filter-wrapper">
