@@ -58,6 +58,55 @@ export class EmChatTopMenu {
         }
     }
 
+    savePollUpdate(newAtCnt) {
+        if (!window.localStorage) return;
+
+        let item = localStorage.getItem(nsCons.KEY_CHAT_NEW_AT_MSG_CNT);
+        if (!item) {
+            item = {}
+        } else {
+            item = JSON.parse(item);
+        }
+
+        let my = item[this.loginUser.username];
+
+        if (!my) item[this.loginUser.username] = my = {};
+
+        if (newAtCnt) my.newAtCnt = newAtCnt;
+
+        localStorage.setItem(nsCons.KEY_CHAT_NEW_AT_MSG_CNT, JSON.stringify(item));
+    }
+
+    clearPollUpdate() {
+        if (!window.localStorage) return;
+
+        let item = localStorage.getItem(nsCons.KEY_CHAT_NEW_AT_MSG_CNT);
+        if (!item) return;
+
+        item = JSON.parse(item);
+        let my = item[this.loginUser.username];
+
+        if (!my) return;
+
+        delete my['newAtCnt'];
+
+        localStorage.setItem(nsCons.KEY_CHAT_NEW_AT_MSG_CNT, JSON.stringify(item));
+    }
+
+    getPollUpdate() {
+        if (!window.localStorage) return {};
+
+        let item = localStorage.getItem(nsCons.KEY_CHAT_NEW_AT_MSG_CNT);
+        if (!item) return {};
+
+        item = JSON.parse(item);
+        let my = item[this.loginUser.username];
+
+        if (!my) return {};
+
+        return my;
+    }
+
     /**
      * 构造函数
      */
@@ -76,6 +125,7 @@ export class EmChatTopMenu {
         this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_POLL_UPDATE, (payload) => {
             if (this.countAt !== null && this.newAtCnt <= 0) {
                 this.newAtCnt = payload.countAt - this.countAt;
+                this.savePollUpdate(this.newAtCnt);
             }
             this.countAt = payload.countAt;
             this.countMyRecentSchedule = payload.countMyRecentSchedule;
@@ -116,6 +166,10 @@ export class EmChatTopMenu {
     attached() {
         this.initHotkeys();
         this.initSearch();
+
+        // 还原记忆的新@消息数量
+        let pollData = this.getPollUpdate();
+        pollData.newAtCnt && (this.newAtCnt = pollData.newAtCnt);
     }
 
     initSearch() {
@@ -309,6 +363,8 @@ export class EmChatTopMenu {
             this.toggleRightSidebar();
             return;
         }
+
+        this.clearPollUpdate(); // 清除记忆的新@消息数量
 
         this.activeType = nsCons.ACTION_TYPE_AT;
         this.newAtCnt = 0;

@@ -78,4 +78,5 @@ window.nsCons = {
     KEY_BLOG_COMMON_SPACE: 'tms/blog/common_space',
     KEY_BLOG_SEARCH_RECENT: 'tms/blog/search_recent',
     KEY_CHAT_NEW_MSG_CNT: 'tms/chat/new_msg_cnt',
+    KEY_CHAT_NEW_AT_MSG_CNT: 'tms/chat/new_at_msg_cnt',
 }
