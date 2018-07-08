@@ -644,6 +644,7 @@ export class ChatDirect {
 
         $.get('/admin/chat/channel/listBy', data, (data) => {
             this.processChats(data);
+            this._getStowsAndPins();
         });
     }
 
@@ -818,6 +819,30 @@ export class ChatDirect {
             });
         }).always(() => {
             this.pollChatsOngoing = false;
+        });
+    }
+
+    _getStowsAndPins() {
+        if (this.isAt) return;
+        if (_.isEmpty(this.chats)) return;
+
+        $.get(`/admin/chat/channel/getStows`, {}, (data) => {
+            _.each(data.data, item => {
+                let chat = _.find(this.chats, { id: item.chatChannel.id });
+                if (chat != null) {
+                    chat._stowed = true;
+                    chat.stowId = item.id;
+                }
+            });
+        });
+        $.get(`/admin/chat/channel/pin/list`, { cid: this.channel.id }, (data) => {
+            _.each(data.data, item => {
+                let chat = _.find(this.chats, { id: item.chatChannel.id });
+                if (chat != null) {
+                    chat._pined = true;
+                    chat.pinId = item.id;
+                }
+            });
         });
     }
 

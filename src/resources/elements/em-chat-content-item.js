@@ -304,7 +304,7 @@ export class EmChatContentItem {
 
     stowHandler(item) {
 
-        if (item.isStow) {
+        if (item._stowed) {
             this.unStowHandler(item);
             return;
         }
@@ -312,7 +312,7 @@ export class EmChatContentItem {
         $.post('/admin/chat/channel/stow', {
             id: item.id
         }, (data, textStatus, xhr) => {
-            item.isStow = true;
+            item._stowed = true;
             if (data.success) {
                 item.stowId = data.data.id;
                 toastr.success('收藏消息成功!');
@@ -330,10 +330,10 @@ export class EmChatContentItem {
         $.post('/admin/chat/channel/removeStow', {
             id: item.stowId
         }, (data, textStatus, xhr) => {
-            item.isStow = false;
             item.stowId = '';
+            item._stowed = false;
             if (data.success) {
-                toastr.success('移除收藏消息成功!');
+                toastr.success('取消收藏消息成功!');
             } else {
                 // toastr.error(data.data, '移除收藏消息失败!');
             }
@@ -415,13 +415,13 @@ export class EmChatContentItem {
             id: item.id,
             cid: this.channel.id
         };
-        if (_.isUndefined(item.isPin)) {
+        if (!item._pined) {
             params.pin = true;
         }
         $.post('/admin/chat/channel/pin/toggle', params, (data, textStatus, xhr) => {
             if (data.success) {
                 toastr.success(`${data.code == 200 ? '固定频道消息成功!' : '解除固定频道消息成功!'}`);
-                item.isPin = (data.code == 200);
+                item._pined = (data.code == 200);
             } else {
                 toastr.error(data.data);
             }
