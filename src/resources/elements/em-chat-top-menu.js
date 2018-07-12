@@ -170,6 +170,10 @@ export class EmChatTopMenu {
         // 还原记忆的新@消息数量
         let pollData = this.getPollUpdate();
         pollData.newAtCnt && (this.newAtCnt = pollData.newAtCnt);
+
+        $(this.channelLinksDdRef).dropdown({
+            fullTextSearch: true
+        });
     }
 
     initSearch() {
@@ -524,10 +528,10 @@ export class EmChatTopMenu {
         window.location = `mailto:${this.chatUser.mails}`;
     }
 
-    channelLinksHandler(event) {
-        // event.stopImmediatePropagation();
-        // $(this.channelLinksDdRef).dropdown('toggle');
-    }
+    // channelLinksHandler(event) {
+    //     event.stopImmediatePropagation();
+    //     $(this.channelLinksDdRef).dropdown('toggle');
+    // }
 
     addChannelLinkHandler(event) {
         this.channelLinkMgrVm.show();

@@ -5,7 +5,7 @@
         <div class="item tms-item-header tms-chat-at">
             <div class="tms-title">${isAt ? '@ ' + chatUser.name : '# ' + channel.title}</div>
             <div class="tms-metadata">
-                <div if.bind="!isAt" click.trigger="channelLinksHandler($event)" ref="channelLinksDdRef" class="ui dropdown icon item tms-channel-links" ui-dropdown>
+                <div if.bind="!isAt" ref="channelLinksDdRef" class="ui dropdown icon item tms-channel-links">
                     <i title="当前频道外链" class="content icon"></i>
                     <div class="menu">
                         <div class="ui icon search input">
