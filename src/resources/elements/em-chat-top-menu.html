@@ -2,19 +2,18 @@
     <require from="./em-chat-top-menu.css"></require>
     <div class="ui top fixed menu tms-em-chat-top-menu">
         <a class="icon item toggle-bar" click.delegate="toggleLeftBarHandler()"><i class="large sidebar icon"></i></a>
-        <div ref="chatToDropdownRef" class="ui dropdown link item ${isActiveSearch ? 'tms-hide' : ''} tms-chat-at">
-            <span class="text"></span>
-            <i class="dropdown icon"></i>
+        <div class="item tms-item-header tms-chat-at">
+            <div class="tms-title">${isAt ? '@ ' + chatUser.name : '# ' + channel.title}</div>
             <div class="tms-metadata">
                 <div if.bind="!isAt" click.trigger="channelLinksHandler($event)" ref="channelLinksDdRef" class="ui dropdown icon item tms-channel-links" ui-dropdown>
                     <i title="当前频道外链" class="content icon"></i>
                     <div class="menu">
-                        <!-- <div class="ui icon search input">
+                        <div class="ui icon search input">
                             <i class="search icon"></i>
-                            <input type="text" placeholder="过滤外链...">
+                            <input type="text" placeholder="过滤查找...">
                         </div>
-                        <div class="divider"></div> -->
-                        <div class="header">
+                        <div class="divider"></div>
+                        <div class="header" style="position: relative;">
                             <i class="linkify icon"></i> 当前频道外链 <i click.trigger="addChannelLinkHandler($event)" title="添加频道外链" class="circular icon link plus"></i>
                         </div>
                         <div class="scrolling menu">
@@ -24,8 +23,6 @@
                     </div>
                 </div>
                 <a if.bind="!isAt" class="item" click.trigger="viewOrMgrUsersHandler($event)" title="频道用户(${channel.members.length})"><i class="users icon"></i></a>
-                <!-- <a if.bind="!isAt && channel.privated" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="私有频道"><i class="lock icon"></i></a> -->
-                <!-- <a if.bind="!isAt && !channel.privated" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="公开频道"><i class="unlock icon"></i></a> -->
                 <a if.bind="!isAt" class="item ${isRightSidebarShow && (activeType == ACTION_TYPE_PIN) ? 'active' : ''}" click.trigger="showPinHandler($event)" title="固定消息查看(ctrl+click刷新)"><i class="${ajaxPin && ajaxPin.readyState != 4 ? 'spinner loading' : ''} pin icon"></i></a>
                 <a if.bind="!isAt" class="item tms-channel-info" click.trigger="channelInfoHandler($event)" title="${channel.description} (${channel.creator.name ? channel.creator.name : channel.creator.username} 创建于 ${channel.createDate | timeago})"><i class="info circle icon"></i></a>
                 <a if.bind="isAt && chatUser.enabled" class="item" click.trigger="stopImmediatePropagationHandler($event)" title="启用中"><i class="heart icon"></i></a>
@@ -33,49 +30,6 @@
                 <a if.bind="isAt" class="item" click.trigger="mailToHandler($event)" title="${chatUser.mails}"><i class="mail icon"></i></a>
                 <a if.bind="isAt && chatUser.lastLoginDate" class="item tms-user-info" click.trigger="userInfoHandler($event)" title="从IP[${chatUser.loginRemoteAddress}]登录(${chatUser.lastLoginDate | timeago})"><i class="info circle icon"></i></a>
                 <a if.bind="isAt && !chatUser.lastLoginDate" class="item tms-user-info" click.trigger="userInfoHandler($event)" title="该用户可能比较懒,暂无登录记录!"><i class="info circle icon"></i></a>
-            </div>
-            <div class="menu">
-                <div class="ui icon search input">
-                    <i class="search icon"></i>
-                    <input ref="filterChatToUser" type="text" placeholder="过滤沟通频道|用户">
-                </div>
-                <div class="divider"></div>
-                <div class="header">
-                    <i class="filter icon"></i> 切换沟通频道|用户(Ctrl+k)
-                </div>
-                <div class="scrolling menu">
-                    <div class="header">
-                        <i class="users icon"></i> 频道 (${channels.length}) <i ref="createChannelRef" class="circular icon link plus"></i>
-                    </div>
-                    <a repeat.for="item of channels | sort:'title' | sortChannels" task.bind="initChatToDropdownHandler($last)" href="#/chat/${item.name}" class="item" title="${item.title}(${item.name})" data-value="${item.name}" data-id="${item.name}">
-                        <i class="hashtag icon"></i>${item.title ? item.title : item.name} (${item.members.length})
-                        <!-- <div class="actions">
-                            <div if.bind="item.owner.username == loginUser.username" ui-dropdown class="ui dropdown">
-                                <i class="large ellipsis horizontal icon"></i>
-                                <div class="left menu">
-                                    <div class="item" click.trigger="membersMgrHandler(item, $event)">成员管理</div>
-                                    <div class="item" click.trigger="subscribeHandler(item)">${(item.isSubscribed || isSubscribed(item)) ? '取消订阅' : '订阅频道'}</div>
-                                    <div class="item" click.trigger="editHandler(item, $event)">编辑</div>
-                                    <div class="item" click.trigger="delHandler(item, $event)">删除</div>
-                                </div>
-                            </div>
-                            <div if.bind="item.owner.username != loginUser.username" ui-dropdown class="ui dropdown">
-                                <i class="large ellipsis horizontal icon"></i>
-                                <div class="left menu">
-                                    <div class="item" click.trigger="membersShowHandler(item, $event)">成员查看</div>
-                                    <div class="item" click.trigger="subscribeHandler(item)">${(item.isSubscribed || isSubscribed(item)) ? '取消订阅' : '订阅频道'}</div>
-                                    <div class="item" click.trigger="leaveHandler(item, $event)">离开</div>
-                                </div>
-                            </div>
-                        </div> -->
-                    </a>
-                    <div class="header">
-                        <i class="user icon"></i> 用户 (${users.length})
-                    </div>
-                    <a repeat.for="item of users | sortUsers:loginUser.username" task.bind="initChatToDropdownHandler($last)" href="#/chat/@${item.username}" class="item ${!item.enabled ? 'disabled-user' : ''}" title="${item.name}(@${item.username})" data-value="@${item.username}" data-id="@${item.username}">
-                        <i style="font-weight: bold;" class="at icon"></i>${item.username == loginUser.username ? '我' : (item.name ? item.name : item.username)} ${item | online:onlines}
-                    </a>
-                </div>
             </div>
         </div>
         <div class="right menu">

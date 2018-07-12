@@ -157,9 +157,9 @@ export class EmChatSidebarLeft {
         });
     }
 
-    switchHandler() {
-        ea.publish(nsCons.EVENT_SWITCH_CHAT_TO, {});
-    }
+    // switchHandler() {
+    //     ea.publish(nsCons.EVENT_SWITCH_CHAT_TO, {});
+    //  }
 
     isSubscribed(item) {
         return _.some(item.subscriber, { username: this.loginUser.username });

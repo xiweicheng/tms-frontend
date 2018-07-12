@@ -7,6 +7,31 @@
                 display: none;
             }
         }
+        .item.tms-item-header {
+            &:before {
+                display: none;
+            }
+            padding-left: 0;
+            padding-top: 10px;
+            padding-bottom: 0;
+            flex-direction: column;
+            align-items: flex-start;
+            >.tms-title {
+                font-size: 16px;
+                padding-bottom: 5px;
+                padding-left: 16px;
+            }
+            >.tms-metadata {
+                display: flex;
+                height: 28px;
+                >.item>i.icon {
+                    margin-right: 0;
+                }
+                >.item:last-child:before {
+                    display: none;
+                }
+            }
+        }
         .item.tms-item:before {
             display: none;
         }
@@ -44,11 +69,11 @@
                         display: none;
                         padding-left: 5px;
                         margin-right: 5px;
-                        > i.icon {
+                        >i.icon {
                             margin-left: 5px;
                         }
                         .menu {
-                            > .item {
+                            >.item {
                                 .ui.button {
                                     margin: 0;
                                     i.icon {
@@ -89,93 +114,11 @@
             }
         }
     }
-    > .tms-chat-at {
-        &.ui.dropdown {
-            @media only screen and (min-width: 768px) {
-                min-width: 175px;
-                padding-top: 0;
-                padding-left: 13px;
-                padding-bottom: 20px;
-                &.item:before {
-                    width: 0;
-                }
-            }
-            > .text {
-                > .actions {
-                    display: none;
-                }
-            }
-            > .tms-metadata {
-                position: absolute;
-                display: flex;
-                top: 35px;
-                font-size: 12px;
-                left: 0;
-                height: 15px;
-                .item {
-                    &:before {
-                        top: 5px;
-                        height: 50%;
-                    }
-                    &.tms-channel-info:before {
-                        width: 0;
-                    }
-                    &.tms-user-info:before {
-                        width: 0;
-                    }
-                }
-                @media only screen and (max-width: 767px) {
-                    display: none;
-                }
-                .tms-channel-links {
-                    .menu {
-                        .header {
-                            min-width: 200px;
-                        }
-                    }
-                }
-            }
-            @media only screen and (max-width: 767px) {
-                > .text {
-                    display: none;
-                }
-                > .dropdown.icon {
-                    margin-left: 6px;
-                    margin-right: 6px;
-                }
-            }
-            .menu {
-                > .header {
-                    i.plus.icon {
-                        position: absolute;
-                        right: 5px;
-                        top: 7px;
-                    }
-                }
-                > .item {
-                    &:hover {
-                        .actions {
-                            display: inline-block;
-                        }
-                    }
-                    .icon {
-                        margin-right: 4px!important;
-                    }
-                    > .actions {
-                        display: none;
-                        position: absolute;
-                        right: 5px;
-                        top: 10px;
-                        .large.ellipsis.horizontal.icon {
-                            font-size: 1.3em!important;
-                        }
-                    }
-                    &.disabled-user {
-                        text-decoration: line-through;
-                        font-style: italic;
-                    }
-                }
-            }
+    >.tms-chat-at {
+        .header i.plus.icon {
+            position: absolute;
+            right: 5px;
+            top: -6px;
         }
     }
     @media only screen and (min-width: 768px) {
@@ -184,7 +127,7 @@
         }
     }
     @media only screen and (max-width: 767px) {
-        div.dropdown.tms-chat-at {
+        div.tms-chat-at {
             display: none!important;
         }
     }
