@@ -171,9 +171,9 @@ export class EmChatTopMenu {
         let pollData = this.getPollUpdate();
         pollData.newAtCnt && (this.newAtCnt = pollData.newAtCnt);
 
-        $(this.channelLinksDdRef).dropdown({
-            fullTextSearch: true
-        });
+        // $(this.channelLinksDdRef).dropdown({
+        //     fullTextSearch: true
+        // });
     }
 
     initSearch() {
@@ -528,24 +528,28 @@ export class EmChatTopMenu {
         window.location = `mailto:${this.chatUser.mails}`;
     }
 
-    // channelLinksHandler(event) {
-    //     event.stopImmediatePropagation();
-    //     $(this.channelLinksDdRef).dropdown('toggle');
-    // }
+    initChannelLinksHandler(last) {
+        if (last) {
+            _.defer(() => {
+                $(this.channelLinksDdRef).dropdown({
+                    // action: 'hide',
+                    fullTextSearch: true
+                });
+            });
+        }
+    }
 
     addChannelLinkHandler(event) {
         this.channelLinkMgrVm.show();
     }
 
     openChannelLinkHandler(event, item) {
-        // event.stopImmediatePropagation();
         $(this.channelLinksDdRef).dropdown('hide');
         utils.openNewWin(item.href);
         $.post('/admin/link/count/inc', { id: item.id });
     }
 
     showPinHandler(event) {
-        // event.stopImmediatePropagation();
         if (this.isRightSidebarShow && (this.activeType == nsCons.ACTION_TYPE_PIN) && !event.ctrlKey) {
             this.toggleRightSidebar();
             return;

@@ -18,7 +18,7 @@
                         </div>
                         <div class="scrolling menu">
                             <div if.bind="!channelLinks || channelLinks.length == 0" click.trigger="stopImmediatePropagationHandler($event)" class="item">暂无频道外链</div>
-                            <a repeat.for="item of channelLinks | sort:'title'" click.trigger="openChannelLinkHandler($event, item)" target="_blank" href="${item.href}" class="item">${item.title}</a>
+                            <a repeat.for="item of channelLinks | sort:'title'" task.bind="initChannelLinksHandler($last)" click.trigger="openChannelLinkHandler($event, item)" target="_blank" href="${item.href}" class="item">${item.title}</a>
                         </div>
                     </div>
                 </div>
