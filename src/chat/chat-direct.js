@@ -585,6 +585,7 @@ export class ChatDirect {
         }
         this.lastMoreP = $.get(url, data, (data) => {
             if (data.success) {
+                this._stowAndPin(data.data);
                 this.chats = _.unionBy(_.reverse(data.data), this.chats);
                 this.last = (data.msgs[0] - data.data.length <= 0);
                 !this.last && (this.lastCnt = data.msgs[0] - data.data.length);
@@ -619,6 +620,7 @@ export class ChatDirect {
         }
         this.nextMoreP = $.get(url, data, (data) => {
             if (data.success) {
+                this._stowAndPin(data.data);
                 this.chats = _.unionBy(this.chats, data.data);
                 this.first = (data.msgs[0] - data.data.length <= 0);
                 !this.first && (this.firstCnt = data.msgs[0] - data.data.length);
@@ -826,23 +828,33 @@ export class ChatDirect {
         if (this.isAt) return;
         if (_.isEmpty(this.chats)) return;
 
-        $.get(`/admin/chat/channel/getStows`, {}, (data) => {
-            _.each(data.data, item => {
-                let chat = _.find(this.chats, { id: item.chatChannel.id });
-                if (chat != null) {
-                    chat._stowed = true;
-                    chat.stowId = item.id;
-                }
-            });
+        $.when(
+            $.get(`/admin/chat/channel/stow/list`, {}, (data) => {
+                this.stows = data.data;
+            }),
+            $.get(`/admin/channel/pin/listBy`, { id: this.channel.id }, (data) => {
+                this.pins = data.data;
+            })).done(() => this._stowAndPin(this.chats));
+    }
+
+    _stowAndPin(chats) {
+        if (this.isAt) return;
+        if (_.isEmpty(chats)) return;
+        
+        _.each(this.stows, item => {
+            let chat = _.find(chats, { id: item[1] });
+            if (chat != null) {
+                chat._stowed = true;
+                chat.stowId = item[0];
+            }
         });
-        $.get(`/admin/chat/channel/pin/list`, { cid: this.channel.id }, (data) => {
-            _.each(data.data, item => {
-                let chat = _.find(this.chats, { id: item.chatChannel.id });
-                if (chat != null) {
-                    chat._pined = true;
-                    chat.pinId = item.id;
-                }
-            });
+
+        _.each(this.pins, item => {
+            let chat = _.find(chats, { id: item[1] });
+            if (chat != null) {
+                chat._pined = true;
+                chat.pinId = item[0];
+            }
         });
     }
 
