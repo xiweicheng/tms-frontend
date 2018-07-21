@@ -277,7 +277,15 @@ export class ChatDirect {
             // 私聊聊天
             if (this.user && (this.user.username == payload.username)) {
 
-                if (payload.username == this.loginUser.username) return;
+                if (payload.username == this.loginUser.username) {
+                    if (payload.cmd == 'U') { // url 摘要解析更新
+                        $.get('/admin/chat/direct/get', { id: payload.id }, (data) => {
+                            let chat = _.find(this.chats, { id: payload.id });
+                            chat && (_.extend(chat, data.data));
+                        });
+                    }
+                    return;
+                }
 
                 if (payload.cmd == 'C') {
                     console.log('ws: poll reset');
@@ -840,7 +848,7 @@ export class ChatDirect {
     _stowAndPin(chats) {
         if (this.isAt) return;
         if (_.isEmpty(chats)) return;
-        
+
         _.each(this.stows, item => {
             let chat = _.find(chats, { id: item[1] });
             if (chat != null) {
