@@ -275,7 +275,7 @@ export class ChatDirect {
             let updaterName = updater ? (updater.name ? updater.name : updater.username) : '';
 
             // 私聊聊天
-            if (this.user && (this.user.username == payload.username || payload.username == this.loginUser.username))) {
+            if (this.user && ((this.user.username == payload.username) || (payload.username == this.loginUser.username))) {
 
                 if (payload.username == this.loginUser.username) {
                     if (payload.cmd == 'U') { // url 摘要解析更新
