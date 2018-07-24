@@ -2,14 +2,14 @@
     <require from="./em-chat-content-item-footbar.css"></require>
     <div class="em-chat-content-item-footbar">
         <!-- <div class="ui image label" repeat.for="item of chat.chatLabels | chatLabelFilter:'Emoji'" if.bind="item.voters.length != 0" click.delegate="toggleChatLabelHandler({value: item.name, label: item.description, type: 'emoji'})" data-tooltip="${item | chatLabelTip & signal:'sg-chatlabel-refresh'}" innerhtml.bind="(item.name + '<div style=\'margin-left: 0;\' class=\'detail\'>' + item.voters.length + '</div>') | emojiRepl"></div> -->
-        <div repeat.for="item of chat.chatLabels | chatLabelFilter:'Emoji'" class="ui image label" if.bind="item.voters.length != 0" click.delegate="toggleChatLabelHandler({value: item.name, label: item.description, type: 'emoji'})" data-tooltip="${item | chatLabelTip & signal:'sg-chatlabel-refresh'}" innerhtml.bind="(item.name + item.voters.length) | emojiRepl"></div>
+        <div repeat.for="item of chat.chatLabels | chatLabelFilter:'Emoji'" class="ui image label" if.bind="item.voters.length != 0" click.delegate="toggleChatLabelHandler({value: item.name, label: item.description, type: 'emoji'})" data-position="top left" data-tooltip="${item | chatLabelTip & signal:'sg-chatlabel-refresh'}" innerhtml.bind="(item.name + item.voters.length) | emojiRepl"></div>
         <span ref="addEmojiRef" class="add-btn add-emoji-btn ${chat.chatLabels | chatLabelExist:'Emoji' & signal:'sg-chatlabel-refresh'}">+<i class="smile icon large link"></i></span>
         <div class="ui popup top left transition hidden emojis">
             <div class="content">
                 <span class="emoji-item" repeat.for="item of emojis" data-tooltip="${item.label}" click.delegate="toggleChatLabelHandler(item)" innerhtml.bind="item.value | emojiRepl"></span>
             </div>
         </div>
-        <div repeat.for="item of chat.chatLabels | chatLabelFilter:'Tag'" class="ui ${item | labelColor} tags label" css.bind="item | labelCss" if.bind="item.voters.length != 0" click.delegate="toggleChatLabelHandler({value: item.name, label: item.description, type: 'tag'})" data-tooltip="${item | chatLabelTip & signal:'sg-chatlabel-refresh'}">${item.name}
+        <div repeat.for="item of chat.chatLabels | chatLabelFilter:'Tag'" class="ui ${item | labelColor} tags label" css.bind="item | labelCss" if.bind="item.voters.length != 0" click.delegate="toggleChatLabelHandler({value: item.name, label: item.description, type: 'tag'})" data-position="top left" data-tooltip="${item | chatLabelTip & signal:'sg-chatlabel-refresh'}">${item.name}
             <div class="detail">${item.voters.length}</div>
         </div>
         <span ref="addTagRef" class="add-btn add-tag-btn ${chat.chatLabels | chatLabelExist & signal:'sg-chatlabel-refresh'}">+<i class="tags icon large link"></i></span>
