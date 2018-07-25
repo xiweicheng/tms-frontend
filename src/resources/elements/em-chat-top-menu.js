@@ -35,11 +35,6 @@ export class EmChatTopMenu {
         }
     }
 
-    // chatToChanged() {
-    //     $(this.chatToDropdownRef).dropdown('set selected', this.chatId).dropdown('hide');
-    //     _.delay(() => $(this.chatToDropdownRef).dropdown('set selected', this.chatId).dropdown('hide'), 1000); // 解决在线状态没有显示问题
-    // }
-
     channelChanged() {
         this._refreshChannelLinks();
     }
@@ -131,10 +126,6 @@ export class EmChatTopMenu {
             this.countMyRecentSchedule = payload.countMyRecentSchedule;
         });
 
-        // this.subscribe2 = ea.subscribe(nsCons.EVENT_SWITCH_CHAT_TO, (payload) => {
-        //     $(this.chatToDropdownRef).dropdown('toggle');
-        // });
-
         this.subscribe3 = ea.subscribe(nsCons.EVENT_CHANNEL_LINKS_REFRESH, (payload) => {
             this._refreshChannelLinks();
         });
@@ -171,9 +162,14 @@ export class EmChatTopMenu {
         let pollData = this.getPollUpdate();
         pollData.newAtCnt && (this.newAtCnt = pollData.newAtCnt);
 
-        // $(this.channelLinksDdRef).dropdown({
-        //     fullTextSearch: true
-        // });
+        $(this.channelLinksDdRef).dropdown({
+            fullTextSearch: true,
+            action: (text, value, element) => {
+                $(this.channelLinksDdRef).dropdown('hide');
+                $.post('/admin/link/count/inc', { id: $(element).attr('data-id') });
+                _.defer(() => utils.openNewWin(value));
+            }
+        });
     }
 
     initSearch() {
@@ -264,27 +260,12 @@ export class EmChatTopMenu {
             this.toggleRightSidebar();
         }).bind('keydown', 'ctrl+k', (event) => {
             event.preventDefault();
-            // $(this.chatToDropdownRef).dropdown('toggle');
         });
 
         $(this.filterChatToUser).bind('keydown', 'ctrl+k', (event) => {
             event.preventDefault();
-            // $(this.chatToDropdownRef).dropdown('toggle');
         });
     }
-
-    // initChatToDropdownHandler(last) {
-    //     if (last) {
-    //         _.defer(() => {
-    //             $(this.chatToDropdownRef).dropdown().dropdown('set selected', this.chatId).dropdown({
-    //                 onChange: (value, text, $choice) => {
-    //                     window.location = wurl('path') + `#/chat/${$choice.attr('data-id')}`;
-    //                 }
-    //             });
-    //             $(this.chatToDropdownRef).off('focus'); // fix 点击展示模态框，当模特框关闭后，其获取焦点后，自动展示下拉菜单问题
-    //         });
-    //     }
-    // }
 
     searchFocusHandler() {
         $(this.searchInputRef).css('width', 'auto');
@@ -524,29 +505,15 @@ export class EmChatTopMenu {
     }
 
     mailToHandler(event) {
-        // event.stopImmediatePropagation();
         window.location = `mailto:${this.chatUser.mails}`;
-    }
-
-    initChannelLinksHandler(last) {
-        if (last) {
-            _.defer(() => {
-                $(this.channelLinksDdRef).dropdown({
-                    // action: 'hide',
-                    fullTextSearch: true
-                });
-            });
-        }
     }
 
     addChannelLinkHandler(event) {
         this.channelLinkMgrVm.show();
     }
 
-    openChannelLinkHandler(event, item) {
-        $(this.channelLinksDdRef).dropdown('hide');
-        utils.openNewWin(item.href);
-        $.post('/admin/link/count/inc', { id: item.id });
+    channelLinkHandler(event, item) {
+        return false;
     }
 
     showPinHandler(event) {
