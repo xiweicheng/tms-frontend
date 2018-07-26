@@ -36,6 +36,7 @@ export class EmChatTopMenu {
     }
 
     channelChanged() {
+        $(this.channelLinksDdRef).find('.menu > .search > input').val('');
         this._refreshChannelLinks();
     }
 
@@ -170,6 +171,22 @@ export class EmChatTopMenu {
                 _.defer(() => utils.openNewWin(value));
             }
         });
+    }
+
+    initChannelLinksHandler(last) {
+        if (last) {
+            _.defer(() => {
+                $(this.channelLinksDdRef).find('.menu > .search > input').val('');
+                $(this.channelLinksDdRef).dropdown({
+                    fullTextSearch: true,
+                    action: (text, value, element) => {
+                        $(this.channelLinksDdRef).dropdown('hide');
+                        $.post('/admin/link/count/inc', { id: $(element).attr('data-id') });
+                        _.defer(() => utils.openNewWin(value));
+                    }
+                });
+            });
+        }
     }
 
     initSearch() {
