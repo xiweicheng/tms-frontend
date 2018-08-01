@@ -290,7 +290,7 @@ export class EmChatInput {
                 let users = $.map(this.members, (member) => {
                     return (member.enabled && member.username.indexOf(term) >= 0) ? member : null;
                 });
-                let groups = $.map(this.channel.channelGroups, (grp) => {
+                let groups = $.map(this.channel ? this.channel.channelGroups : [], (grp) => {
                     return ((grp.status != 'Deleted') && grp.name.indexOf(term) >= 0) ? grp : null;
                 });
                 callback([...users, ...groups]);

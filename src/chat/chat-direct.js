@@ -387,7 +387,7 @@ export class ChatDirect {
         toastr.success(message);
 
         if (!alarm.off && alarm.news) {
-            push.create('TMS沟通频道消息通知', {
+            push.create(`TMS沟通频道消息通知`, {
                 body: message,
                 icon: {
                     x16: 'img/tms-x16.ico',
