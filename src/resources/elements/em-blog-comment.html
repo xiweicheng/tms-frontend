@@ -13,7 +13,7 @@
                             <i click.delegate="rateHandler(item)" style="cursor: pointer;" title="赞一下" class="cbutton cbutton--effect-novak thumbs ${item.voteZan && item.voteZan.split(',').includes(loginUser.username) ? '' : 'outline'} up icon"></i> <span title="${item.voteZan}">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>
                         </div>
                     </div>
-                    <div fancybox show.bind="!item.isEditing" ref="mkbodyRef" class="text markdown-body" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
+                    <div fancybox show.bind="!item.isEditing" ref="mkbodyRef" class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
                     <div class="textcomplete-container" show.bind="item.isEditing">
                         <div class="append-to"></div>
                     </div>
@@ -54,7 +54,7 @@
                     <div class="tms-blog-comment-status-bar"></div>
                     <div class="dropzone-previews"></div>
                 </div>
-                <div ref="markdownRef" class="field markdown-body">
+                <div ref="markdownRef" class="field markdown-body fr-view">
                     <textarea ref="commentRef"></textarea>
                 </div>
                 <div click.delegate="addHandler()" title="提交评论(ctrl+enter)" class="ui blue labeled submit icon button">

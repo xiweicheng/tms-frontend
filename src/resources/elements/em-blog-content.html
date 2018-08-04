@@ -78,7 +78,7 @@
                 </div>
             </h1>
             </div>
-            <div fancybox ref="mkbodyRef" class="markdown-body" innerhtml.bind="blog.content | parseMd | emoji:mkbodyRef"></div>
+            <div fancybox ref="mkbodyRef" class="markdown-body fr-view" innerhtml.bind="blog.content | parseMd | emoji:mkbodyRef"></div>
             <div class="footer">
                 <span click.delegate="rateHandler()" class="rate"><i class="link icon thumbs outline up"></i>${blog.voteZan && blog.voteZan.split(',').includes(loginUser.username) ? '踩' : '赞'}</span> <span show.bind="!blog.voteZanCnt">成为第一个赞同者</span> <span show.bind="blog.voteZan && blog.voteZan.split(',').includes(loginUser.username)">你赞了它</span> <span show.bind="blog.voteZan && !blog.voteZan.split(',').includes(loginUser.username)" title="${blog.voteZan}"><a href="javascript:void(0);">${blog.voteZanCnt}</a>人赞了它</span>
                 <div class="tags">
@@ -192,7 +192,7 @@
                         </template>
                         <template if.bind="item.target=='Comment'">
                             <template if.bind="item.action=='Create'">
-                                <div ref="mkbodyRef2" class="extra text markdown-body">
+                                <div ref="mkbodyRef2" class="extra text markdown-body fr-view">
                                     <div fancybox innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef2"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
                                         <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
@@ -200,7 +200,7 @@
                                 </div>
                             </template>
                             <template if.bind="item.action=='Delete'">
-                                <div ref="mkbodyRef2" class="extra text markdown-body">
+                                <div ref="mkbodyRef2" class="extra text markdown-body fr-view">
                                     <div fancybox innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef2"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
                                         <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
@@ -216,7 +216,7 @@
                                 </div>
                             </template>
                             <template if.bind="item.action=='Update' && item.properties=='voteZan'">
-                                <div ref="mkbodyRef2" class="extra text markdown-body">
+                                <div ref="mkbodyRef2" class="extra text markdown-body fr-view">
                                     <div fancybox innerhtml.bind="item.oldValue | parseMd | emoji:mkbodyRef2"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
                                         <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>

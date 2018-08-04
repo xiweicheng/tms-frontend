@@ -14,7 +14,7 @@
                         <span class="cinema timeago" style="font-style: italic;" title="${comment.createDate | date}">${comment.createDate | timeago}</span>
                     </div>
                     <div class="ui divider"></div>
-                    <div class="description markdown-body" style="width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;" innerhtml.bind="comment.content | parseMd"></div>
+                    <div class="description markdown-body fr-view" style="width:300px; word-break: break-all; max-height: 200px; overflow-y: auto; overflow-x: hidden;" innerhtml.bind="comment.content | parseMd"></div>
                 </div>
             </div>
         </div>

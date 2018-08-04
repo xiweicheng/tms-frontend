@@ -11,7 +11,7 @@
                 <a if.bind="!isAt" click.delegate="stowHandler(item)" class="tms-stow" title="${item._stowed ? '取消收藏' : '收藏'}该消息"><i class="${item._stowed ? '' : 'empty'} star link icon"></i></a>
                 <a if.bind="!isAt && item._pined" click.delegate="pinHandler(item)" class="tms-pin" title="解除固定频道消息"><i class="pin link icon"></i></a>
             </div>
-            <div ref="mkbodyRef" fancybox show.bind="!item.isEditing" class="text markdown-body" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
+            <div ref="mkbodyRef" fancybox show.bind="!item.isEditing" class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
             <div class="textcomplete-container" show.bind="item.isEditing">
                 <div class="append-to"></div>
             </div>

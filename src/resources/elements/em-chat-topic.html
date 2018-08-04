@@ -12,7 +12,7 @@
                             <div class="date" data-timeago="${chat.createDate}" title="${chat.createDate | date}">${chat.createDate | timeago}</div>
                             <span title="${'频道: ' + chat.channel.title}"><a href="#/chat/${chat.channel.name}?id=${chat.id}">#${chat.channel.name}</a></span>
                         </div>
-                        <div ref="mkbodyRef" fancybox class="text markdown-body" style="max-height: none; overflow-y: initial;" innerhtml.bind="chat.content | parseMd:channel | emoji:mkbodyRef"></div>
+                        <div ref="mkbodyRef" fancybox class="text markdown-body fr-view" style="max-height: none; overflow-y: initial;" innerhtml.bind="chat.content | parseMd:channel | emoji:mkbodyRef"></div>
                         <div class="actions">
                             <a style="margin-right: 5px;" if.bind="!isAt" click.delegate="followerHandler()" class="tms-follower" title="${isFollower ? '取消关注此话题消息' : '关注此话题消息'}"><i class="large ${isFollower ? 'hide' : 'unhide'} icon link"></i></a>
                             <a style="margin-right: 5px;" if.bind="!isAt" data-clipboard-text="${basePath + '#/chat/' + channel.name + '?id=' + chat.id}" class="tms-clipboard" title="复制分享消息链接"><i class="large link external share icon"></i></a>
@@ -37,7 +37,7 @@
                             <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
                             <a click.delegate="stowHandler(item)" class="tms-stow" title="收藏该消息"><i class="${item.isStow ? '' : 'empty'} star link icon"></i></a>
                         </div>
-                        <div ref="mkbodyRef2" show.bind="!item.isEditing" fancybox class="text markdown-body" style="max-height: none; overflow-y: initial;" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef2"></div>
+                        <div ref="mkbodyRef2" show.bind="!item.isEditing" fancybox class="text markdown-body fr-view" style="max-height: none; overflow-y: initial;" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef2"></div>
                         <div class="textcomplete-container" show.bind="item.isEditing">
                             <div class="append-to"></div>
                         </div>
