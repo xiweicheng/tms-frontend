@@ -162,10 +162,16 @@ export class Config {
             return `<div class="pre-code-wrapper"><i data-clipboard-text="${utils.escape(codeBk, true)}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre><code class="${this.options.langPrefix + utils.escape(lang, true)}">${escaped ? code : utils.escape(code, true)}\n</code></pre><div>\n`;
         };
 
+        renderer.html = function(html) {
+            // return html.replace(/<br\/>/g, '').replace(/(<br>)+/g, '$1');
+            return html.replace(/<br\/>/g, '');
+        };
+
         // https://github.com/chjj/marked
         marked.setOptions({
             renderer: renderer,
             breaks: true,
+            xhtml: true,
             highlight: function(code) {
                 return hljs.highlightAuto(code).value;
             }
