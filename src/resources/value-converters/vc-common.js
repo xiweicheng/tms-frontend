@@ -254,7 +254,7 @@ export class DiffHtmlValueConverter {
         if (value) {
             return utils.diffHtml(value);
         }
-        return value;
+        return '';
     }
 }
 
