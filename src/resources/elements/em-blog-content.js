@@ -364,7 +364,9 @@ export class EmBlogContent {
     }
 
     editHandler() {
-        if (!nsCtx.isModaalOpening) {
+        if (this.blog.editor == 'Html') {
+            utils.openNewWin(utils.getResourceBase() + 'blog.html?id=' + this.blog.id);
+        } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'edit', id: this.blog.id });
         }
     }

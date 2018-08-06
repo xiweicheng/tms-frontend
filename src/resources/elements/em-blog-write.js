@@ -14,6 +14,8 @@ export class EmBlogWrite {
 
     static NAME = 'blog-create';
 
+    baseRes = utils.getResourceBase();
+
     /**
      * 构造函数
      */

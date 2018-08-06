@@ -41,9 +41,9 @@ export class CommonUtils {
     getResourceBase() {
         let basePath = this.getBasePath();
         if (_.endsWith(basePath, '/index.html')) {
-            basePath = _.replace(basePath, '/index.html', '');
+            basePath = _.replace(basePath, '/index.html', '/');
         }
-        return basePath;
+        return _.endsWith(basePath, '/') ? basePath : basePath + '/';
     }
 
     redirect2Login(redirectUrl) {
