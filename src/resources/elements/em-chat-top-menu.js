@@ -146,7 +146,6 @@ export class EmChatTopMenu {
     unbind() {
         this.subscribe.dispose();
         this.subscribe1.dispose();
-        this.subscribe2.dispose();
         this.subscribe3.dispose();
         this.subscribe4.dispose();
         this.subscribe5.dispose();
