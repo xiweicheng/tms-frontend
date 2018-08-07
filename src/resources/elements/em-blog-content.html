@@ -78,7 +78,7 @@
                 </div>
             </h1>
             </div>
-            <div fancybox ref="mkbodyRef" class="markdown-body fr-view" innerhtml.bind="blog.content | parseMd | emoji:mkbodyRef"></div>
+            <div fancybox ref="mkbodyRef" class="markdown-body fr-view" innerhtml.bind="blog.content | parseMd:null:blog.editor | emoji:mkbodyRef"></div>
             <div class="footer">
                 <span click.delegate="rateHandler()" class="rate"><i class="link icon thumbs outline up"></i>${blog.voteZan && blog.voteZan.split(',').includes(loginUser.username) ? '踩' : '赞'}</span> <span show.bind="!blog.voteZanCnt">成为第一个赞同者</span> <span show.bind="blog.voteZan && blog.voteZan.split(',').includes(loginUser.username)">你赞了它</span> <span show.bind="blog.voteZan && !blog.voteZan.split(',').includes(loginUser.username)" title="${blog.voteZan}"><a href="javascript:void(0);">${blog.voteZanCnt}</a>人赞了它</span>
                 <div class="tags">

@@ -72,7 +72,10 @@ export class TimeagoValueConverter {
  * markdown内容解析处理
  */
 export class ParseMdValueConverter {
-    toView(value, channel = null) {
+    toView(value, channel = null, editor = null) {
+        if (editor == 'Html') {
+            return value ? value : '';
+        }
         return value ? marked(utils.preParse(value, channel)) : '';
     }
 }
