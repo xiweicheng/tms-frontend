@@ -66,7 +66,7 @@
                 </button>
             </div>
         </div>
-        <em-chat-content-item-footbar if.bind="!item.isEditing" chat.bind="item"></em-chat-content-item-footbar>
+        <em-chat-content-item-footbar if.bind="!item.isEditing" chat.bind="item" last.bind="$last" last-pre.bind="(chats.length > 1) && ($index == chats.length - 2)"></em-chat-content-item-footbar>
     </div>
     <em-confirm-modal em-confirm-modal.ref="emConfirmModal"></em-confirm-modal>
 </template>

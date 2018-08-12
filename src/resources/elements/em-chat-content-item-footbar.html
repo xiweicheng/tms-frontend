@@ -15,7 +15,7 @@
         <span ref="addTagRef" class="add-btn add-tag-btn ${chat.chatLabels | chatLabelExist & signal:'sg-chatlabel-refresh'}">+<i class="tags icon large link"></i></span>
         <div class="ui popup top left transition hidden tags ${isCustomTag ? 'customTag' : ''}">
             <div class="content">
-                <div show.bind="!isCustomTag" ui-dropdown class="ui left pointing dropdown mini icon">
+                <div show.bind="!isCustomTag" ui-dropdown class="ui ${(last || lastPre) ? 'bottom' : 'top'} left pointing dropdown mini icon">
                     <i class="ellipsis vertical icon"></i>
                     <div class="menu">
                         <div class="ui left search icon input">

@@ -6,6 +6,10 @@ export class EmChatContentItemFootbar {
 
     @bindable chat;
 
+    @bindable last;
+
+    @bindable lastPre
+
     emojis = [{
         label: '赞同',
         value: ':+1:',
