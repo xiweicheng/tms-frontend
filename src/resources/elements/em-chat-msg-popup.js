@@ -18,6 +18,9 @@ export class EmChatMsgPopup {
                 return;
             }
 
+            // var last = $(this.target).parents('.em-chat-content-item[data-last="true"]').size() === 1;
+            // console.log(last); 
+
             $(this.target).popup('is hidden') && $(this.target).popup({
                 popup: this.popup,
                 hoverable: true,
