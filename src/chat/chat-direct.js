@@ -1064,6 +1064,13 @@ export class ChatDirect {
 
     scrollTo(target, duration = 0, onAfter) {
         this.focusedComment = target;
+        if ((target instanceof jQuery) && target.is('.comment.item:first')) {
+            this._scrollTo('t');
+            return;
+        } else if ((target instanceof jQuery) && target.is('.comment.item:last')) {
+            this._scrollTo('b');
+            return;
+        }
         $(this.commentsRef).parent().scrollTo(target, duration, {
             offset: this.offset,
             onAfter: onAfter
