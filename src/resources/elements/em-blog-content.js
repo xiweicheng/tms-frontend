@@ -496,7 +496,9 @@ export class EmBlogContent {
     }
 
     copyHandler() {
-        if (!nsCtx.isModaalOpening) {
+        if (this.blog.editor == 'Html') {
+            utils.openNewWin(utils.getResourceBase() + 'blog.html?id=' + this.blog.id + '&amp;copy'); // &copy
+        } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'copy', id: this.blog.id });
         }
     }
