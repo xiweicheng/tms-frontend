@@ -246,6 +246,10 @@ export class EmBlogLeftSidebar {
 
     }
 
+    createDirHandler(space) {
+        this.spaceDirCreateVm.show(space);
+    }
+
     // sysLinkHandler(item) {
     //     $.post('/admin/link/count/inc', { id: item.id });
     //     return true;

@@ -78,6 +78,8 @@ export function configure(aurelia) {
         'resources/elements/em-blog-history-diff',
         'resources/elements/em-blog-comment-popup',
         'resources/elements/em-blog-space-auth',
+        'resources/elements/em-blog-space-dir-create',
+        'resources/elements/em-blog-space-dir-edit',
         'resources/elements/em-user-avatar',
         'resources/elements/em-user-edit',
         'resources/elements/em-blog-comment-share',

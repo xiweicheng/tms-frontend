@@ -52,7 +52,8 @@
                             <div class="content">
                                 <span style="cursor: pointer;" click.delegate="spaceToggleHandler(space)">
                                     <i class="icons">
-                                        <i class="folder outline icon"></i>
+                                        <!-- <i class="folder outline icon"></i> -->
+                                        <i class="world icon"></i>
                                     <i show.bind="space.privated" class="corner lock icon"></i>
                                     </i>
                                     ${space.name}
@@ -72,6 +73,7 @@
                                 <div if.bind="isSuper || space.creator.username == loginUser.username" ui-dropdown class="ui right pointing dropdown">
                                     <i class="large ellipsis horizontal icon"></i>
                                     <div class="menu">
+                                        <div class="item" click.delegate="createDirHandler(space)"><i class="icon folder outline"></i>创建分类</div>
                                         <div class="item" click.delegate="editSpaceHandler(space)"><i class="icon edit"></i>编辑</div>
                                         <div class="item" click.delegate="authSpaceHandler(space)"><i class="lock icon"></i>限制</div>
                                         <!-- <div class="divider"></div> -->
@@ -125,4 +127,6 @@
     <em-confirm-modal em-confirm-modal.ref="confirmMd"></em-confirm-modal>
     <em-blog-space-edit view-model.ref="spaceEditVm"></em-blog-space-edit>
     <em-blog-space-auth view-model.ref="blogSpaceAuthVm"></em-blog-space-auth>
+    <em-blog-space-dir-create view-model.ref="spaceDirCreateVm"></em-blog-space-dir-create>
+    <em-blog-space-dir-edit view-model.ref="spaceDirEditVm"></em-blog-space-dir-edit>
 </template>
