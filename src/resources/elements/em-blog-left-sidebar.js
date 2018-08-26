@@ -35,7 +35,7 @@ export class EmBlogLeftSidebar {
             } else if (payload.action == 'updated') {
                 _.extend(_.find(this.blogs, { id: payload.blog.id }), payload.blog);
                 // 同步更新收藏博文
-                let bs = _.find(this.blogStows, { id: payload.blog.id });
+                let bs = _.find(this.blogStows, item => item.blog.id === payload.blog.id);
                 if (bs) {
                     _.extend(bs.blog, payload.blog);
                 }

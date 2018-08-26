@@ -25,7 +25,7 @@
                     <div ui-dropdown-action class="ui top right pointing dropdown basic mini icon button">
                         <i class="large ellipsis horizontal icon"></i>
                         <div class="menu">
-                            <div click.delegate="refreshHandler()" class="item">
+                            <div click.delegate="refreshHandler()" class="item" style="min-width: 170px;">
                                 <span class="description">alt + r</span>
                                 <i class="refresh icon"></i> 刷新
                             </div>
@@ -57,8 +57,11 @@
                             <a href="/admin/blog/download/${blog.id}?type=pdf" class="item">
                                 <i class="file pdf outline icon"></i> 导出为PDF
                             </a>
-                            <a href="/admin/blog/download/${blog.id}?type=md" class="item">
+                            <a show.bind="blog.editor != 'Html'" href="/admin/blog/download/${blog.id}?type=md" class="item">
                                 <i class="file text outline icon"></i> 导出为Markdown
+                            </a>
+                            <a show.bind="blog.editor == 'Html'" href="/admin/blog/download/${blog.id}?type=html" class="item">
+                                <i class="file text outline icon"></i> 导出为HTML
                             </a>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username" class="divider"></div>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="deleteHandler()" class="item" style="color: red;">
