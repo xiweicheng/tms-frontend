@@ -5,14 +5,32 @@
         <div slot="content" class="em-blog-save">
             <form class="ui form">
                 <div class="field">
+                    <label>选择空间</label>
                     <div ref="spacesRef" class="ui fluid search selection dropdown" ui-dropdown="activate">
-                        <input type="hidden" name="country">
+                        <input type="hidden" name="space">
                         <i class="dropdown icon"></i>
                         <div class="default text">选择空间(可选)</div>
                         <div class="menu">
                             <div class="item" data-value="">(不指定空间)</div>
                             <template repeat.for="item of spaces | sort:'name'">
-                                <div task.bind="initSpacesHandler($last)" class="item" data-value="${item.id}"><i class="folder outline icon"></i>${item.name}</div>
+                                <div task.bind="initSpacesHandler($last)" class="item" data-value="${item.id}"><i class="icons">
+                                        <i class="world icon"></i>
+                                    <i show.bind="item.privated" class="corner lock icon"></i>
+                                    </i>${item.name}</div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>选择分类</label>
+                    <div ref="dirsRef" class="ui fluid search selection dropdown" ui-dropdown="activate">
+                        <input type="hidden" name="dir">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">选择分类(可选)</div>
+                        <div class="menu">
+                            <div class="item" data-value="">(不指定分类)</div>
+                            <template repeat.for="item of space.dirs | sort:'name'">
+                                <div task.bind="initDirsHandler($last)" class="item" data-value="${item.id}"><i class="folder outline icon"></i>${item.name}</div>
                             </template>
                         </div>
                     </div>

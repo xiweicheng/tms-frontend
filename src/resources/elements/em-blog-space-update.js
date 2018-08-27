@@ -7,6 +7,8 @@ export class EmBlogSpaceUpdate {
 
     loginUser = nsCtx.loginUser;
     isSuper = nsCtx.isSuper;
+    spaces = [];
+    space;
 
     /**
      * 当视图被附加到DOM中时被调用
@@ -28,9 +30,12 @@ export class EmBlogSpaceUpdate {
 
     approveHandler(modal) {
         let sid = $(this.spacesRef).dropdown('get value');
+        let did = $(this.dirsRef).dropdown('get value');
+
         $.post('/admin/blog/space/update', {
             id: this.blog.id,
             sid: sid ? sid : null,
+            did: did ? did : null
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 toastr.success('博文空间更新成功!');
@@ -51,7 +56,29 @@ export class EmBlogSpaceUpdate {
     initSpacesHandler(last) {
         if (last) {
             _.defer(() => {
-                $(this.spacesRef).dropdown('clear').dropdown('set selected', this.blog.space ? this.blog.space.id + '' : '');
+                $(this.spacesRef).dropdown('clear').dropdown({
+                    onChange: (value, text, $choice) => {
+                        // toastr.info(value);
+                        if (!!value) {
+                            this.space = _.find(this.spaces, { id: +value });
+                        } else {
+                            this.space = null;
+                            $(this.dirsRef).dropdown('clear');
+                        }
+                    }
+                }).dropdown('set selected', this.blog.space ? this.blog.space.id + '' : '');
+            });
+        }
+    }
+
+    initDirsHandler(last) {
+        if (last) {
+            _.defer(() => {
+                $(this.dirsRef).dropdown('clear').dropdown({
+                    onChange: (value, text, $choice) => {
+                        // toastr.info(value);
+                    }
+                }).dropdown('set selected', this.blog.dir ? this.blog.dir.id + '' : '');
             });
         }
     }

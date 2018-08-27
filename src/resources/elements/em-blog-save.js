@@ -8,6 +8,9 @@ export class EmBlogSave {
     loginUser = nsCtx.loginUser;
     isSuper = nsCtx.isSuper;
 
+    spaces = [];
+    space;
+
     triggerChanged() {
 
         $(this.trigger).click((event) => {
@@ -61,6 +64,7 @@ export class EmBlogSave {
         let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
 
         let spaceId = $(this.spacesRef).dropdown('get value');
+        let dirId = $(this.dirsRef).dropdown('get value');
 
         localStorage && localStorage.setItem(nsCons.KEY_BLOG_COMMON_SPACE, spaceId);
 
@@ -70,6 +74,7 @@ export class EmBlogSave {
             title: this.blogInfo.title,
             content: this.blogInfo.content,
             spaceId: spaceId,
+            dirId: dirId,
             privated: $(this.chk).checkbox('is checked'),
             contentHtml: html
         }, (data, textStatus, xhr) => {
@@ -91,13 +96,35 @@ export class EmBlogSave {
     initSpacesHandler(last) {
         if (last) {
             _.defer(() => {
-                $(this.spacesRef).dropdown('clear');
+                $(this.spacesRef).dropdown('clear').dropdown({
+                    onChange: (value, text, $choice) => {
+                        // toastr.info(value);
+                        if (!!value) {
+                            this.space = _.find(this.spaces, { id: +value });
+                        } else {
+                            this.space = null;
+                            $(this.dirsRef).dropdown('clear');
+                        }
+                    }
+                });
                 if (localStorage) {
                     let sid = localStorage.getItem(nsCons.KEY_BLOG_COMMON_SPACE);
                     if (sid) {
                         $(this.spacesRef).dropdown('set selected', sid);
                     }
                 }
+            });
+        }
+    }
+
+    initDirsHandler(last) {
+        if (last) {
+            _.defer(() => {
+                $(this.dirsRef).dropdown('clear').dropdown({
+                    onChange: (value, text, $choice) => {
+                        // toastr.info(value);
+                    }
+                });
             });
         }
     }
