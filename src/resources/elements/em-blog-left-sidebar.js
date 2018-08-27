@@ -139,6 +139,10 @@ export class EmBlogLeftSidebar {
         space.open = !space.open;
     }
 
+    dirToggleHandler(dir) {
+        dir.open = !dir.open;
+    }
+
     getBlogTree() {
         return $.get('/admin/blog/listMy', (data) => {
             if (data.success) {
@@ -171,6 +175,23 @@ export class EmBlogLeftSidebar {
                         this.spaces = _.reject(this.spaces, { id: space.id });
                     } else {
                         toastr.error(data.data, '删除空间失败!');
+                    }
+                });
+            }
+        });
+    }
+
+    delDirHandler(dir, space) {
+        this.confirmMd.show({
+            onapprove: () => {
+                $.post('/admin/space/dir/delete', {
+                    id: dir.id
+                }, (data) => {
+                    if (data.success) {
+                        toastr.success('删除分类成功!');
+                        space.dirs = _.reject(space.dirs, { id: dir.id });
+                    } else {
+                        toastr.error(data.data, '删除分类失败!');
                     }
                 });
             }

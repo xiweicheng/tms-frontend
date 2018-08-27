@@ -21,26 +21,63 @@
                 padding-left: 15px;
                 margin-bottom: 0px;
                 padding-bottom: 8px;
-                > .item {
+                >.item>.content>.list.dir {
+                    margin-top: 3px;
+                    // padding-top: .25em;
+                    padding-top: 5px;
+                    // padding-bottom: 0;
                     position: relative;
+                    padding-left: 5px;
+                    left: -5px;
+                    // height: 21px;
                     &:hover {
                         box-shadow: 0px 0px 2px -1px #5791cb;
-                        > .actions {
+                        >.actions {
                             display: inline-block;
                         }
                     }
-                    > .icon {
+                    >.icon {
+                        display: table-cell;
+                        padding-right: 0;
+                        position: relative;
+                        left: -6px;
+                        // top: -4px;
+                    }
+                    >.content {
+                        display: table-cell;
+                        // display: inline-block;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        max-width: 200px;
+                    }
+                    >.actions {
+                        display: none;
+                        position: absolute;
+                        right: 0;
+                        top: -2px;
+                    }
+                }
+                >.item {
+                    position: relative;
+                    &:hover {
+                        box-shadow: 0px 0px 2px -1px #5791cb;
+                        >.actions {
+                            display: inline-block;
+                        }
+                    }
+                    >.icon {
                         padding-right: 0;
                         position: relative;
                         top: -1px;
                     }
-                    > .content {
+                    >.content {
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
                         max-width: 245px;
                     }
-                    > .actions {
+                    >.actions {
                         display: none;
                         position: absolute;
                         right: 0;
@@ -49,11 +86,11 @@
                 }
                 .ui.bulleted.list {
                     padding-left: 16px;
-                    > div.item {
+                    >div.item {
                         max-width: 220px;
                         padding-top: 5px;
                         padding-bottom: 5px;
-                        > a {
+                        >a {
                             display: block;
                             white-space: nowrap;
                             overflow: hidden;
@@ -65,7 +102,7 @@
                         }
                         &.active {
                             font-weight: bold;
-                            > a {
+                            >a {
                                 color: black;
                             }
                         }
@@ -83,10 +120,10 @@
                 padding: 20px;
                 margin-top: 0px;
                 padding-top: 0px;
-                > div.item {
+                >div.item {
                     padding-top: 5px;
                     padding-bottom: 5px;
-                    > a {
+                    >a {
                         display: block;
                         white-space: nowrap;
                         overflow: hidden;
@@ -98,7 +135,7 @@
                     }
                     &.active {
                         font-weight: bold;
-                        > a {
+                        >a {
                             color: black;
                         }
                     }
@@ -121,7 +158,7 @@
                 border: none;
                 border-radius: 0;
                 background-color: #e8e0e0;
-                > .item {
+                >.item {
                     &.tms-search {
                         position: relative;
                         height: 40px;
@@ -129,7 +166,7 @@
                         &:before {
                             width: 0;
                         }
-                        > .remove.icon {
+                        >.remove.icon {
                             position: absolute;
                             right: 5px;
                             top: 13px;

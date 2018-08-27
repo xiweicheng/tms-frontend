@@ -58,6 +58,41 @@
                                     </i>
                                     ${space.name}
                                 </span>
+                                <template repeat.for="dir of space.dirs | sort:'name'">
+                                    <div class="list dir" show.bind="space.open">
+                                        <i click.delegate="dirToggleHandler(dir)" class="angle ${dir.open ? 'down' : 'right'} link icon"></i>
+                                        <div class="content">
+                                            <span style="cursor: pointer;" click.delegate="dirToggleHandler(dir)">
+                                    <i class="icons">
+                                        <i class="folder outline icon"></i>
+                                    <i show.bind="dir.privated" class="corner lock icon"></i>
+                                    </i>
+                                    ${dir.name}
+                                </span>
+                                            <div show.bind="dir.open" class="ui bulleted list">
+                                                <div repeat.for="item of dir.blogs | sort:'title'" show.bind="!item._hidden" class="item ${item.id == blog.id ? 'active' : ''}">
+                                                    <a title="${item.title}" href="#/blog/${item.id}">
+                                            <i class="icons">
+                                                <i class="file outline icon"></i>
+                                            <i show.bind="item.privated" class="corner lock icon"></i>
+                                            </i>
+                                            ${item.title}</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="actions">
+                                            <div if.bind="isSuper || space.creator.username == loginUser.username" ui-dropdown class="ui right pointing dropdown">
+                                                <i class="large ellipsis horizontal icon"></i>
+                                                <div class="menu">
+                                                    <div class="item" click.delegate="editSpaceHandler(dir, space)"><i class="icon edit"></i>编辑</div>
+                                                    <!-- <div class="item" click.delegate="authSpaceHandler(space)"><i class="lock icon"></i>限制</div> -->
+                                                    <!-- <div class="divider"></div> -->
+                                                    <div class="item" style="color: red;" click.delegate="delDirHandler(dir, space)"><i class="trash outline icon"></i>删除</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
                                 <div show.bind="space.open" class="ui bulleted list">
                                     <div repeat.for="item of space.blogs | sort:'title'" show.bind="!item._hidden" class="item ${item.id == blog.id ? 'active' : ''}">
                                         <a title="${item.title}" href="#/blog/${item.id}">
