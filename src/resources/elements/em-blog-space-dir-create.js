@@ -33,6 +33,7 @@ export class EmBlogSpaceDirCreate {
         }, (data, textStatus, xhr) => {
             this.emModal.hideDimmer();
             if (data.success) {
+                this.dir.name = '';
                 toastr.success('创建空间分类成功!');
                 ea.publish(nsCons.EVENT_SPACE_DIR_CHANGED, {
                     action: 'created',
