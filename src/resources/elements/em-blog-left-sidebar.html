@@ -64,7 +64,7 @@
                                         <div class="content">
                                             <span style="cursor: pointer;" click.delegate="dirToggleHandler(dir)" title="${dir.name}">
                                     <i class="icons">
-                                        <i class="folder outline icon"></i>
+                                        <i class="folder ${dir.open ? 'open' : ''} outline icon"></i>
                                     <i show.bind="dir.privated" class="corner lock icon"></i>
                                     </i>
                                     ${dir.name}
@@ -84,7 +84,7 @@
                                             <div if.bind="isSuper || space.creator.username == loginUser.username" ui-dropdown class="ui right pointing dropdown">
                                                 <i class="large ellipsis horizontal icon"></i>
                                                 <div class="menu">
-                                                    <div class="item" click.delegate="editDirHandler(dir)"><i class="icon edit"></i>编辑</div>
+                                                    <div class="item" click.delegate="editDirHandler(dir, space)"><i class="icon edit"></i>编辑</div>
                                                     <!-- <div class="item" click.delegate="authSpaceHandler(space)"><i class="lock icon"></i>限制</div> -->
                                                     <!-- <div class="divider"></div> -->
                                                     <div class="item" style="color: red;" click.delegate="delDirHandler(dir, space)"><i class="trash outline icon"></i>删除</div>
