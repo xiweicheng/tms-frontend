@@ -30,7 +30,7 @@
                         <div class="menu">
                             <div class="item" data-value="">(不指定分类)</div>
                             <template repeat.for="item of space.dirs | sort:'name'">
-                                <div task.bind="initDirsHandler($last)" class="item" data-value="${item.id}"><i class="folder outline icon"></i>${item.name}</div>
+                                <div if.bind="item.status != 'Deleted'" task.bind="initDirsHandler($last)" class="item" data-value="${item.id}"><i class="folder outline icon"></i>${item.name}</div>
                             </template>
                         </div>
                     </div>

@@ -55,6 +55,13 @@ export class EmBlogLeftSidebar {
                 this.calcTree();
             }
         });
+        this.subscribe6 = ea.subscribe(nsCons.EVENT_SPACE_DIR_CHANGED, (payload) => {
+            if (payload.action == 'created') {
+                this.calcTree();
+            } else if (payload.action == 'updated') {
+                // this.calcTree();
+            }
+        });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, (payload) => {
             this.blog = _.find(this.blogs, { id: +nsCtx.blogId });
         });
@@ -77,6 +84,7 @@ export class EmBlogLeftSidebar {
         this.subscribe3.dispose();
         this.subscribe4.dispose();
         this.subscribe5.dispose();
+        this.subscribe6.dispose();
     }
 
     /**
@@ -120,13 +128,27 @@ export class EmBlogLeftSidebar {
         this.noSpaceBlogs = [];
         $.each(this.spaces, (index, space) => {
             space.blogs = [];
+            $.each(space.dirs, (index, dir) => {
+                dir.blogs = [];
+            });
             $.each(this.blogs, (index, blog) => {
                 if (blog.space) {
                     if (blog.space.id === space.id) {
-                        space.blogs.push(blog);
                         if (nsCtx.blogId == blog.id) {
                             space.open = true;
                         }
+                        let dirs = space.dirs;
+                        if (blog.dir) {
+                            let dir = _.find(dirs, { id: blog.dir.id });
+                            if (dir && dir.status != 'Deleted') {
+                                dir.blogs.push(blog);
+                                if (nsCtx.blogId == blog.id) {
+                                    dir.open = true;
+                                }
+                                return;
+                            }
+                        }
+                        space.blogs.push(blog);
                     }
                 }
             });
@@ -173,6 +195,7 @@ export class EmBlogLeftSidebar {
                     if (data.success) {
                         toastr.success('删除空间成功!');
                         this.spaces = _.reject(this.spaces, { id: space.id });
+                        this.calcTree();
                     } else {
                         toastr.error(data.data, '删除空间失败!');
                     }
@@ -190,6 +213,7 @@ export class EmBlogLeftSidebar {
                     if (data.success) {
                         toastr.success('删除分类成功!');
                         space.dirs = _.reject(space.dirs, { id: dir.id });
+                        this.calcTree();
                     } else {
                         toastr.error(data.data, '删除分类失败!');
                     }
@@ -228,6 +252,18 @@ export class EmBlogLeftSidebar {
                 s._hidden = false;
                 s.open = true;
             }
+
+            _.each(s.dirs, d => {
+                if (!_.some(d.blogs, b => !b._hidden)) {
+                    s._hidden = true;
+                    d._hidden = true;
+                } else {
+                    s._hidden = false;
+                    s.open = true;
+                    d._hidden = false;
+                    d.open = true;
+                }
+            });
         });
 
         _.each(this.blogStows, bs => {
@@ -269,6 +305,10 @@ export class EmBlogLeftSidebar {
 
     createDirHandler(space) {
         this.spaceDirCreateVm.show(space);
+    }
+
+    editDirHandler(dir, space) {
+        this.spaceDirEditVm.show(dir);
     }
 
     // sysLinkHandler(item) {
