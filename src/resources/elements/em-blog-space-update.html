@@ -13,11 +13,13 @@
                         <div class="menu">
                             <div class="item" data-value="">(不指定空间)</div>
                             <template repeat.for="item of spaces | sort:'name'">
-                                <div task.bind="initSpacesHandler($last)" class="item" data-value="${item.id}"><i class="icons">
+                                <div task.bind="initSpacesHandler($last)" class="item" data-value="${item.id}">
+                                    <i class="icons">
                                         <i class="world icon"></i>
-                                    <i show.bind="item.privated" class="corner lock icon"></i>
+                                        <i show.bind="item.privated" class="corner lock icon"></i>
                                     </i>
-                                    </i>${item.name}</div>
+                                    ${item.name}
+                                </div>
                             </template>
                         </div>
                     </div>
