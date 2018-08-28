@@ -1,11 +1,11 @@
 <template>
     <require from="./em-blog-space-dir-create.css"></require>
-    <em-modal classes="small tms-md450" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
+    <em-modal classes="small tms-md450" em-modal.ref="emModal" autofocus.bind="!0" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
         <div slot="header">创建分类</div>
         <div slot="content" class="em-blog-space-dir-create">
             <form class="ui form">
                 <div class="required field">
-                    <input type="text" value.bind="dir.name" placeholder="分类名称">
+                    <input ref="nameRef" type="text" value.bind="dir.name" placeholder="分类名称">
                 </div>
             </form>
         </div>

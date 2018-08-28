@@ -16,6 +16,7 @@ export class EmModal {
     @bindable disabled = false;
     @bindable classes = 'small';
     @bindable showConfirm = true;
+    @bindable autofocus = false;
 
     options = {
         hideOnApprove: true,
@@ -36,7 +37,7 @@ export class EmModal {
 
         $(this.modal).modal({
             closable: false,
-            autofocus: false,
+            autofocus: this.autofocus,
             observeChanges: true,
             allowMultiple: true,
             // detachable: false,
