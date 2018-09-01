@@ -3,11 +3,11 @@
     <em-modal classes="small tms-md450" em-modal.ref="emModal" autofocus.bind="!0" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
         <div slot="header">更新分类</div>
         <div slot="content" class="em-blog-space-dir-edit">
-            <form class="ui form">
+            <div class="ui form">
                 <div class="required field">
-                    <input ref="nameRef" type="text" value.bind="name" placeholder="分类名称">
+                    <input ref="nameRef" type="text" value.bind="name" keyup.trigger="keyupHandler() & key" placeholder="分类名称">
                 </div>
-            </form>
+            </div>
         </div>
     </em-modal>
 </template>

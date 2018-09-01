@@ -47,4 +47,9 @@ export class EmBlogSpaceDirCreate {
             }
         });
     }
+
+    keyupHandler() {
+        this.approveHandler(this.emModal);
+        return false;
+    }
 }

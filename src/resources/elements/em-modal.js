@@ -40,6 +40,7 @@ export class EmModal {
             autofocus: this.autofocus,
             observeChanges: true,
             allowMultiple: true,
+            // keyboardShortcuts: false,
             // detachable: false,
             onShow: () => {
                 this.onshow && this.onshow(this);
