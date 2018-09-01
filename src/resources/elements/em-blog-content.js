@@ -405,7 +405,7 @@ export class EmBlogContent {
     }
 
     updateSpaceHandler() {
-        if (this.isSuper || this.blog.creator.username == this.loginUser.username) {
+        if (this.isSuper || this.blog.creator.username == this.loginUser.username || (this.blog.space && this.blog.space.creator.username == this.loginUser.username)) {
             this.blogSpaceUpdateVm.show(this.blog);
         }
     }

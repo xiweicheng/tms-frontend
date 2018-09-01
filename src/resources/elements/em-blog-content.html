@@ -45,7 +45,7 @@
                                 <span class="description">alt + c</span>
                                 <i class="copy icon"></i> 复制
                             </div>
-                            <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="updateSpaceHandler()" class="item">
+                            <div if.bind="isSuper || blog.creator.username == loginUser.username || (blog.space && blog.space.creator.username == loginUser.username)" click.delegate="updateSpaceHandler()" class="item">
                                 <span class="description">alt + m</span>
                                 <i class="exchange icon"></i> 移动
                             </div>
