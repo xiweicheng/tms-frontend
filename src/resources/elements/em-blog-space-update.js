@@ -58,13 +58,12 @@ export class EmBlogSpaceUpdate {
             _.defer(() => {
                 $(this.spacesRef).dropdown('clear').dropdown({
                     onChange: (value, text, $choice) => {
-                        // toastr.info(value);
                         if (!!value) {
                             this.space = _.find(this.spaces, { id: +value });
                         } else {
                             this.space = null;
-                            $(this.dirsRef).dropdown('clear');
                         }
+                        $(this.dirsRef).dropdown('clear');
                     }
                 }).dropdown('set selected', this.blog.space ? this.blog.space.id + '' : '');
             });
@@ -75,9 +74,7 @@ export class EmBlogSpaceUpdate {
         if (last) {
             _.defer(() => {
                 $(this.dirsRef).dropdown('clear').dropdown({
-                    onChange: (value, text, $choice) => {
-                        // toastr.info(value);
-                    }
+                    onChange: (value, text, $choice) => {}
                 }).dropdown('set selected', this.blog.dir ? this.blog.dir.id + '' : '');
             });
         }
