@@ -20,7 +20,7 @@
             left: 45px;
         }
     }
-    > .ui.label {
+    >.ui.label {
         cursor: pointer;
     }
     .emoji-item {
@@ -33,19 +33,31 @@
         }
     }
     .ui.popup.tags {
-        > .content {
+        >.content {
             width: 290px;
-            > .ui.input {
+            >.ui.input {
                 width: 20px;
             }
         }
         &.customTag {
-            > .content {
-                > .ui.label {
+            >.content {
+                >.ui.label {
                     display: none;
                 }
-                > .ui.input {
+                >.ui.input {
                     width: 280px;
+                }
+            }
+        }
+        .tms-tag {
+            .delete.icon {
+                display: none;
+                position: absolute;
+                right: 0;
+            }
+            &:hover {
+                .delete.icon {
+                    display: inline-block;
                 }
             }
         }

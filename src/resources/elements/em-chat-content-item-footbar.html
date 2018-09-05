@@ -26,9 +26,10 @@
                             <i class="tags icon"></i> 消息标签
                         </div>
                         <div class="scrolling menu">
-                            <div class="item" repeat.for="item of myTags" click.delegate="toggleChatLabelHandler(item)">
+                            <div class="item tms-tag" repeat.for="item of myTags" click.delegate="toggleChatLabelHandler(item)">
                                 <div class="ui green empty circular label" style="width: 0; height: 0;" data-value="${item.value}"></div>
                                 ${item.label}
+                                <i class="delete link icon" if.bind="!item.undel" click.delegate="removeTagHandler(item, $event)"></i>
                             </div>
                         </div>
                     </div>

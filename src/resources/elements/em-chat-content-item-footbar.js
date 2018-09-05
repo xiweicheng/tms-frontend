@@ -132,4 +132,21 @@ export class EmChatContentItemFootbar {
     tagKeyupHandler() {
         this.toggleCustomTagHandler();
     }
+
+    removeTagHandler(item, event) {
+
+        event.stopPropagation();
+
+        $.post(`/admin/chat/label/delete`, {
+            name: item.value,
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                this.myTags = _.reject(this.myTags, { value: item.value });
+                nsCtx.myTags = this.myTags;
+            } else {
+                toastr.error(data.data);
+            }
+        });
+        return false;
+    }
 }
