@@ -34,12 +34,12 @@
                         </div>
                     </div>
                 </div>
-                <div repeat.for="item of tags" class="ui small ${item.color} label" data-tooltip="${item.label}" click.delegate="toggleChatLabelHandler(item)">${item.value}</div>
+                <div repeat.for="item of tags" class="ui ${item.color} label" data-tooltip="${item.label}" click.delegate="toggleChatLabelHandler(item)">${item.value}</div>
                 <div if.bind="isCustomTag" class="ui ${!isCustomTag ? 'transparent' : ''} icon input">
                     <input ref="tagRef" keyup.trigger="tagKeyupHandler() & key" type="text" placeholder="">
                     <i click.delegate="toggleCustomTagHandler()" title="添加自定义标签" class="add link icon"></i>
                 </div>
-                <i if.bind="!isCustomTag" click.delegate="toggleCustomTagHandler()" title="添加自定义标签" class="add link icon"></i>
+                <i if.bind="!isCustomTag" click.delegate="toggleCustomTagHandler()" title="添加自定义标签" style="margin-right: 0;" class="add big blue circle link icon"></i>
             </div>
         </div>
     </div>
