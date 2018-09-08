@@ -81,6 +81,7 @@ export class ChatDirect {
                     }
                 });
                 this.users = [...this.users];
+                bs.signal('sg-users-refresh');
             });
             stompClient.subscribe('/user/direct/update', (msg) => {
                 ea.publish(nsCons.EVENT_WS_DIRECT_UPDATE, JSON.parse(msg.body));
@@ -109,6 +110,7 @@ export class ChatDirect {
                         delete user['onlineDate'];
                     }
                 });
+                bs.signal('sg-users-refresh');
             }
         });
     }
