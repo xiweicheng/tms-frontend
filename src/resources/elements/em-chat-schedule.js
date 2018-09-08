@@ -41,7 +41,40 @@ export class EmChatSchedule {
             $(this.scheduleRef).fullCalendar('refetchEvents');
         });
 
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_WS_SCHEDULE_UPDATE, (payload) => {
+            if (payload.creator != this.loginUser.username) {
+                ea.publish(nsCons.EVENT_SCHEDULE_REFRESH, {});
+
+                let content = '';
+                if (payload.cmd == 'C') {
+                    content = '您有需要参与的新日程安排，请注意关注！';
+                } else if (payload.cmd == 'U') {
+                    content = '您参与的日程有更新，请注意关注！';
+                } else if (payload.cmd == 'D') {
+                    content = '您参与的日程有被取消，请注意关注！';
+                } else {
+                    content = '您参与的日程有更新，请注意关注！';
+                }
+
+                this._desktopPush(content);
+            }
+        });
+
         this._getEvents();
+    }
+
+    _desktopPush(content) {
+        push.create('TMS日程提醒通知', {
+            body: content,
+            icon: {
+                x16: 'img/tms-x16.ico',
+                x32: 'img/tms-x32.png'
+            },
+            timeout: 5000
+        });
+
+        let alarm = utils.getAlarm();
+        (!alarm.off && alarm.audio) && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
     }
 
     _getEvents(start, end, callback) {
@@ -84,6 +117,7 @@ export class EmChatSchedule {
      */
     unbind() {
         this.subscribe.dispose();
+        this.subscribe2.dispose();
     }
 
     attached() {

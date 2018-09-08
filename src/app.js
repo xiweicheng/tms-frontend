@@ -148,7 +148,7 @@ export class App {
         }, {
             route: ['chat/:username'],
             name: 'chat',
-            moduleId: 'chat/chat-direct',
+            moduleId: 'chat/chat',
             nav: false,
             title: '私聊 | TMS'
         }, {

@@ -46,7 +46,7 @@ export class EmChatContentItem {
         });
 
         // 消息popup
-        $('.tms-chat-direct').on('mouseenter', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', (event) => {
+        $('.tms-chat').on('mouseenter', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', (event) => {
             event.preventDefault();
             let target = event.currentTarget;
 
@@ -71,7 +71,7 @@ export class EmChatContentItem {
 
         });
 
-        $('.tms-chat-direct').on('mouseleave', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', (event) => {
+        $('.tms-chat').on('mouseleave', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', (event) => {
             event.preventDefault();
             if (this.hoverMsgTimeoutRef) {
                 if (this.hoverMsgTarget === event.currentTarget) {
@@ -82,7 +82,7 @@ export class EmChatContentItem {
         });
 
         // wiki dir
-        $('.tms-chat-direct').on('mouseenter', '.tms-content-body .em-chat-content-item', (event) => {
+        $('.tms-chat').on('mouseenter', '.tms-content-body .em-chat-content-item', (event) => {
             event.preventDefault();
             var $c = $(event.currentTarget);
 
@@ -91,13 +91,13 @@ export class EmChatContentItem {
             });
         });
 
-        $('.tms-chat-direct').on('click', '.panel-wiki-dir .wiki-dir-item', (event) => {
+        $('.tms-chat').on('click', '.panel-wiki-dir .wiki-dir-item', (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_CHAT_CONTENT_SCROLL_TO, { target: $('#' + $(event.currentTarget).attr('data-id')) });
         });
 
         // 用户信息popup
-        $('.tms-chat-direct').on('mouseenter', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+        $('.tms-chat').on('mouseenter', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
             event.preventDefault();
             let target = event.currentTarget;
 
@@ -125,7 +125,7 @@ export class EmChatContentItem {
         });
 
         // 用户信息popup
-        $('.tms-chat-direct').on('mouseleave', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+        $('.tms-chat').on('mouseleave', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
             event.preventDefault();
             if (this.hoverTimeoutRef) {
                 if (this.hoverUserTarget === event.currentTarget) {

@@ -36,7 +36,7 @@ export class ChatDirect {
         Dropzone.autoDiscover = false;
         this.poll = poll;
 
-        new Clipboard('.tms-chat-direct .tms-clipboard')
+        new Clipboard('.tms-chat .tms-clipboard')
             .on('success', function(e) {
                 toastr.success('复制到剪贴板成功!');
             }).on('error', function(e) {
@@ -83,8 +83,10 @@ export class ChatDirect {
                 this.users = [...this.users];
             });
             stompClient.subscribe('/user/direct/update', (msg) => {
-                let body = JSON.parse(msg.body);
-                ea.publish(nsCons.EVENT_WS_DIRECT_UPDATE, body);
+                ea.publish(nsCons.EVENT_WS_DIRECT_UPDATE, JSON.parse(msg.body));
+            });
+            stompClient.subscribe('/user/channel/schedule', (msg) => {
+                ea.publish(nsCons.EVENT_WS_SCHEDULE_UPDATE, JSON.parse(msg.body));
             });
         }, (err) => {
             utils.errorAutoTry(() => {
