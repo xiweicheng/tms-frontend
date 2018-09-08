@@ -47,13 +47,13 @@ export class EmChatSchedule {
 
                 let content = '';
                 if (payload.cmd == 'C') {
-                    content = '您有需要参与的新日程安排，请注意关注！';
+                    content = `【新日程】${payload.title}`;
                 } else if (payload.cmd == 'U') {
-                    content = '您参与的日程有更新，请注意关注！';
+                    content = `【日程变更】${payload.title}`;
                 } else if (payload.cmd == 'D') {
-                    content = '您参与的日程有被取消，请注意关注！';
+                    content = `【日程取消】${payload.title}`;
                 } else {
-                    content = '您参与的日程有更新，请注意关注！';
+                    content = `【日程变更】${payload.title}`;
                 }
 
                 this._desktopPush(content);
