@@ -34,7 +34,7 @@
     "nprogress": "^0.2.0",
     "push.js": "0.0.11",
     "requirejs": "^2.3.2",
-    "semantic-ui-calendar": "0.0.6",
+    "semantic-ui-calendar": "0.0.8",
     "simplemde": "github:xiweicheng/simplemde-markdown-editor#master",
     "table-export": "^1.0.2",
     "text": "github:requirejs/text#latest",
