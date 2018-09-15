@@ -316,6 +316,47 @@ export class ChatDirect {
 
         });
 
+        this.subscribe15 = ea.subscribe(nsCons.EVENT_CHAT_DO_MSG_FILTER, (payload) => {
+
+            if (payload.action == 'clear') {
+                this._doClearFilter();
+                return;
+            }
+
+            this._doFilter(payload.filter);
+
+        });
+
+    }
+
+    _doClearFilter() {
+        this._filter = false;
+        _.each(this.chats, item => {
+            item._filter = false;
+            _.each(item.chatLabels, cl => { cl._filter = false; });
+        });
+        this.chats = this.chats_bk;
+        // bs.signal('sg-chatlabel-refresh');
+    }
+
+    _doFilter(filter) {
+
+        if (this._filter) {
+            this._doClearFilter();
+        }
+
+        this._filter = true;
+        this.chats_bk = this.chats;
+
+        this.chats = _.filter(this.chats_bk, item => {
+            let v = _.some(item.chatLabels, cl => {
+                let vv = (cl.name == filter) && (cl.voters && cl.voters.length > 0);
+                cl._filter = vv;
+                return vv;
+            });
+            item._filter = v;
+            return v;
+        });
     }
 
     getNewMsgCnt() {
@@ -440,6 +481,7 @@ export class ChatDirect {
         this.subscribe12.dispose();
         this.subscribe13.dispose();
         this.subscribe14.dispose();
+        this.subscribe15.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();
@@ -727,6 +769,7 @@ export class ChatDirect {
 
     doPoll() {
         poll.start((resetCb, stopCb) => {
+            if (this._filter) return;
             this._pollChats(resetCb, stopCb);
             this._poll(resetCb, stopCb);
         });

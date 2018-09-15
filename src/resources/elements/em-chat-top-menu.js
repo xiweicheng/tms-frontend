@@ -138,6 +138,13 @@ export class EmChatTopMenu {
         this.subscribe5 = ea.subscribe(nsCons.EVENT_CHAT_TOGGLE_RIGHT_SIDEBAR, (payload) => {
             this.toggleRightSidebar();
         });
+
+        this.subscribe6 = ea.subscribe(nsCons.EVENT_CHAT_DO_MSG_SEARCH, (payload) => {
+            $(this.searchInputRef).val(payload.search);
+            this.searchFocusHandler();
+            this.activeType = nsCons.ACTION_TYPE_SEARCH;
+            this.searchHandler();
+        });
     }
 
     /**
@@ -149,6 +156,7 @@ export class EmChatTopMenu {
         this.subscribe3.dispose();
         this.subscribe4.dispose();
         this.subscribe5.dispose();
+        this.subscribe6.dispose();
     }
 
     /**

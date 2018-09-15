@@ -149,4 +149,23 @@ export class EmChatContentItemFootbar {
         });
         return false;
     }
+
+    stopPropagationHandler(event) {
+        event.stopPropagation();
+    }
+
+    filterByLabelHandler(item, event) {
+        event.stopPropagation();
+        ea.publish(nsCons.EVENT_CHAT_DO_MSG_FILTER, { filter: `${item.name}` })
+    }
+
+    clearFilterByLabelHandler(item, event) {
+        event.stopPropagation();
+        ea.publish(nsCons.EVENT_CHAT_DO_MSG_FILTER, { filter: `${item.name}`, action: 'clear' })
+    }
+
+    searchByLabelHandler(item, event) {
+        event.stopPropagation();
+        ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `tags:${item.name}` })
+    }
 }
