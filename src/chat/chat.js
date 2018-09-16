@@ -102,7 +102,7 @@ export class ChatDirect {
                 this.onlines = data.data;
                 _.each(this.users, user => {
                     let online = _.find(this.onlines, { username: user.username });
-                    if (online) {
+                    if (online || (user.username == this.loginUser.username)) {
                         user.onlineStatus = 'Online';
                         user.onlineDate = online.date;
                     } else {
