@@ -73,7 +73,7 @@ export class ChatDirect {
                         if (online.cmd == 'ON') {
                             user.onlineStatus = 'Online';
                             user.onlineDate = new Date().getTime();
-                        } else if (online.cmd == 'OFF') {
+                        } else if (online.cmd == 'OFF' && (user.username != this.loginUser.username)) {
                             delete user['onlineStatus'];
                             delete user['onlineDate'];
                         }
