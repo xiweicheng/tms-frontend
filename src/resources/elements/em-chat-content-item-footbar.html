@@ -10,9 +10,9 @@
             </div>
         </div>
         <div repeat.for="item of chat.chatLabels | chatLabelFilter:'Tag'" class="ui ${item | labelColor} tags label tms-tag-item" css.bind="item | labelCss" if.bind="item.voters.length != 0" click.delegate="toggleChatLabelHandler({value: item.name, label: item.description, type: 'tag'})" data-position="top left" data-tooltip="${item | chatLabelTip & signal:'sg-chatlabel-refresh'}">${item.name}
-            <div show.bind="!(chat._filter && item._filter)" class="detail">${item.voters.length}</div>
-            <i show.bind="chat._filter && item._filter" style="margin: 0; margin-left: 8px;" class="remove red link icon" title="清除以此标签过滤" click.delegate="clearFilterByLabelHandler(item, $event)"></i>
-            <div show.bind="!(chat._filter && item._filter)" ui-dropdown-hover class="ui ${last ? 'bottom' : 'top'} right pointing dropdown">
+            <div show.bind="!item._filter" class="detail">${item.voters.length}</div>
+            <i show.bind="item._filter" style="margin: 0; margin-left: 8px;" class="remove red link icon" title="清除以此标签过滤" click.delegate="clearFilterByLabelHandler(item, $event)"></i>
+            <div show.bind="!item._filter" ui-dropdown-hover class="ui ${last ? 'bottom' : 'top'} right pointing dropdown">
                 <a class="text" style="margin: 0; margin-left: 8px; line-height: 1;" title="更多操作" click.delegate="stopPropagationHandler($event)"><i class="ellipsis vertical link icon" style="margin: 0;"></i></a>
                 <div class="menu">
                     <div class="item" click.delegate="filterByLabelHandler(item, $event)" title="以此标签过滤"><i class="filter icon"></i>过滤</div>

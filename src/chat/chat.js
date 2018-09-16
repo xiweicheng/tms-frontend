@@ -332,10 +332,9 @@ export class ChatDirect {
     _doClearFilter() {
         this._filter = false;
         _.each(this.chats, item => {
-            item._filter = false;
+            item._hidden = false;
             _.each(item.chatLabels, cl => { cl._filter = false; });
         });
-        this.chats = this.chats_bk;
         // bs.signal('sg-chatlabel-refresh');
     }
 
@@ -346,16 +345,14 @@ export class ChatDirect {
         }
 
         this._filter = true;
-        this.chats_bk = this.chats;
 
-        this.chats = _.filter(this.chats_bk, item => {
+        _.each(this.chats, item => {
             let v = _.some(item.chatLabels, cl => {
                 let vv = (cl.name == filter) && (cl.voters && cl.voters.length > 0);
                 cl._filter = vv;
                 return vv;
             });
-            item._filter = v;
-            return v;
+            item._hidden = !v;
         });
     }
 
