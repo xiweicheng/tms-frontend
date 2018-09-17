@@ -609,6 +609,7 @@ export class ChatDirect {
         this.chats = null;
         this.first = true; // 第一页
         this.last = true; // 最后一页
+        this._filter = false;
     }
 
     lastMoreHandler() { // 上面的老消息
