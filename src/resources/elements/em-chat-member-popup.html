@@ -34,7 +34,7 @@
                         <div class="ui middle aligned divided list">
                             <div class="item" style="padding-top: 5px!important; padding-bottom: 5px!important;">
                                 <div class="content">
-                                    <a class="header" style="display: inline;">姓名</a> ${member.name}
+                                    <a class="header" style="display: inline;">姓名</a> ${member.name} <span show.bind="member.level">(${member.level})</span>
                                 </div>
                             </div>
                             <div class="item" style="padding-top: 5px!important; padding-bottom: 5px!important;">
@@ -50,6 +50,26 @@
                             <div class="item" style="padding-top: 5px!important; padding-bottom: 5px!important;">
                                 <div class="content">
                                     <a class="header" style="display: inline;">登录</a> 从IP ${member.loginRemoteAddress} (<span style="font-style: italic; color:gray;" class="timeago" title="${member.lastLoginDate | date}">${member.lastLoginDate | timeago}</span>)
+                                </div>
+                            </div>
+                            <div show.bind="member.phone" class="item" style="padding-top: 5px!important; padding-bottom: 5px!important;">
+                                <div class="content">
+                                    <a class="header" style="display: inline;">座机</a> ${member.phone}
+                                </div>
+                            </div>
+                            <div show.bind="member.mobile" class="item" style="padding-top: 5px!important; padding-bottom: 5px!important;">
+                                <div class="content">
+                                    <a class="header" style="display: inline;">手机</a> ${member.mobile}
+                                </div>
+                            </div>
+                            <div show.bind="member.place" class="item" style="padding-top: 5px!important; padding-bottom: 5px!important;">
+                                <div class="content">
+                                    <a class="header" style="display: inline;">位置</a> ${member.place}
+                                </div>
+                            </div>
+                            <div show.bind="member.hobby" class="item" style="padding-top: 5px!important; padding-bottom: 5px!important;">
+                                <div class="content">
+                                    <a class="header" style="display: inline;">爱好</a> ${member.hobby}
                                 </div>
                             </div>
                             <div class="item" style="padding-top: 5px!important; padding-bottom: 5px!important;">

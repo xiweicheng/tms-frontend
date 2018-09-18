@@ -12,11 +12,7 @@ export class EmUserEdit {
         });
     }
 
-    showHandler() {
-        // $.get('/admin/user/get', {
-        //     username: this.user.username
-        // }, (data) => {});
-    }
+    showHandler() {}
 
     /**
      * 当视图被附加到DOM中时被调用
@@ -32,6 +28,11 @@ export class EmUserEdit {
                     // password: ['minLength[8]'],
                 }
             });
+        $(this.frm2)
+            .form({
+                on: 'blur',
+                inline: true
+            });
     }
 
     _chkOk() {
@@ -46,23 +47,46 @@ export class EmUserEdit {
 
     approveHandler(modal) {
 
-        if (this._chkOk() && $(this.frm).form('is valid')) {
-            $.post('/admin/user/update2', {
+        var active = $(this.tabRef).children('a.active').attr('data-tab');
+
+        if (active == 'user-basic-info') {
+
+            if (this._chkOk() && $(this.frm).form('is valid')) {
+                $.post('/admin/user/update2', {
+                    username: this.user.username,
+                    password: this.user.password,
+                    name: this.user.name,
+                    mail: this.user.mails
+                }, (data) => {
+                    modal.hide();
+                    this.user.password = '';
+                    if (data.success) {
+                        toastr.success('更新个人信息成功!');
+                    } else {
+                        toastr.error(data.data, '更新个人信息失败!');
+                    }
+                });
+            } else {
+                modal.hideDimmer();
+            }
+        } else if (active == 'user-extra-info') {
+
+            $.post('/admin/user/extra/update', {
                 username: this.user.username,
-                password: this.user.password,
-                name: this.user.name,
-                mail: this.user.mails
+                phone: this.user.phone,
+                mobile: this.user.mobile,
+                place: this.user.place,
+                level: this.user.level,
+                hobby: this.user.hobby,
+                introduce: this.user.introduce
             }, (data) => {
                 modal.hide();
-                this.user.password = '';
                 if (data.success) {
-                    toastr.success('更新个人信息成功!');
+                    toastr.success('更新个人扩展信息成功!');
                 } else {
-                    toastr.error(data.data, '更新个人信息失败!');
+                    toastr.error(data.data, '更新个人扩展信息失败!');
                 }
             });
-        } else {
-            modal.hideDimmer();
         }
     }
 }

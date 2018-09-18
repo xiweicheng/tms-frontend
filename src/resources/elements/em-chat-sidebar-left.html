@@ -51,7 +51,7 @@
                         <!-- <i class="plus link circular icon"></i> -->
                     </div>
                     <div ref="userListRef" class="ui middle aligned selection list">
-                        <a repeat.for="item of users | sortUsers:loginUser.username & signal:'sg-users-refresh'" click.delegate="userHandler()" title="${item.name}(@${item.username}) ${item.onlineDate | date:'MM-dd HH:mm'}${item.onlineDate ? ' 上线' : ''}" show.bind="!item.hidden" href="#/chat/@${item.username}" class="item my-theme ${(isAt && item.username == chatTo) ? 'active' : ''} ${!item.enabled ? 'disabled-user' : ''}" data-id="${item.username}">
+                        <a repeat.for="item of users | sortUsers:loginUser.username & signal:'sg-users-refresh'" click.delegate="userHandler()" title="${item.name}(@${item.username}) ${item.onlineDate | date:'MM-dd HH:mm'}${item.onlineDate ? ' 上线' : ''} ${item.level ? '\n职位: ' + item.level : ''} ${item.phone ? '\n座机: ' + item.phone : ''} ${item.mobile ? '\n手机: ' + item.mobile : ''} ${item.mobile ? '\n位置: ' + item.place : ''} ${item.hobby ? '\n爱好: ' + item.hobby : ''}" show.bind="!item.hidden" href="#/chat/@${item.username}" class="item my-theme ${(isAt && item.username == chatTo) ? 'active' : ''} ${!item.enabled ? 'disabled-user' : ''}" data-id="${item.username}">
                             <i style="font-weight: bold;" class="at icon my-theme"></i>
                             <div class="content">
                                 <div class="tms-name my-theme">${item.username == loginUser.username ? '我' : (item.name ? item.name : item.username)} ${(item.onlineStatus == 'Online' ? '(在线)' : '')  & signal:'sg-users-refresh'}</div>

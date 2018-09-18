@@ -3,8 +3,12 @@
     <em-modal classes="small em-user-edit-modal" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)" confirm-label="更新">
         <div slot="header">个人信息编辑</div>
         <div slot="content" class="tms-em-user-edit">
-            <div ref="frm" class="ui form">
-                <div class="ui form" with.bind="user">
+            <div ref="tabRef" ui-tab class="ui pointing secondary menu">
+                <a class="item active" data-tab="user-basic-info">基本信息</a>
+                <a class="item" data-tab="user-extra-info">扩展信息</a>
+            </div>
+            <div class="ui tab basic segment active" style="margin-bottom: 0;" data-tab="user-basic-info">
+                <div ref="frm" class="ui form" with.bind="user">
                     <div class="inline field">
                         <label>用户名:</label>
                         <div class="ui basic label user-username">${username}</div>
@@ -20,6 +24,34 @@
                     <div class="required inline field">
                         <label>邮箱:</label>
                         <input name="mail" value.bind="mails" placeholder="邮箱" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="ui tab basic segment" style="margin-bottom: 0;" data-tab="user-extra-info">
+                <div ref="frm2" class="ui form" with.bind="user">
+                    <div class="inline field">
+                        <label>手机:</label>
+                        <input name="mobile" value.bind="mobile" placeholder="手机号" type="text">
+                    </div>
+                    <div class="inline field">
+                        <label>座机:</label>
+                        <input name="phone" value.bind="phone" placeholder="座机号" type="text">
+                    </div>
+                    <div class="inline field">
+                        <label>位置:</label>
+                        <input name="place" value.bind="place" placeholder="位置" type="text">
+                    </div>
+                    <div class="inline field">
+                        <label>职位:</label>
+                        <input name="level" value.bind="level" placeholder="职位" type="text">
+                    </div>
+                    <div class="inline field">
+                        <label>爱好:</label>
+                        <input name="hobby" value.bind="hobby" placeholder="爱好" type="text">
+                    </div>
+                    <div class="inline field">
+                        <label>介绍:</label>
+                        <textarea name="introduce" value.bind="introduce" placeholder="个人介绍" rows="3"></textarea>
                     </div>
                 </div>
             </div>
