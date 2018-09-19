@@ -89,11 +89,90 @@ export class ChatDirect {
             stompClient.subscribe('/user/channel/schedule', (msg) => {
                 ea.publish(nsCons.EVENT_WS_SCHEDULE_UPDATE, JSON.parse(msg.body));
             });
+
+            // 注册发送消息
+            stompClient.subscribe('/blog/update', (msg) => {
+                this._blogUpdateToastr(JSON.parse(msg.body));
+            });
+            stompClient.subscribe('/user/blog/update', (msg) => {
+                this._blogUpdateToastr(JSON.parse(msg.body));
+            });
         }, (err) => {
             utils.errorAutoTry(() => {
                 this._initSock();
             });
         });
+    }
+
+    _blogUpdateToastr(payload) {
+        if (payload.username != this.loginUser.username) {
+
+            if (payload.cmd == 'At') {
+                toastr.info(`博文【${payload.title}】有提及到你，点击可查看！`, null, {
+                    timeOut: 0,
+                    positionClass: 'toast-top-right',
+                    onclick: () => {
+                        utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
+                    }
+                });
+            } else if (payload.cmd == 'OU') {
+                toastr.info(`您的博文【${payload.title}】有更新，点击可查看！`, null, {
+                    timeOut: 0,
+                    positionClass: 'toast-top-right',
+                    onclick: () => {
+                        utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
+                    }
+                });
+            } else if (payload.cmd == 'F') {
+                toastr.info(`您关注的博文【${payload.title}】有更新，点击可查看！`, null, {
+                    timeOut: 0,
+                    positionClass: 'toast-top-right',
+                    onclick: () => {
+                        utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
+                    }
+                });
+            } else if (payload.cmd == 'CAt') {
+                toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, {
+                    timeOut: 0,
+                    positionClass: 'toast-top-right',
+                    onclick: () => {
+                        utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
+                    }
+                });
+            } else if (payload.cmd == 'FCC') {
+                toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, {
+                    timeOut: 0,
+                    positionClass: 'toast-top-right',
+                    onclick: () => {
+                        utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
+                    }
+                });
+            } else if (payload.cmd == 'FCU') {
+                toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, {
+                    timeOut: 0,
+                    positionClass: 'toast-top-right',
+                    onclick: () => {
+                        utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
+                    }
+                });
+            } else if (payload.cmd == 'CC') {
+                toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, {
+                    timeOut: 0,
+                    positionClass: 'toast-top-right',
+                    onclick: () => {
+                        utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
+                    }
+                });
+            } else if (payload.cmd == 'CU') {
+                toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, {
+                    timeOut: 0,
+                    positionClass: 'toast-top-right',
+                    onclick: () => {
+                        utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
+                    }
+                });
+            }
+        }
     }
 
     getOnlineUsers() {

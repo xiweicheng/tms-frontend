@@ -39,6 +39,28 @@ export class Blog {
         clearInterval(this.timeagoTimer);
     }
 
+    _initSock() {
+        // FYI: https://stomp-js.github.io/stomp-websocket/codo/class/Client.html
+        // var socket = new SockJS('http://localhost:8080/ws');
+        let socket = new SockJS('/ws');
+        window.stompClient = Stomp.over(socket);
+        // window.stompClient.debug = () => {};
+        stompClient.debug = (msg) => { console.log(msg) };
+        window.stompClient.connect({}, (frame) => {
+            // 注册发送消息
+            stompClient.subscribe('/blog/update', (msg) => {
+                ea.publish(nsCons.EVENT_WS_BLOG_UPDATE, JSON.parse(msg.body));
+            });
+            stompClient.subscribe('/user/blog/update', (msg) => {
+                ea.publish(nsCons.EVENT_WS_BLOG_UPDATE, JSON.parse(msg.body));
+            });
+        }, (err) => {
+            utils.errorAutoTry(() => {
+                this._initSock();
+            });
+        });
+    }
+
     /**
      * 当视图被附加到DOM中时被调用
      */
@@ -99,6 +121,8 @@ export class Blog {
                 content: `{!~${$(event.currentTarget).attr('data-value')}} `
             });
         });
+
+        this._initSock();
 
     }
 

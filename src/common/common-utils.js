@@ -520,6 +520,23 @@ export class CommonUtils {
 
     }
 
+    /**
+     * 打开url
+     * url:需要跳转的地址
+     */
+    openUrl(url) {
+
+        if (url) {
+            let $a = $(`<a href="${url}" style="display:none;"></a>`).appendTo('body').end();
+            $(`<input type="button">`).appendTo($a).end().click();
+
+            _.delay(() => {
+                $a.remove();
+            }, 200);
+        }
+
+    }
+
     isAdminUser(user) {
         if (user && user.authorities) {
             return _.some(user.authorities, (item) => {

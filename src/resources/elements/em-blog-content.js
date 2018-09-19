@@ -39,6 +39,112 @@ export class EmBlogContent {
         this.subscribe4 = ea.subscribe(nsCons.EVENT_BLOG_COMMENT_CHANGED, (payload) => {
             this.comments = payload.comments;
         });
+        this.subscribe5 = ea.subscribe(nsCons.EVENT_WS_BLOG_UPDATE, (payload) => {
+            if (payload.username != this.loginUser.username) {
+
+                if (payload.cmd == 'At') {
+                    if (payload.id != this.blog.id) {
+                        toastr.info(`博文【${payload.title}】有提及到你，点击可查看！`, null, {
+                            timeOut: 0,
+                            positionClass: 'toast-top-right',
+                            onclick: () => {
+                                utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
+                            }
+                        });
+                    }
+                } else if (payload.cmd == 'OU') {
+                    if (payload.id != this.blog.id) {
+                        toastr.info(`您的博文【${payload.title}】有更新，点击可查看！`, null, {
+                            timeOut: 0,
+                            positionClass: 'toast-top-right',
+                            onclick: () => {
+                                utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
+                            }
+                        });
+                    }
+                } else if (payload.cmd == 'U') {
+                    if (payload.id == this.blog.id) {
+                        toastr.info(`当前博文有更新，点击可更新查看！`, null, {
+                            timeOut: 0,
+                            positionClass: 'toast-top-right',
+                            onclick: () => {
+                                this.refreshHandler();
+                            }
+                        });
+                    }
+                } else if (payload.cmd == 'F') {
+                    if (payload.id != this.blog.id) {
+                        toastr.info(`您关注的博文【${payload.title}】有更新，点击可查看！`, null, {
+                            timeOut: 0,
+                            positionClass: 'toast-top-right',
+                            onclick: () => {
+                                utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
+                            }
+                        });
+                    }
+                } else if (payload.cmd == 'CAt') {
+                    toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, {
+                        timeOut: 0,
+                        positionClass: 'toast-top-right',
+                        onclick: () => {
+                            if (payload.id != this.blog.id) {
+                                utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
+                            } else {
+                                this.refreshHandler();
+                            }
+                        }
+                    });
+                } else if (payload.cmd == 'FCC') {
+                    toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, {
+                        timeOut: 0,
+                        positionClass: 'toast-top-right',
+                        onclick: () => {
+                            if (payload.id != this.blog.id) {
+                                utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
+                            } else {
+                                this.refreshHandler();
+                            }
+                        }
+                    });
+                } else if (payload.cmd == 'FCU') {
+                    toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, {
+                        timeOut: 0,
+                        positionClass: 'toast-top-right',
+                        onclick: () => {
+                            if (payload.id != this.blog.id) {
+                                utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
+                            } else {
+                                this.refreshHandler();
+                            }
+                        }
+                    });
+                } else if (payload.cmd == 'CC') {
+                    toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, {
+                        timeOut: 0,
+                        positionClass: 'toast-top-right',
+                        onclick: () => {
+                            if (payload.id != this.blog.id) {
+                                utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
+                            } else {
+                                this.refreshHandler();
+                            }
+                        }
+                    });
+                } else if (payload.cmd == 'CU') {
+                    toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, {
+                        timeOut: 0,
+                        positionClass: 'toast-top-right',
+                        onclick: () => {
+                            if (payload.id != this.blog.id) {
+                                utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
+                            } else {
+                                this.refreshHandler();
+                            }
+                        }
+                    });
+                }
+            }
+        });
 
         this.throttleCreateHandler = _.throttle(() => { this.createHandler() }, 1000, { 'trailing': false });
         this.throttleEditHandler = _.throttle(() => { this.editHandler() }, 1000, { 'trailing': false });
@@ -53,6 +159,7 @@ export class EmBlogContent {
         this.subscribe2.dispose();
         this.subscribe3.dispose();
         this.subscribe4.dispose();
+        this.subscribe5.dispose();
     }
 
     /**
