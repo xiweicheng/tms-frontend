@@ -10,6 +10,7 @@
                     <a show.bind="blog.space" class="section active">${blog.space.name}</a>
                     <span if.bind="isSuper || blog.creator.username == loginUser.username" data-tooltip="${blog.privated ? '私有博文,点击可公开' : '公开博文,点击可关闭'}" data-position="right center" style="margin-left: 16px; float: right;"><i click.delegate="updatePrivatedHandler()" class="link icon ${blog.privated ? 'lock' : 'unlock alternate'}"></i></span>
                     <span if.bind="(isSuper || blog.creator.username == loginUser.username) && blog.openEdit" data-tooltip="开放编辑中,点击可关闭" data-position="right center" style="margin-left: 8px; top: -1px;"><i click.delegate="openEditHandler()" class="link icon write"></i></span>
+                    <span if.bind="blogStow" data-tooltip="已收藏,点击可删除收藏" data-position="right center" style="margin-left: 8px; top: -1px;"><i click.delegate="stowHandler()" class="link icon star"></i></span>
                 </div>
                 <div class="actions">
                     <a if.bind="dir" class="ui basic mini button" title="博文目录 (d)" click.delegate="catalogHandler()">

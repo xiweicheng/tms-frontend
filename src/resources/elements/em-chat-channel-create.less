@@ -4,9 +4,14 @@
         overflow-y: auto;
     }
     .ui.form {
-        > .field {
-            > label {
+        >.field {
+            >label {
                 width: 35px!important;
+            }
+            &.inline {
+                input {
+                    width: 360px;
+                }
             }
         }
     }

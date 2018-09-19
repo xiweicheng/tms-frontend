@@ -15,6 +15,7 @@
                                 <th><i class="at icon" style="margin-right: 0;"></i>用户名</th>
                                 <th>姓名</th>
                                 <th>邮箱</th>
+                                <th></th>
                                 <th>登录</th>
                                 <th style="width: 108px; text-align: center;">状态</th>
                             </tr>
@@ -24,6 +25,9 @@
                                 <td><i class="at icon" style="margin-right: 0;"></i>${item.username}</td>
                                 <td>${item.name}</td>
                                 <td>${item.mails}</td>
+                                <td>
+                                    <span ui-pp data-html="${item.level ? '<b>职位:</b> ' + item.level : ''} ${item.phone ? '<br/><b>座机:</b> ' + item.phone : ''} ${item.mobile ? '<br/><b>手机:</b> ' + item.mobile : ''} ${item.place ? '<br/><b>位置:</b> ' + item.place : ''} ${item.hobby ? '<br/><b>爱好:</b> ' + item.hobby : ''}"><i class="info circle icon"></i></span>
+                                </td>
                                 <td title="${item.lastLoginDate | date}">${item.lastLoginDate | timeago}</td>
                                 <td if.bind="item.enabled">
                                     <div class="ui green tag label">启用中</div>

@@ -25,6 +25,7 @@ export function configure(aurelia) {
         'resources/attributes/attr-ui-dropdown-hover',
         'resources/attributes/attr-ui-tab',
         'resources/attributes/attr-ui-popup',
+        'resources/attributes/attr-ui-pp',
         'resources/attributes/attr-ui-checkbox',
         'resources/attributes/attr-tablesort',
         'resources/attributes/attr-textcomplete',
