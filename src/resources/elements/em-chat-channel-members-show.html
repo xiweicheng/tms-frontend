@@ -26,7 +26,7 @@
                                 <td>${item.name}</td>
                                 <td>${item.mails}</td>
                                 <td>
-                                    <span ui-pp data-html="${item.level ? '<b>职位:</b> ' + item.level : ''} ${item.phone ? '<br/><b>座机:</b> ' + item.phone : ''} ${item.mobile ? '<br/><b>手机:</b> ' + item.mobile : ''} ${item.place ? '<br/><b>位置:</b> ' + item.place : ''} ${item.hobby ? '<br/><b>爱好:</b> ' + item.hobby : ''}"><i class="info circle icon"></i></span>
+                                    <span ui-pp data-html="${item.level ? '<b>职位:</b> ' + item.level + '<br/>' : ''} ${item.phone ? '<b>座机:</b> ' + item.phone + '<br/>' : ''} ${item.mobile ? '<b>手机:</b> ' + item.mobile + '<br/>' : ''} ${item.place ? '<b>位置:</b> ' + item.place + '<br/>' : ''} ${item.hobby ? '<b>爱好:</b> ' + item.hobby : ''}"><i class="info circle icon"></i></span>
                                 </td>
                                 <td title="${item.lastLoginDate | date}">${item.lastLoginDate | timeago}</td>
                                 <td if.bind="item.enabled">
