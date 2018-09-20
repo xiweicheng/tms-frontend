@@ -303,12 +303,12 @@ export class ChatDirect {
                     if (msg.action == 'Delete') {
                         this.chats = _.reject(this.chats, { id: chat.id });
                     } else {
-                        this.updateNotify(chat, msg, `【${updaterName}】更新了消息[#${chat.id}]的内容，请注意关注！`);
+                        this.updateNotify(chat, msg, `【${updaterName}】更新了消息[#${chat.id}]的内容，可点击查看！`);
                     }
                 } else if (msg.type == 'Label') {
-                    this.updateNotify(chat, msg, (msg.action != 'Delete' ? `【${updaterName}】更新了消息[#${chat.id}]的表情标签，请注意关注！` : null));
+                    this.updateNotify(chat, msg, (msg.action != 'Delete' ? `【${updaterName}】更新了消息[#${chat.id}]的表情标签，可点击查看！` : null));
                 } else if (msg.type == 'Reply') {
-                    this.updateNotify(chat, msg, (msg.action != 'Delete' ? `【${updaterName}】更新了消息[#${chat.id}]的话题回复，请注意关注！` : null));
+                    this.updateNotify(chat, msg, (msg.action != 'Delete' ? `【${updaterName}】更新了消息[#${chat.id}]的话题回复，可点击查看！` : null));
                 }
             });
 
@@ -364,7 +364,7 @@ export class ChatDirect {
                         let chat = _.find(this.chats, { id: payload.id });
                         chat && (_.extend(chat, data.data));
 
-                        this.updateNotifyDirect(chat, `【${updaterName}】更新了消息[#${payload.id}]的内容，请注意关注！`);
+                        this.updateNotifyDirect(chat, `【${updaterName}】更新了消息[#${payload.id}]的内容，可点击查看！`);
                     });
                 } else if (payload.cmd == 'D') {
                     this.chats = _.reject(this.chats, { id: payload.id });
@@ -469,13 +469,18 @@ export class ChatDirect {
 
     updateNotifyDirect(chat, message) {
         let alarm = utils.getAlarm();
-        if (!alarm.off && chat) this.scrollToAfterImgLoaded(chat.id);
+        // if (!alarm.off && chat) this.scrollToAfterImgLoaded(chat.id);
 
-        toastr.success(message);
+        // toastr.success(message);
+        toastr.info(message, null, _.extend(toastrOps, {
+            onclick: () => {
+                chat && this.scrollToAfterImgLoaded(chat.id);
+            }
+        }));
 
         if (!alarm.off && alarm.news) {
             push.create('TMS沟通私聊消息通知', {
-                body: message,
+                body: _.replace(message, '可点击查看', '请注意关注'),
                 icon: {
                     x16: 'img/tms-x16.ico',
                     x32: 'img/tms-x32.png'
@@ -489,13 +494,18 @@ export class ChatDirect {
 
     updateNotifyChannel(chat, message) {
         let alarm = utils.getAlarm();
-        if (!alarm.off && chat) this.scrollToAfterImgLoaded(chat.id);
+        // if (!alarm.off && chat) this.scrollToAfterImgLoaded(chat.id);
 
-        toastr.success(message);
+        // toastr.success(message);
+        toastr.info(message, null, _.extend(toastrOps, {
+            onclick: () => {
+                chat && this.scrollToAfterImgLoaded(chat.id);
+            }
+        }));
 
         if (!alarm.off && alarm.news) {
             push.create(`TMS沟通频道消息通知`, {
-                body: message,
+                body: _.replace(message, '可点击查看', '请注意关注'),
                 icon: {
                     x16: 'img/tms-x16.ico',
                     x32: 'img/tms-x32.png'
