@@ -6,6 +6,8 @@ import {
     default as Clipboard
 } from 'clipboard';
 
+import toastrOps from 'common/common-toastr';
+
 @containerless
 export class EmBlogContent {
 
@@ -44,48 +46,38 @@ export class EmBlogContent {
 
                 if (payload.cmd == 'At') {
                     if (payload.id != this.blog.id) {
-                        toastr.info(`博文【${payload.title}】有提及到你，点击可查看！`, null, {
-                            timeOut: 0,
-                            positionClass: 'toast-top-right',
+                        toastr.info(`博文【${payload.title}】有提及到你，点击可查看！`, null, _.extend(toastrOps, {
                             onclick: () => {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
                             }
-                        });
+                        }));
                     }
                 } else if (payload.cmd == 'OU') {
                     if (payload.id != this.blog.id) {
-                        toastr.info(`您的博文【${payload.title}】有更新，点击可查看！`, null, {
-                            timeOut: 0,
-                            positionClass: 'toast-top-right',
+                        toastr.info(`您的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                             onclick: () => {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
                             }
-                        });
+                        }));
                     }
                 } else if (payload.cmd == 'U') {
                     if (payload.id == this.blog.id) {
-                        toastr.info(`当前博文有更新，点击可更新查看！`, null, {
-                            timeOut: 0,
-                            positionClass: 'toast-top-right',
+                        toastr.info(`当前博文有更新，点击可更新查看！`, null, _.extend(toastrOps, {
                             onclick: () => {
                                 this.refreshHandler();
                             }
-                        });
+                        }));
                     }
                 } else if (payload.cmd == 'F') {
                     if (payload.id != this.blog.id) {
-                        toastr.info(`您关注的博文【${payload.title}】有更新，点击可查看！`, null, {
-                            timeOut: 0,
-                            positionClass: 'toast-top-right',
+                        toastr.info(`您关注的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                             onclick: () => {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
                             }
-                        });
+                        }));
                     }
                 } else if (payload.cmd == 'CAt') {
-                    toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, {
-                        timeOut: 0,
-                        positionClass: 'toast-top-right',
+                    toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
                             if (payload.id != this.blog.id) {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
@@ -93,11 +85,9 @@ export class EmBlogContent {
                                 this.refreshHandler();
                             }
                         }
-                    });
+                    }));
                 } else if (payload.cmd == 'FCC') {
-                    toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, {
-                        timeOut: 0,
-                        positionClass: 'toast-top-right',
+                    toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
                             if (payload.id != this.blog.id) {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
@@ -105,11 +95,9 @@ export class EmBlogContent {
                                 this.refreshHandler();
                             }
                         }
-                    });
+                    }));
                 } else if (payload.cmd == 'FCU') {
-                    toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, {
-                        timeOut: 0,
-                        positionClass: 'toast-top-right',
+                    toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
                             if (payload.id != this.blog.id) {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
@@ -117,11 +105,9 @@ export class EmBlogContent {
                                 this.refreshHandler();
                             }
                         }
-                    });
+                    }));
                 } else if (payload.cmd == 'CC') {
-                    toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, {
-                        timeOut: 0,
-                        positionClass: 'toast-top-right',
+                    toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
                             if (payload.id != this.blog.id) {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
@@ -129,11 +115,9 @@ export class EmBlogContent {
                                 this.refreshHandler();
                             }
                         }
-                    });
+                    }));
                 } else if (payload.cmd == 'CU') {
-                    toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, {
-                        timeOut: 0,
-                        positionClass: 'toast-top-right',
+                    toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
                             if (payload.id != this.blog.id) {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
@@ -141,7 +125,7 @@ export class EmBlogContent {
                                 this.refreshHandler();
                             }
                         }
-                    });
+                    }));
                 }
             }
         });
