@@ -10,6 +10,8 @@ export class EmBlogTopMenu {
 
     loginUser = nsCtx.loginUser;
 
+    basePath = utils.getBasePath();
+
     recentSearchs = {
         blogs: [],
         comments: []
@@ -34,10 +36,23 @@ export class EmBlogTopMenu {
         this.subscribe.dispose();
     }
 
+    _getNews() {
+        $.get('/admin/blog/news/list', {
+            page: 0,
+            size: 20
+        }, (data) => {
+            if (data.success) {
+                this.news = data.data.content;
+                this.totalNews = data.data.totalElements;
+            }
+        });
+    }
+
     /**
      * 当视图被附加到DOM中时被调用
      */
     attached() {
+
         $(this.logoRef).on('mouseenter', (event) => {
             $(this.logoRef).animateCss('flip');
         });
@@ -102,6 +117,18 @@ export class EmBlogTopMenu {
         if (nsCtx.blogId == 'create') {
             _.defer(() => { $('a[href="#modaal-blog-write"]').click(); });
         }
+
+        $(this.newsRef).popup({
+            inline: true,
+            hoverable: true,
+            position: 'bottom left',
+            delay: {
+                show: 300,
+                hide: 800
+            }
+        });
+
+        this._getNews();
     }
 
     _refreshSysLinks() {
@@ -166,5 +193,20 @@ export class EmBlogTopMenu {
             $(this.searchRef).search('set value', '');
         }
         this.showRecentSearchResults();
+    }
+
+    newsHandler(item) {
+        $.post('/admin/blog/news/delete', { id: item.id }, (data, textStatus, xhr) => {
+            if (data.success) {
+                // this.news = _.reject(this.news, { id: item.id });
+                // this.totalNews--;
+                this._getNews();
+            }
+        });
+        return true;
+    }
+
+    newsRefreshHandler() {
+        this._getNews();
     }
 }

@@ -24,6 +24,29 @@
             <em-blog-write></em-blog-write>
         </div>
         <div class="right menu">
+            <a ref="newsRef" show.bind="totalNews > 0" class="item icon" click.delegate="newsRefreshHandler()">
+                <i class="announcement large link icon"></i>
+                <div class="floating ui red circular label" style="top: 0;">${totalNews > 99 ? '99+' : totalNews }</div>
+            </a>
+            <div class="ui fluid popup bottom left transition hidden">
+                <div class="ui selection divided list">
+                    <a class="item" repeat.for="item of news" click.delegate="newsHandler(item)" href="${basePath + '#/blog/' + item.bid + (item.cid ? '?cid=' + item.cid : '')}">
+                        <i class="wait large icon"></i>
+                        <!-- <i class="check circle large outline icon"></i> -->
+                        <div class="content">
+                          <div class="header">${item.createDate | timeago}</div>
+                          <div if.bind="item.cmd == 'At'" class="description">博文【${item.title}】有提及到你，点击可查看！</div>
+                          <div if.bind="item.cmd == 'CAt'" class="description">博文【${item.title}】评论有提及到你，点击可查看！</div>
+                          <div if.bind="item.cmd == 'CC'" class="description">博文【${item.title}】有新的评论，点击可查看！</div>
+                          <div if.bind="item.cmd == 'CU'" class="description">博文【${item.title}】评论有更新，点击可查看！</div>
+                          <div if.bind="item.cmd == 'F'" class="description">关注博文【${item.title}】有更新，点击可查看！</div>
+                          <div if.bind="item.cmd == 'FCC'" class="description">关注博文【${item.title}】有新评论，点击可查看！</div>
+                          <div if.bind="item.cmd == 'FCU'" class="description">关注博文【${item.title}】评论有更新，点击可查看！</div>
+                          <div if.bind="item.cmd == 'OU'" class="description">您的博文【${item.title}】有更新，点击可查看！</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
             <div class="item">
                 <div ref="searchRef" class="ui category search">
                     <div class="ui icon input">

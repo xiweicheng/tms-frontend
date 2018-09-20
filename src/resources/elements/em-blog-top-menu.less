@@ -37,6 +37,15 @@
                     left: -150px;
                 }
             }
+            .ui.popup {
+                .ui.list {
+                    max-height: 300px;
+                    overflow-y: auto;
+                    .item::before {
+                        display: none;
+                    }
+                }
+            }
         }
         @media only screen and (max-width: 767px) {
             .item {
