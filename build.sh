@@ -18,15 +18,17 @@ echo "rm page/scripts & page/index.html & page/blog.html"
 rm -rf $DEST/page/scripts
 rm -rf $DEST/page/index.html
 rm -rf $DEST/page/blog.html
-rm -rf $DEST/page/alert.mp3
-rm -rf $DEST/page/alert.ogg
+# rm -rf $DEST/page/alert.mp3
+# rm -rf $DEST/page/alert.ogg
 
 echo "cp tms-frontend to tms"
 
 cp -rf $SRC/scripts $DEST/page
 cp -rf $SRC/index.html $DEST/page
 cp -rf $SRC/blog.html $DEST/page
-cp -rf alert.mp3 $DEST/page
-cp -rf alert.ogg $DEST/page
+# cp -rf alert.mp3 $DEST/page
+# cp -rf alert.ogg $DEST/page
+# cp -rf $SRC/font-awesome.min.css $DEST/page
+# cp -rf $SRC/fonts $DEST/page
 
 echo "build end"
