@@ -182,7 +182,7 @@ export class EmBlogComment {
             // autofocus: true,
             // toolbar: false,
             // forceSync: true,
-            // autoDownloadFontAwesome: false,
+            autoDownloadFontAwesome: false,
             toolbar: [{
                     name: "bold",
                     action: SimpleMDE.toggleBold,
