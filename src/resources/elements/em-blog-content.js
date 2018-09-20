@@ -45,33 +45,37 @@ export class EmBlogContent {
             if (payload.username != this.loginUser.username) {
 
                 if (payload.cmd == 'At') {
-                    if (payload.id != this.blog.id) {
+                    if (!this.blog || payload.id != this.blog.id) {
                         toastr.info(`博文【${payload.title}】有提及到你，点击可查看！`, null, _.extend(toastrOps, {
                             onclick: () => {
+                                this._delBlogNews(payload.nid);
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
                             }
                         }));
                     }
                 } else if (payload.cmd == 'OU') {
-                    if (payload.id != this.blog.id) {
+                    if (!this.blog || payload.id != this.blog.id) {
                         toastr.info(`您的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                             onclick: () => {
+                                this._delBlogNews(payload.nid);
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
                             }
                         }));
                     }
                 } else if (payload.cmd == 'U') {
-                    if (payload.id == this.blog.id) {
+                    if (this.blog && (payload.id == this.blog.id)) {
                         toastr.info(`当前博文有更新，点击可更新查看！`, null, _.extend(toastrOps, {
                             onclick: () => {
+                                this._delBlogNews(payload.nid);
                                 this.refreshHandler();
                             }
                         }));
                     }
                 } else if (payload.cmd == 'F') {
-                    if (payload.id != this.blog.id) {
+                    if (!this.blog || payload.id != this.blog.id) {
                         toastr.info(`您关注的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                             onclick: () => {
+                                this._delBlogNews(payload.nid);
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
                             }
                         }));
@@ -79,7 +83,8 @@ export class EmBlogContent {
                 } else if (payload.cmd == 'CAt') {
                     toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
-                            if (payload.id != this.blog.id) {
+                            this._delBlogNews(payload.nid);
+                            if (!this.blog || payload.id != this.blog.id) {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                             } else {
                                 this.refreshHandler();
@@ -89,7 +94,8 @@ export class EmBlogContent {
                 } else if (payload.cmd == 'FCC') {
                     toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
-                            if (payload.id != this.blog.id) {
+                            this._delBlogNews(payload.nid);
+                            if (!this.blog || payload.id != this.blog.id) {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                             } else {
                                 this.refreshHandler();
@@ -99,7 +105,8 @@ export class EmBlogContent {
                 } else if (payload.cmd == 'FCU') {
                     toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
-                            if (payload.id != this.blog.id) {
+                            this._delBlogNews(payload.nid);
+                            if (!this.blog || payload.id != this.blog.id) {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                             } else {
                                 this.refreshHandler();
@@ -109,7 +116,8 @@ export class EmBlogContent {
                 } else if (payload.cmd == 'CC') {
                     toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
-                            if (payload.id != this.blog.id) {
+                            this._delBlogNews(payload.nid);
+                            if (!this.blog || payload.id != this.blog.id) {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                             } else {
                                 this.refreshHandler();
@@ -119,7 +127,8 @@ export class EmBlogContent {
                 } else if (payload.cmd == 'CU') {
                     toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
-                            if (payload.id != this.blog.id) {
+                            this._delBlogNews(payload.nid);
+                            if (!this.blog || payload.id != this.blog.id) {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                             } else {
                                 this.refreshHandler();
@@ -133,6 +142,17 @@ export class EmBlogContent {
         this.throttleCreateHandler = _.throttle(() => { this.createHandler() }, 1000, { 'trailing': false });
         this.throttleEditHandler = _.throttle(() => { this.editHandler() }, 1000, { 'trailing': false });
         this.throttleCopyHandler = _.throttle(() => { this.copyHandler() }, 1000, { 'trailing': false });
+    }
+
+    _delBlogNews(id) {
+
+        if (!id) return;
+
+        $.post('/admin/blog/news/delete', { id: id }, (data, textStatus, xhr) => {
+            if (data.success) {
+                ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
+            }
+        });
     }
 
     /**

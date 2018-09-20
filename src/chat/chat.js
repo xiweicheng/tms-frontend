@@ -112,53 +112,72 @@ export class ChatDirect {
             if (payload.cmd == 'At') {
                 toastr.info(`博文【${payload.title}】有提及到你，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
+                        this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
             } else if (payload.cmd == 'OU') {
                 toastr.info(`您的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
+                        this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
             } else if (payload.cmd == 'F') {
                 toastr.info(`您关注的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
+                        this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
             } else if (payload.cmd == 'CAt') {
                 toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
+                        this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
             } else if (payload.cmd == 'FCC') {
                 toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
+                        this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
             } else if (payload.cmd == 'FCU') {
                 toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
+                        this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
             } else if (payload.cmd == 'CC') {
                 toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
+                        this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
             } else if (payload.cmd == 'CU') {
                 toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
+                        this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
             }
         }
+    }
+
+    _delBlogNews(id) {
+
+        if (!id) return;
+
+        $.post('/admin/blog/news/delete', { id: id }, (data, textStatus, xhr) => {
+            if (data.success) {
+                ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
+            }
+        });
     }
 
     getOnlineUsers() {

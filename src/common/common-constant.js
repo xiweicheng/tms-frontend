@@ -64,6 +64,7 @@ window.nsCons = {
     EVENT_WS_DIRECT_UPDATE: 'event_ws_direct_update',
     EVENT_WS_SCHEDULE_UPDATE: 'event_ws_schedule_update',
     EVENT_WS_BLOG_UPDATE: 'event_ws_blog_update',
+    EVENT_WS_BLOG_NEWS_UPDATE: 'event_ws_blog_news_update',
     EVENT_AUDIO_ALERT: 'event_audio_alert',
     ACTION_TYPE_SEARCH: 'action_type_search',
     ACTION_TYPE_STOW: 'action_type_stow',

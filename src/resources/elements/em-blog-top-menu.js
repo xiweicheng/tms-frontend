@@ -24,8 +24,11 @@ export class EmBlogTopMenu {
         this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, (payload) => {
             this.toggleHandler(true);
         });
-        this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_LEFT_SIDEBAR_TOGGLE, (payload) => {
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_LEFT_SIDEBAR_TOGGLE, (payload) => {
             this.toggleHandler(payload.isHide);
+        });
+        this.subscribe3 = ea.subscribe(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, (payload) => {
+            this._getNews();
         });
     }
 
@@ -34,6 +37,8 @@ export class EmBlogTopMenu {
      */
     unbind() {
         this.subscribe.dispose();
+        this.subscribe2.dispose();
+        this.subscribe3.dispose();
     }
 
     _getNews() {
@@ -198,8 +203,6 @@ export class EmBlogTopMenu {
     newsHandler(item) {
         $.post('/admin/blog/news/delete', { id: item.id }, (data, textStatus, xhr) => {
             if (data.success) {
-                // this.news = _.reject(this.news, { id: item.id });
-                // this.totalNews--;
                 this._getNews();
             }
         });

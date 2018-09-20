@@ -53,6 +53,7 @@ export class Blog {
             });
             stompClient.subscribe('/user/blog/update', (msg) => {
                 ea.publish(nsCons.EVENT_WS_BLOG_UPDATE, JSON.parse(msg.body));
+                ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
             });
         }, (err) => {
             utils.errorAutoTry(() => {
