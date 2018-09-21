@@ -167,7 +167,7 @@ export class EmChatTopic {
                 timeout: 5000
             });
 
-            alarm.audio && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
+            (!alarm.off && alarm.audio) && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
         }
     }
 

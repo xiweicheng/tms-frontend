@@ -44,6 +44,11 @@ export class EmBlogContent {
         this.subscribe5 = ea.subscribe(nsCons.EVENT_WS_BLOG_UPDATE, (payload) => {
             if (payload.username != this.loginUser.username) {
 
+                if (payload.cmd != 'U') {
+                    let alarm = utils.getAlarm();
+                    (!alarm.off && alarm.audio) && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
+                }
+
                 if (payload.cmd == 'At') {
                     if (!this.blog || payload.id != this.blog.id) {
                         let t = toastr.info(`博文【${payload.title}】有提及到你，点击可查看！`, null, _.extend(toastrOps, {

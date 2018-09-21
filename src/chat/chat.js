@@ -109,6 +109,11 @@ export class ChatDirect {
     _blogUpdateToastr(payload) {
         if (payload.username != this.loginUser.username) {
 
+            if (payload.cmd != 'U') {
+                let alarm = utils.getAlarm();
+                (!alarm.off && alarm.audio) && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
+            }
+
             if (payload.cmd == 'At') {
                 toastr.info(`博文【${payload.title}】有提及到你，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -507,7 +512,7 @@ export class ChatDirect {
                 timeout: 5000
             });
 
-            alarm.audio && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
+            (!alarm.off && alarm.audio) && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
         }
     }
 
@@ -532,7 +537,7 @@ export class ChatDirect {
                 timeout: 5000
             });
 
-            alarm.audio && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
+            (!alarm.off && alarm.audio) && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
         }
     }
 
@@ -896,7 +901,7 @@ export class ChatDirect {
                         timeout: 5000
                     });
 
-                    alarm.audio && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
+                    (!alarm.off && alarm.audio) && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
                 }
                 this.countAt = data.data.countAt;
                 ea.publish(nsCons.EVENT_CHAT_POLL_UPDATE, {
@@ -1035,7 +1040,7 @@ export class ChatDirect {
                 timeout: 5000
             }));
 
-            alarm.audio && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
+            (!alarm.off && alarm.audio) && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
         }
     }
 

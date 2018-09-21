@@ -39,14 +39,14 @@
                             <span style="font-style: italic;"><i class="wait icon"></i><span title="更新时间：${item.createDate | date}">${item.createDate | timeago}</span></span>
                             <span style="float: right; margin-right: 8px;"><i class="user icon"></i><span title="更新人：${item.username | userName}">${item.username | userName}</span></span>
                         </div>
-                          <div if.bind="item.cmd == 'At'" class="description">博文<b>${item.title}</b>有提及到你，点击可查看！</div>
-                          <div if.bind="item.cmd == 'CAt'" class="description">博文<b>${item.title}</b>评论有提及到你，点击可查看！</div>
+                          <div if.bind="item.cmd == 'At'" class="description">博文<b>${item.title}</b>有提及@到你，点击可查看！</div>
+                          <div if.bind="item.cmd == 'CAt'" class="description">博文<b>${item.title}</b>的评论有提及@到你，点击可查看！</div>
                           <div if.bind="item.cmd == 'CC'" class="description">博文<b>${item.title}</b>有新的评论，点击可查看！</div>
-                          <div if.bind="item.cmd == 'CU'" class="description">博文<b>${item.title}</b>评论有更新，点击可查看！</div>
-                          <div if.bind="item.cmd == 'F'" class="description">关注博文<b>${item.title}</b>有更新，点击可查看！</div>
-                          <div if.bind="item.cmd == 'FCC'" class="description">关注博文<b>${item.title}</b>有新评论，点击可查看！</div>
-                          <div if.bind="item.cmd == 'FCU'" class="description">关注博文<b>${item.title}</b>评论有更新，点击可查看！</div>
-                          <div if.bind="item.cmd == 'OU'" class="description">您的博文<b>${item.title}</b>有更新，点击可查看！</div>
+                          <div if.bind="item.cmd == 'CU'" class="description">博文<b>${item.title}</b>有评论更新，点击可查看！</div>
+                          <div if.bind="item.cmd == 'F'" class="description">您关注的博文<b>${item.title}</b>有更新，点击可查看！</div>
+                          <div if.bind="item.cmd == 'FCC'" class="description">您关注的博文<b>${item.title}</b>有新的评论，点击可查看！</div>
+                          <div if.bind="item.cmd == 'FCU'" class="description">您关注的博文<b>${item.title}</b>有评论更新，点击可查看！</div>
+                          <div if.bind="item.cmd == 'OU'" class="description">您的博文<b>${item.title}</b>有被他人更新，点击可查看！</div>
                         </div>
                     </a>
                 </div>
