@@ -126,10 +126,11 @@ export class EmBlogTopMenu {
         $(this.newsRef).popup({
             inline: true,
             hoverable: true,
+            distanceAway: -10,
             position: 'bottom left',
             delay: {
-                show: 300,
-                hide: 800
+                show: 200,
+                hide: 300
             }
         });
 
@@ -207,6 +208,11 @@ export class EmBlogTopMenu {
             }
         });
         return true;
+    }
+
+    newsDelHandler(item, event) {
+        event.stopPropagation();
+        this.newsHandler(item);
     }
 
     newsRefreshHandler() {

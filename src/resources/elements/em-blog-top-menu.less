@@ -38,11 +38,26 @@
                 }
             }
             .ui.popup {
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
                 .ui.list {
                     max-height: 300px;
                     overflow-y: auto;
                     .item::before {
                         display: none;
+                    }
+                    .item {
+                        >.remove.icon {
+                            display: none;
+                        }
+                        &:hover {
+                            >.remove.icon {
+                                display: table-cell;
+                            }
+                            >.alarm.icon {
+                                display: none;
+                            }
+                        }
                     }
                 }
             }

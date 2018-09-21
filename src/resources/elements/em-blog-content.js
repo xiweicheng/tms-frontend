@@ -46,42 +46,46 @@ export class EmBlogContent {
 
                 if (payload.cmd == 'At') {
                     if (!this.blog || payload.id != this.blog.id) {
-                        toastr.info(`博文【${payload.title}】有提及到你，点击可查看！`, null, _.extend(toastrOps, {
+                        let t = toastr.info(`博文【${payload.title}】有提及到你，点击可查看！`, null, _.extend(toastrOps, {
                             onclick: () => {
                                 this._delBlogNews(payload.nid);
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
+                                t.remove();
                             }
                         }));
                     }
                 } else if (payload.cmd == 'OU') {
                     if (!this.blog || payload.id != this.blog.id) {
-                        toastr.info(`您的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
+                        let t = toastr.info(`您的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                             onclick: () => {
                                 this._delBlogNews(payload.nid);
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
+                                t.remove();
                             }
                         }));
                     }
                 } else if (payload.cmd == 'U') {
                     if (this.blog && (payload.id == this.blog.id)) {
-                        toastr.info(`当前博文有更新，点击可更新查看！`, null, _.extend(toastrOps, {
+                        let t = toastr.info(`当前博文有更新，点击可更新查看！`, null, _.extend(toastrOps, {
                             onclick: () => {
                                 this._delBlogNews(payload.nid);
                                 this.refreshHandler();
+                                t.remove();
                             }
                         }));
                     }
                 } else if (payload.cmd == 'F') {
                     if (!this.blog || payload.id != this.blog.id) {
-                        toastr.info(`您关注的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
+                        let t = toastr.info(`您关注的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                             onclick: () => {
                                 this._delBlogNews(payload.nid);
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
+                                t.remove();
                             }
                         }));
                     }
                 } else if (payload.cmd == 'CAt') {
-                    toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, _.extend(toastrOps, {
+                    let t = toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
                             this._delBlogNews(payload.nid);
                             if (!this.blog || payload.id != this.blog.id) {
@@ -89,10 +93,11 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
+                            t.remove();
                         }
                     }));
                 } else if (payload.cmd == 'FCC') {
-                    toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
+                    let t = toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
                             this._delBlogNews(payload.nid);
                             if (!this.blog || payload.id != this.blog.id) {
@@ -100,10 +105,11 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
+                            t.remove();
                         }
                     }));
                 } else if (payload.cmd == 'FCU') {
-                    toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
+                    let t = toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
                             this._delBlogNews(payload.nid);
                             if (!this.blog || payload.id != this.blog.id) {
@@ -111,10 +117,11 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
+                            t.remove();
                         }
                     }));
                 } else if (payload.cmd == 'CC') {
-                    toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
+                    let t = toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
                             this._delBlogNews(payload.nid);
                             if (!this.blog || payload.id != this.blog.id) {
@@ -122,10 +129,11 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
+                            t.remove();
                         }
                     }));
                 } else if (payload.cmd == 'CU') {
-                    toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
+                    let t = toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
                             this._delBlogNews(payload.nid);
                             if (!this.blog || payload.id != this.blog.id) {
@@ -133,6 +141,7 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
+                            t.remove();
                         }
                     }));
                 }
