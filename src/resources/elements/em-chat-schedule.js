@@ -4,6 +4,7 @@ import {
 } from 'moment';
 import 'fullcalendar';
 import 'fullcalendar/dist/locale/zh-cn';
+import toastrOps from 'common/common-toastr';
 
 @containerless
 export class EmChatSchedule {
@@ -57,6 +58,12 @@ export class EmChatSchedule {
                 }
 
                 this._desktopPush(content);
+
+                toastr.info(`${content}，点击可查看！`, null, _.extend(toastrOps, {
+                    onclick: () => {
+                        ea.publish(nsCons.EVENT_SHOW_SCHEDULE, {});
+                    }
+                }));
             }
         });
 

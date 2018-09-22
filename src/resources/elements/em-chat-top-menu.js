@@ -145,6 +145,10 @@ export class EmChatTopMenu {
             this.activeType = nsCons.ACTION_TYPE_SEARCH;
             this.searchHandler();
         });
+
+        this.subscribe7 = ea.subscribe(nsCons.EVENT_SHOW_SCHEDULE, (payload) => {
+            this.showScheduleHandler({ ctrlKey: true });
+        });
     }
 
     /**
@@ -157,6 +161,7 @@ export class EmChatTopMenu {
         this.subscribe4.dispose();
         this.subscribe5.dispose();
         this.subscribe6.dispose();
+        this.subscribe7.dispose();
     }
 
     /**
