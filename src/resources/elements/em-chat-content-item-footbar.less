@@ -22,6 +22,16 @@
     }
     >.ui.label {
         cursor: pointer;
+        &.image {
+            > span > img {
+                width: auto;
+            }
+            > .detail {
+                background: transparent;
+                padding-left: 4px;
+                margin-left: 0;
+            }
+        }
     }
     .emoji-item {
         margin-right: 8px;

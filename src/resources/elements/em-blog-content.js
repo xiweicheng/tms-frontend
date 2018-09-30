@@ -31,6 +31,11 @@ export class EmBlogContent {
             if (payload.action == 'updated') {
                 _.extend(this.blog, payload.blog);
                 _.defer(() => this.catalogHandler(true));
+
+                if (this.loginUser.username != this.blog.creator.username && !this.blogFollower) {
+                    this.getFollower();
+                    toastr.info(`已为您自动关注该编辑博文，可手动取消关注！`);
+                }
             }
         });
         this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_COMMENT_ADDED, (payload) => {

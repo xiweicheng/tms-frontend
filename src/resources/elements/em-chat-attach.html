@@ -36,7 +36,7 @@
         <div if.bind="type == 'Attachment'" class="divided list selection ui">
             <div repeat.for="item of attachs" if.bind="item.type == 'Attachment'" class="item">
                 <div class="right floated content">
-                    <div if.bind="isSuper || item.username == loginUser.username" ui-dropdown-action class="ui icon top right pointing dropdown" title="删除附件">
+                    <div if.bind="isSuper || item.username == loginUser.username" ui-dropdown-action style="position: absolute; right: 10px;" class="ui icon top right pointing dropdown" title="删除附件">
                         <i class="red large trash outline icon" style="margin-right: 0;"></i>
                         <div class="menu">
                             <div style="color: red;" class="item" click.delegate="delHandler(item)"><i class="trash outline icon"></i>确认删除</div>

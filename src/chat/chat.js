@@ -655,7 +655,11 @@ export class ChatDirect {
                         if (this.preChatId) {
                             window.location = wurl('path') + `#/chat/${this.preChatId}`;
                         } else {
-                            window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
+                            if (this.loginUser) {
+                                window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
+                            } else {
+                                window.location = wurl('path') + `#/chat/all`;
+                            }
                         }
                     }
 
@@ -690,7 +694,11 @@ export class ChatDirect {
                         if (this.preChatId) {
                             window.location = wurl('path') + `#/chat/${this.preChatId}`;
                         } else {
-                            window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
+                            if (this.loginUser) {
+                                window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
+                            } else {
+                                window.location = wurl('path') + `#/chat/all`;
+                            }
                         }
                     }
                 }
