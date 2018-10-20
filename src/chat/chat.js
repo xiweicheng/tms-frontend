@@ -1211,6 +1211,7 @@ export class ChatDirect {
                 this.focusedComment = $(this.commentsRef).children('.comment.item:last');
             }
         }
+        this.markId = this.focusedComment ? this.focusedComment.attr('data-id') : null;
         return this.focusedComment;
     }
 
