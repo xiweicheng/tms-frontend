@@ -6,9 +6,11 @@
         </div>
         <div ui-dropdown-action class="ui dropdown item tms-links">
             <i class="large content icon"></i>
-            <div class="scrolling menu">
+            <div class="menu">
                 <div class="header">系统外链</div>
-                <a repeat.for="item of sysLinks" href="${item.href}" target="_blank" class="item">${item.title}</a>
+                <div class="scrolling menu">
+                    <a repeat.for="item of sysLinks" href="${item.href}" target="_blank" class="item">${item.title}</a>
+                </div>
             </div>
         </div>
         <div class="item tms-logo">
