@@ -12,6 +12,8 @@ export class EmBlogTopMenu {
 
     basePath = utils.getBasePath();
 
+    baseRes = utils.getResourceBase();
+
     recentSearchs = {
         blogs: [],
         comments: []
@@ -217,5 +219,11 @@ export class EmBlogTopMenu {
 
     newsRefreshHandler() {
         this._getNews();
+    }
+
+    createHandler() {
+        if (!nsCtx.isModaalOpening) {
+            $('a[href="#modaal-blog-write"]').click();
+        }
     }
 }
