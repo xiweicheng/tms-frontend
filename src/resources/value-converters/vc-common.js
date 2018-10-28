@@ -201,11 +201,12 @@ export class ChatLabelFilterValueConverter {
 
 export class FilterValueConverter {
     toView(items, search, prop = null) {
+        let _search = _.toUpper(search);
         return _.filter(items, (item) => {
             if (!prop) {
-                return _.includes(item, search);
+                return _.includes(_.toUpper(item), _search);
             } else {
-                return _.includes(item[prop], search);
+                return _.includes(_.toUpper(item[prop]), _search);
             }
         });
     }
