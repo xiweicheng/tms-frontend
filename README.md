@@ -39,3 +39,5 @@ https://github.com/zenozeng/color-hash
 https://github.com/Nickersoft/push.js  
 https://github.com/PitPik/tinyColorPicker  
 http://fancyapps.com/fancybox/3/  
+https://github.com/froala/wysiwyg-editor  
+https://blog.csdn.net/kittyjie/article/details/80674367  
