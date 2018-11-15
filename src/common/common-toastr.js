@@ -4,5 +4,6 @@ export default {
     tapToDismiss: false,
     closeButton: true,
     preventDuplicates: true,
-    positionClass: 'toast-top-right'
+    // positionClass: 'toast-top-right'
+    positionClass: 'toast-top-right-custom'
 }
