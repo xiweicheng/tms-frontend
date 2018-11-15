@@ -155,6 +155,12 @@ export class EmBlogContent {
                         }
                     }));
                 }
+            } else {
+                if (payload.cmd == 'U') {
+                    if (this.blog && (payload.id == this.blog.id) && (payload.version != this.blog.version) && (this.blog.editor == 'Html')) {
+                        this.refreshHandler();
+                    }
+                }
             }
         });
 
