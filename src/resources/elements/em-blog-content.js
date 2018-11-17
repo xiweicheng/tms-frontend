@@ -156,11 +156,11 @@ export class EmBlogContent {
                     }));
                 }
             } else {
-                if (payload.cmd == 'U') {
-                    if (this.blog && (payload.id == this.blog.id) && (payload.version != this.blog.version) && (this.blog.editor == 'Html')) {
-                        this.refreshHandler();
-                    }
-                }
+                // if (payload.cmd == 'U') {
+                //     if (this.blog && (payload.id == this.blog.id) && (payload.version != this.blog.version) && (this.blog.editor == 'Html')) {
+                //         this.refreshHandler();
+                //     }
+                // }
             }
         });
 
@@ -295,6 +295,13 @@ export class EmBlogContent {
         });
 
         this.initHotkeys();
+
+        window.addEventListener && window.addEventListener('message', function(ev) {
+            // console.info('message from parent:', ev.data);
+            if (ev.origin != window.location.origin) return;
+
+            ea.publish(nsCons.EVENT_BLOG_CHANGED, ev.data);
+        }, false);
     }
 
     fixDirItem() {
@@ -501,7 +508,9 @@ export class EmBlogContent {
 
     editHandler() {
         if (this.blog.editor == 'Html') {
-            utils.openNewWin(utils.getResourceBase() + 'blog.html?id=' + this.blog.id);
+            $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?id=' + this.blog.id);
+            $('a[href="#modaal-blog-write-html"]').click();
+            // utils.openNewWin(utils.getResourceBase() + 'blog.html?id=' + this.blog.id);
         } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'edit', id: this.blog.id });
         }
@@ -633,7 +642,9 @@ export class EmBlogContent {
 
     copyHandler() {
         if (this.blog.editor == 'Html') {
-            utils.openNewWin(utils.getResourceBase() + 'blog.html?id=' + this.blog.id + '&amp;copy'); // &copy
+            $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?id=' + this.blog.id + '&copy');
+            $('a[href="#modaal-blog-write-html"]').click();
+            // utils.openNewWin(utils.getResourceBase() + 'blog.html?id=' + this.blog.id + '&amp;copy'); // &copy
         } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'copy', id: this.blog.id });
         }
