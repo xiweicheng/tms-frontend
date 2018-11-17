@@ -226,4 +226,10 @@ export class EmBlogTopMenu {
             $('a[href="#modaal-blog-write"]').click();
         }
     }
+
+    htmlCreateHandler() {
+        $('.em-blog-write-html > iframe').attr('src', this.baseRes + 'blog.html');
+        $('a[href="#modaal-blog-write-html"]').click();
+        return false;
+    }
 }
