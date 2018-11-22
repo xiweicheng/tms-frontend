@@ -14,7 +14,7 @@ import chatService from './chat-service';
 
 import toastrOps from 'common/common-toastr';
 
-export class ChatDirect {
+export class Chat {
 
     offset = 0;
 
@@ -354,7 +354,7 @@ export class ChatDirect {
                             channel.newMsgCnt = _.isNumber(channel.newMsgCnt) ? (channel.newMsgCnt + 1) : 1;
                             this.saveNewMsgCnt(channel.name, channel.newMsgCnt);
 
-                            this.updateNotifyChannel(null, `【${channel.title ? channel.title : channel.name}】频道有消息更新，请注意关注！`);
+                            this.updateNotifyChannel(null, `【${channel.title ? channel.title : channel.name}】频道有消息更新，请注意关注！`, null);
                         }
                     }
                 }
@@ -516,7 +516,7 @@ export class ChatDirect {
         }
     }
 
-    updateNotifyChannel(chat, message) {
+    updateNotifyChannel(chat, message, msgItem) {
         let alarm = utils.getAlarm();
         // if (!alarm.off && chat) this.scrollToAfterImgLoaded(chat.id);
 
@@ -524,6 +524,13 @@ export class ChatDirect {
         toastr.info(message, null, _.extend(toastrOps, {
             onclick: () => {
                 chat && this.scrollToAfterImgLoaded(chat.id);
+                // 不安全的判断方式
+                if (_.includes(message, '话题回复')) {
+                    ea.publish(nsCons.EVENT_CHAT_TOPIC_SHOW, {
+                        chat: chat,
+                        rid: (msgItem ? msgItem.rid : null)
+                    });
+                }
             }
         }));
 
@@ -551,7 +558,7 @@ export class ChatDirect {
                 let isOwn = msg.username == this.loginUser.username;
 
                 if (!isOwn && message) {
-                    this.updateNotifyChannel(chat, message);
+                    this.updateNotifyChannel(chat, message, msg);
                 }
                 // TODO 自动滚动定位到更新消息，或者显示更新图标，让用户手动触发定位到更新消息
             });
