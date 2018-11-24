@@ -211,7 +211,7 @@ export class EmChatTopMenu {
         $(this.searchRef).search({
             source: source,
             onSelect: (result, response) => {
-                this.searchHandler();
+                this.searchHandler(result.title);
             },
             onResults: () => {
                 $(this.searchRef).search('hide results');
@@ -220,11 +220,11 @@ export class EmChatTopMenu {
 
     }
 
-    searchHandler() {
+    searchHandler(query) {
 
         $(this.searchRef).search('hide results');
 
-        let search = $(this.searchInputRef).val();
+        let search = _.isEmpty(query) ? $(this.searchInputRef).val() : query;
 
         if (!search || search.length < 2) {
             toastr.error('检索条件至少需要两个字符!');
@@ -232,6 +232,7 @@ export class EmChatTopMenu {
         }
 
         this.search = search;
+        this.activeType = nsCons.ACTION_TYPE_SEARCH;
 
         // 保存检索值
         var isExists = false;
@@ -246,7 +247,13 @@ export class EmChatTopMenu {
                 title: search
             });
             $(this.searchRef).search({
-                source: _.clone(this.searchSource)
+                source: _.clone(this.searchSource),
+                onSelect: (result, response) => {
+                    this.searchHandler(result.title);
+                },
+                onResults: () => {
+                    $(this.searchRef).search('hide results');
+                }
             });
         }
         localStorage && localStorage.setItem('tms/chat-direct:search', JSON.stringify(this.searchSource));
