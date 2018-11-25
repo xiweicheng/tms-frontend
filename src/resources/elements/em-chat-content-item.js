@@ -441,7 +441,7 @@ export class EmChatContentItem {
             ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:${offsetD - 1}d ${offsetD + 1}d` });
             return;
         } else if (offsetD > 0) {
-            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:1d` });
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:2d` });
             return;
         }
 
