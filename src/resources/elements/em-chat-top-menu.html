@@ -117,7 +117,7 @@
                 </button>
             </div>
             <div class="item tms-search">
-                <div ref="searchRef" class="ui search" title="全文检索或者添加tags:前缀进行标签检索">
+                <div ref="searchRef" class="ui search" title="全文检索或者指定前缀检索&#10;- 按标签检索（tag:标签）&#10;- 按发送人检索（from:super）&#10;- 按发送时间（date:5m 1h）">
                     <div class="ui left icon input">
                         <input ref="searchInputRef" keyup.trigger="searchKeyupHandler($event)" blur.trigger="searchBlurHandler()" focus.trigger="searchFocusHandler()" class="prompt" type="text" placeholder="搜索...">
                         <i title="点击检索" class="${(searchingP && searchingP.readyState != 4) ? 'spinner loading' : 'search'} link icon" click.delegate="searchHandler()"></i>

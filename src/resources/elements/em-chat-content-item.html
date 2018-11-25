@@ -1,12 +1,12 @@
 <template>
     <require from="./em-chat-content-item.css"></require>
     <div repeat.for="item of chats" show.bind="!item._hidden" class="em-chat-content-item comment item ${item.id == markId ? 'active' : ''}" data-id="${item.id}" data-index.bind="$index" data-first.bind="$first" data-last.bind="$last" task.bind="notifyRendered($last, item)">
-        <em-user-avatar user.bind="item.creator"></em-user-avatar>
+        <em-user-avatar user.bind="item.creator" search-on.bind="!0"></em-user-avatar>
         <div class="content">
             <a class="author" data-value="${item.creator.username}" click.delegate="creatorNameHandler(item)">${item.creator.username == loginUser.username ? '我' : (item.creator.name ? item.creator.name : item.creator.username)}</a>
             <div class="metadata">
                 <i if.bind="item.ua" class="${item.ua | ua} icon large" style="margin-right: 0;" title="发自于${item.ua | ua2}"></i>
-                <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
+                <div class="date" style="cursor: pointer;" dblclick.delegate="dateDblclickHandler(item)" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
                 <div class="tms-clipboard" style="cursor: pointer;" data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}" title="复制沟通消息分享链接">#${item.id}</div>
                 <a if.bind="!isAt" click.delegate="stowHandler(item)" class="tms-stow" title="${item._stowed ? '取消收藏' : '收藏'}该消息"><i class="${item._stowed ? '' : 'empty'} star link icon"></i></a>
                 <a if.bind="!isAt && item._pined" click.delegate="pinHandler(item)" class="tms-pin" title="解除固定频道消息"><i class="pin link icon"></i></a>

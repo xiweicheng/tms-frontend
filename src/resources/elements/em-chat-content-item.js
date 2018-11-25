@@ -431,4 +431,13 @@ export class EmChatContentItem {
     talkHandler(item, event) {
         ea.publish(nsCons.EVENT_CHAT_TOPIC_SHOW, { chat: item });
     }
+
+    dateDblclickHandler(item) {
+        let offset = parseInt((new Date().getTime() - item.createDate) / 1000 / 60 / 60);
+        if (offset < 2) {
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:2h` });
+        } else {
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:${offset - 1}h ${offset + 1}h` });
+        }
+    }
 }

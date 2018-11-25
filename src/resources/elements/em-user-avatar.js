@@ -7,6 +7,7 @@ import {
 export class EmUserAvatar {
 
     @bindable user;
+    @bindable searchOn = false;
 
     userChanged() {
         if (this.user) {
@@ -36,6 +37,10 @@ export class EmUserAvatar {
         }, () => {
             this._calcNameChar();
         });
+    }
+
+    dblclickHandler() {
+        this.searchOn && ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `from:${this.user.username}` });
     }
 
 }
