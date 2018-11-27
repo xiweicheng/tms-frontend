@@ -4,12 +4,12 @@
         <div class="ui basic segment" style="padding-top: 8px;">
             <div ref="commentsRef" class="ui minimal comments">
                 <div class="comment">
-                    <em-user-avatar user.bind="chat.creator"></em-user-avatar>
+                    <em-user-avatar user.bind="chat.creator" search-on.bind="!0"></em-user-avatar>
                     <div class="content">
                         <a class="author" data-value="${chat.creator.username}">${chat.creator.name}</a>
                         <div class="metadata">
                             <i if.bind="chat.ua" class="${chat.ua | ua} icon large" style="margin-right: 0;" title="发自于${chat.ua | ua2}"></i>
-                            <div class="date" data-timeago="${chat.createDate}" title="${chat.createDate | date}">${chat.createDate | timeago}</div>
+                            <div class="date" style="cursor: pointer;" dblclick.delegate="dateDblclickHandler(chat)" data-timeago="${chat.createDate}" title="${chat.createDate | date}">${chat.createDate | timeago}</div>
                             <span title="${'频道: ' + chat.channel.title}"><a href="#/chat/${chat.channel.name}?id=${chat.id}">#${chat.channel.name}</a></span>
                         </div>
                         <div ref="mkbodyRef" fancybox class="text markdown-body fr-view" style="max-height: none; overflow-y: initial;" innerhtml.bind="chat.content | parseMd:channel | emoji:mkbodyRef"></div>
@@ -24,17 +24,18 @@
                             </button>
                         </div>
                     </div>
+                    <em-chat-content-item-footbar chat.bind="chat"></em-chat-content-item-footbar>
                 </div>
                 <div class="ui horizontal divider">
                     <i class="talk outline icon"></i> ${chat.chatReplies.length} 回复
                 </div>
                 <div repeat.for="item of chat.chatReplies" class="comment tms-reply ${item.id == rid ? 'active' : ''}" data-id="${item.id}" task.bind="notifyRendered($last, item)">
-                    <em-user-avatar user.bind="item.creator"></em-user-avatar>
+                    <em-user-avatar user.bind="item.creator" search-on.bind="!0"></em-user-avatar>
                     <div class="content">
                         <a class="author" data-value="${item.creator.username}">${item.creator.name}</a>
                         <div class="metadata">
                             <i if.bind="item.ua" class="${item.ua | ua} icon large" style="margin-right: 0;" title="发自于${item.ua | ua2}"></i>
-                            <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
+                            <div class="date" style="cursor: pointer;" dblclick.delegate="dateDblclickHandler(item)" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
                             <a click.delegate="stowHandler(item)" class="tms-stow" title="收藏该消息"><i class="${item.isStow ? '' : 'empty'} star link icon"></i></a>
                         </div>
                         <div ref="mkbodyRef2" show.bind="!item.isEditing" fancybox class="text markdown-body fr-view" style="max-height: none; overflow-y: initial;" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef2"></div>
