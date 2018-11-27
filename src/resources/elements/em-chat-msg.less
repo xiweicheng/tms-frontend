@@ -1,10 +1,37 @@
 .em-chat-msg {
     .ui.comments {
-    	padding-top: 8px!important;
+        padding-top: 8px !important;
+
         .comment {
-            border-radius: 0!important;
+            border-radius: 0 !important;
+
             .actions a {
                 margin-right: 5px;
+            }
+
+            .tms-footer {
+                display: none;
+
+                &.tms-open {
+                    margin-bottom: 30px;
+                }
+
+                &.tms-has {
+                    display: block;
+                }
+            }
+
+            &:hover {
+                // .em-chat-content-item-footbar {
+                //     .add-btn {
+                //         display: inline-block;
+                //         bottom: 30px;
+                //     }
+                // }
+
+                // .tms-footer {
+                //     display: block;
+                // }
             }
         }
     }

@@ -4,12 +4,12 @@
         <div class="ui basic segment minimal selection list segment comments">
             <h1 show.bind="!chats.length" class="ui center aligned header">${actived.nodata}</h1>
             <div repeat.for="item of chats" mouseleave.trigger="searchItemMouseleaveHandler(item)" mouseenter.trigger="searchItemMouseenterHandler(item)" fancybox class="comment item ${item.id == markId ? 'active' : ''}" data-id="${item.id}">
-                <em-user-avatar user.bind="item.creator"></em-user-avatar>
+                <em-user-avatar user.bind="item.creator" search-on.bind="!0"></em-user-avatar>
                 <div class="content">
                     <a class="author" data-value="${item.creator.username}">${item.creator.name}</a>
                     <div class="metadata">
                         <i if.bind="item.ua" class="${item.ua | ua} icon large" style="margin-right: 0;" title="发自于${item.ua | ua2}"></i>
-                        <div class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
+                        <div class="date" dblclick.delegate="dateDblclickHandler(item)" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>
                         <!-- <div style="cursor: pointer;" click.delegate="gotoChatHandler(item)" class="tms-goto" title="定位到消息"><i class="large crosshairs icon"></i></div> -->
                     </div>
                     <div ref="mkbodyRef" class="text markdown-body fr-view ${item.isOpen ? 'tms-open' : ''}" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
@@ -31,6 +31,9 @@
                         <a class="tms-copy tms-clipboard" data-clipboard-text="${item.content}" title="复制消息内容到剪贴板"><i class="copy icon large"></i></a>
                         <a class="tms-share tms-clipboard" data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}" title="复制消息链接到剪贴板"><i class="share alternate icon large"></i></a>
                     </div>
+                </div>
+                <div class="tms-footer ${item.chatLabels.length > 0 ? 'tms-has' : ''} ${item.isOpen ? 'tms-open' : ''}">
+                    <em-chat-content-item-footbar chat.bind="item" last.bind="$last" last-pre.bind="(chats.length > 1) && ($index == chats.length - 2)"></em-chat-content-item-footbar>
                 </div>
                 <div class="tms-btn-open-search-item" click.delegate="openSearchItemHandler(item)">
                     <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>

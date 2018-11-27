@@ -164,4 +164,25 @@ export class EmChatMsg {
             }
         });
     }
+
+    dateDblclickHandler(item) {
+
+        let offset = parseInt((new Date().getTime() - item.createDate) / 1000 / 60 / 60);
+
+        let offsetD = parseInt(offset / 24);
+
+        if (offsetD > 1) {
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:${offsetD - 1}d ${offsetD + 1}d` });
+            return;
+        } else if (offsetD > 0) {
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:2d` });
+            return;
+        }
+
+        if (offset < 2) {
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:2h` });
+        } else {
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:${offset - 1}h ${offset + 1}h` });
+        }
+    }
 }
