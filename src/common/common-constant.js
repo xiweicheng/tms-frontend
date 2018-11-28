@@ -20,6 +20,7 @@ window.nsCons = {
     EVENT_CHAT_TOPIC_MSG_INSERT: 'event_chat_topic_msg_insert',
     EVENT_CHAT_MSG_POPUP_SHOW: 'event_chat_msg_popup_show',
     EVENT_CHAT_TOPIC_SHOW: 'event_chat_topic_show',
+    EVENT_CHAT_TOPIC_SCROLL_TO: 'event_chat_topic_scroll_to',
     EVENT_CHAT_MEMBER_POPUP_SHOW: 'event_chat_member_popup_show',
     EVENT_CHAT_MSG_WIKI_DIR: 'event_chat_msg_wiki_dir',
     EVENT_CHAT_CONTENT_SCROLL_TO: 'event_chat_content_scroll_to',

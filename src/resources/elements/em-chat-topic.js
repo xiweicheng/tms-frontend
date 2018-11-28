@@ -390,4 +390,9 @@ export class EmChatTopic {
             ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:${offset - 1}h ${offset + 1}h` });
         }
     }
+
+    scroll2ChatHandler() {
+        ea.publish(nsCons.EVENT_CHAT_TOPIC_SCROLL_TO, { chat: this.chat });
+        return false;
+    }
 }

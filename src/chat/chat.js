@@ -416,6 +416,12 @@ export class Chat {
 
         });
 
+        this.subscribe16 = ea.subscribe(nsCons.EVENT_CHAT_TOPIC_SCROLL_TO, (payload) => {
+
+            this.gotoChatItem(payload.chat);
+
+        });
+
     }
 
     _doClearFilter() {
@@ -585,6 +591,7 @@ export class Chat {
         this.subscribe13.dispose();
         this.subscribe14.dispose();
         this.subscribe15.dispose();
+        this.subscribe16.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();
