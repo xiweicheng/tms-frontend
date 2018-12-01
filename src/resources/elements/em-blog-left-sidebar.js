@@ -66,6 +66,7 @@ export class EmBlogLeftSidebar {
         });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, (payload) => {
             this.blog = _.find(this.blogs, { id: +nsCtx.blogId });
+            this.blog && _.delay(() => this._scrollTo(this.blog.id), 1000);
         });
         this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR, (payload) => {
             this.isHide = payload;
@@ -100,9 +101,11 @@ export class EmBlogLeftSidebar {
     }
 
     _scrollTo(to) {
-        $(this.treeRef).parent().scrollTo(`.blog-item[data-id="${to}"]`, {
-            offset: 0
-        });
+        if (!utils.isElementInViewport($(`.blog-item[data-id="${to}"]`))) {
+            $(this.treeRef).parent().scrollTo(`.blog-item[data-id="${to}"]`, {
+                offset: 0
+            });
+        }
     }
 
     // _refreshSysLinks() {
@@ -128,6 +131,7 @@ export class EmBlogLeftSidebar {
     refresh() {
         $.when(this.getSpaces(), this.getBlogTree()).done(() => {
             this.calcTree();
+            this.blog && _.delay(() => this._scrollTo(this.blog.id), 1000);
         });
     }
 
