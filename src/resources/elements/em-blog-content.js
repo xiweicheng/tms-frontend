@@ -300,6 +300,12 @@ export class EmBlogContent {
             // console.info('message from parent:', ev.data);
             if (ev.origin != window.location.origin) return;
 
+            if (ev.data.action == 'created') {
+                $('a[href="#modaal-blog-write-html"]').modaal('close');
+            }
+
+            ev.data.from = 'html';
+
             ea.publish(nsCons.EVENT_BLOG_CHANGED, ev.data);
         }, false);
     }

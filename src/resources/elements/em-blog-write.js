@@ -45,7 +45,7 @@ export class EmBlogWrite {
         });
         this.subscribe4 = ea.subscribe(nsCons.EVENT_BLOG_CHANGED, (payload) => {
             this.action = payload.action;
-            if (payload.action === 'created') {
+            if (payload.action === 'created' && payload.from != 'html') {
                 this.blog = payload.blog;
                 $('#blog-save-btn span').text('更新');
                 $('#blog-save-btn').attr('title', 'ctrl+click更新后关闭窗口');
@@ -580,6 +580,10 @@ export class EmBlogWrite {
         $('#blog-save-btn').click((event) => {
             this.save(event);
         });
+
+        $('#switch-html').click((event) => {
+            this.switchEditorHandler();
+        });
     }
 
     save(event, isKey) {
@@ -672,6 +676,13 @@ export class EmBlogWrite {
             });
         }
 
+    }
+
+    switchEditorHandler() {
+        this.close();
+        $('.em-blog-write-html > iframe').attr('src', this.baseRes + 'blog.html');
+        $('a[href="#modaal-blog-write-html"]').click();
+        return false;
     }
 
 }
