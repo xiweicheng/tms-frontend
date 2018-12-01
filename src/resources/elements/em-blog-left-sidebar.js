@@ -30,7 +30,9 @@ export class EmBlogLeftSidebar {
         this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_CHANGED, (payload) => {
             if (payload.action == 'created') {
                 this.blogs = [payload.blog, ...this.blogs];
+                nsCtx.blogId = payload.blog.id;
                 this.calcTree();
+                _.delay(() => this._scrollTo(payload.blog.id), 1000);
                 ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, { to: `#/blog/${payload.blog.id}` });
             } else if (payload.action == 'updated') {
                 _.extend(_.find(this.blogs, { id: payload.blog.id }), payload.blog);
@@ -97,6 +99,11 @@ export class EmBlogLeftSidebar {
         this._refreshBlogStows();
     }
 
+    _scrollTo(to) {
+        $(this.treeRef).parent().scrollTo(`.blog-item[data-id="${to}"]`, {
+            offset: 0
+        });
+    }
 
     // _refreshSysLinks() {
     //     $.get('/admin/link/listByApp', (data) => {
