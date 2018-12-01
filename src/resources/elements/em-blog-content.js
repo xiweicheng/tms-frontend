@@ -79,7 +79,7 @@ export class EmBlogContent {
                         let t = toastr.info(`当前博文有更新，点击可更新查看！`, null, _.extend(toastrOps, {
                             onclick: () => {
                                 this._delBlogNews(payload.nid);
-                                this.refreshHandler();
+                                this.refreshHandler(payload.id);
                                 t.remove();
                             }
                         }));
@@ -416,7 +416,12 @@ export class EmBlogContent {
         });
     }
 
-    getBlog() {
+    getBlog(id) {
+
+        if (id) {
+            nsCtx.blogId = id;
+        }
+
         this.progressWidth = 0;
         if (!nsCtx.blogId || isNaN(new Number(nsCtx.blogId))) {
             this.blog = null;
@@ -617,8 +622,8 @@ export class EmBlogContent {
         }
     }
 
-    refreshHandler() {
-        let p = this.getBlog();
+    refreshHandler(id) {
+        let p = this.getBlog(id);
         p && p.done(() => { toastr.success('刷新操作成功!'); });
     }
 
