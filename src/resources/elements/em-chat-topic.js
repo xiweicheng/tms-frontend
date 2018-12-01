@@ -21,7 +21,7 @@ export class EmChatTopic {
         this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_TOPIC_MSG_SENDED, (payload) => {
             if (!_.some(this.chat.chatReplies, { id: payload.data.id })) {
                 this.chat.chatReplies.push(payload.data);
-                this.scrollToBottom();
+                // this.scrollToBottom();
             }
 
             this.isFollower = true; // 回复话题会自动关注该话题
@@ -34,7 +34,9 @@ export class EmChatTopic {
     }
 
     scrollToBottom() {
-        this.scrollTo('max');
+        // this.scrollTo('max');
+        this.scrollTo("100%", { axis: 'y' });
+
     }
 
     scrollTo(to) {
@@ -43,7 +45,8 @@ export class EmChatTopic {
 
     _scrollTo(to) {
         if (to == 'b') {
-            $(this.commentsRef).closest('.scroll-content').scrollTo('max');
+            // $(this.commentsRef).closest('.scroll-content').scrollTo('max');
+            $(this.commentsRef).closest('.scroll-content').scrollTo("100%", { axis: 'y' });
         } else if (to == 't') {
             $(this.commentsRef).closest('.scroll-content').scrollTo(0);
         } else {
@@ -54,7 +57,8 @@ export class EmChatTopic {
                 $(this.commentsRef).find(`.comment[data-id]`).removeClass('active');
                 $(this.commentsRef).find(`.comment[data-id=${to}]`).addClass('active');
             } else {
-                $(this.commentsRef).closest('.scroll-content').scrollTo('max');
+                // $(this.commentsRef).closest('.scroll-content').scrollTo('max');
+                $(this.commentsRef).closest('.scroll-content').scrollTo("100%", { axis: 'y' });
                 toastr.warning(`消息[${to}]不存在,可能已经被删除!`);
             }
         }
@@ -185,6 +189,8 @@ export class EmChatTopic {
     activedChanged(newValue, oldValue) {
         if (!newValue || this.actived.payload.action != nsCons.ACTION_TYPE_TOPIC) {
             // poll.stop();
+            this.chat = null;
+            this.rid = null;
             return;
         }
 
