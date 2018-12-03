@@ -160,6 +160,10 @@ export class CommonUtils {
 
         var rect = el.getBoundingClientRect();
 
+        if (rect.top == 0 && rect.left == 0 && rect.bottom == 0 && rect.right == 0) {
+            return false;
+        }
+
         return (
             rect.top >= 0 &&
             rect.left >= 0 &&
@@ -408,23 +412,6 @@ export class CommonUtils {
                 $list.append($item);
             }
         });
-    }
-
-    isElementInViewport(el) {
-
-        //special bonus for those using jQuery
-        if (typeof jQuery === "function" && el instanceof jQuery) {
-            el = el[0];
-        }
-
-        var rect = el.getBoundingClientRect();
-
-        return (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
-        );
     }
 
     /**

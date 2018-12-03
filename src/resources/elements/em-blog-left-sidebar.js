@@ -101,11 +101,29 @@ export class EmBlogLeftSidebar {
         this._refreshBlogStows();
     }
 
+    _isBlogInView(id) {
+        let isInView = false;
+        $(`.blog-item[data-id="${id}"]`).each(function(item) {
+            let _isInView = utils.isElementInViewport($(this));
+            if (_isInView) {
+                isInView = true;
+                return false;
+            }
+        });
+        return isInView;
+    }
+
     _scrollTo(to) {
-        if (!utils.isElementInViewport($(`.blog-item[data-id="${to}"]`))) {
-            $(this.treeRef).parent().scrollTo(`.blog-item[data-id="${to}"]`, {
-                offset: 0
-            });
+        if (!this._isBlogInView(to)) {
+            if ($(`.blog-item[data-id="${to}"]`).length == 1) {
+                $(this.treeRef).parent().scrollTo(`.blog-item[data-id="${to}"]`, {
+                    offset: 0
+                });
+            } else if ($(`.blog-item[data-id="${to}"]`).length > 1) {
+                $(this.treeRef).parent().scrollTo($(`.blog-item[data-id="${to}"]`).get(1), {
+                    offset: 0
+                });
+            }
         }
     }
 

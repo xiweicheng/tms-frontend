@@ -13,7 +13,7 @@
                                 </span>
                             <div show.bind="spaceStow.open" class="ui bulleted list">
                                 <template repeat.for="item of blogStows | sort:'blog.title'">
-                                    <div if.bind="item.blog.status != 'Deleted'" show.bind="!item._hidden" class="item ${item.blog.id == $parent.blog.id ? 'active' : ''}">
+                                    <div if.bind="item.blog.status != 'Deleted'" show.bind="!item._hidden" data-id="${item.blog.id}" class="item blog-item ${item.blog.id == $parent.blog.id ? 'active' : ''}">
                                         <a title="${item.blog.title}" href="#/blog/${item.blog.id}">
                                             <i class="icons">
                                                 <i class="file outline icon"></i>
@@ -34,7 +34,7 @@
                                 </span>
                             <div show.bind="spaceRecent.open" class="ui bulleted list">
                                 <template repeat.for="blog of blogs | sort:'updateDate':true | take:20">
-                                    <div if.bind="blog.status != 'Deleted'" show.bind="!blog._hidden" class="item ${blog.id == $parent.blog.id ? 'active' : ''}">
+                                    <div if.bind="blog.status != 'Deleted'" show.bind="!blog._hidden" data-id="${blog.id}" class="item blog-item ${blog.id == $parent.blog.id ? 'active' : ''}">
                                         <a title="${blog.title}" href="#/blog/${blog.id}">
                                             <i class="icons">
                                                 <i class="file outline icon"></i>
