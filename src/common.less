@@ -10,6 +10,7 @@ code.nx {
 .markdown-body {
     .pre-code-wrapper {
         position: relative;
+
         >i.copy.icon {
             display: none;
             position: absolute;
@@ -17,12 +18,37 @@ code.nx {
             right: 0;
             cursor: pointer;
         }
+
         &:hover {
             >i.copy.icon {
                 display: block;
             }
         }
+
+        >.tms-chat-msg-code-trigger {
+            display: none;
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            cursor: pointer;
+            font-size: 12px;
+            color: #4183c4;
+        }
+
+        &:hover {
+            >.tms-chat-msg-code-trigger {
+                display: inline-block;
+            }
+        }
+
+        >pre {
+            &.fold {
+                max-height: 100px;
+                // overflow-y: hidden;
+            }
+        }
     }
+
     .export-table-wrapper:first-child table {
         margin-top: 0;
     }
@@ -30,14 +56,14 @@ code.nx {
 
 .tms-disabled {
     cursor: default;
-    opacity: .45!important;
-    background-image: none!important;
-    box-shadow: none!important;
-    pointer-events: none!important;
+    opacity: .45 !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    pointer-events: none !important;
 }
 
 .tms-hidden {
-    display: none!important;
+    display: none !important;
 }
 
 .animated {
@@ -54,24 +80,28 @@ code.nx {
         -webkit-animation-timing-function: ease-out;
         animation-timing-function: ease-out;
     }
+
     40% {
         -webkit-transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -190deg);
         transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -190deg);
         -webkit-animation-timing-function: ease-out;
         animation-timing-function: ease-out;
     }
+
     50% {
         -webkit-transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -170deg);
         transform: perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -170deg);
         -webkit-animation-timing-function: ease-in;
         animation-timing-function: ease-in;
     }
+
     80% {
         -webkit-transform: perspective(400px) scale3d(.95, .95, .95);
         transform: perspective(400px) scale3d(.95, .95, .95);
         -webkit-animation-timing-function: ease-in;
         animation-timing-function: ease-in;
     }
+
     to {
         -webkit-transform: perspective(400px);
         transform: perspective(400px);
@@ -124,6 +154,7 @@ code.nx {
         -webkit-transform: scale3d(0.1, 0.1, 1);
         transform: scale3d(0.1, 0.1, 1);
     }
+
     100% {
         opacity: 0;
         -webkit-transform: scale3d(8, 8, 1);
@@ -137,6 +168,7 @@ code.nx {
         -webkit-transform: scale3d(0.1, 0.1, 1);
         transform: scale3d(0.1, 0.1, 1);
     }
+
     100% {
         opacity: 0;
         -webkit-transform: scale3d(8, 8, 1);
@@ -163,5 +195,5 @@ a.btn-delete {
 }
 
 .modaal-content-container {
-    padding: 0!important;
+    padding: 0 !important;
 }

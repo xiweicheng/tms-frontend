@@ -1150,6 +1150,25 @@ export class Chat {
             }
         });
 
+        $(this.chatContainerRef).on('click', '.tms-chat-msg-code-trigger', function(event) {
+
+            let $pre = $(this).parent().children('pre');
+            $pre.toggleClass('fold');
+            if ($pre.hasClass('fold')) {
+                $(this).text('展开');
+            } else {
+                $(this).text('折叠');
+            }
+        });
+
+        $(this.chatContainerRef).on('mouseenter', 'pre.fold', function(event) {
+
+            let $pre = $(event.currentTarget);
+            if ($pre.height() < 100) {
+                $pre.parent().children('.tms-chat-msg-code-trigger').remove();
+            }
+        });
+
         $('.tms-comments-container[ref="scrollbarRef"]').scroll(_.throttle((event) => {
             try {
                 let sHeight = $(event.currentTarget)[0].scrollHeight;

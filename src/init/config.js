@@ -156,10 +156,10 @@ export class Config {
             }
 
             if (!lang) {
-                return `<div class="pre-code-wrapper"><i data-clipboard-text="${utils.escape(codeBk, true)}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre><code>${escaped ? code : utils.escape(code, true)}\n</code></pre></div>`;
+                return `<div class="pre-code-wrapper"><i data-clipboard-text="${utils.escape(codeBk, true)}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre class="fold"><code>${escaped ? code : utils.escape(code, true)}\n</code></pre><div class="tms-chat-msg-code-trigger">展开</div></div>`;
             }
 
-            return `<div class="pre-code-wrapper"><i data-clipboard-text="${utils.escape(codeBk, true)}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre><code class="${this.options.langPrefix + utils.escape(lang, true)}">${escaped ? code : utils.escape(code, true)}\n</code></pre><div>\n`;
+            return `<div class="pre-code-wrapper"><i data-clipboard-text="${utils.escape(codeBk, true)}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre class="fold"><code class="${this.options.langPrefix + utils.escape(lang, true)}">${escaped ? code : utils.escape(code, true)}\n</code></pre><<div class="tms-chat-msg-code-trigger">展开</div>div>\n`;
         };
 
         renderer.html = function(html) {
