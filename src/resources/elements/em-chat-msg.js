@@ -52,11 +52,28 @@ export class EmChatMsg {
             this.last = result.last;
             this.moreCnt = result.totalElements - (result.number + 1) * result.size;
         } else if (this.actived.payload.action == nsCons.ACTION_TYPE_STOW) {
-            this.chats = payload.result;
-            this.last = true;
+            this.page = result;
+            this.chats = _.map(result.content, (item) => {
+                if (item.chatReply) {
+                    let chat = item.chatReply;
+                    chat.chatStow = item;
+                    return chat;
+                }
+                let chatChannel = item.chatChannel;
+                chatChannel.chatStow = item;
+                return chatChannel;
+            });
+            this.last = result.last;
+            this.moreCnt = result.totalElements - (result.number + 1) * result.size;
         } else if (this.actived.payload.action == nsCons.ACTION_TYPE_PIN) {
-            this.chats = payload.result;
-            this.last = true;
+            this.page = result;
+            this.chats = _.map(result.content, (item) => {
+                let chatChannel = item.chatChannel;
+                chatChannel.chatPin = item;
+                return chatChannel;
+            });
+            this.last = result.last;
+            this.moreCnt = result.totalElements - (result.number + 1) * result.size;
         } else if (this.actived.payload.action == nsCons.ACTION_TYPE_SEARCH) {
             this.search = payload.search;
             this.page = result;
@@ -94,6 +111,46 @@ export class EmChatMsg {
             }, (data) => {
                 if (data.success) {
                     this.chats = _.concat(this.chats, data.data.content);
+
+                    this.page = data.data;
+                    this.last = data.data.last;
+                    this.moreCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
+                }
+            });
+        } else if (this.actived.payload.action == nsCons.ACTION_TYPE_PIN) {
+            this.searchMoreP = $.get(`/admin/chat/channel/pin/list`, {
+                cid: !nsCtx.isAt ? this.channel.id : null,
+                size: this.page.size,
+                page: this.page.number + 1
+            }, (data) => {
+                if (data.success) {
+                    this.chats = _.concat(this.chats, _.map(data.data.content, (item) => {
+                        let chatChannel = item.chatChannel;
+                        chatChannel.chatPin = item;
+                        return chatChannel;
+                    }));
+
+                    this.page = data.data;
+                    this.last = data.data.last;
+                    this.moreCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
+                }
+            });
+        } else if (this.actived.payload.action == nsCons.ACTION_TYPE_STOW) {
+            this.searchMoreP = $.get('/admin/chat/channel/getStows', {
+                size: this.page.size,
+                page: this.page.number + 1
+            }, (data) => {
+                if (data.success) {
+                    this.chats = _.concat(this.chats, _.map(data.data.content, (item) => {
+                        if (item.chatReply) {
+                            let chat = item.chatReply;
+                            chat.chatStow = item;
+                            return chat;
+                        }
+                        let chatChannel = item.chatChannel;
+                        chatChannel.chatStow = item;
+                        return chatChannel;
+                    }));
 
                     this.page = data.data;
                     this.last = data.data.last;

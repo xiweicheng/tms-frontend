@@ -355,21 +355,14 @@ export class EmChatTopMenu {
         }
 
         this.activeType = nsCons.ACTION_TYPE_STOW;
-        this.ajaxStow = $.get('/admin/chat/channel/getStows', (data) => {
+        this.ajaxStow = $.get('/admin/chat/channel/getStows', {
+            page: 0,
+            size: 20
+        }, (data) => {
             if (data.success) {
-                let stowChats = _.map(data.data, (item) => {
-                    if (item.chatReply) {
-                        let chat = item.chatReply;
-                        chat.chatStow = item;
-                        return chat;
-                    }
-                    let chatChannel = item.chatChannel;
-                    chatChannel.chatStow = item;
-                    return chatChannel;
-                });
                 ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
                     action: this.activeType,
-                    result: _.reverse(stowChats)
+                    result: data.data
                 });
                 this.toggleRightSidebar(true);
             } else {
@@ -559,19 +552,15 @@ export class EmChatTopMenu {
         }
 
         this.activeType = nsCons.ACTION_TYPE_PIN;
-
         this.ajaxPin = $.get('/admin/chat/channel/pin/list', {
-            cid: this.channel.id
+            cid: this.channel.id,
+            page: 0,
+            size: 20
         }, (data) => {
             if (data.success) {
-                let pinChats = _.map(data.data, (item) => {
-                    let chatChannel = item.chatChannel;
-                    chatChannel.chatPin = item;
-                    return chatChannel;
-                });
                 ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_TOGGLE, {
                     action: this.activeType,
-                    result: _.reverse(pinChats)
+                    result: data.data
                 });
                 this.toggleRightSidebar(true);
             } else {
