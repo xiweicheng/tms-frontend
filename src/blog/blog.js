@@ -123,6 +123,25 @@ export class Blog {
             });
         });
 
+        $('.tms-blog').on('click', '.tms-chat-msg-code-trigger', function(event) {
+
+            let $pre = $(this).parent().children('pre');
+            $pre.toggleClass('fold');
+            if ($pre.hasClass('fold')) {
+                $(this).text('展开');
+            } else {
+                $(this).text('折叠');
+            }
+        });
+
+        $('.tms-blog').on('mouseenter', 'pre.fold', function(event) {
+
+            let $pre = $(event.currentTarget);
+            if ($pre.height() < 100) {
+                $pre.parent().children('.tms-chat-msg-code-trigger').remove();
+            }
+        });
+
         this._initSock();
 
     }
