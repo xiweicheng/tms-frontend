@@ -11,7 +11,7 @@
                         <div class="ui middle aligned divided list" style="padding-left: 0px;">
                             <div class="item" style="padding-top: 5px!important; padding-bottom: 5px!important; padding-left: 0; padding-right: 0;">
                                 <div class="content">
-                                    <div repeat.for="item of members" class="ui basic label mapping-user group-user" data-value="${item.username}" style="margin-top: 3px; margin-left: 0;" title="${item.username}">${item.name ? item.name : item.username}</div>
+                                    <div repeat.for="item of members" class="ui basic label mapping-user group-user ${!item.enabled ? 'disable-user' : ''}" data-value="${item.username}" style="margin-top: 3px; margin-left: 0;" title="${item.username}">${item.name ? item.name : item.username}</div>
                                 </div>
                             </div>
                         </div>
