@@ -9,6 +9,8 @@
     <link rel=stylesheet href="libs/jquery/dateField/jquery.dateField.css" type="text/css">
     <link rel=stylesheet href="gantt.css" type="text/css">
     <link rel=stylesheet href="ganttPrint.css" type="text/css" media="print">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="libs/jquery/jquery.livequery.1.1.1.min.js"></script>
@@ -29,15 +31,10 @@
     <script src="ganttZoom.js"></script>
     <script src="ganttGridEditor.js"></script>
     <script src="ganttMaster.js"></script>
-    <!--<script src="libs/profiling.js"></script>-->
-    <!--<script type="text/javascript" src="ganttTestSuite.js"></script>-->
-</head>
-
-<body style="background-color: #fff;">
-    <!-- <div id="ndo" style="position:absolute;right:5px;top:5px;width:378px;padding:5px;background-color: #FFF5E6; border:1px solid #F9A22F; font-size:12px" class="noprint">
-        This Gantt editor is free thanks to <a href="http://twproject.com" target="_blank">Twproject</a> where it can be used on a complete and flexible project management solution.<br> Get your projects done! Give <a href="http://twproject.com" target="_blank">Twproject a try now</a>.
-    </div> -->
-    <div id="workSpace" style="padding:0px; overflow-y:auto; overflow-x:hidden;border:1px solid #e5e5e5;position:relative;margin:0 5px"></div>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-url/2.5.3/url.min.js"></script> -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.core.min.js"></script> -->
     <style>
         .resEdit {
         padding: 15px;
@@ -60,17 +57,24 @@
         font-size: 28px;
         margin-left: 10px;
     }
+    .blocker {
+        z-index: 999;
+    }
     </style>
-    <!-- <form id="gimmeBack" style="display:none;" action="../gimmeBack.jsp" method="post" target="_blank"><input type="hidden" name="prj" id="gimBaPrj"></form> -->
+</head>
+
+<body style="background-color: #fff;">
+    <div id="workSpace" style="padding:0px; overflow-y:auto; overflow-x:hidden;border:1px solid #e5e5e5;position:relative;margin:0 5px"></div>
     <script type="text/javascript">
-    var ge;
+    var ge = null;
+    var gantt = null;
+
     $(function() {
         var canWrite = true; //this is the default for test purposes
 
         // here starts gantt initialization
         ge = new GanttMaster();
         ge.set100OnClose = true;
-
         ge.shrinkParent = true;
 
         ge.init($("#workSpace"));
@@ -79,337 +83,85 @@
         //in order to force compute the best-fitting zoom level
         delete ge.gantt.zoom;
 
-        var project = loadFromLocalStorage();
+        $.get('/admin/gantt/get/1', function(data) {
+            if (data.success) {
+                gantt = data.data;
+                var project = JSON.parse(gantt.content)
+                project.canAdd = true;
 
-        if (!project.canWrite) {
-            $(".ganttButtonBar button.requireWrite").attr("disabled", "true");
-        }
+                if (!project.canWrite) {
+                    $(".ganttButtonBar button.requireWrite").attr("disabled", "true");
+                }
 
-        ge.loadProject(project);
-        ge.checkpoint(); //empty the undo stack
+                ge.loadProject(project);
+                ge.checkpoint(); //empty the undo stack
+            } else {
+                toastr && toastr.error(data.data);
+            }
+        });
+
+
+        $('#saveModal .btnOk').click(function(event) {
+            saveProject();
+        });
     });
 
+    function saveProject() {
+        var title = $('#saveModal input[name="title"]').val();
 
-
-    function getDemoProject() {
-        //console.debug("getDemoProject")
-        ret = {
-            "tasks": [{
-                    "id": -1,
-                    "name": "Gantt editor",
-                    "progress": 0,
-                    "progressByWorklog": false,
-                    "relevance": 0,
-                    "type": "",
-                    "typeId": "",
-                    "description": "",
-                    "code": "",
-                    "level": 0,
-                    "status": "STATUS_ACTIVE",
-                    "depends": "",
-                    "canWrite": true,
-                    "start": 1396994400000,
-                    "duration": 20,
-                    "end": 1399586399999,
-                    "startIsMilestone": false,
-                    "endIsMilestone": false,
-                    "collapsed": false,
-                    "assigs": [],
-                    "hasChild": true
-                },
-                {
-                    "id": -2,
-                    "name": "coding",
-                    "progress": 0,
-                    "progressByWorklog": false,
-                    "relevance": 0,
-                    "type": "",
-                    "typeId": "",
-                    "description": "",
-                    "code": "",
-                    "level": 1,
-                    "status": "STATUS_ACTIVE",
-                    "depends": "",
-                    "canWrite": true,
-                    "start": 1396994400000,
-                    "duration": 10,
-                    "end": 1398203999999,
-                    "startIsMilestone": false,
-                    "endIsMilestone": false,
-                    "collapsed": false,
-                    "assigs": [],
-                    "hasChild": true
-                },
-                {
-                    "id": -3,
-                    "name": "gantt part",
-                    "progress": 0,
-                    "progressByWorklog": false,
-                    "relevance": 0,
-                    "type": "",
-                    "typeId": "",
-                    "description": "",
-                    "code": "",
-                    "level": 2,
-                    "status": "STATUS_ACTIVE",
-                    "depends": "",
-                    "canWrite": true,
-                    "start": 1396994400000,
-                    "duration": 2,
-                    "end": 1397167199999,
-                    "startIsMilestone": false,
-                    "endIsMilestone": false,
-                    "collapsed": false,
-                    "assigs": [],
-                    "hasChild": false
-                },
-                {
-                    "id": -4,
-                    "name": "editor part",
-                    "progress": 0,
-                    "progressByWorklog": false,
-                    "relevance": 0,
-                    "type": "",
-                    "typeId": "",
-                    "description": "",
-                    "code": "",
-                    "level": 2,
-                    "status": "STATUS_SUSPENDED",
-                    "depends": "3",
-                    "canWrite": true,
-                    "start": 1397167200000,
-                    "duration": 4,
-                    "end": 1397685599999,
-                    "startIsMilestone": false,
-                    "endIsMilestone": false,
-                    "collapsed": false,
-                    "assigs": [],
-                    "hasChild": false
-                },
-                {
-                    "id": -5,
-                    "name": "testing",
-                    "progress": 0,
-                    "progressByWorklog": false,
-                    "relevance": 0,
-                    "type": "",
-                    "typeId": "",
-                    "description": "",
-                    "code": "",
-                    "level": 1,
-                    "status": "STATUS_SUSPENDED",
-                    "depends": "2:5",
-                    "canWrite": true,
-                    "start": 1398981600000,
-                    "duration": 5,
-                    "end": 1399586399999,
-                    "startIsMilestone": false,
-                    "endIsMilestone": false,
-                    "collapsed": false,
-                    "assigs": [],
-                    "hasChild": true
-                },
-                {
-                    "id": -6,
-                    "name": "test on safari",
-                    "progress": 0,
-                    "progressByWorklog": false,
-                    "relevance": 0,
-                    "type": "",
-                    "typeId": "",
-                    "description": "",
-                    "code": "",
-                    "level": 2,
-                    "status": "STATUS_SUSPENDED",
-                    "depends": "",
-                    "canWrite": true,
-                    "start": 1398981600000,
-                    "duration": 2,
-                    "end": 1399327199999,
-                    "startIsMilestone": false,
-                    "endIsMilestone": false,
-                    "collapsed": false,
-                    "assigs": [],
-                    "hasChild": false
-                },
-                {
-                    "id": -7,
-                    "name": "test on ie",
-                    "progress": 0,
-                    "progressByWorklog": false,
-                    "relevance": 0,
-                    "type": "",
-                    "typeId": "",
-                    "description": "",
-                    "code": "",
-                    "level": 2,
-                    "status": "STATUS_SUSPENDED",
-                    "depends": "6",
-                    "canWrite": true,
-                    "start": 1399327200000,
-                    "duration": 3,
-                    "end": 1399586399999,
-                    "startIsMilestone": false,
-                    "endIsMilestone": false,
-                    "collapsed": false,
-                    "assigs": [],
-                    "hasChild": false
-                },
-                {
-                    "id": -8,
-                    "name": "test on chrome",
-                    "progress": 0,
-                    "progressByWorklog": false,
-                    "relevance": 0,
-                    "type": "",
-                    "typeId": "",
-                    "description": "",
-                    "code": "",
-                    "level": 2,
-                    "status": "STATUS_SUSPENDED",
-                    "depends": "6",
-                    "canWrite": true,
-                    "start": 1399327200000,
-                    "duration": 2,
-                    "end": 1399499999999,
-                    "startIsMilestone": false,
-                    "endIsMilestone": false,
-                    "collapsed": false,
-                    "assigs": [],
-                    "hasChild": false
-                }
-            ],
-            "selectedRow": 2,
-            "deletedTaskIds": [],
-            "resources": [{
-                    "id": "tmp_1",
-                    "name": "Resource 1"
-                },
-                {
-                    "id": "tmp_2",
-                    "name": "Resource 2"
-                },
-                {
-                    "id": "tmp_3",
-                    "name": "Resource 3"
-                },
-                {
-                    "id": "tmp_4",
-                    "name": "Resource 4"
-                }
-            ],
-            "roles": [{
-                    "id": "tmp_1",
-                    "name": "Project Manager"
-                },
-                {
-                    "id": "tmp_2",
-                    "name": "Worker"
-                },
-                {
-                    "id": "tmp_3",
-                    "name": "Stakeholder"
-                },
-                {
-                    "id": "tmp_4",
-                    "name": "Customer"
-                }
-            ],
-            "canWrite": true,
-            "canDelete": true,
-            "canWriteOnParent": true,
-            "canAdd": true
-        };
-
-
-        //actualize data
-        var offset = new Date().getTime() - ret.tasks[0].start;
-        for (var i = 0; i < ret.tasks.length; i++) {
-            ret.tasks[i].start = ret.tasks[i].start + offset;
+        if (!title || !$.trim(title)) {
+            toastr && toastr.error('标题不能为空！');
+            return;
         }
-        return ret;
+
+        $.modal.close();
+
+        var project = ge.saveProject();
+        // project.canAdd = true;
+
+        $.post('/admin/gantt/create', { title: title, cid: 4, content: JSON.stringify(project) }, function(data, textStatus, xhr) {
+            if (data.success) {
+                gantt = data.data;
+                toastr && toastr.success('保存成功！');
+                (window.parent && window.parent.postMessage) && (window.parent.postMessage({ action: 'created', gantt: gantt }, window.location.origin));
+            } else {
+                toastr && toastr.error(data.data);
+            }
+        });
     }
 
-    function loadGanttFromServer(taskId, callback) {
+    function updateProject() {
 
-        //this is a simulation: load data from the local storage if you have already played with the demo or a textarea with starting demo data
-        var ret = loadFromLocalStorage();
+        var project = ge.saveProject();
+        // project.canAdd = true;
 
-        //this is the real implementation
-        /*
-        //var taskId = $("#taskSelector").val();
-        var prof = new Profiler("loadServerSide");
-        prof.reset();
+        if (gantt.content == JSON.stringify(project)) {
+            toastr.info('没有内容变更！');
+            return;
+        }
 
-        $.getJSON("ganttAjaxController.jsp", {CM:"LOADPROJECT",taskId:taskId}, function(response) {
-          //console.debug(response);
-          if (response.ok) {
-            prof.stop();
-
-            ge.loadProject(response.project);
-            ge.checkpoint(); //empty the undo stack
-
-            if (typeof(callback)=="function") {
-              callback(response);
+        $.post('/admin/gantt/update', { id: gantt.id, content: JSON.stringify(project) }, function(data, textStatus, xhr) {
+            if (data.success) {
+                gantt = data.data;
+                toastr && toastr.success('保存成功！');
+                (window.parent && window.parent.postMessage) && (window.parent.postMessage({ action: 'updated', gantt: gantt }, window.location.origin));
+            } else {
+                toastr && toastr.error(data.data);
             }
-          } else {
-            jsonErrorHandling(response);
-          }
         });
-        */
-
-        return ret;
     }
 
     function saveGanttOnServer() {
 
-        //this is a simulation: save data to the local storage or to the textarea
-        saveInLocalStorage();
-
-        /*
-        var prj = ge.saveProject();
-
-        delete prj.resources;
-        delete prj.roles;
-
-        var prof = new Profiler("saveServerSide");
-        prof.reset();
-
-        if (ge.deletedTaskIds.length>0) {
-          if (!confirm("TASK_THAT_WILL_BE_REMOVED\n"+ge.deletedTaskIds.length)) {
-            return;
-          }
+        if (gantt) {
+            updateProject();
+        } else {
+            $('#saveModal').modal({
+                fadeDuration: 200,
+                clickClose: false
+            });
         }
 
-        $.ajax("ganttAjaxController.jsp", {
-          dataType:"json",
-          data: {CM:"SVPROJECT",prj:JSON.stringify(prj)},
-          type:"POST",
-
-          success: function(response) {
-            if (response.ok) {
-              prof.stop();
-              if (response.project) {
-                ge.loadProject(response.project); //must reload as "tmp_" ids are now the good ones
-              } else {
-                ge.reset();
-              }
-            } else {
-              var errMsg="Errors saving project\n";
-              if (response.message) {
-                errMsg=errMsg+response.message+"\n";
-              }
-
-              if (response.errorMessages.length) {
-                errMsg += response.errorMessages.join("\n");
-              }
-
-              alert(errMsg);
-            }
-          }
-
-        });
-        */
     }
 
     function newProject() {
@@ -420,42 +172,6 @@
     function clearGantt() {
         ge.reset();
     }
-
-    //-------------------------------------------  Get project file as JSON (used for migrate project from gantt to Teamwork) ------------------------------------------------------
-    function getFile() {
-        $("#gimBaPrj").val(JSON.stringify(ge.saveProject()));
-        $("#gimmeBack").submit();
-        $("#gimBaPrj").val("");
-
-        /*  var uriContent = "data:text/html;charset=utf-8," + encodeURIComponent(JSON.stringify(prj));
-         neww=window.open(uriContent,"dl");*/
-    }
-
-
-    function loadFromLocalStorage() {
-        var ret;
-        if (localStorage) {
-            if (localStorage.getObject("teamworkGantDemo")) {
-                ret = localStorage.getObject("teamworkGantDemo");
-            }
-        }
-
-        //if not found create a new example task
-        if (!ret || !ret.tasks || ret.tasks.length == 0) {
-            ret = getDemoProject();
-        }
-        return ret;
-    }
-
-
-    function saveInLocalStorage() {
-        var prj = ge.saveProject();
-        prj.canAdd = true;
-        if (localStorage) {
-            localStorage.setObject("teamworkGantDemo", prj);
-        }
-    }
-
 
     //-------------------------------------------  Open a black popup for managing resources. This is only an axample of implementation (usually resources come from server) ------------------------------------------------------
     function editResources() {
@@ -523,112 +239,13 @@
         var ndo = createModalPopup(400, 500).append(resourceEditor);
     }
 
-    function initializeHistoryManagement() {
-
-        //si chiede al server se c'è della hisory per la root
-        $.getJSON(contextPath + "/applications/teamwork/task/taskAjaxController.jsp", { CM: "GETGANTTHISTPOINTS", OBJID: 10236 }, function(response) {
-
-            //se c'è
-            if (response.ok == true && response.historyPoints && response.historyPoints.length > 0) {
-
-                //si crea il bottone sulla bottoniera
-                var histBtn = $("<button>").addClass("button textual icon lreq30 lreqLabel").attr("title", "SHOW_HISTORY").append("<span class=\"teamworkIcon\">&#x60;</span>");
-
-                //al click
-                histBtn.click(function() {
-                    var el = $(this);
-                    var ganttButtons = $(".ganttButtonBar .buttons");
-
-                    //è gi�  in modalit�  history?
-                    if (!ge.element.is(".historyOn")) {
-                        ge.element.addClass("historyOn");
-                        ganttButtons.find(".requireCanWrite").hide();
-
-                        //si carica la history server side
-                        if (false) return;
-                        showSavingMessage();
-                        $.getJSON(contextPath + "/applications/teamwork/task/taskAjaxController.jsp", { CM: "GETGANTTHISTPOINTS", OBJID: ge.tasks[0].id }, function(response) {
-                            jsonResponseHandling(response);
-                            hideSavingMessage();
-                            if (response.ok == true) {
-                                var dh = response.historyPoints;
-                                //ge.historyPoints=response.historyPoints;
-                                if (dh && dh.length > 0) {
-                                    //si crea il div per lo slider
-                                    var sliderDiv = $("<div>").prop("id", "slider").addClass("lreq30 lreqHide").css({ "display": "inline-block", "width": "500px" });
-                                    ganttButtons.append(sliderDiv);
-
-                                    var minVal = 0;
-                                    var maxVal = dh.length - 1;
-
-                                    $("#slider").show().mbSlider({
-                                        rangeColor: '#2f97c6',
-                                        minVal: minVal,
-                                        maxVal: maxVal,
-                                        startAt: maxVal,
-                                        showVal: false,
-                                        grid: 1,
-                                        formatValue: function(val) {
-                                            return new Date(dh[val]).format();
-                                        },
-                                        onSlideLoad: function(obj) {
-                                            this.onStop(obj);
-
-                                        },
-                                        onStart: function(obj) {},
-                                        onStop: function(obj) {
-                                            var val = $(obj).mbgetVal();
-                                            showSavingMessage();
-                                            $.getJSON(contextPath + "/applications/teamwork/task/taskAjaxController.jsp", { CM: "GETGANTTHISTORYAT", OBJID: ge.tasks[0].id, millis: dh[val] }, function(response) {
-                                                jsonResponseHandling(response);
-                                                hideSavingMessage();
-                                                if (response.ok) {
-                                                    ge.baselines = response.baselines;
-                                                    ge.showBaselines = true;
-                                                    ge.baselineMillis = dh[val];
-                                                    ge.redraw();
-                                                }
-                                            })
-
-                                        },
-                                        onSlide: function(obj) {
-                                            clearTimeout(obj.renderHistory);
-                                            var self = this;
-                                            obj.renderHistory = setTimeout(function() {
-                                                self.onStop(obj);
-                                            }, 200)
-
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                        // quando si spenge
-                    } else {
-                        //si cancella lo slider
-                        $("#slider").remove();
-                        ge.element.removeClass("historyOn");
-                        if (ge.permissions.canWrite)
-                            ganttButtons.find(".requireCanWrite").show();
-
-                        ge.showBaselines = false;
-                        ge.baselineMillis = undefined;
-                        ge.redraw();
-                    }
-
-                });
-                $("#saveGanttButton").before(histBtn);
-            }
-        })
-    }
-
     function showBaselineInfo(event, element) {
-        //alert(element.attr("data-label"));
         $(element).showBalloon(event, $(element).attr("data-label"));
         ge.splitter.secondBox.one("scroll", function() {
             $(element).hideBalloon();
         });
     }
+
     </script>
     <div id="gantEditorTemplates" style="display:none;">
         <div class="__template__" type="GANTBUTTONS">
@@ -672,7 +289,7 @@
     <button onclick="editResources();" class="button textual requireWrite" title="编辑资源"><span class="teamworkIcon">M</span></button>
       &nbsp; &nbsp; &nbsp; &nbsp;
     <button onclick="saveGanttOnServer();" class="button first big requireWrite" title="保存">保存</button>
-    <button onclick='newProject();' class='button requireWrite newproject'><em>清空项目</em></button>
+    <button onclick='newProject();' style="display: none;" class='button requireWrite newproject'><em>清空项目</em></button>
     <button class="button login" title="login/enroll" onclick="loginEnroll($(this));" style="display:none;">login/enroll</button>
     <button class="button opt collab" title="Start with Twproject" onclick="collaborate($(this));" style="display:none;"><em>collaborate</em></button>
     </div></div>
@@ -879,6 +496,22 @@
   -->
         </div>
     </div>
+    <!-- Modal HTML embedded directly into document -->
+    <div id="saveModal" class="modal">
+        <div id="saveFrm" style="padding-top: 16px;">
+            <div class="row">
+                <label>标题</label>
+                <input name="title" type="text" style="width: 200px;">
+            </div>
+            <div class="row">
+                <input id="privated" type="checkbox">
+                <label for="privated">私有甘特图（不公开）</label>
+            </div>
+            <div class="row" style="padding-top: 16px;">
+                <button class="btnOk btn">确定</button>
+            </div>
+        </div>
+    </div>
     <script type="text/javascript">
     $.JST.loadDecorator("RESOURCE_ROW", function(resTr, res) {
         resTr.find(".delRes").click(function() { $(this).closest("tr").remove() });
@@ -942,21 +575,6 @@
         };
     }
 
-    function createNewResource(el) {
-        var row = el.closest("tr[taskid]");
-        var name = row.find("[name=resourceId_txt]").val();
-        var url = contextPath + "/applications/teamwork/resource/resourceNew.jsp?CM=ADD&name=" + encodeURI(name);
-
-        openBlackPopup(url, 700, 320, function(response) {
-            //fillare lo smart combo
-            if (response && response.resId && response.resName) {
-                //fillare lo smart combo e chiudere l'editor
-                row.find("[name=resourceId]").val(response.resId);
-                row.find("[name=resourceId_txt]").val(response.resName).focus().blur();
-            }
-
-        });
-    }
     </script>
 </body>
 
