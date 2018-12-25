@@ -63,6 +63,7 @@ export function configure(aurelia) {
         'resources/elements/em-chat-topic-input',
         'resources/elements/em-chat-settings',
         'resources/elements/em-chat-todo',
+        'resources/elements/em-chat-gantt',
         'resources/elements/em-blog-write',
         'resources/elements/em-blog-write-html',
         'resources/elements/em-blog-left-sidebar',

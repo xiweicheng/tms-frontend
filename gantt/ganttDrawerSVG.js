@@ -74,14 +74,16 @@ Ganttalendar.prototype.zoomGantt = function (isPlus) {
 };
 
 
-
-Ganttalendar.prototype.getStoredZoomLevel = function () {
-  if (localStorage  && localStorage.getObject("TWPGanttSavedZooms")) {
-    var savedZooms = localStorage.getObject("TWPGanttSavedZooms");
-    return savedZooms[this.master.tasks[0].id];
-  }
-  return false;
+Ganttalendar.prototype.getStoredZoomLevel = function() {
+    if (localStorage && localStorage.getObject("TWPGanttSavedZooms")) {
+        var savedZooms = localStorage.getObject("TWPGanttSavedZooms");
+        if (this.master.tasks && this.master.tasks.length > 0) {
+            return savedZooms[this.master.tasks[0].id];
+        }
+    }
+    return false;
 };
+
 
 Ganttalendar.prototype.storeZoomLevel = function () {
   //console.debug("storeZoomLevel: "+this.zoom);

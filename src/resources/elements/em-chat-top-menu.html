@@ -22,6 +22,27 @@
                         </div>
                     </div>
                 </div>
+                <div show.bind="!isAt" ref="channelGanttsDdRef" class="ui dropdown icon item tms-channel-gantts">
+                    <i title="当前频道甘特图" class="ordered list icon"></i>
+                    <div class="menu">
+                        <div class="ui icon search input">
+                            <i class="search icon"></i>
+                            <input type="text" placeholder="过滤查找...">
+                        </div>
+                        <div class="divider"></div>
+                        <div class="header" style="position: relative;">
+                            <i class="linkify icon"></i> 当前频道甘特图 <i show.bind="channel.creator.username == loginUser.username" click.trigger="addChannelGanttHandler($event)" title="添加频道甘特图" class="circular icon link plus"></i>
+                        </div>
+                        <div class="scrolling menu">
+                            <div if.bind="!channelGantts || channelGantts.length == 0" click.trigger="stopImmediatePropagationHandler($event)" class="item">暂无频道甘特图</div>
+                            <div repeat.for="item of channelGantts" click.trigger="channelGanttHandler(item)" data-id="${item.id}" class="item">${item.title}</div>
+                        </div>
+                    </div>
+                </div>
+                <a modaal="blog-create-html" href="#modaal-chat-gantt" class="item" style="display: none;">Gantt</a>
+                <div id="modaal-chat-gantt" style="display:none;">
+                    <em-chat-gantt></em-chat-gantt>
+                </div>
                 <a if.bind="!isAt" class="item" click.trigger="viewOrMgrUsersHandler($event)" title="频道用户(${channel.members.length})"><i class="users icon"></i></a>
                 <a if.bind="!isAt" class="item ${isRightSidebarShow && (activeType == ACTION_TYPE_PIN) ? 'active' : ''}" click.trigger="showPinHandler($event)" title="固定消息查看(ctrl+click刷新)"><i class="${ajaxPin && ajaxPin.readyState != 4 ? 'spinner loading' : ''} pin icon"></i></a>
                 <a if.bind="!isAt" class="item tms-channel-info" click.trigger="channelInfoHandler($event)" title="${channel.description} (${channel.creator.name ? channel.creator.name : channel.creator.username} 创建于 ${channel.createDate | timeago})"><i class="info circle icon"></i></a>

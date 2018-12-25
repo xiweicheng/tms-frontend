@@ -35,6 +35,7 @@ window.nsCons = {
     EVENT_SWITCH_CHAT_TO: 'event_switch_chat_to',
     EVENT_CHANNEL_ACTIONS: 'event_channel_actions',
     EVENT_CHANNEL_LINKS_REFRESH: 'event_channel_links_refresh',
+    EVENT_CHANNEL_GANTTS_REFRESH: 'event_channel_gantts_refresh',
     EVENT_SYSTEM_LINKS_REFRESH: 'event_system_links_refresh',
     EVENT_SCHEDULE_REFRESH: 'event_schedule_refresh',
     EVENT_MODAAL_BEFORE_OPEN: 'event_modaal_before_open',

@@ -28,6 +28,7 @@ export class EmChatTopMenu {
     newAtCnt = 0;
 
     channelLinks = [];
+    channelGantts = [];
 
     loginUserChanged() {
         if (this.loginUser) {
@@ -37,7 +38,9 @@ export class EmChatTopMenu {
 
     channelChanged() {
         $(this.channelLinksDdRef).find('.menu > .search > input').val('');
+        $(this.channelGanttsDdRef).find('.menu > .search > input').val('');
         this._refreshChannelLinks();
+        this._refreshChannelGantts();
     }
 
     _refreshChannelLinks() {
@@ -49,6 +52,23 @@ export class EmChatTopMenu {
                     this.channelLinks = data.data;
                 } else {
                     this.channelLinks = [];
+                }
+            });
+        }
+    }
+
+    _refreshChannelGantts() {
+        if (this.channel) {
+            $.get('/admin/gantt/search', {
+                cid: this.channel.id,
+                search: '',
+                page: 0,
+                size: 100
+            }, (data) => {
+                if (data.success) {
+                    this.channelGantts = data.data.content;
+                } else {
+                    this.channelGantts = [];
                 }
             });
         }
@@ -149,6 +169,10 @@ export class EmChatTopMenu {
         this.subscribe7 = ea.subscribe(nsCons.EVENT_SHOW_SCHEDULE, (payload) => {
             this.showScheduleHandler({ ctrlKey: true });
         });
+
+        this.subscribe8 = ea.subscribe(nsCons.EVENT_CHANNEL_GANTTS_REFRESH, (payload) => {
+            this._refreshChannelGantts();
+        });
     }
 
     /**
@@ -162,6 +186,7 @@ export class EmChatTopMenu {
         this.subscribe5.dispose();
         this.subscribe6.dispose();
         this.subscribe7.dispose();
+        this.subscribe8.dispose();
     }
 
     /**
@@ -181,6 +206,14 @@ export class EmChatTopMenu {
                 $(this.channelLinksDdRef).dropdown('hide');
                 $.post('/admin/link/count/inc', { id: $(element).attr('data-id') });
                 _.defer(() => utils.openNewWin(value));
+            }
+        });
+        $(this.channelGanttsDdRef).dropdown({
+            fullTextSearch: true,
+            action: (text, value, element) => {
+                $(this.channelGanttsDdRef).dropdown('hide');
+                // $.post('/admin/link/count/inc', { id: $(element).attr('data-id') });
+                // _.defer(() => utils.openNewWin(value));
             }
         });
     }
@@ -605,5 +638,15 @@ export class EmChatTopMenu {
                 toastr.error(data.data, `${isSub ? '取消订阅' : '订阅频道'}失败!`);
             }
         });
+    }
+
+    addChannelGanttHandler() {
+        $('.em-chat-gantt > iframe').attr('src', utils.getResourceBase() + 'gantt/index.html?cid=' + this.channel.id);
+        $('a[href="#modaal-chat-gantt"]').click();
+    }
+
+    channelGanttHandler(item) {
+        $('.em-chat-gantt > iframe').attr('src', utils.getResourceBase() + 'gantt/index.html?id=' + item.id + '&editable=' + (item.creator.username == this.loginUser.username));
+        $('a[href="#modaal-chat-gantt"]').click();
     }
 }

@@ -38,9 +38,9 @@
     <script src="ganttGridEditor.js"></script>
     <script src="ganttMaster.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-url/2.5.3/url.min.js"></script> -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-url/2.5.3/url.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.core.min.js"></script> -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.core.min.js"></script>
     <style>
         .resEdit {
         padding: 15px;
@@ -74,6 +74,7 @@
     <script type="text/javascript">
     var ge = null;
     var gantt = null;
+    var cid = null; // channel id
 
     $(function() {
         var canWrite = true; //this is the default for test purposes
@@ -89,28 +90,80 @@
         //in order to force compute the best-fitting zoom level
         delete ge.gantt.zoom;
 
-        $.get('/admin/gantt/get/1', function(data) {
-            if (data.success) {
-                gantt = data.data;
-                var project = JSON.parse(gantt.content)
-                project.canAdd = true;
+        cid = url('?cid'); // channel id
+        var id = url('?id');
+        var editable = url('?editable') == 'true';
 
-                if (!project.canWrite) {
-                    $(".ganttButtonBar button.requireWrite").attr("disabled", "true");
+        if (id) {
+            $.get('/admin/gantt/get/' + id, function(data) {
+                if (data.success) {
+                    gantt = data.data;
+                    var project = JSON.parse(gantt.content)
+                    project.canAdd = editable;
+                    project.canWrite = editable;
+                    project.canDelete = editable;
+                    project.canWriteOnParent = editable;
+
+                    if (!editable) {
+                        $(".ganttButtonBar button.requireWrite").attr("disabled", "true");
+                    }
+
+                    ge.loadProject(project);
+                    ge.checkpoint(); //empty the undo stack
+                } else {
+                    toastr && toastr.error(data.data);
                 }
+            });
+        } else if (cid) {
 
-                ge.loadProject(project);
-                ge.checkpoint(); //empty the undo stack
-            } else {
-                toastr && toastr.error(data.data);
-            }
-        });
+            $.get('/admin/channel/get', { id: cid }, function(data) {
+                if (data.success) {
+                    var resources = _.map(data.data.members, function(m) {
+                        return { id: m.username, name: m.name ? m.name : m.username };
+                    });
+                    ge.loadProject(newGanttProject(resources));
+                    ge.checkpoint(); //empty the undo stack
+                } else {
+                    toastr && toastr.error(data.data);
+                }
+            });
 
+        }
 
         $('#saveModal .btnOk').click(function(event) {
             saveProject();
         });
     });
+
+    function newGanttProject(resources) {
+
+        return {
+            "tasks": [],
+            "deletedTaskIds": [],
+            "resources": _.sortBy(resources, 'name'),
+            "roles": [{
+                    "id": "r_1",
+                    "name": "开发人员"
+                },
+                {
+                    "id": "r_2",
+                    "name": "测试人员"
+                },
+                {
+                    "id": "r_3",
+                    "name": "产品经理"
+                },
+                {
+                    "id": "r_4",
+                    "name": "项目经理"
+                }
+            ],
+            "canWrite": true,
+            "canDelete": true,
+            "canWriteOnParent": true,
+            "canAdd": true
+        };
+    }
 
     function saveProject() {
         var title = $('#saveModal input[name="title"]').val();
@@ -125,7 +178,7 @@
         var project = ge.saveProject();
         // project.canAdd = true;
 
-        $.post('/admin/gantt/create', { title: title, cid: 4, content: JSON.stringify(project) }, function(data, textStatus, xhr) {
+        $.post('/admin/gantt/create', { title: title, cid: cid, content: JSON.stringify(project) }, function(data, textStatus, xhr) {
             if (data.success) {
                 gantt = data.data;
                 toastr && toastr.success('保存成功！');
@@ -170,14 +223,14 @@
 
     }
 
-    function newProject() {
-        clearGantt();
-    }
+    // function newProject() {
+    //     clearGantt();
+    // }
 
 
-    function clearGantt() {
-        ge.reset();
-    }
+    // function clearGantt() {
+    //     ge.reset();
+    // }
 
     //-------------------------------------------  Open a black popup for managing resources. This is only an axample of implementation (usually resources come from server) ------------------------------------------------------
     function editResources() {
