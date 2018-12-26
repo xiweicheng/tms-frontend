@@ -39,6 +39,9 @@
                 .view {
                     display: inline;
                 }
+                .newest {
+                    // display: none;
+                }
             }
             .reply {
                 color: #2185d0;
@@ -50,6 +53,18 @@
             .view {
                 margin-left: 16px;
                 display: none;
+            }
+            .newest {
+                display: block;
+                margin-left: 27px;
+                .quote {
+                    &.left {
+                        padding-right: 6px;
+                    }
+                    &.right {
+                        padding-left: 6px;
+                    }
+                }
             }
         }
         &:hover {

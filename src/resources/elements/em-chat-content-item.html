@@ -57,7 +57,7 @@
                 <i class="large talk outline icon link"></i>
                 <span class="reply">${item.chatReplies.length} 回复</span>
                 <span class="timeago">${item.chatReplies[item.chatReplies.length - 1].creator.name} 最后回复于 <span class="date" data-timeago="${item.chatReplies[item.chatReplies.length - 1].updateDate}" title="${item.chatReplies[item.chatReplies.length - 1].updateDate | date}">${tem.chatReplies[item.chatReplies.length - 1].updateDate | timeago}</span></span>
-                <span class="view">查看回复</span>
+                <span class="view">查看回复</span><span class="newest"><i class="quote left icon"></i>${item.chatReplies[item.chatReplies.length - 1].content}<i class="quote right icon"></i></span>
             </a>
             <div class="tools">
                 <button show.bind="!isAt && !item.isEditing" click.delegate="refreshHandler(item)" title="刷新同步" class="mini circular ui icon button">
