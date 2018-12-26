@@ -66,7 +66,12 @@ export class EmChatTopMenu {
                 size: 100
             }, (data) => {
                 if (data.success) {
-                    this.channelGantts = data.data.content;
+                    this.channelGantts = _.filter(data.data.content, g => {
+                        if (g.privated && (g.creator.username != this.loginUser.username)) {
+                            return false;
+                        }
+                        return true;
+                    });
                 } else {
                     this.channelGantts = [];
                 }
