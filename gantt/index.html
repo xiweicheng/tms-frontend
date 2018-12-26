@@ -93,6 +93,7 @@
         cid = url('?cid'); // channel id
         var id = url('?id');
         var editable = url('?editable') == 'true';
+        var copy = !(typeof url('?copy') === 'undefined');
 
         if (id) {
             $.get('/admin/gantt/get/' + id, function(data) {
@@ -106,10 +107,14 @@
 
                     if (!editable) {
                         $(".ganttButtonBar button.requireWrite").attr("disabled", "true");
+                        $(".ganttButtonBar button.requireWrite").hide();
                     }
 
                     ge.loadProject(project);
                     ge.checkpoint(); //empty the undo stack
+
+                    copy && (gantt = null); // copy gantt
+
                 } else {
                     toastr && toastr.error(data.data);
                 }
@@ -142,20 +147,24 @@
             "deletedTaskIds": [],
             "resources": _.sortBy(resources, 'name'),
             "roles": [{
-                    "id": "r_1",
+                    "id": "tmp_1",
                     "name": "开发人员"
                 },
                 {
-                    "id": "r_2",
+                    "id": "tmp_2",
                     "name": "测试人员"
                 },
                 {
-                    "id": "r_3",
+                    "id": "tmp_3",
                     "name": "产品经理"
                 },
                 {
-                    "id": "r_4",
+                    "id": "tmp_4",
                     "name": "项目经理"
+                },
+                {
+                    "id": "tmp_5",
+                    "name": "未定义"
                 }
             ],
             "canWrite": true,
@@ -176,13 +185,17 @@
         $.modal.close();
 
         var project = ge.saveProject();
-        // project.canAdd = true;
 
-        $.post('/admin/gantt/create', { title: title, cid: cid, content: JSON.stringify(project) }, function(data, textStatus, xhr) {
+        $.post('/admin/gantt/create', {
+            title: title,
+            cid: cid,
+            privated: $('#privated').prop("checked"),
+            content: JSON.stringify(project)
+        }, function(data, textStatus, xhr) {
             if (data.success) {
                 gantt = data.data;
                 toastr && toastr.success('保存成功！');
-                (window.parent && window.parent.postMessage) && (window.parent.postMessage({ action: 'created', gantt: gantt }, window.location.origin));
+                (window.parent && window.parent.postMessage) && (window.parent.postMessage({ action: 'created', source: 'gantt', gantt: gantt }, window.location.origin));
             } else {
                 toastr && toastr.error(data.data);
             }
@@ -192,7 +205,6 @@
     function updateProject() {
 
         var project = ge.saveProject();
-        // project.canAdd = true;
 
         if (gantt.content == JSON.stringify(project)) {
             toastr.info('没有内容变更！');
@@ -203,7 +215,7 @@
             if (data.success) {
                 gantt = data.data;
                 toastr && toastr.success('保存成功！');
-                (window.parent && window.parent.postMessage) && (window.parent.postMessage({ action: 'updated', gantt: gantt }, window.location.origin));
+                (window.parent && window.parent.postMessage) && (window.parent.postMessage({ action: 'updated', source: 'gantt', gantt: gantt }, window.location.origin));
             } else {
                 toastr && toastr.error(data.data);
             }
@@ -451,7 +463,7 @@
           <label for="code">任务标识</label><br>
           <input type="text" name="code" id="code" value="" size=15 class="formElements" autocomplete='off' maxlength=255 style='width:100%' oldvalue="1">
         </td>
-        <td colspan="3" valign="top"><label for="name" class="required">事项</label><br><input type="text" name="name" id="name" class="formElements" autocomplete='off' maxlength=255 style='width:100%' value="" required="true" oldvalue="1"></td>
+        <td colspan="3" valign="top"><label for="name" class="required">任务事项</label><br><input type="text" name="name" id="name" class="formElements" autocomplete='off' maxlength=255 style='width:100%' value="" required="true" oldvalue="1"></td>
           </tr>
 
 
@@ -562,12 +574,12 @@
                 <label>标题</label>
                 <input name="title" type="text" style="width: 200px;">
             </div>
-            <div class="row">
-                <input id="privated" type="checkbox">
+            <div class="row" style="margin-top: 8px;">
+                <input id="privated" type="checkbox" style="margin-left: 31px;">
                 <label for="privated">私有甘特图（不公开）</label>
             </div>
             <div class="row" style="padding-top: 16px;">
-                <button class="btnOk btn">确定</button>
+                <button class="btnOk btn button" style="background-color: green;">确定</button>
             </div>
         </div>
     </div>

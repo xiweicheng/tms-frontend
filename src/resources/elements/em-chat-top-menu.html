@@ -14,7 +14,7 @@
                         </div>
                         <div class="divider"></div>
                         <div class="header" style="position: relative;">
-                            <i class="linkify icon"></i> 当前频道外链 <i click.trigger="addChannelLinkHandler($event)" title="添加频道外链" class="circular icon link plus"></i>
+                            <i class="linkify icon"></i> 当前频道外链 (${channelLinks.length}) <i click.trigger="addChannelLinkHandler($event)" title="添加频道外链" class="circular icon link plus"></i>
                         </div>
                         <div class="scrolling menu">
                             <div if.bind="!channelLinks || channelLinks.length == 0" click.trigger="stopImmediatePropagationHandler($event)" class="item">暂无频道外链</div>
@@ -23,7 +23,8 @@
                     </div>
                 </div>
                 <div show.bind="!isAt" ref="channelGanttsDdRef" class="ui dropdown icon item tms-channel-gantts">
-                    <i title="当前频道甘特图" class="ordered list icon"></i>
+                    <!-- <i title="当前频道甘特图" class="ordered list icon"></i> -->
+                    <i title="当前频道甘特图" class="bar chart icon"></i>
                     <div class="menu">
                         <div class="ui icon search input">
                             <i class="search icon"></i>
@@ -31,11 +32,17 @@
                         </div>
                         <div class="divider"></div>
                         <div class="header" style="position: relative;">
-                            <i class="linkify icon"></i> 当前频道甘特图 <i show.bind="channel.creator.username == loginUser.username" click.trigger="addChannelGanttHandler($event)" title="添加频道甘特图" class="circular icon link plus"></i>
+                            <i class="linkify icon"></i> 当前频道甘特图 (${channelGantts.length}) <i show.bind="channel.creator.username == loginUser.username" click.trigger="addChannelGanttHandler($event)" title="添加频道甘特图" class="circular icon link plus"></i>
                         </div>
                         <div class="scrolling menu">
                             <div if.bind="!channelGantts || channelGantts.length == 0" click.trigger="stopImmediatePropagationHandler($event)" class="item">暂无频道甘特图</div>
-                            <div repeat.for="item of channelGantts" click.trigger="channelGanttHandler(item)" data-id="${item.id}" class="item">${item.title}</div>
+                            <div repeat.for="item of channelGantts" click.trigger="channelGanttHandler(item)" data-id="${item.id}" class="item">${item.title}
+                                <div class="action" show.bind="item.creator.username == loginUser.username || channel.creator.username == loginUser.username">
+                                    <i class="copy icon" title="复制甘特图" style="margin-right: 3px;" click.trigger="copyGanttHandler($event, item)"></i>
+                                    <i class="edit icon" title="编辑甘特图" style="margin-right: 3px;" click.trigger="editGanttHandler($event, item)"></i>
+                                    <i class="remove red icon" title="删除甘特图" style="margin-right: 3px;" click.trigger="removeGanttHandler($event, item)"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -162,6 +169,8 @@
             </div>
         </div>
     </div>
+    <em-chat-gantt-edit view-model.ref="ganttEditVm"></em-chat-gantt-edit>
+    <em-confirm-modal em-confirm-modal.ref="confirmMd"></em-confirm-modal>
     <em-user-edit user.bind="loginUser" view-model.ref="userEditMd"></em-user-edit>
     <em-chat-channel-create login-user.bind="loginUser" trigger.bind="createChannelRef"></em-chat-channel-create>
     <em-chat-channel-link-mgr login-user.bind="loginUser" view-model.ref="channelLinkMgrVm" channel.bind="channel"></em-chat-channel-link-mgr>

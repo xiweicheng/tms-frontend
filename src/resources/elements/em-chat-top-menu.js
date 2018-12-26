@@ -216,6 +216,15 @@ export class EmChatTopMenu {
                 // _.defer(() => utils.openNewWin(value));
             }
         });
+
+        window.addEventListener && window.addEventListener('message', function(ev) {
+            // console.info('message from parent:', ev.data);
+            if (ev.origin != window.location.origin) return;
+
+            if (ev.data.source != 'gantt') return;
+
+            ea.publish(nsCons.EVENT_CHANNEL_GANTTS_REFRESH, ev.data);
+        }, false);
     }
 
     initChannelLinksHandler(last) {
@@ -647,6 +656,35 @@ export class EmChatTopMenu {
 
     channelGanttHandler(item) {
         $('.em-chat-gantt > iframe').attr('src', utils.getResourceBase() + 'gantt/index.html?id=' + item.id + '&editable=' + (item.creator.username == this.loginUser.username));
+        $('a[href="#modaal-chat-gantt"]').click();
+    }
+
+    removeGanttHandler(event, item) {
+        event.stopImmediatePropagation();
+        this.confirmMd.show({
+            title: '删除确认',
+            content: '确认要删除该甘特图吗?',
+            onapprove: () => {
+                $.post(`/admin/gantt/delete/${item.id}`, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        toastr.success('删除甘特图成功!');
+                        this.channelGantts = _.reject(this.channelGantts, { id: item.id });
+                    } else {
+                        toastr.error(data.data, '删除甘特图失败!');
+                    }
+                });
+            }
+        });
+    }
+
+    editGanttHandler(event, item) {
+        event.stopImmediatePropagation();
+        this.ganttEditVm.show(item);
+    }
+
+    copyGanttHandler(event, item) {
+        event.stopImmediatePropagation();
+        $('.em-chat-gantt > iframe').attr('src', utils.getResourceBase() + 'gantt/index.html?copy&editable=true&id=' + item.id + '&cid=' + this.channel.id);
         $('a[href="#modaal-chat-gantt"]').click();
     }
 }

@@ -2,40 +2,49 @@
     &.ui.top.menu {
         padding-left: 220px;
         height: 60px;
+
         @media only screen and (max-width: 767px) {
             .tms-chat-at.tms-hide {
                 display: none;
             }
         }
+
         .item.tms-item-header {
             &:before {
                 display: none;
             }
+
             padding-left: 0;
             padding-top: 10px;
             padding-bottom: 0;
             flex-direction: column;
             align-items: flex-start;
+
             >.tms-title {
                 font-size: 16px;
                 padding-bottom: 5px;
                 padding-left: 16px;
                 cursor: default;
             }
+
             >.tms-metadata {
                 display: flex;
                 height: 28px;
+
                 >.item>i.icon {
                     margin-right: 0;
                 }
+
                 >.item:last-child:before {
                     display: none;
                 }
             }
         }
+
         .item.tms-item:before {
             display: none;
         }
+
         .right.menu {
             .item {
                 &.tms-login-user {
@@ -45,17 +54,21 @@
                         }
                     }
                 }
+
                 &.tms-item {
                     padding-left: 0;
                     padding-right: 5px;
+
                     @media only screen and (max-width: 767px) {
                         &.tms-hide {
                             display: none;
                         }
+
                         &.tms-mobile-hide {
                             display: none;
                         }
                     }
+
                     button {
                         .ui.floating.label {
                             top: 0;
@@ -63,20 +76,25 @@
                             left: auto;
                         }
                     }
+
                     &.ui.dropdown {
                         @media only screen and (max-width: 767px) {
                             display: flex;
                         }
+
                         display: none;
                         padding-left: 5px;
                         margin-right: 5px;
+
                         >i.icon {
                             margin-left: 5px;
                         }
+
                         .menu {
                             >.item {
                                 .ui.button {
                                     margin: 0;
+
                                     i.icon {
                                         margin: 0;
                                     }
@@ -85,6 +103,7 @@
                         }
                     }
                 }
+
                 &.tms-search {
                     @media only screen and (max-width: 767px) {
                         padding-left: 10px;
@@ -92,11 +111,13 @@
                     }
                 }
             }
+
             .ui.search {
                 input {
                     width: 95px;
                     transition: width .15s ease-out 0s;
                 }
+
                 i.remove.icon {
                     display: none;
                     position: absolute;
@@ -105,16 +126,20 @@
                 }
             }
         }
+
         @media only screen and (max-width: 767px) {
             padding-left: 0;
         }
+
         .ui.basic.button {
             box-shadow: none;
+
             &:hover {
-                background-color: rgba(0, 0, 0, .03)!important
+                background-color: rgba(0, 0, 0, .03) !important
             }
         }
     }
+
     >.tms-chat-at {
         .header i.plus.icon {
             position: absolute;
@@ -122,14 +147,34 @@
             top: -6px;
         }
     }
-    @media only screen and (min-width: 768px) {
-        a.item.toggle-bar {
-            display: none!important;
+
+    .tms-channel-gantts {
+        .scrolling.menu {
+            .item {
+                .action {
+                    display: none;
+                    position: absolute;
+                    right: 0;
+                }
+
+                &:hover {
+                    .action {
+                        display: inline-block;
+                    }
+                }
+            }
         }
     }
+
+    @media only screen and (min-width: 768px) {
+        a.item.toggle-bar {
+            display: none !important;
+        }
+    }
+
     @media only screen and (max-width: 767px) {
         div.tms-chat-at {
-            display: none!important;
+            display: none !important;
         }
     }
 }
