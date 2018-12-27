@@ -734,6 +734,44 @@ export class CommonUtils {
 
         return chatAlarm;
     }
+
+    // 判断浏览器tab页面是否不可见
+    isTabHidden() {
+        return !this.isTabVisible();
+    }
+
+    // 判断浏览器tab页面是否可见
+    isTabVisible() {
+        // 各种浏览器兼容
+        // var hidden;
+        var state;
+        // var visibilityChange;
+
+        if (typeof document.hidden !== "undefined") {
+            // hidden = "hidden";
+            // visibilityChange = "visibilitychange";
+            state = "visibilityState";
+        } else if (typeof document.mozHidden !== "undefined") {
+            // hidden = "mozHidden";
+            // visibilityChange = "mozvisibilitychange";
+            state = "mozVisibilityState";
+        } else if (typeof document.msHidden !== "undefined") {
+            // hidden = "msHidden";
+            // visibilityChange = "msvisibilitychange";
+            state = "msVisibilityState";
+        } else if (typeof document.webkitHidden !== "undefined") {
+            // hidden = "webkitHidden";
+            // visibilityChange = "webkitvisibilitychange";
+            state = "webkitVisibilityState";
+        }
+
+        // document.addEventListener(visibilityChange, function() {
+        //     document.title = document[state];
+        // }, false);
+        // document.title = document[state];
+
+        return document[state] == 'visible';
+    }
 }
 
 export default new CommonUtils();
