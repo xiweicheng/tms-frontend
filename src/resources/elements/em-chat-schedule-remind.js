@@ -36,7 +36,12 @@ export class EmChatScheduleRemind {
             _.each(this.events, (event) => {
                 if (event.start && !_.includes(this.reminded, event.id)) {
                     let start = event.start;
-                    let remind = event.remind * 60 * 1000;
+                    let remind = 0;
+                    if (event.remind == 0) {
+                        remind = 2 * this.interval; // 提前时间
+                    } else {
+                        remind = event.remind * 60 * 1000;
+                    }
                     if (start > now && start < (now + remind)) {
                         this.event = event;
                         this.reminded.push(event.id);
