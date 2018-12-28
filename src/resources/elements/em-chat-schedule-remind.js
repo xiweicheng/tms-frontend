@@ -7,7 +7,7 @@ export class EmChatScheduleRemind {
 
     interval = 5000;
 
-    headOffset = 10 * 60 * 1000;
+    // headOffset = 10 * 60 * 1000;
 
     reminded = [];
 
@@ -36,7 +36,8 @@ export class EmChatScheduleRemind {
             _.each(this.events, (event) => {
                 if (event.start && !_.includes(this.reminded, event.id)) {
                     let start = event.start;
-                    if (start > now && start < (now + this.headOffset)) {
+                    let remind = event.remind * 60 * 1000;
+                    if (start > now && start < (now + remind)) {
                         this.event = event;
                         this.reminded.push(event.id);
                         this._desktopPush();

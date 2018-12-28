@@ -12,6 +12,7 @@ export class EmChatSchedule {
     @bindable loginUser;
 
     offset = 100;
+    _remind = null; // 提前提醒
 
     show() {
         this.users = window.tmsUsers;
@@ -68,11 +69,11 @@ export class EmChatSchedule {
         });
 
         this.subscribe3 = ea.subscribe(nsCons.EVENT_CUSTOM_ALARM_SCHEDULE, (payload) => {
-            // $(this.scheduleRef).fullCalendar('refetchEvents');
             this.title = utils.abbreviate(`【#${payload.id}】${payload.content}`, 200);
-            $(this.startRef).calendar('set date', new Date());
+            $(this.startRef).calendar('clear');
             $(this.endRef).calendar('clear');
             $(this.addRef).popup('show');
+            this._remind = 0;
         });
 
         this._getEvents();
@@ -107,6 +108,7 @@ export class EmChatSchedule {
                         id: item.id,
                         title: item.title,
                         actors: item.actors,
+                        remind: item.remind,
                         creator: item.creator
                     };
 
@@ -301,6 +303,10 @@ export class EmChatSchedule {
             data.endDate = end;
         }
 
+        if (this._remind != null) {
+            data.remind = this._remind;
+        }
+
         $.post('/admin/schedule/create', data, (data, textStatus, xhr) => {
             if (data.success) {
                 $(this.scheduleRef).fullCalendar('refetchEvents');
@@ -321,5 +327,9 @@ export class EmChatSchedule {
         if (this.loginUser && this.loginUser.username) {
             $(this.actorsRef).dropdown('set selected', [this.loginUser.username]).dropdown('set value', this.loginUser.username);
         }
+    }
+
+    showAddFormHandler() {
+        this._remind = null;
     }
 }

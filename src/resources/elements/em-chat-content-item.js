@@ -509,13 +509,12 @@ export class EmChatContentItem {
         let data = {
             title: utils.abbreviate(`【#${chat.id}】${chat.content}`, 200),
             basePath: utils.getBasePath(),
+            remind: 0,
             actors: `${this.loginUser.username}`
         };
 
-        let start = new Date();
-        let end = new Date(start.getTime() + alarm.value * 60 * 1000);
+        let start = new Date(new Date().getTime() + alarm.value * 60 * 1000);
         data.startDate = start;
-        data.endDate = end;
 
         $.post('/admin/schedule/create', data, (data, textStatus, xhr) => {
             if (data.success) {
