@@ -10,6 +10,14 @@
                 <div class="tms-clipboard" style="cursor: pointer;" data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}" title="复制沟通消息分享链接">#${item.id}</div>
                 <a if.bind="!isAt" click.delegate="stowHandler(item)" class="tms-stow" title="${item._stowed ? '取消收藏' : '收藏'}该消息"><i class="${item._stowed ? '' : 'empty'} star link icon"></i></a>
                 <a if.bind="!isAt && item._pined" click.delegate="pinHandler(item)" class="tms-pin" title="解除固定频道消息"><i class="pin link icon"></i></a>
+                <div ref="alarmRef" task.bind="initAlarmHander(alarmRef)" class="tms-alarm"><i class="alarm outline icon"></i></div>
+                <div class="ui popup right center transition hidden">
+                    <div class="content">
+                        <div class="ui mini blue inverted buttons">
+                            <button repeat.for="alarm of alarms" class="ui button" data-tooltip="${alarm.tip}" click.delegate="alarmHandler(alarm, item)">${alarm.label}</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div ref="mkbodyRef" fancybox show.bind="!item.isEditing" class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
             <div class="textcomplete-container" show.bind="item.isEditing">

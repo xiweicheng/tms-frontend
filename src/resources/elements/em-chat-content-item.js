@@ -11,6 +11,35 @@ export class EmChatContentItem {
     @bindable chatTo;
     members = [];
     basePath = utils.getBasePath();
+    alarms = [{
+        label: '5m',
+        tip: '5分钟后提醒',
+        value: 5
+    }, {
+        label: '15m',
+        tip: '15分钟后提醒',
+        value: 15
+    }, {
+        label: '30m',
+        tip: '30分钟后提醒',
+        value: 30
+    }, {
+        label: '1h',
+        tip: '1小时后提醒',
+        value: 60
+    }, {
+        label: '2h',
+        tip: '2小时后提醒',
+        value: 60 * 2
+    }, {
+        label: '3h',
+        tip: '3小时后提醒',
+        value: 60 * 3
+    }, {
+        label: '自定义',
+        tip: '自定义时间提醒',
+        value: -1
+    }];
 
     /**
      * 构造函数
@@ -450,5 +479,51 @@ export class EmChatContentItem {
         } else {
             ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:${offset - 1}h ${offset + 1}h` });
         }
+    }
+
+    initAlarmHander(alarmR) {
+        _.defer(() => {
+            $(alarmR)
+                .popup({
+                    inline: true,
+                    hoverable: true,
+                    position: 'right center',
+                    delay: {
+                        show: 500,
+                        hide: 300
+                    },
+                    onHide: () => {}
+                });
+        });
+
+    }
+
+    alarmHandler(alarm, chat) {
+
+        ea.publish(nsCons.EVENT_SHOW_SCHEDULE, {});
+        if (alarm.value == -1) {
+            _.delay(() => ea.publish(nsCons.EVENT_CUSTOM_ALARM_SCHEDULE, chat), 1000);
+            return;
+        }
+
+        let data = {
+            title: utils.abbreviate(`【#${chat.id}】${chat.content}`, 200),
+            basePath: utils.getBasePath(),
+            actors: `${this.loginUser.username}`
+        };
+
+        let start = new Date();
+        let end = new Date(start.getTime() + alarm.value * 60 * 1000);
+        data.startDate = start;
+        data.endDate = end;
+
+        $.post('/admin/schedule/create', data, (data, textStatus, xhr) => {
+            if (data.success) {
+                toastr.success('添加日程提醒成功!');
+                ea.publish(nsCons.EVENT_SCHEDULE_REFRESH, {});
+            } else {
+                toastr.error(data.data);
+            }
+        });
     }
 }

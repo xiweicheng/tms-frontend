@@ -67,6 +67,14 @@ export class EmChatSchedule {
             }
         });
 
+        this.subscribe3 = ea.subscribe(nsCons.EVENT_CUSTOM_ALARM_SCHEDULE, (payload) => {
+            // $(this.scheduleRef).fullCalendar('refetchEvents');
+            this.title = utils.abbreviate(`【#${payload.id}】${payload.content}`, 200);
+            $(this.startRef).calendar('set date', new Date());
+            $(this.endRef).calendar('clear');
+            $(this.addRef).popup('show');
+        });
+
         this._getEvents();
     }
 

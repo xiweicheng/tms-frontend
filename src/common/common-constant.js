@@ -12,6 +12,7 @@ window.nsCons = {
     EVENT_CHAT_CHANNEL_LEAVED: 'event_chat_channel_leaved',
     EVENT_SHOW_HOTKEYS_MODAL: 'event_show_hotkeys_modal',
     EVENT_SHOW_SCHEDULE: 'event_show_schedule',
+    EVENT_CUSTOM_ALARM_SCHEDULE: 'event_custom_alarm_schedule',
     EVENT_CHAT_CHANNEL_MEMBER_ADD_OR_REMOVE: 'event_chat_channel_member_add_or_remove',
     EVENT_CHAT_LAST_ITEM_RENDERED: 'event_chat_last_item_rendered',
     EVENT_CHAT_REPLY_LAST_ITEM_RENDERED: 'event_chat_reply_last_item_rendered',
