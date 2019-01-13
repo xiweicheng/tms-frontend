@@ -508,11 +508,15 @@ export class EmBlogContent {
     }
 
     getFollower() {
-        $.get('/admin/blog/follower/get', {
+        $.get('/admin/blog/follower/list', {
             id: nsCtx.blogId
         }, (data) => {
             if (data.success) {
-                this.blogFollower = data.data;
+                this.blogFollowers = data.data;
+                this.blogFollower = _.find(data.data, (item) => item.creator.username == this.loginUser.username);
+                this.followers = _.chain(this.blogFollowers).map((item) => {
+                    return item.creator.name ? item.creator.name : item.creator.username;
+                }).join(',').value();
             } else {
                 toastr.error(data.data);
             }
@@ -700,6 +704,7 @@ export class EmBlogContent {
                 if (data.success) {
                     this.blogFollower = data.data;
                     toastr.success('博文关注成功!');
+                    this.getFollower();
                 } else {
                     toastr.error(data.data);
                 }
@@ -711,6 +716,7 @@ export class EmBlogContent {
                 if (data.success) {
                     this.blogFollower = null;
                     toastr.success('取消博文关注成功!');
+                    this.getFollower();
                 } else {
                     toastr.error(data.data);
                 }
