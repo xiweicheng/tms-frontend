@@ -28,7 +28,7 @@
                     </div>
                 </div>
             </span>
-            <div if.bind="page && !page.last" click.delegate="moreHandler()" class="basic ui button"><i show.bind="ajax && ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
+            <div if.bind="page && !page.last" click.delegate="moreHandler()" class="basic ui button ${ajax && ajax.readyState != 4 ? 'tms-disabled2' : ''}"><i show.bind="ajax && ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
         </div>
     </div>
     <div class="ui tab basic segment em-chat-attach" data-tab="Attachment">
@@ -49,7 +49,7 @@
                     <div class="description"><i class="wait icon"></i><b>${item.username | userName}</b>上传于<span title="${item.createDate | date}">${item.createDate | timeago}</span></div>
                 </div>
             </div>
-            <div if.bind="page && !page.last" click.delegate="moreHandler()" class="basic ui button"><i show.bind="ajax && ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
+            <div if.bind="page && !page.last" click.delegate="moreHandler()" class="basic ui button ${ajax && ajax.readyState != 4 ? 'tms-disabled2' : ''}"><i show.bind="ajax && ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
         </div>
     </div>
 </template>

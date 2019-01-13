@@ -759,7 +759,7 @@ export class Chat {
         this.lastMoreP = $.get(url, data, (data) => {
             if (data.success) {
                 this._stowAndPin(data.data);
-                this.chats = _.unionBy(_.reverse(data.data), this.chats);
+                this.chats = _.unionBy(_.reverse(data.data), this.chats, 'id');
                 this.last = (data.msgs[0] - data.data.length <= 0);
                 !this.last && (this.lastCnt = data.msgs[0] - data.data.length);
                 this.scrollToAfterImgLoaded(start);
@@ -794,7 +794,7 @@ export class Chat {
         this.nextMoreP = $.get(url, data, (data) => {
             if (data.success) {
                 this._stowAndPin(data.data);
-                this.chats = _.unionBy(this.chats, data.data);
+                this.chats = _.unionBy(this.chats, data.data, 'id');
                 this.first = (data.msgs[0] - data.data.length <= 0);
                 !this.first && (this.firstCnt = data.msgs[0] - data.data.length);
                 this.scrollToAfterImgLoaded(start);

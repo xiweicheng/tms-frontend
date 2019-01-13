@@ -39,7 +39,7 @@
                     <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                 </div>
             </div>
-            <div if.bind="!last" click.delegate="searchMoreHandler()" class="ui basic button tms-search-more"><i show.bind="searchMoreP && searchMoreP.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
+            <div if.bind="!last" click.delegate="searchMoreHandler()" class="ui basic button tms-search-more ${searchMoreP && searchMoreP.readyState != 4 ? 'tms-disabled2' : ''}"><i show.bind="searchMoreP && searchMoreP.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
         </div>
     </div>
 </template>

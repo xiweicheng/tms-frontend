@@ -83,7 +83,7 @@
                         </div>
                     </div>
                 </div>
-                <div if.bind="!last" click.delegate="loadMoreHandler()" class="ui basic button tms-load-more"><i show.bind="searchMoreP && searchMoreP.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
+                <div if.bind="!last" click.delegate="loadMoreHandler()" class="ui basic button tms-load-more ${searchMoreP && searchMoreP.readyState != 4 ? 'tms-disabled2' : ''}"><i show.bind="searchMoreP && searchMoreP.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
             </div>
         </div>
     </div>
