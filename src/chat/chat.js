@@ -847,6 +847,7 @@ export class Chat {
 
     // 共同返回消息处理
     processChats(data) {
+        this.chats = null;
         if (data.success) {
             this.chats = _.reverse(data.data.content);
             let lastChat = _.last(this.chats);
