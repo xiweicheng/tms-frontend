@@ -958,7 +958,7 @@ export class Chat {
     // 消息轮询处理
     _pollChats(resetCb, stopCb) {
 
-        if (this.pollChatsOngoing || !this.chats || !this.first) {
+        if (this.pollChatsOngoing || _.isEmpty(this.chats) || !this.first) {
             return;
         }
 
