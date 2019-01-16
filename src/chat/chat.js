@@ -29,6 +29,7 @@ export class Chat {
     chatTo = null;
     onlines = [];
     isLeftBarHide = true;
+    delayMs = 0;
 
     /**
      * 构造函数
@@ -763,6 +764,8 @@ export class Chat {
                 this.last = (data.msgs[0] - data.data.length <= 0);
                 !this.last && (this.lastCnt = data.msgs[0] - data.data.length);
                 this.scrollToAfterImgLoaded(start);
+
+                _.delay(() => { _.each(data.data, item => item._show = true) }, this.delayMs);
             } else {
                 toastr.error(data.data, '获取更多消息失败!');
             }
@@ -798,6 +801,8 @@ export class Chat {
                 this.first = (data.msgs[0] - data.data.length <= 0);
                 !this.first && (this.firstCnt = data.msgs[0] - data.data.length);
                 this.scrollToAfterImgLoaded(start);
+
+                _.delay(() => { _.each(data.data, item => item._show = true) }, this.delayMs);
             } else {
                 toastr.error(data.data, '获取更多消息失败!');
             }
@@ -850,6 +855,8 @@ export class Chat {
             this.first = data.data.first;
             !this.last && (this.lastCnt = data.data.totalElements - data.data.numberOfElements);
             !this.first && (this.firstCnt = data.data.size * data.data.number);
+
+            _.delay(() => { _.each(this.chats, item => item._show = true) }, this.delayMs);
         }
     }
 
@@ -979,6 +986,8 @@ export class Chat {
                 this._checkNeedNotify(data);
 
                 this.chats = _.unionBy(this.chats, data.data, 'id');
+
+                _.delay(() => { _.each(data.data, item => item._show = true) }, this.delayMs);
 
                 let hasOwn = _.some(data.data, (item) => {
                     return item.creator.username == this.loginUser.username;

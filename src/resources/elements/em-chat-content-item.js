@@ -118,6 +118,17 @@ export class EmChatContentItem {
             ea.publish(nsCons.EVENT_CHAT_MSG_WIKI_DIR, {
                 dir: utils.dir($c.find('> .content > .markdown-body'))
             });
+
+            let chat = _.find(this.chats, { id: +$c.attr('data-id') });
+            chat && (chat._hovered = true);
+        });
+
+        $('.tms-chat').on('mouseleave', '.tms-content-body .em-chat-content-item', (event) => {
+            event.preventDefault();
+            var $c = $(event.currentTarget);
+
+            let chat = _.find(this.chats, { id: +$c.attr('data-id') });
+            chat && (chat._hovered = false);
         });
 
         $('.tms-chat').on('click', '.panel-wiki-dir .wiki-dir-item', (event) => {

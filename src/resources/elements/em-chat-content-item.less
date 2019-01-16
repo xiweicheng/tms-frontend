@@ -2,10 +2,6 @@
     >.content {
         >.metadata {
             .tms-alarm {
-                // margin-right: 0;
-                // .alarm.icon {
-                //     margin-right: 0;
-                // }
             }
             .ui.popup {
                 > .content {
@@ -87,6 +83,16 @@
                 }
             }
         }
+        >.content {
+            >.metadata {
+                .tms-alarm {
+                    display: none;
+                }
+                .tms-stow {
+                    display: none;
+                }
+            }
+        }
         &:hover {
             .tools {
                 display: block;
@@ -97,6 +103,16 @@
             .em-chat-content-item-footbar {
                 .add-btn {
                     display: inline-block;
+                }
+            }
+            >.content {
+                >.metadata {
+                    .tms-alarm {
+                        display: inline-block;
+                    }
+                    .tms-stow {
+                        display: inline-block;
+                    }
                 }
             }
         }
