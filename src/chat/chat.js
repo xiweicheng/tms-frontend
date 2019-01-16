@@ -850,12 +850,12 @@ export class Chat {
     processChats(data) {
         if (data.success) {
             // this.chats = _.reverse(data.data.content);
+            let chats = _.reverse(data.data.content);
             if (_.isNil(this.chats)) {
-                this.chats = [];
+                this.chats = [...chats];
             } else {
-                this.chats.splice(0, this.chats.length);
+                this.chats.splice(0, this.chats.length, ...chats);
             }
-            this.chats.push(..._.reverse(data.data.content));
             let lastChat = _.last(this.chats);
             lastChat && (lastChat.__scroll = true); // 标记消息列表渲染完成需要执行消息滚动定位.
             this.last = data.data.last;
