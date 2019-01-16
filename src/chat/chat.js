@@ -728,6 +728,7 @@ export class Chat {
 
     _reset() {
         this.progressWidth = 0;
+        this.chats && (this.chats.splice(0, this.chats.length));
         // this.chats = null;
         this.first = true; // 第一页
         this.last = true; // 最后一页
@@ -847,9 +848,14 @@ export class Chat {
 
     // 共同返回消息处理
     processChats(data) {
-        this.chats = null;
         if (data.success) {
-            this.chats = _.reverse(data.data.content);
+            // this.chats = _.reverse(data.data.content);
+            if (_.isNil(this.chats)) {
+                this.chats = [];
+            } else {
+                this.chats.splice(0, this.chats.length);
+            }
+            this.chats.push(..._.reverse(data.data.content));
             let lastChat = _.last(this.chats);
             lastChat && (lastChat.__scroll = true); // 标记消息列表渲染完成需要执行消息滚动定位.
             this.last = data.data.last;
