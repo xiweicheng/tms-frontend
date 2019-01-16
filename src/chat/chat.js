@@ -728,7 +728,7 @@ export class Chat {
 
     _reset() {
         this.progressWidth = 0;
-        this.chats = null;
+        // this.chats = null;
         this.first = true; // 第一页
         this.last = true; // 最后一页
         this._filter = false;
