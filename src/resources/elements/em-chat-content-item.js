@@ -121,6 +121,7 @@ export class EmChatContentItem {
 
             let chat = _.find(this.chats, { id: +$c.attr('data-id') });
             chat && (chat._hovered = true);
+            chat && (chat.__hovered = true);
         });
 
         $('.tms-chat').on('mouseleave', '.tms-content-body .em-chat-content-item', (event) => {
