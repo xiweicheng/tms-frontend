@@ -9,6 +9,19 @@ export class EmChatChannelLinkMgr {
 
     links = [];
 
+    @bindable filter = '';
+
+    filterChanged(nv, ov) {
+        let fv = _.toLower(nv);
+        _.each(this.links, lk => {
+            if (_.includes(_.toLower(lk.title), fv) || _.includes(_.toLower(lk.href), fv)) {
+                lk._hide = false;
+            } else {
+                lk._hide = true;
+            }
+        })
+    }
+
     getChannelLinks(news, old) {
         if (this.channel) {
             $.get('/admin/link/listBy', {
@@ -66,7 +79,7 @@ export class EmChatChannelLinkMgr {
             item.isEditing = false;
             return;
         }
-        
+
         $.post('/admin/link/update', {
             id: item.id,
             title: item.title,
