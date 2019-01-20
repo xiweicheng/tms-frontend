@@ -1,47 +1,20 @@
 <template>
     <require from="./em-channel-task.css"></require>
     <div class="em-channel-task">
-        <div ref="containerRef" class="ui equal width grid" style="height: 100vh;">
+        <div ref="containerRef" class="ui equal width internally celled grid">
             <div class="row">
-                <div class="column">
-                    <h3 class="ui top attached header">
-				  待处理
-				</h3>
-                    <div scrollbar="scrollbar-macosx" class="ui basic segment tms-dd-container">
-                        <div repeat.for="item of todo.content" class="ui red segment">
+                <div class="column" repeat.for="col of cols">
+                    <h4 class="ui top attached center aligned header">
+                  ${col.name}（${col.page.totalElements ? col.page.totalElements : 0}）
+                </h4>
+                    <div scrollbar="scrollbar-macosx" class="ui basic segment tms-dd-container s-${col.value}" data-sts="${col.name}">
+                        <div repeat.for="item of col.page.content" class="ui green segment tms-dd-task-item" data-id="${item.id}">
+                            <em-channel-task-item-header task-item.bind="item"></em-channel-task-item-header>
                             <div ref="mkbodyRef" fancybox class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
+                            <em-channel-task-item-footer task-item.bind="item"></em-channel-task-item-footer>
                         </div>
                     </div>
-                </div>
-                <div class="column">
-                    <h3 class="ui top attached header">
-				  处理中
-				</h3>
-                    <div scrollbar="scrollbar-macosx" class="ui basic segment tms-dd-container">
-                        <div repeat.for="item of doing.content" class="ui red segment">
-                            <div ref="mkbodyRef" fancybox class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="column">
-                    <h3 class="ui top attached header">
-				  已完成
-				</h3>
-                    <div scrollbar="scrollbar-macosx" class="ui basic segment tms-dd-container">
-                        <div repeat.for="item of done.content" class="ui red segment">
-                            <div ref="mkbodyRef" fancybox class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="column">
-                    <h3 class="ui top attached header">
-				  已验证
-				</h3>
-                    <div scrollbar="scrollbar-macosx" class="ui basic segment tms-dd-container">
-                        <div repeat.for="item of verified.content" class="ui red segment">
-                            <div ref="mkbodyRef" fancybox class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
-                        </div>
-                    </div>
+                    <div if.bind="col.page && !col.page.last" click.delegate="moreHandler(col)" class="basic ui fluid button ${col.ajax && col.ajax.readyState != 4 ? 'tms-disabled2' : ''}"><i show.bind="col.ajax && col.ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${col.moreCnt})</div>
                 </div>
             </div>
         </div>

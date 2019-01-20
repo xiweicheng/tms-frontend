@@ -1,0 +1,9 @@
+<template>
+    <require from="./em-channel-tasks-modal.css"></require>
+    <em-modal classes="fullscreen em-channel-tasks-modal-parent" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
+        <div slot="header">频道任务看板</div>
+        <div slot="content" class="em-channel-tasks-modal">
+            <em-channel-task view-model.ref="channelTaskVm" channel.bind="channel"></em-channel-task>
+        </div>
+    </em-modal>
+</template>

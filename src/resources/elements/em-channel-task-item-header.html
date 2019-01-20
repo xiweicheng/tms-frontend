@@ -1,0 +1,7 @@
+<template>
+    <require from="./em-channel-task-item-header.css"></require>
+    <div class="em-channel-task-item-header">
+        <a class="task-id" style="cursor: pointer;" click.delegate="idHandler()">#${taskItem.id}</a>
+        <span style="float: right;"><em-user-avatar user.bind="taskItem.creator"></em-user-avatar></span>
+    </div>
+</template>

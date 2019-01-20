@@ -1,0 +1,12 @@
+<template>
+    <require from="./em-channel-task-item-footer.css"></require>
+    <div class="em-channel-task-item-footer">
+        <div repeat.for="item of taskItem.chatLabels | chatLabelFilter:'Emoji'" class="ui image label tms-tag-item" if.bind="item.voters.length != 0" data-position="top left" data-tooltip="${item | chatLabelTip & signal:'sg-chatlabel-refresh'}">
+            <span innerhtml.bind="(item.name) | emojiRepl"></span>
+            <div class="detail">${item.voters.length}</div>
+        </div>
+        <div repeat.for="item of taskItem.chatLabels | chatLabelFilter:'Tag'" class="ui ${item | labelColor} tags label tms-tag-item" css.bind="item | labelCss" if.bind="item.voters.length != 0" data-position="top left" data-tooltip="${item | chatLabelTip & signal:'sg-chatlabel-refresh'}">${item.name}
+            <div class="detail">${item.voters.length}</div>
+        </div>
+    </div>
+</template>

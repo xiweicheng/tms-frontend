@@ -692,4 +692,8 @@ export class EmChatTopMenu {
         $('.em-chat-gantt > iframe').attr('src', utils.getResourceBase() + 'gantt/index.html?copy&editable=true&id=' + item.id + '&cid=' + this.channel.id);
         $('a[href="#modaal-chat-gantt"]').click();
     }
+
+    channelTasksHandler() {
+        this.channelTasksVm.show();
+    }
 }

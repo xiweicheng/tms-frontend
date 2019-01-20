@@ -70,6 +70,7 @@ window.nsCons = {
     EVENT_WS_BLOG_UPDATE: 'event_ws_blog_update',
     EVENT_WS_BLOG_NEWS_UPDATE: 'event_ws_blog_news_update',
     EVENT_AUDIO_ALERT: 'event_audio_alert',
+    EVENT_CLOSE_CHANNEL_TASKS_MODAL: 'event_close_channel_tasks_modal',
     ACTION_TYPE_SEARCH: 'action_type_search',
     ACTION_TYPE_STOW: 'action_type_stow',
     ACTION_TYPE_PIN: 'action_type_pin',

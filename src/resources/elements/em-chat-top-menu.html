@@ -50,6 +50,7 @@
                 <div id="modaal-chat-gantt" style="display:none;">
                     <em-chat-gantt></em-chat-gantt>
                 </div>
+                <a if.bind="!isAt" class="item" click.trigger="channelTasksHandler($event)" title="频道任务看板"><i class="tasks icon"></i></a>
                 <a if.bind="!isAt" class="item" click.trigger="viewOrMgrUsersHandler($event)" title="频道用户(${channel.members.length})"><i class="users icon"></i></a>
                 <a if.bind="!isAt" class="item ${isRightSidebarShow && (activeType == ACTION_TYPE_PIN) ? 'active' : ''}" click.trigger="showPinHandler($event)" title="固定消息查看(ctrl+click刷新)"><i class="${ajaxPin && ajaxPin.readyState != 4 ? 'spinner loading' : ''} pin icon"></i></a>
                 <a if.bind="!isAt" class="item tms-channel-info" click.trigger="channelInfoHandler($event)" title="${channel.description} (${channel.creator.name ? channel.creator.name : channel.creator.username} 创建于 ${channel.createDate | timeago})"><i class="info circle icon"></i></a>
@@ -174,4 +175,5 @@
     <em-user-edit user.bind="loginUser" view-model.ref="userEditMd"></em-user-edit>
     <em-chat-channel-create login-user.bind="loginUser" trigger.bind="createChannelRef"></em-chat-channel-create>
     <em-chat-channel-link-mgr login-user.bind="loginUser" view-model.ref="channelLinkMgrVm" channel.bind="channel"></em-chat-channel-link-mgr>
+    <em-channel-tasks-modal view-model.ref="channelTasksVm" login-user.bind="loginUser" channel.bind="channel"></em-channel-tasks-modal>
 </template>

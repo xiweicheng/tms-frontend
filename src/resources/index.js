@@ -90,5 +90,8 @@ export function configure(aurelia) {
         'resources/elements/em-blog-comment-share',
         'resources/elements/em-audio-alert',
         'resources/elements/em-channel-task',
+        'resources/elements/em-channel-task-item-footer',
+        'resources/elements/em-channel-task-item-header',
+        'resources/elements/em-channel-tasks-modal',
     ]);
 }
