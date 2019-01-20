@@ -1,0 +1,49 @@
+<template>
+    <require from="./em-channel-task.css"></require>
+    <div class="em-channel-task">
+        <div ref="containerRef" class="ui equal width grid" style="height: 100vh;">
+            <div class="row">
+                <div class="column">
+                    <h3 class="ui top attached header">
+				  待处理
+				</h3>
+                    <div scrollbar="scrollbar-macosx" class="ui basic segment tms-dd-container">
+                        <div repeat.for="item of todo.content" class="ui red segment">
+                            <div ref="mkbodyRef" fancybox class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3 class="ui top attached header">
+				  处理中
+				</h3>
+                    <div scrollbar="scrollbar-macosx" class="ui basic segment tms-dd-container">
+                        <div repeat.for="item of doing.content" class="ui red segment">
+                            <div ref="mkbodyRef" fancybox class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3 class="ui top attached header">
+				  已完成
+				</h3>
+                    <div scrollbar="scrollbar-macosx" class="ui basic segment tms-dd-container">
+                        <div repeat.for="item of done.content" class="ui red segment">
+                            <div ref="mkbodyRef" fancybox class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3 class="ui top attached header">
+				  已验证
+				</h3>
+                    <div scrollbar="scrollbar-macosx" class="ui basic segment tms-dd-container">
+                        <div repeat.for="item of verified.content" class="ui red segment">
+                            <div ref="mkbodyRef" fancybox class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
