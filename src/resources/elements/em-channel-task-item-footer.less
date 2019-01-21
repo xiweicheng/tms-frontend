@@ -4,4 +4,23 @@
     >.ui.label.image>span>img {
         width: auto;
     }
+
+    .tms-tag-item {
+        >.red.remove.icon {
+            display: none;
+            // display: inline;
+            margin: 0;
+            margin-left: 9px;
+        }
+
+        &:hover {
+            >.red.remove.icon {
+                display: inline;
+            }
+
+            >.detail.can-del {
+                display: none;
+            }
+        }
+    }
 }

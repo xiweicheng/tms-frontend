@@ -4,6 +4,7 @@ import { bindable, containerless } from 'aurelia-framework';
 export class EmChannelTasksModal {
 
     @bindable channel;
+    @bindable loginUser;
 
     showHandler() {
         this.channelTaskVm.init();

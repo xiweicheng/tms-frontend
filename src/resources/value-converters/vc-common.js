@@ -299,3 +299,19 @@ export class Ua2ValueConverter {
         return `${s} (${ua.device.manufacturer ? ua.device.manufacturer + ' ' : ''}${ua.device.model ? ua.device.model + ' ' : ''}${ua.os.name} ${ua.browser.name}[${ua.engine.name}])`;
     }
 }
+
+export class CanDelLblValueConverter {
+    toView(item, loginUser) {
+        let hasMe = _.some(item.voters, { username: loginUser.username });
+
+        return hasMe;
+    }
+}
+
+export class CanDelLblClsValueConverter {
+    toView(item, loginUser) {
+        let hasMe = _.some(item.voters, { username: loginUser.username });
+
+        return hasMe ? 'can-del' : 'can-not-del';
+    }
+}

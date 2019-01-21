@@ -6,7 +6,8 @@
             <div class="detail">${item.voters.length}</div>
         </div>
         <div repeat.for="item of taskItem.chatLabels | chatLabelFilter:'Tag'" class="ui ${item | labelColor} tags label tms-tag-item" css.bind="item | labelCss" if.bind="item.voters.length != 0" data-position="top left" data-tooltip="${item | chatLabelTip & signal:'sg-chatlabel-refresh'}">${item.name}
-            <div class="detail">${item.voters.length}</div>
+            <div class="detail ${item | canDelLblCls:loginUser}">${item.voters.length}</div>
+            <i show.bind="item | canDelLbl:loginUser" class="remove red link icon" title="删除标签" click.delegate="delLabelHandler(item, $event)"></i>
         </div>
     </div>
 </template>

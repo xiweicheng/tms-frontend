@@ -32,10 +32,21 @@
             transition-timing-function: ease-out;
         }
 
+        >.remove.link.icon {
+            display: none;
+            position: absolute;
+            right: 0;
+            bottom: 5px;
+        }
+
         &:hover {
 
             &:before {
                 width: 4px;
+            }
+
+            >.remove.link.icon {
+                display: inline;
             }
         }
     }

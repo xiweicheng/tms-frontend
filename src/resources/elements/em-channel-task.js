@@ -4,6 +4,7 @@ import { bindable, containerless } from 'aurelia-framework';
 export class EmChannelTask {
 
     @bindable channel;
+    @bindable loginUser;
 
     channelChanged() {
         _.each(this.mapping, (v, k) => {
@@ -131,6 +132,23 @@ export class EmChannelTask {
                 }
             });
 
+        });
+    }
+
+    removeHandler(item, col) {
+        if (this.channel.creator.username != this.loginUser.username) {
+            toastr.error('删除权限不足！');
+            return;
+        }
+
+        $.post('/admin/channel/task/remove', {
+            id: item.id,
+            label: col.name
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                toastr.success('操作成功！');
+                this._refresh(col.name);
+            }
         });
     }
 }

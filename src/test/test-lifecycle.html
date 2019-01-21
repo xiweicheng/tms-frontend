@@ -2,6 +2,6 @@
     <!-- <require from=""></require> -->
     <div class="ui container" style="height: 100%">
         <!-- <h1 class="ui header">Aurelia框架模块生命周期钩子函数调用顺序测试(看console输出)</h1> -->
-        <em-channel-task></em-channel-task>
+        <em-channel-task view-model.ref="channelTaskVm" channel.bind="channel" login-user.bind="loginUser"></em-channel-task>
     </div>
 </template>

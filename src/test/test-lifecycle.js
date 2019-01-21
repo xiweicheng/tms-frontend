@@ -12,11 +12,12 @@ from 'aurelia-event-aggregator';
  */
 export class TestLifeCycle {
 
-    @
-    bindable
-    prop = null;
+    @bindable prop = null;
 
     static inject = [EventAggregator];
+
+    channel = { id: 3 };
+    loginUser = { username: 'super' };
 
     /**
      * 构造函数
@@ -61,6 +62,7 @@ export class TestLifeCycle {
      */
     attached() {
         console.log('attached');
+        this.channelTaskVm.init();
     }
 
     /**
