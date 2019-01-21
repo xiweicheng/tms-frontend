@@ -7,6 +7,7 @@ export class EmChannelTaskItemFooter {
 
     @bindable channel;
     @bindable loginUser;
+    @bindable col;
 
     delLabelHandler(item, event) {
         if (!this.canDelLabel(item)) {
@@ -21,6 +22,16 @@ export class EmChannelTaskItemFooter {
             if (data.success) {
                 toastr.success('删除操作成功！');
                 item.voters = _.reject(item.voters, { username: this.loginUser.username });
+
+                bs.signal('sg-chatlabel-refresh');
+
+                if (_.isEmpty(item.voters)) {
+                    ea.publish(nsCons.EVENT_CHANNEL_TASK_COL_REFRESH, { name: this.col.name });
+                }
+
+                if (item.name != this.col.name) {
+                    ea.publish(nsCons.EVENT_CHANNEL_TASK_COL_REFRESH, { name: item.name });
+                }
             }
         });
     }

@@ -11,7 +11,7 @@
                         <div repeat.for="item of col.page.content" class="ui green segment tms-dd-task-item" data-id="${item.id}">
                             <em-channel-task-item-header task-item.bind="item"></em-channel-task-item-header>
                             <div ref="mkbodyRef" fancybox class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
-                            <em-channel-task-item-footer task-item.bind="item" channel.bind="channel" login-user.bind="loginUser"></em-channel-task-item-footer>
+                            <em-channel-task-item-footer task-item.bind="item" channel.bind="channel" login-user.bind="loginUser" col.bind="col"></em-channel-task-item-footer>
                             <i style="position: absolute; right: 0; bottom: 5px;" if.bind="channel.creator.username == loginUser.username" title="从看板移除该任务" click.delegate="removeHandler(item, col)" class="remove circle outline big red link icon"></i>
                         </div>
                     </div>

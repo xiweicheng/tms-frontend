@@ -28,6 +28,27 @@ export class EmChannelTask {
         value: 'verified',
     }];
 
+    /**
+     * 构造函数
+     */
+    constructor() {
+        this.subscribe = ea.subscribe(nsCons.EVENT_CHANNEL_TASK_COL_REFRESH, (payload) => {
+
+            if (_.some(this.cols, payload)) {
+                this._refresh(payload.name);
+            }
+
+        });
+    }
+
+    /**
+     * 当数据绑定引擎从视图解除绑定时被调用
+     */
+    unbind() {
+
+        this.subscribe.dispose();
+    }
+
     async _getTasks(label, page) {
         let pageTask = {};
         await $.get('/admin/channel/task/listBy', {
