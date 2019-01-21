@@ -12,7 +12,7 @@
                             <em-channel-task-item-header task-item.bind="item"></em-channel-task-item-header>
                             <div ref="mkbodyRef" fancybox class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
                             <em-channel-task-item-footer task-item.bind="item" channel.bind="channel" login-user.bind="loginUser"></em-channel-task-item-footer>
-                            <i if.bind="channel.creator.username == loginUser.username" title="从看板移除该任务" click.delegate="removeHandler(item, col)" class="remove circle outline big red link icon"></i>
+                            <i style="position: absolute; right: 0; bottom: 5px;" if.bind="channel.creator.username == loginUser.username" title="从看板移除该任务" click.delegate="removeHandler(item, col)" class="remove circle outline big red link icon"></i>
                         </div>
                     </div>
                     <div if.bind="col.page && !col.page.last" click.delegate="moreHandler(col)" class="basic ui fluid button ${col.ajax && col.ajax.readyState != 4 ? 'tms-disabled2' : ''}"><i show.bind="col.ajax && col.ajax.readyState != 4" class="spinner loading icon"></i> 加载更多(${col.moreCnt})</div>

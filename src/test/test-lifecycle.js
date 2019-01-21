@@ -16,7 +16,7 @@ export class TestLifeCycle {
 
     static inject = [EventAggregator];
 
-    channel = { id: 3 };
+    channel = { id: 4, creator: { username: 'super' } };
     loginUser = { username: 'super' };
 
     /**
