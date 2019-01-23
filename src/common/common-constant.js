@@ -72,6 +72,7 @@ window.nsCons = {
     EVENT_AUDIO_ALERT: 'event_audio_alert',
     EVENT_CLOSE_CHANNEL_TASKS_MODAL: 'event_close_channel_tasks_modal',
     EVENT_CHANNEL_TASK_COL_REFRESH: 'event_channel_task_col_refresh',
+    EVENT_CHANNEL_TASK_LABELS_REFRESH: 'event_channel_task_labels_refresh',
     EVENT_CHANNEL_TASK_ITEM_ACTION: 'event_channel_task_item_action',
     ACTION_TYPE_SEARCH: 'action_type_search',
     ACTION_TYPE_STOW: 'action_type_stow',

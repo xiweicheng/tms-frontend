@@ -39,6 +39,20 @@ export class EmChannelTask {
             }
 
         });
+
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_CHANNEL_TASK_LABELS_REFRESH, (payload) => {
+
+            _.each(this.cols, col => {
+                if (col.name != payload.col.name) {
+                    let task = _.find(col.page.content, { id: payload.task.id });
+                    if (task) {
+                        let lbl = _.find(task.chatLabels, { id: payload.label.id });
+                        lbl & (lbl.voters = payload.label.voters);
+                    }
+                }
+            });
+
+        });
     }
 
     /**
@@ -47,6 +61,7 @@ export class EmChannelTask {
     unbind() {
 
         this.subscribe.dispose();
+        this.subscribe2.dispose();
     }
 
     async _getTasks(label, page) {
@@ -78,6 +93,10 @@ export class EmChannelTask {
 
     bind(ctx) {
 
+    }
+
+    refreshHandler(col) {
+        this._refresh(col.name);
     }
 
     _refresh(label) {

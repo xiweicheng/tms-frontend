@@ -32,6 +32,8 @@ export class EmChannelTaskItemFooter {
                 if (item.name != this.col.name) {
                     ea.publish(nsCons.EVENT_CHANNEL_TASK_COL_REFRESH, { name: item.name });
                 }
+
+                ea.publish(nsCons.EVENT_CHANNEL_TASK_LABELS_REFRESH, { col: this.col, label: item, task: this.taskItem });
             }
         });
     }

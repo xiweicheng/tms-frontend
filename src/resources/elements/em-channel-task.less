@@ -4,6 +4,33 @@
 
     .ui.equal.width.internally.celled.grid {
         height: e("calc(100% - 60px)");
+
+        .row {
+            .column {
+                .ui.header {
+                    &:hover {
+                        .btn-wrapper {
+                            display: inline;
+                        }
+                    }
+
+                    .btn-wrapper {
+                        display: none;
+                        position: absolute;
+                        right: 20px;
+                        top: 19px;
+
+                    }
+
+                    .ui.icon.button {
+                        display: inline-block;
+                        padding: .78571429em .78571429em .78571429em;
+                        margin-right: 0.25em;
+                        margin-right: 0;
+                    }
+                }
+            }
+        }
     }
 
     .markdown-body .pre-code-wrapper>.tms-chat-msg-code-trigger {

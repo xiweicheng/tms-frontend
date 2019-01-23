@@ -6,6 +6,11 @@
                 <div class="column" repeat.for="col of cols">
                     <h4 class="ui top attached center aligned header">
                   ${col.name}（${col.page.totalElements ? col.page.totalElements : 0}）
+                    <span class="btn-wrapper">
+                        <button click.delegate="refreshHandler(col)" title="刷新同步" class="mini circular ui icon basic button">
+                            <i class="refresh icon"></i>
+                        </button>
+                    </span>
                 </h4>
                     <div scrollbar="scrollbar-macosx" class="ui basic segment tms-dd-container s-${col.value}" data-sts="${col.name}">
                         <div repeat.for="item of col.page.content" class="ui green segment tms-dd-task-item" data-id="${item.id}">
