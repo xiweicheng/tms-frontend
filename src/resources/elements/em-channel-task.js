@@ -181,6 +181,15 @@ export class EmChannelTask {
             return;
         }
 
+        let label = _.find(item.chatLabels, cl => {
+            if (cl.type == 'Tag' && cl.status != 'Deleted' && cl.name == col.name) {
+                return true;
+            }
+            return false;
+        });
+
+        if (!label) return;
+
         $.post('/admin/channel/task/remove', {
             id: item.id,
             label: col.name
@@ -188,6 +197,14 @@ export class EmChannelTask {
             if (data.success) {
                 toastr.success('操作成功！');
                 this._refresh(col.name);
+                ea.publish(nsCons.EVENT_CHANNEL_TASK_LABELS_REFRESH, {
+                    col: col,
+                    label: {
+                        id: label.id,
+                        voters: []
+                    },
+                    task: item
+                });
             }
         });
     }
