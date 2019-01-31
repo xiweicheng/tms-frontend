@@ -5,5 +5,6 @@ export default {
     closeButton: true,
     preventDuplicates: true,
     // positionClass: 'toast-top-right'
-    positionClass: 'toast-top-right-custom'
+    // positionClass: 'toast-top-right-custom'
+    positionClass: 'toast-bottom-right-custom'
 }
