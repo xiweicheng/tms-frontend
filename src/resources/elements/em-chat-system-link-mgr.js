@@ -5,6 +5,19 @@ export class EmChatSystemLinkMgr {
 
     links = [];
 
+    @bindable filter = '';
+
+    filterChanged(nv, ov) {
+        let fv = _.toLower(nv);
+        _.each(this.links, lk => {
+            if (_.includes(_.toLower(lk.title), fv) || _.includes(_.toLower(lk.href), fv)) {
+                lk._hide = false;
+            } else {
+                lk._hide = true;
+            }
+        })
+    }
+
     addHandler() {
         $.post('/admin/link/create', {
             title: this.title,

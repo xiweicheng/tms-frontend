@@ -1,25 +1,30 @@
 <template>
     <require from="./em-chat-system-link-mgr.css"></require>
-    <em-modal classes="small" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
+    <em-modal classes="" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
         <div slot="header">系统外链管理</div>
         <div slot="content" class="tms-em-chat-system-link-mgr">
-            <div class="ui segment">
-                <div class="ui form">
-                    <div class="field required">
-                        <label>添加系统外链</label>
-                        <div class="fields">
-                            <div class="five wide field">
-                                <input type="text" value.bind="title" name="title" placeholder="链接标题">
-                            </div>
-                            <div class="ten wide field">
-                                <input type="text" value.bind="href" name="href" placeholder="链接地址">
-                            </div>
-                            <div class="one wide field">
-                                <button title="添加外链" click.delegate="addHandler()" class="circular ui icon blue button" type="button"><i class="plus icon"></i></button>
-                            </div>
+            <!-- <div class="ui segment"> -->
+            <div class="ui form">
+                <div class="field required">
+                    <label>添加系统外链</label>
+                    <div class="fields">
+                        <div class="five wide field">
+                            <input type="text" value.bind="title" name="title" placeholder="链接标题">
+                        </div>
+                        <div class="ten wide field">
+                            <input type="text" value.bind="href" name="href" placeholder="链接地址">
+                        </div>
+                        <div class="one wide field">
+                            <button title="添加外链" click.delegate="addHandler()" class="circular ui icon blue button" type="button"><i class="plus icon"></i></button>
                         </div>
                     </div>
                 </div>
+            </div>
+            <!-- </div> -->
+            <div class="ui divider"></div>
+            <div class="ui transparent left icon input">
+                <input type="text" value.bind="filter" placeholder="过滤查找...">
+                <i class="search icon"></i>
             </div>
             <div style="max-height: 275px; overflow: auto;">
                 <table class="ui very basic striped compact table">
@@ -27,12 +32,12 @@
                         <tr>
                             <th style="width: 180px;">标题</th>
                             <th>链接</th>
-                            <th>点击</th>
-                            <th style="width: 150px;">操作</th>
+                            <th style="width: 50px;" class="center aligned">点击</th>
+                            <th style="width: 152px;" class="center aligned">操作</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr repeat.for="item of links | sort:'title'">
+                        <tr repeat.for="item of links | sort:'title'" show.bind="!item._hide">
                             <td if.bind="!item.isEditing">${item.title}</td>
                             <td if.bind="item.isEditing">
                                 <div class="ui fluid input">
@@ -45,8 +50,8 @@
                                     <input type="text" value.bind="item.href" placeholder="链接地址">
                                 </div>
                             </td>
-                            <td>${item.count ? item.count : 0}</td>
-                            <td>
+                            <td class="center aligned">${item.count ? item.count : 0}</td>
+                            <td class="center aligned">
                                 <button show.bind="!item.isEditing" click.delegate="editHandler(item)" class="mini ui button">
                                     编辑
                                 </button>
