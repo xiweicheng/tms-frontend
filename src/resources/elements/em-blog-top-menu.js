@@ -94,12 +94,21 @@ export class EmBlogTopMenu {
                             }
                         };
                         $.each(resp.data.blogs, (index, item) => {
+
+                            let desc = `<i class="wait icon"></i>${item.creator.name} 创建于 ${tg.format(item.createDate, 'zh_CN')}`;
+                            if (item.space && item.space.name) {
+                                desc = desc + `<br/><i class="world icon"></i>${item.space ? item.space.name : ''}`;
+                            }
+                            if (item.dir && item.dir.name) {
+                                desc = desc + ` / <i class="folder outline icon"></i>${item.dir ? item.dir.name : ''}`;
+                            }
+
                             response.results.blogs.results.push({
                                 type: 'blog',
                                 id: item.id,
                                 title: item.title,
                                 // description: utils.abbreviate(item.content, 65),
-                                description: `<i class="wait icon"></i>${item.creator.name} 创建于 ${tg.format(item.createDate, 'zh_CN')}`,
+                                description: desc,
                                 url: `#/blog/${item.id}`
                             });
                         });
