@@ -34,7 +34,9 @@ export class EmChannelTasksModal {
     }
 
     show() {
-        $('.em-channel-tasks-modal').height($(window).height() - 270);
+        let height = $(window).height() - 270;
+        $('.em-channel-tasks-modal').height(height);
+        $('.tms-dd-container').height(height - 110);
 
         this.emModal.show({
             hideOnApprove: true,
