@@ -97,6 +97,7 @@ export class EmChannelTask {
 
     refreshHandler(col) {
         this._refresh(col.name);
+        toastr.success(`刷新操作成功！`);
     }
 
     _refresh(label) {
