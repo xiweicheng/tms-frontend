@@ -32,7 +32,7 @@ export class EmBlogContent {
                 _.extend(this.blog, payload.blog);
                 _.defer(() => this.catalogHandler(true));
 
-                if (this.loginUser.username != this.blog.creator.username && !this.blogFollower) {
+                if (this.loginUser.username != this.blog.creator.username && !this.blogFollower && payload.autoFollow) {
                     this.getFollower();
                     toastr.info(`已为您自动关注该编辑博文，可手动取消关注！`);
                 }

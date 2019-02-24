@@ -660,6 +660,7 @@ export class EmBlogWrite {
                     toastr.success('博文更新成功!');
                     ea.publish(nsCons.EVENT_BLOG_CHANGED, {
                         action: 'updated',
+                        autoFollow: true,
                         blog: this.blog
                     });
                     if (!isKey) {
