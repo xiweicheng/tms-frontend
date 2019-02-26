@@ -681,7 +681,7 @@ export class EmBlogWrite {
 
     switchEditorHandler() {
         this.close();
-        $('.em-blog-write-html > iframe').attr('src', this.baseRes + 'blog.html');
+        $('.em-blog-write-html > iframe').attr('src', this.baseRes + 'blog.html' + '?_=' + new Date().getTime());
         $('a[href="#modaal-blog-write-html"]').click();
         return false;
     }

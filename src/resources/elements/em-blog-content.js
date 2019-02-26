@@ -525,9 +525,8 @@ export class EmBlogContent {
 
     editHandler() {
         if (this.blog.editor == 'Html') {
-            $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?id=' + this.blog.id);
+            $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?id=' + this.blog.id + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-html"]').click();
-            // utils.openNewWin(utils.getResourceBase() + 'blog.html?id=' + this.blog.id);
         } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'edit', id: this.blog.id });
         }
@@ -659,9 +658,8 @@ export class EmBlogContent {
 
     copyHandler() {
         if (this.blog.editor == 'Html') {
-            $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?id=' + this.blog.id + '&copy');
+            $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?id=' + this.blog.id + '&copy' + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-html"]').click();
-            // utils.openNewWin(utils.getResourceBase() + 'blog.html?id=' + this.blog.id + '&amp;copy'); // &copy
         } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'copy', id: this.blog.id });
         }
