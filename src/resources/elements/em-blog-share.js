@@ -129,4 +129,32 @@ export class EmBlogShare {
             }
         });
     }
+
+    createShareHandler() {
+
+        $.post('/admin/blog/share/create', {
+            id: this.blog.id
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                this.blog.shareId = data.data.shareId;
+                toastr.success('生成免登分享链接成功!');
+            } else {
+                toastr.error(data.data, '生成免登分享链接失败!');
+            }
+        });
+    }
+
+    removeShareHandler() {
+
+        $.post('/admin/blog/share/remove', {
+            id: this.blog.id
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                this.blog.shareId = null;
+                toastr.success('删除免登分享链接成功!');
+            } else {
+                toastr.error(data.data, '删除免登分享链接失败!');
+            }
+        });
+    }
 }
