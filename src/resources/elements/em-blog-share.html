@@ -52,7 +52,7 @@
                 <i class="external share icon"></i>
             </button>
             <div show.bind="blog.shareId" class="tms-share-wrapper">
-                <button class="ui basic icon mini button tms-clipboard" data-tooltip="复制免登分享链接" data-clipboard-text="${basePath}#/blog/share/${blog.shareId}">
+                <button class="ui basic icon mini button tms-clipboard" data-tooltip="复制免登分享链接" data-clipboard-text="${baseUrl}#/blog/share/${blog.shareId}">
                     <i class="copy icon"></i>
                 </button>
                 <i class="red remove link icon" click.delegate="removeShareHandler()" title="删除免登分享链接"></i>
