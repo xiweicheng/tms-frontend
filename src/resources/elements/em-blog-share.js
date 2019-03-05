@@ -11,6 +11,9 @@ export class EmBlogShare {
     basePath = utils.getBasePath();
     baseUrl = utils.getBaseUrl();
 
+    isSuper = nsCtx.isSuper;
+    loginUser = nsCtx.loginUser;
+
     /**
      * 当视图被附加到DOM中时被调用
      */

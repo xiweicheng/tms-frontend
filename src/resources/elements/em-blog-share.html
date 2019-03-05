@@ -48,11 +48,11 @@
             <button show.bind="blog.opened" class="ui basic icon mini button tms-clipboard" data-tooltip="复制游客访问链接" data-clipboard-text="${baseUrl}/#/blog/${blog.id}">
                 <i class="copy icon"></i>
             </button>
-            <button show.bind="!blog.shareId" class="ui basic icon mini button" click.delegate="createShareHandler()" data-tooltip="生成免登分享链接">
+            <button if.bind="isSuper || loginUser.username == blog.creator.username" show.bind="!blog.shareId" class="ui basic icon mini button" click.delegate="createShareHandler()" data-tooltip="生成免登分享链接">
                 <i class="external share icon"></i>
             </button>
-            <div show.bind="blog.shareId" class="tms-share-wrapper">
-                <button class="ui basic icon mini button tms-clipboard" data-tooltip="复制免登分享链接" data-clipboard-text="${baseUrl}#/blog/share/${blog.shareId}">
+            <div if.bind="isSuper || loginUser.username == blog.creator.username" show.bind="blog.shareId" class="tms-share-wrapper">
+                <button class="ui basic icon mini button tms-clipboard" data-tooltip="复制免登分享链接" data-clipboard-text="${baseUrl}#/blog/share/${blog.shareId}?read">
                     <i class="copy icon"></i>
                 </button>
                 <i class="red remove link icon" click.delegate="removeShareHandler()" title="删除免登分享链接"></i>
