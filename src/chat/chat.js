@@ -499,17 +499,17 @@ export class Chat {
     }
 
     updateNotifyDirect(chat, message) {
-        let alarm = utils.getAlarm();
-        // if (!alarm.off && chat) this.scrollToAfterImgLoaded(chat.id);
 
-        // toastr.success(message);
-        toastr.info(message, null, _.extend(toastrOps, {
-            onclick: () => {
-                chat && this.scrollToAfterImgLoaded(chat.id);
-            }
-        }));
+        let alarm = utils.getAlarm();
 
         if (!alarm.off && alarm.news) {
+
+            toastr.info(message, null, _.extend(toastrOps, {
+                onclick: () => {
+                    chat && this.scrollToAfterImgLoaded(chat.id);
+                }
+            }));
+
             push.create('TMS沟通私聊消息通知', {
                 body: _.replace(message, '可点击查看', '请注意关注'),
                 icon: {
@@ -524,24 +524,24 @@ export class Chat {
     }
 
     updateNotifyChannel(chat, message, msgItem) {
-        let alarm = utils.getAlarm();
-        // if (!alarm.off && chat) this.scrollToAfterImgLoaded(chat.id);
 
-        // toastr.success(message);
-        toastr.info(message, null, _.extend(toastrOps, {
-            onclick: () => {
-                chat && this.scrollToAfterImgLoaded(chat.id);
-                // 不安全的判断方式
-                if (_.includes(message, '话题回复')) {
-                    ea.publish(nsCons.EVENT_CHAT_TOPIC_SHOW, {
-                        chat: chat,
-                        rid: (msgItem ? msgItem.rid : null)
-                    });
-                }
-            }
-        }));
+        let alarm = utils.getAlarm();
 
         if (!alarm.off && alarm.news) {
+
+            toastr.info(message, null, _.extend(toastrOps, {
+                onclick: () => {
+                    chat && this.scrollToAfterImgLoaded(chat.id);
+                    // 不安全的判断方式
+                    if (_.includes(message, '话题回复')) {
+                        ea.publish(nsCons.EVENT_CHAT_TOPIC_SHOW, {
+                            chat: chat,
+                            rid: (msgItem ? msgItem.rid : null)
+                        });
+                    }
+                }
+            }));
+
             push.create(`TMS沟通频道消息通知`, {
                 body: _.replace(message, '可点击查看', '请注意关注'),
                 icon: {
@@ -556,6 +556,7 @@ export class Chat {
     }
 
     updateNotify(chat, msg, message) {
+        
         if (chat.version != msg.version) {
             $.get('/admin/chat/channel/get', {
                 id: chat.id
