@@ -53,6 +53,12 @@ export class EmChannelTask {
             });
 
         });
+
+        this.subscribe3 = ea.subscribe(nsCons.EVENT_CHANNEL_TASK_TALK_SHOW, (payload) => {
+
+            this.talkVm.show(payload);
+
+        });
     }
 
     /**
@@ -62,6 +68,7 @@ export class EmChannelTask {
 
         this.subscribe.dispose();
         this.subscribe2.dispose();
+        this.subscribe3.dispose();
     }
 
     async _getTasks(label, page) {

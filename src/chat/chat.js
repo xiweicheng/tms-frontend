@@ -39,7 +39,8 @@ export class Chat {
         Dropzone.autoDiscover = false;
         this.poll = poll;
 
-        new Clipboard('.tms-chat .tms-clipboard')
+        // new Clipboard('.tms-chat .tms-clipboard')
+        new Clipboard('.tms-clipboard')
             .on('success', function(e) {
                 toastr.success('复制到剪贴板成功!');
             }).on('error', function(e) {

@@ -93,5 +93,6 @@ export function configure(aurelia) {
         'resources/elements/em-channel-task-item-footer',
         'resources/elements/em-channel-task-item-header',
         'resources/elements/em-channel-tasks-modal',
+        'resources/elements/em-channel-chat-task-talk-modal',
     ]);
 }

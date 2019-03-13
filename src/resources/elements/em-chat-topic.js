@@ -19,9 +19,9 @@ export class EmChatTopic {
      */
     constructor() {
         this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_TOPIC_MSG_SENDED, (payload) => {
-            if (!_.some(this.chat.chatReplies, { id: payload.data.id })) {
-                this.chat.chatReplies.push(payload.data);
-                // this.scrollToBottom();
+            if (!_.some(this.chat ? this.chat.chatReplies : [], { id: payload.data.id })) {
+                this.chat && this.chat.chatReplies.push(payload.data);
+                this.scrollToBottom();
             }
 
             this.isFollower = true; // 回复话题会自动关注该话题
@@ -35,7 +35,8 @@ export class EmChatTopic {
 
     scrollToBottom() {
         // this.scrollTo('max');
-        this.scrollTo("100%", { axis: 'y' });
+        // this.scrollTo("100%", { axis: 'y' });
+        this.scrollTo("100%");
 
     }
 

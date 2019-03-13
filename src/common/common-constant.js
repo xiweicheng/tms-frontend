@@ -74,6 +74,7 @@ window.nsCons = {
     EVENT_CHANNEL_TASK_COL_REFRESH: 'event_channel_task_col_refresh',
     EVENT_CHANNEL_TASK_LABELS_REFRESH: 'event_channel_task_labels_refresh',
     EVENT_CHANNEL_TASK_ITEM_ACTION: 'event_channel_task_item_action',
+    EVENT_CHANNEL_TASK_TALK_SHOW: 'event_channel_task_talk_show',
     ACTION_TYPE_SEARCH: 'action_type_search',
     ACTION_TYPE_STOW: 'action_type_stow',
     ACTION_TYPE_PIN: 'action_type_pin',
