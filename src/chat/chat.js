@@ -69,6 +69,9 @@ export class Chat {
             stompClient.subscribe('/channel/update', (msg) => {
                 ea.publish(nsCons.EVENT_WS_CHANNEL_UPDATE, JSON.parse(msg.body));
             });
+            stompClient.subscribe('/user/channel/at', (msg) => {
+                ea.publish(nsCons.EVENT_WS_CHANNEL_AT, JSON.parse(msg.body));
+            });
             stompClient.subscribe('/channel/online', (msg) => {
                 let online = JSON.parse(msg.body);
                 ea.publish(nsCons.EVENT_WS_CHANNEL_ONLINE, online);
@@ -424,6 +427,72 @@ export class Chat {
 
         });
 
+        this.subscribe17 = ea.subscribe(nsCons.EVENT_WS_CHANNEL_AT, (payload) => {
+
+            // 频道聊天
+            if (payload.username != this.loginUser.username) {
+
+                let alarm = utils.getAlarm();
+
+                if (!alarm.off && alarm.ats) {
+
+                    let ccid = payload.ccid ? payload.ccid : payload.id;
+
+                    toastr.info(payload.content, `频道@消息通知【${payload.cname}】`, _.extend(toastrOps, {
+                        onclick: () => {
+
+                            if (this.channel && this.channel.id == payload.cid) {
+
+                                this.scrollToAfterImgLoaded(ccid);
+                                if (payload.cmd == 'RC' || payload.cmd == 'RU') {
+                                    ea.publish(nsCons.EVENT_CHAT_TOPIC_SHOW, {
+                                        chat: _.find(this.chats, { id: payload.ccid }),
+                                        rid: payload.id
+                                    });
+                                }
+                            } else {
+                                if (payload.cmd == 'RC' || payload.cmd == 'RU') {
+                                    this.gotoChatItem({
+                                        id: payload.id,
+                                        chatAt: {
+                                            chatChannel: {
+                                                id: payload.ccid,
+                                                channel: {
+                                                    id: payload.cid,
+                                                    name: payload.cname
+                                                }
+                                            },
+                                            chatReply: {}
+                                        }
+                                    });
+                                } else {
+                                    this.gotoChatItem({
+                                        id: payload.id,
+                                        channel: {
+                                            id: payload.cid,
+                                            name: payload.cname
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }));
+
+                    push.create(`TMS沟通频道@消息通知【${payload.cname}】`, {
+                        body: payload.content,
+                        icon: {
+                            x16: 'img/tms-x16.ico',
+                            x32: 'img/tms-x32.png'
+                        },
+                        timeout: 5000
+                    });
+
+                    (!alarm.off && alarm.audio) && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
+                }
+            }
+
+        });
+
     }
 
     _doClearFilter() {
@@ -557,7 +626,7 @@ export class Chat {
     }
 
     updateNotify(chat, msg, message) {
-        
+
         if (chat.version != msg.version) {
             $.get('/admin/chat/channel/get', {
                 id: chat.id
@@ -595,6 +664,7 @@ export class Chat {
         this.subscribe14.dispose();
         this.subscribe15.dispose();
         this.subscribe16.dispose();
+        this.subscribe17.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();
@@ -927,20 +997,21 @@ export class Chat {
         }, (data) => {
             if (data.success) {
 
-                let alarm = utils.getAlarm();
+                // let alarm = utils.getAlarm();
 
-                if (this.countAt && (data.data.countAt > this.countAt) && !alarm.off && alarm.ats) {
-                    push.create('TMS沟通@消息通知', {
-                        body: `你有${data.data.countAt - this.countAt}条新的@消息!`,
-                        icon: {
-                            x16: 'img/tms-x16.ico',
-                            x32: 'img/tms-x32.png'
-                        },
-                        timeout: 5000
-                    });
+                // if (this.countAt && (data.data.countAt > this.countAt) && !alarm.off && alarm.ats) {
+                //     push.create('TMS沟通@消息通知', {
+                //         body: `你有${data.data.countAt - this.countAt}条新的@消息!`,
+                //         icon: {
+                //             x16: 'img/tms-x16.ico',
+                //             x32: 'img/tms-x32.png'
+                //         },
+                //         timeout: 5000
+                //     });
 
-                    (!alarm.off && alarm.audio) && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
-                }
+                //     (!alarm.off && alarm.audio) && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
+                // }
+
                 this.countAt = data.data.countAt;
                 ea.publish(nsCons.EVENT_CHAT_POLL_UPDATE, {
                     countAt: data.data.countAt,
