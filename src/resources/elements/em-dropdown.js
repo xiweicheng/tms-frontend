@@ -15,7 +15,6 @@ export class EmDropdown {
         if (news) {
             _.defer(() => {
                 $(this.dropdown).dropdown('set selected', news);
-                // console.log('selectedItemChanged: ' + news);
             });
         }
 
@@ -34,11 +33,9 @@ export class EmDropdown {
             _.defer(() => {
                 $(this.dropdown).dropdown({
                     onChange: (value, text, $choice) => {
-                        // toastr.info(value + ' | ' + text);
                         this.selectedItem = value;
                     }
                 }).dropdown('set selected', this.selectedItem);
-                // console.log('initDropdownHandler: ' + this.selectedItem);
             });
         }
     }

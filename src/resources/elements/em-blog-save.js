@@ -98,7 +98,6 @@ export class EmBlogSave {
             _.defer(() => {
                 $(this.spacesRef).dropdown('clear').dropdown({
                     onChange: (value, text, $choice) => {
-                        // toastr.info(value);
                         if (!!value) {
                             this.space = _.find(this.spaces, { id: +value });
                         } else {
@@ -122,7 +121,6 @@ export class EmBlogSave {
             _.defer(() => {
                 $(this.dirsRef).dropdown('clear').dropdown({
                     onChange: (value, text, $choice) => {
-                        // toastr.info(value);
                     }
                 });
             });

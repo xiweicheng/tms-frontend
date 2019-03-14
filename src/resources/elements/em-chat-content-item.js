@@ -416,13 +416,8 @@ export class EmChatContentItem {
         $.get('/admin/chat/channel/get', {
             id: item.id
         }, (data) => {
-            // if (item.version != data.data.version) {
             _.extend(item, data.data);
             toastr.success('刷新同步成功!');
-            // } else {
-            //     item.chatReplies = data.data.chatReplies;
-            //     toastr.info('消息内容暂无变更!');
-            // }
         });
     }
 
