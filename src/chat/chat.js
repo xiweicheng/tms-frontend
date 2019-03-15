@@ -359,7 +359,8 @@ export class Chat {
                             channel.newMsgCnt = _.isNumber(channel.newMsgCnt) ? (channel.newMsgCnt + 1) : 1;
                             this.saveNewMsgCnt(channel.name, channel.newMsgCnt);
 
-                            this.updateNotifyChannel(null, `【${channel.title ? channel.title : channel.name}】频道有消息更新，请注意关注！`, null);
+                            // TODO 提醒干扰，考虑优化
+                            // this.updateNotifyChannel(null, `【${channel.title ? channel.title : channel.name}】频道有消息更新，请注意关注！`, null);
                         }
                     }
                 }
@@ -438,7 +439,7 @@ export class Chat {
 
                     let ccid = payload.ccid ? payload.ccid : payload.id;
 
-                    toastr.info(payload.content, `频道@消息通知【${payload.cname}】`, _.extend(toastrOps, {
+                    toastr.info(payload.content, `频道@消息通知【${payload.ctitle}】`, _.extend(toastrOps, {
                         onclick: () => {
 
                             if (this.channel && this.channel.id == payload.cid) {
