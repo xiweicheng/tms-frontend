@@ -10,6 +10,8 @@ export class EmChannelTask {
         _.each(this.mapping, (v, k) => {
             this[v] = {};
         });
+
+        this._sortMembers();
     }
 
     size = 10;
@@ -99,7 +101,7 @@ export class EmChannelTask {
     }
 
     bind(ctx) {
-
+        this._sortMembers();
     }
 
     refreshHandler(col) {
@@ -200,6 +202,19 @@ export class EmChannelTask {
                 });
             }
         })
+    }
+
+    _sortMembers() {
+        if (this.channel) {
+            let me = _.find(this.channel.members, { username: nsCtx.loginUser.username });
+            let members = _.sortBy(this.channel.members, ['name', 'username']);
+            if (me) {
+                members = _.reject(members, { username: nsCtx.loginUser.username });
+                this.channel.members = [me, ...members];
+            } else {
+                this.channel.members = members;
+            }
+        }
     }
 
     removeHandler(item, col) {
