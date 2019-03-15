@@ -110,6 +110,9 @@ export class EmChannelTask {
     _refresh(label) {
         this._getTasks(label, 0).then(data => {
             let col = _.find(this.cols, { name: label });
+            col._filter && _.each(data.content, item => {
+                item._hidden = (!_.includes(item.content, `{~${col._filter}}`) && !_.includes(item.content, `{~all}`));
+            });
             col.page = data;
             col.moreCnt = col.page.last ? 0 : col.page.totalElements - (col.page.number + 1) * col.page.size;
         });
@@ -124,6 +127,9 @@ export class EmChannelTask {
             label: col.name
         }, (data) => {
             if (data.success) {
+                col._filter && _.each(data.data.content, item => {
+                    item._hidden = (!_.includes(item.content, `{~${col._filter}}`) && !_.includes(item.content, `{~all}`));
+                });
                 col.page.content.push(...data.data.content);
                 col.page.number++;
                 col.page.last = data.data.last;
@@ -181,6 +187,19 @@ export class EmChannelTask {
             });
 
         });
+
+        $('.em-channel-task').on('click', '.tms-task-filter > .text .remove.icon', event => {
+
+            let $dd = $(event.currentTarget).parents('.tms-task-filter');
+            $dd.dropdown('clear').dropdown('hide');
+            let col = _.find(this.cols, { name: $dd.attr('data-col-name') });
+            if (col) {
+                delete col['_filter'];
+                _.each(col.page.content, item => {
+                    item._hidden = false;
+                });
+            }
+        })
     }
 
     removeHandler(item, col) {
@@ -212,6 +231,17 @@ export class EmChannelTask {
                         voters: []
                     },
                     task: item
+                });
+            }
+        });
+    }
+
+    initFilterHandler(filterRef, col) {
+        $(filterRef).dropdown({
+            onChange: (value, text, $choice) => {
+                col._filter = value;
+                _.each(col.page.content, item => {
+                    item._hidden = (!_.includes(item.content, `{~${value}}`) && !_.includes(item.content, `{~all}`));
                 });
             }
         });
