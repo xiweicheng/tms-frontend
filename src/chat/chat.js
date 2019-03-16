@@ -834,6 +834,11 @@ export class Chat {
         this.lastMoreP = $.get(url, data, (data) => {
             if (data.success) {
                 this._stowAndPin(data.data);
+                if (this.channel && this.channel._filter) {
+                    _.each(data.data, item => {
+                        item._hidden = item.creator.username != this.channel._filter;
+                    });
+                }
                 this.chats = _.unionBy(_.reverse(data.data), this.chats, 'id');
                 this.last = (data.msgs[0] - data.data.length <= 0);
                 !this.last && (this.lastCnt = data.msgs[0] - data.data.length);
@@ -871,6 +876,11 @@ export class Chat {
         this.nextMoreP = $.get(url, data, (data) => {
             if (data.success) {
                 this._stowAndPin(data.data);
+                if (this.channel && this.channel._filter) {
+                    _.each(data.data, item => {
+                        item._hidden = item.creator.username != this.channel._filter;
+                    });
+                }
                 this.chats = _.unionBy(this.chats, data.data, 'id');
                 this.first = (data.msgs[0] - data.data.length <= 0);
                 !this.first && (this.firstCnt = data.msgs[0] - data.data.length);
@@ -1470,5 +1480,27 @@ export class Chat {
 
     dimmerHandler() {
         ea.publish(nsCons.EVENT_CHAT_TOGGLE_LEFT_SIDEBAR, true);
+    }
+
+    initFilterHandler(filterRef) {
+        $(filterRef).dropdown({
+            onChange: (value, text, $choice) => {
+                this.channel._filter = value;
+                if (value) {
+                    this.channel._filterd = true;
+                    _.each(this.chats, item => {
+                        item._hidden = item.creator.username != value;
+                    });
+                }
+            }
+        });
+    }
+
+    clearFilterHandler() {
+        this.channel._filterd = false;
+        _.each(this.chats, item => {
+            item._hidden = false;
+        });
+        $(this.filterRef).dropdown('clear').dropdown('hide');
     }
 }

@@ -1,27 +1,34 @@
 .tms-chat {
     height: 100%;
+
     .ui.comments {
         min-height: e("calc(100% - 170px)");
-        > .comment {
-            > .content {
-                display: block!important;
+
+        >.comment {
+            >.content {
+                display: block !important;
             }
         }
     }
+
     .tms-edit-textarea {
         width: 100%;
     }
+
     .ui.selection.list>.item {
         cursor: default;
     }
+
     .ui.search .prompt {
         border-radius: .28571429rem;
     }
+
     .tms-content {
         position: relative;
         margin-left: 220px;
         top: 60px;
         height: e("calc(100% - 60px)");
+
         // display: -webkit-box;
         // display: -ms-flexbox;
         // display: flex;
@@ -38,15 +45,18 @@
                 margin-right: 0;
             }
         }
+
         @media only screen and (max-width: 767px) {
             margin-left: 0;
         }
+
         .tms-content-body {
             .tms-comments-container {
                 width: 100%;
                 height: 100%;
                 overflow: auto;
             }
+
             width: 100%;
             height: 100%;
             max-width: 100%;
@@ -60,6 +70,7 @@
             // -ms-flex-align: stretch;
             // align-items: stretch;
             padding-bottom: 73px;
+
             .ui.comments {
                 overflow: hidden;
                 // -webkit-box-flex: 1;
@@ -68,16 +79,20 @@
                 max-width: none;
                 margin-bottom: 12px;
                 margin-top: 10px;
-                > .ui.basic.button {
+
+                >.ui.basic.button {
                     display: block;
                     margin-right: 0;
                 }
+
                 .tms-pre-more {
                     margin-bottom: 10px;
                 }
+
                 .tms-next-more {
                     margin-top: 10px;
                     position: relative;
+
                     .ui.icon.button {
                         position: absolute;
                         top: 2px;
@@ -85,28 +100,35 @@
                     }
                 }
             }
+
             .tms-go {
                 position: fixed;
                 left: 240px;
+
                 .ui.button {
                     margin: 0;
                     background-color: rgba(224, 225, 226, 0.5);
+
                     &:hover {
                         background-color: #CACBCD;
                     }
                 }
+
                 @media only screen and (max-width: 767px) {
                     left: 20px;
                 }
             }
+
             .tms-go-head {
                 top: 80px;
             }
+
             .tms-go-foot {
                 bottom: 90px;
             }
         }
     }
+
     .tms-right-sidebar {
         position: absolute;
         top: 0;
@@ -117,21 +139,25 @@
         overflow: hidden;
         padding-top: 10px;
         padding-bottom: 10px;
+
         .comments {
             .ui.button.tms-search-more {
                 display: block;
                 margin: 0;
             }
+
             .comment {
                 .markdown-body {
                     max-height: 65px;
                     overflow-y: hidden;
+
                     &.tms-open {
                         max-height: none;
                         overflow-y: auto;
                         padding-bottom: 20px;
                     }
                 }
+
                 .tms-btn-open-search-item {
                     display: none;
                     height: 25px;
@@ -147,6 +173,7 @@
                     background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0) 0, #bbbbbb 100%);
                     background-image: linear-gradient(top, rgba(255, 255, 255, 0) 0, #bbbbbb 100%);
                 }
+
                 &:hover {
                     .tms-btn-open-search-item {
                         display: block;
@@ -155,20 +182,24 @@
             }
         }
     }
+
     @media only screen and (max-width: 767px) {
-        .tms-content > .ui.dimmer {
+        .tms-content>.ui.dimmer {
             display: block;
             opacity: 1;
             z-index: 1;
         }
+
         &.hide-bar {
-            .tms-content > .ui.dimmer {
+            .tms-content>.ui.dimmer {
                 display: none;
             }
         }
+
         .tms-left-sidebar.hide-bar {
             left: -220px;
         }
+
         .tms-right-sidebar {
             position: fixed;
             left: 0;
@@ -176,7 +207,8 @@
             bottom: 0;
             top: 59px;
             background-color: white;
-            margin-left: 0!important;
+            margin-left: 0 !important;
+
             .panel-chat-msg {
                 .ui.basic.segment.minimal.selection.list.segment.comments {
                     padding-left: 0;
@@ -184,18 +216,43 @@
                 }
             }
         }
+
         .tms-sidebar-show {
             .tms-right-sidebar {
-                width: 100%!important;
+                width: 100% !important;
             }
         }
     }
+
     .tms-edit-actions {
         .left.button {
             border-top-left-radius: 0;
         }
+
         .right.button {
             border-top-right-radius: 0;
+        }
+    }
+
+    .tms-msg-filter {
+        position: absolute;
+        left: 14px;
+        bottom: 72px;
+        padding: 8px !important;
+        margin-right: 0px;
+        background-color: #e0e1e26e;
+
+        .red.remove.icon {
+            display: none;
+            position: absolute;
+            top: -6px;
+            right: -6px;
+        }
+
+        &.filterd {
+            .red.remove.icon {
+                display: inline-block;
+            }
         }
     }
 }
@@ -210,6 +267,7 @@
     margin-left: 220px;
     background-color: #c6c6c6;
     box-shadow: 0px 0px 8px 0px #c6c6c6;
+
     @media only screen and (max-width: 767px) {
         margin-left: 0;
     }
