@@ -12,8 +12,10 @@
                         <div class="menu">
                             <div class="ui icon search input">
                                 <i class="search icon"></i>
-                                <input type="text" placeholder="搜索...">
+                                <input type="text" placeholder="过滤查找...">
                             </div>
+                            <div class="divider"></div>
+                            <div class="header">按任务关联人过滤</div>
                             <div class="scrolling menu">
                                 <template repeat.for="item of channel.members">
                                     <div if.bind="item.enabled" class="item" data-value="${item.username}">

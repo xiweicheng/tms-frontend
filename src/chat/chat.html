@@ -24,20 +24,20 @@
                     </div>
                 </div>
                 <em-chat-input channel.bind="channel" is-at.bind="isAt" chat-to.bind="chatTo" em-chat-input.ref="emChatInputRef"></em-chat-input>
-                <div ref="filterRef" class="ui bottom left pointing dropdown circular icon tiny button tms-msg-filter ${channel._filterd ? 'filterd' : ''}" task.bind="initFilterHandler(filterRef)">
+                <div ref="filterRef" title="按消息关联人过滤" class="ui bottom left pointing dropdown circular icon tiny button tms-msg-filter ${channel._filterd ? 'filterd' : ''}" task.bind="initFilterHandler(filterRef)">
                     <i class="filter icon"></i>
                     <i class="red link remove large icon" title="清除过滤条件" click.delegate="clearFilterHandler()"></i>
                     <div class="menu">
                         <div class="ui icon search input">
                             <i class="search icon"></i>
-                            <input type="text" placeholder="搜索...">
+                            <input type="text" placeholder="过滤查找...">
                         </div>
-                        <!-- <div class="divider"></div> -->
+                        <div class="divider"></div>
+                        <div class="header">按消息关联人过滤</div>
                         <div class="scrolling menu">
                             <template repeat.for="item of channel.members">
                                 <div if.bind="item.enabled" class="item" data-value="${item.username}">
                                     ${item.name ? item.name : item.username}
-                                    <!-- <i class="red link remove icon" title="清除过滤条件"></i> -->
                                 </div>
                             </template>
                         </div>
