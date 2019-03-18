@@ -598,6 +598,13 @@ export class Chat {
 
         let alarm = utils.getAlarm();
 
+        if (!alarm.off && alarm.ats) {
+            if (msgItem.atUsernames && msgItem.atUsernames.split(',').includes(this.loginUser.username)) {
+                // 不再提醒，因为会通过 @消息 ws推送提醒
+                return;
+            }
+        }
+
         if (!alarm.off && alarm.news) {
 
             toastr.info(message, null, _.extend(toastrOps, {
