@@ -40,6 +40,6 @@ export class EmChannelChatTaskTalkModal {
     }
 
     approveHandler(modal) {
-
+        this.emModal.hide();
     }
 }

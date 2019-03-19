@@ -343,7 +343,8 @@ export class EmChatInput {
                 }
             }
         }], {
-            appendTo: '.tms-chat-status-bar',
+            // appendTo: '.tms-chat-status-bar',
+            appendTo: this.chatStatusBarRef,
             maxCount: nsCons.NUM_TEXT_COMPLETE_MAX_COUNT
         });
 
