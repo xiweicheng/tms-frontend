@@ -442,7 +442,7 @@ export class Chat {
                     toastr.info(payload.content, `频道@消息通知【${payload.ctitle}】`, _.extend(toastrOps, {
                         onclick: () => {
 
-                            if (this.channel && this.channel.id == payload.cid) {
+                            if (this.channel && this.channel.id == payload.cid && _.some(this.chats, { id: ccid })) {
 
                                 this.scrollToAfterImgLoaded(ccid);
                                 if (payload.cmd == 'RC' || payload.cmd == 'RU') {

@@ -5,7 +5,7 @@ export class EmAudioAlert {
 
     constructor() {
         this.subscribe = ea.subscribe(nsCons.EVENT_AUDIO_ALERT, (payload) => {
-            this.audioRef.play();
+            this.audioRef && this.audioRef.play();
         });
     }
 
