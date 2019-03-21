@@ -3,7 +3,7 @@
     <em-modal classes="small" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)" confirm-label="确定">
         <div slot="header">频道任务评论</div>
         <div slot="content" class="em-channel-chat-task-talk-modal">
-            <em-chat-topic actived.bind="actived" channel.bind="channel"></em-chat-topic>
+            <em-chat-topic name="task" actived.bind="actived" channel.bind="channel"></em-chat-topic>
         </div>
     </em-modal>
 </template>

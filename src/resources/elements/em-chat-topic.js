@@ -6,6 +6,7 @@ export class EmChatTopic {
 
     @bindable actived;
     @bindable channel;
+    @bindable name;
     isSuper = nsCtx.isSuper;
     loginUser = nsCtx.loginUser;
     members = [];
@@ -99,6 +100,7 @@ export class EmChatTopic {
         $(this.commentsRef).on('click', '.markdown-body .at-user', (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_INSERT, {
+                from: this.name,
                 content: `{~${$(event.currentTarget).attr('data-value')}} `
             });
         });
@@ -106,6 +108,7 @@ export class EmChatTopic {
         $(this.commentsRef).on('click', '.markdown-body .at-group', (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_INSERT, {
+                from: this.name,
                 content: `{!~${$(event.currentTarget).attr('data-value')}} `
             });
         });
@@ -301,7 +304,10 @@ export class EmChatTopic {
 
     replyHandler() {
         this.scrollToBottom();
-        _.defer(() => ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_INSERT, { content: '' }));
+        _.defer(() => ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_INSERT, {
+            from: this.name,
+            content: ''
+        }));
     }
 
     followerHandler() {
@@ -405,6 +411,7 @@ export class EmChatTopic {
 
     creatorNameHandler(item) {
         ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_INSERT, {
+            from: this.name,
             content: `{~${item.creator.username}} `
         });
     }

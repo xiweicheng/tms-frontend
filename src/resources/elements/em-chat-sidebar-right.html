@@ -19,7 +19,7 @@
             <div ref="scheduleRef" show.bind="actived.show == 'schedule'" class="panel-chat-schedule">
                 <em-chat-schedule login-user.bind="loginUser" view-model.ref="chatScheduleVm"></em-chat-schedule>
             </div>
-            <em-chat-topic actived.bind="actived" channel.bind="channel"></em-chat-topic>
+            <em-chat-topic name="chat" actived.bind="actived" channel.bind="channel"></em-chat-topic>
             <em-chat-todo actived.bind="actived"></em-chat-todo>
         </div>
     </div>

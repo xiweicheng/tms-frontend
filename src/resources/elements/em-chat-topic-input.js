@@ -11,6 +11,7 @@ export class EmChatTopicInput {
 
     @bindable channel;
     @bindable chat;
+    @bindable name;
     members = [];
     isMobile = utils.isMobile();
 
@@ -32,6 +33,7 @@ export class EmChatTopicInput {
             this.members = [nsCtx.memberAll, ...payload.members];
         });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_TOPIC_MSG_INSERT, (payload) => {
+            if (this.name != payload.from) return;
             this.insertContent(payload.content);
         });
     }
