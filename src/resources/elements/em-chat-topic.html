@@ -6,7 +6,7 @@
                 <div class="comment">
                     <em-user-avatar user.bind="chat.creator" search-on.bind="!0"></em-user-avatar>
                     <div class="content">
-                        <a class="author" data-value="${chat.creator.username}">${chat.creator.name}</a>
+                        <a class="author" data-value="${chat.creator.username}" click.delegate="creatorNameHandler(chat)">${chat.creator.name}</a>
                         <div class="metadata">
                             <i if.bind="chat.ua" class="${chat.ua | ua} icon large" style="margin-right: 0;" title="发自于${chat.ua | ua2}"></i>
                             <div class="date" style="cursor: pointer;" dblclick.delegate="dateDblclickHandler(chat)" data-timeago="${chat.createDate}" title="${chat.createDate | date}">${chat.createDate | timeago}</div>
@@ -32,7 +32,7 @@
                 <div repeat.for="item of chat.chatReplies" class="comment tms-reply ${item.id == rid ? 'active' : ''}" data-id="${item.id}" task.bind="notifyRendered($last, item)">
                     <em-user-avatar user.bind="item.creator" search-on.bind="!0"></em-user-avatar>
                     <div class="content">
-                        <a class="author" data-value="${item.creator.username}">${item.creator.name}</a>
+                        <a class="author" data-value="${item.creator.username}" click.delegate="creatorNameHandler(item)">${item.creator.name}</a>
                         <div class="metadata">
                             <i if.bind="item.ua" class="${item.ua | ua} icon large" style="margin-right: 0;" title="发自于${item.ua | ua2}"></i>
                             <div class="date" style="cursor: pointer;" dblclick.delegate="dateDblclickHandler(item)" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</div>

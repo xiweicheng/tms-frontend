@@ -402,4 +402,10 @@ export class EmChatTopic {
         ea.publish(nsCons.EVENT_CHAT_TOPIC_SCROLL_TO, { chat: this.chat });
         return false;
     }
+
+    creatorNameHandler(item) {
+        ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_INSERT, {
+            content: `{~${item.creator.username}} `
+        });
+    }
 }
