@@ -6,7 +6,7 @@
                 <div class="column" style="height: 100%" repeat.for="col of cols">
                     <h4 class="ui top attached center aligned header">
                   ${col.name}（${col.page.totalElements ? col.page.totalElements : 0}）
-                   <div ref="filterRef" class="ui inline dropdown tms-task-filter" title="频道任务过滤" data-col-name="${col.name}" task.bind="initFilterHandler(filterRef, col)">
+                   <div ref="filterRef" class="ui inline dropdown tms-task-filter" title="按任务关联人过滤" data-col-name="${col.name}" task.bind="initFilterHandler(filterRef, col)">
                         <i class="filter icon"></i>
                         <div class="text"></div>
                         <div class="menu">
@@ -17,7 +17,9 @@
                             <div class="divider"></div>
                             <div class="header">按任务关联人过滤</div>
                             <div class="scrolling menu">
-                                <div class="item" data-value="all">全员</div>
+                                <div class="item" data-value="all">
+                                    全员
+                                    <i class="red link remove icon" title="清除过滤条件"></i></div>
                                 <template repeat.for="item of channel.members">
                                     <div if.bind="item.enabled" class="item" data-value="${item.username}">
                                        ${item.name ? item.name : item.username}
