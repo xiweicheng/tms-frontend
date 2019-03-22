@@ -841,14 +841,14 @@ export class Chat {
         this.lastMoreP = $.get(url, data, (data) => {
             if (data.success) {
                 this._stowAndPin(data.data);
-                if (this.channel && this.channel._filter) {
+                if (this.channel && this.channel._filterVal) {
                     _.each(data.data, item => {
                         let crHas = _.some(item.chatReplies, cr => {
-                            let crcHas = (_.includes(cr.content, `{~${this.channel._filter}}`) || _.includes(cr.content, `{~all}`));
-                            return cr.creator.username == this.channel._filter || crcHas;
+                            let crcHas = (_.includes(cr.content, `{~${this.channel._filterVal}}`) || _.includes(cr.content, `{~all}`) || _.includes(cr.content, this.channel._filterTxt));
+                            return cr.creator.username == this.channel._filterVal || crcHas;
                         });
-                        let cHas = (_.includes(item.content, `{~${this.channel._filter}}`) || _.includes(item.content, `{~all}`));
-                        item._hidden = (item.creator.username != this.channel._filter && !crHas && !cHas);
+                        let cHas = (_.includes(item.content, `{~${this.channel._filterVal}}`) || _.includes(item.content, `{~all}`) || _.includes(item.content, this.channel._filterTxt));
+                        item._hidden = (item.creator.username != this.channel._filterVal && !crHas && !cHas);
 
                     });
                 }
@@ -889,14 +889,14 @@ export class Chat {
         this.nextMoreP = $.get(url, data, (data) => {
             if (data.success) {
                 this._stowAndPin(data.data);
-                if (this.channel && this.channel._filter) {
+                if (this.channel && this.channel._filterVal) {
                     _.each(data.data, item => {
                         let crHas = _.some(item.chatReplies, cr => {
-                            let crcHas = (_.includes(cr.content, `{~${this.channel._filter}}`) || _.includes(cr.content, `{~all}`));
-                            return cr.creator.username == this.channel._filter || crcHas;
+                            let crcHas = (_.includes(cr.content, `{~${this.channel._filterVal}}`) || _.includes(cr.content, `{~all}`) || _.includes(cr.content, this.channel._filterTxt));
+                            return cr.creator.username == this.channel._filterVal || crcHas;
                         });
-                        let cHas = (_.includes(item.content, `{~${this.channel._filter}}`) || _.includes(item.content, `{~all}`));
-                        item._hidden = (item.creator.username != this.channel._filter && !crHas && !cHas);
+                        let cHas = (_.includes(item.content, `{~${this.channel._filterVal}}`) || _.includes(item.content, `{~all}`) || _.includes(item.content, this.channel._filterTxt));
+                        item._hidden = (item.creator.username != this.channel._filterVal && !crHas && !cHas);
 
                     });
                 }
@@ -1504,15 +1504,16 @@ export class Chat {
     initFilterHandler(filterRef) {
         $(filterRef).dropdown({
             onChange: (value, text, $choice) => {
-                this.channel._filter = value;
+                this.channel._filterVal = value;
+                this.channel._filterTxt = text;
                 if (value) {
                     this.channel._filterd = true;
                     _.each(this.chats, item => {
                         let crHas = _.some(item.chatReplies, cr => {
-                            let crcHas = (_.includes(cr.content, `{~${value}}`) || _.includes(cr.content, `{~all}`));
+                            let crcHas = (_.includes(cr.content, `{~${value}}`) || _.includes(cr.content, `{~all}`) || _.includes(cr.content, text));
                             return cr.creator.username == value || crcHas;
                         });
-                        let cHas = (_.includes(item.content, `{~${value}}`) || _.includes(item.content, `{~all}`));
+                        let cHas = (_.includes(item.content, `{~${value}}`) || _.includes(item.content, `{~all}`) || _.includes(item.content, text));
                         item._hidden = (item.creator.username != value && !crHas && !cHas);
                     });
                 }

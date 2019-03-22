@@ -35,6 +35,7 @@
                         <div class="divider"></div>
                         <div class="header">按消息关联人过滤</div>
                         <div class="scrolling menu">
+                            <div class="item" data-value="all">全员</div>
                             <template repeat.for="item of channel.members">
                                 <div if.bind="item.enabled" class="item" data-value="${item.username}">
                                     ${item.name ? item.name : item.username}

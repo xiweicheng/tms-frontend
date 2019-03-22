@@ -112,8 +112,13 @@ export class EmChannelTask {
     _refresh(label) {
         this._getTasks(label, 0).then(data => {
             let col = _.find(this.cols, { name: label });
-            col._filter && _.each(data.content, item => {
-                item._hidden = (!_.includes(item.content, `{~${col._filter}}`) && !_.includes(item.content, `{~all}`));
+            col._filterVal && _.each(data.content, item => {
+                let crHas = _.some(item.chatReplies, cr => {
+                    let crcHas = (_.includes(cr.content, `{~${col._filterVal}}`) || _.includes(cr.content, `{~all}`) || _.includes(cr.content, col._filterTxt));
+                    return cr.creator.username == value || crcHas;
+                });
+                let cHas = (_.includes(item.content, `{~${col._filterVal}}`) || _.includes(item.content, `{~all}`) || _.includes(item.content, col._filterTxt));
+                item._hidden = (item.creator.username != value && !crHas && !cHas);
             });
             col.page = data;
             col.moreCnt = col.page.last ? 0 : col.page.totalElements - (col.page.number + 1) * col.page.size;
@@ -129,8 +134,13 @@ export class EmChannelTask {
             label: col.name
         }, (data) => {
             if (data.success) {
-                col._filter && _.each(data.data.content, item => {
-                    item._hidden = (!_.includes(item.content, `{~${col._filter}}`) && !_.includes(item.content, `{~all}`));
+                col._filterVal && _.each(data.data.content, item => {
+                    let crHas = _.some(item.chatReplies, cr => {
+                        let crcHas = (_.includes(cr.content, `{~${col._filterVal}}`) || _.includes(cr.content, `{~all}`) || _.includes(cr.content, col._filterTxt));
+                        return cr.creator.username == value || crcHas;
+                    });
+                    let cHas = (_.includes(item.content, `{~${col._filterVal}}`) || _.includes(item.content, `{~all}`) || _.includes(item.content, col._filterTxt));
+                    item._hidden = (item.creator.username != value && !crHas && !cHas);
                 });
                 col.page.content.push(...data.data.content);
                 col.page.number++;
@@ -254,10 +264,18 @@ export class EmChannelTask {
     initFilterHandler(filterRef, col) {
         $(filterRef).dropdown({
             onChange: (value, text, $choice) => {
-                col._filter = value;
+                col._filterVal = value;
+                col._filterTxt = text;
+
                 _.each(col.page.content, item => {
-                    item._hidden = (!_.includes(item.content, `{~${value}}`) && !_.includes(item.content, `{~all}`));
+                    let crHas = _.some(item.chatReplies, cr => {
+                        let crcHas = (_.includes(cr.content, `{~${value}}`) || _.includes(cr.content, `{~all}`) || _.includes(cr.content, text));
+                        return cr.creator.username == value || crcHas;
+                    });
+                    let cHas = (_.includes(item.content, `{~${value}}`) || _.includes(item.content, `{~all}`) || _.includes(item.content, text));
+                    item._hidden = (item.creator.username != value && !crHas && !cHas);
                 });
+
             }
         });
     }
