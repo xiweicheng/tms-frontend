@@ -404,6 +404,7 @@ export class Chat {
                 if (user) {
                     user.newMsgCnt = _.isNumber(user.newMsgCnt) ? (user.newMsgCnt + 1) : 1;
                     this.saveNewMsgCnt(`@${user.username}`, user.newMsgCnt);
+                    bs.signal('sg-users-refresh');
 
                     this.updateNotifyDirect(null, `【${updaterName}】私聊有消息更新，请注意关注！`);
                 }

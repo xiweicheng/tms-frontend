@@ -125,6 +125,27 @@ export class SortUsersValueConverter {
     }
 }
 
+export class SortUsers2ValueConverter {
+    toView(value, username) {
+        if (_.isArray(value) && username) {
+            let user = _.find(value, { username: username });
+            let users = _.filter(value, item => {
+                return (item.newMsgCnt > 0) && (item.username != username);
+            });
+            users = _.reverse(_.sortBy(users, 'newMsgCnt'));
+            if (user) {
+                users = [user, ...users];
+            }
+            if (users && users.length > 0) {
+                return [...users, ..._.sortBy(_.reject(value, item => {
+                    return ((item.username == username) || (item.newMsgCnt > 0));
+                }), ['onlineStatus', 'name'])];
+            }
+        }
+        return value;
+    }
+}
+
 export class SortUsernamesValueConverter {
     toView(value, username) {
         if (_.isArray(value) && username) {
