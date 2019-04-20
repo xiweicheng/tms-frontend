@@ -389,6 +389,7 @@ export class EmChatTopicInput {
             if (data.success) {
                 this.simplemde.value('');
                 ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_SENDED, {
+                    from: this.name,
                     data: data.data
                 });
             } else {

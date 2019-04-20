@@ -20,6 +20,9 @@ export class EmChatTopic {
      */
     constructor() {
         this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_TOPIC_MSG_SENDED, (payload) => {
+
+            if (payload.from != this.name) return;
+
             if (!_.some(this.chat ? this.chat.chatReplies : [], { id: payload.data.id })) {
                 this.chat && this.chat.chatReplies.push(payload.data);
                 this.scrollToBottom();
