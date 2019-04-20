@@ -226,7 +226,7 @@ export class Chat {
 
             poll.reset();
 
-            if (!this.first) { // 不是第一页
+            if (!this.first || _.isEmpty(this.chats)) { // 不是第一页 或者 没有获取过聊天记录
                 if (this.isAt) {
                     this.listChatDirect(false);
                 } else {
