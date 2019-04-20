@@ -418,6 +418,7 @@ export class EmBlogContent {
             if (data.success) {
                 // this.logs = _.reverse(data.data);
                 this.logs = data.data;
+                this.hasNoMoreFeeds = _.isEmpty(data.data);
             } else {
                 toastr.error(data.data);
             }
@@ -744,5 +745,21 @@ export class EmBlogContent {
 
     refreshFeedHandler() {
         this.getMyLog();
+    }
+
+    loadMoreFeedHandler() {
+
+        var params = {};
+
+        if (!_.isEmpty(this.logs)) params.lastId = _.last(this.logs).id;
+
+        this.ajaxS = $.get('/admin/blog/log/my/more', params, (data) => {
+            if (data.success) {
+                this.logs = _.unionBy(this.logs, data.data, 'id');
+                this.hasNoMoreFeeds = _.isEmpty(data.data);
+            } else {
+                toastr.error(data.data);
+            }
+        });
     }
 }

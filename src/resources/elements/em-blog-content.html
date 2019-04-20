@@ -235,6 +235,9 @@
                         </template>
                     </div>
                 </div>
+                <div if.bind="!hasNoMoreFeeds" class="ui fluid basic button ${(ajaxS && ajaxS.readyState != 4) ? 'disabled' : ''}" click.delegate="loadMoreFeedHandler()">
+                    <i show.bind="ajaxS && ajaxS.readyState != 4" class="spinner loading icon"></i> 加载更多
+                </div>
             </div>
         </div>
     </div>
