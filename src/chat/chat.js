@@ -440,7 +440,7 @@ export class Chat {
 
                     let ccid = payload.ccid ? payload.ccid : payload.id;
 
-                    toastr.info(payload.content, `频道@消息通知【${payload.ctitle}】`, _.extend(toastrOps, {
+                    toastr.info(`[${payload.from}]: ${payload.content}`, `频道@消息通知【${payload.ctitle}】`, _.extend(toastrOps, {
                         onclick: () => {
 
                             if (this.channel && this.channel.id == payload.cid && _.some(this.chats, { id: ccid })) {
@@ -480,8 +480,8 @@ export class Chat {
                         }
                     }));
 
-                    push.create(`TMS沟通频道@消息通知【${payload.cname}】`, {
-                        body: payload.content,
+                    push.create(`TMS沟通频道@消息通知【${payload.ctitle}】`, {
+                        body: `[${payload.from}]: ${payload.content}`,
                         icon: {
                             x16: 'img/tms-x16.ico',
                             x32: 'img/tms-x32.png'
