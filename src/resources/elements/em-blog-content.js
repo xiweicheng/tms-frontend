@@ -60,9 +60,10 @@ export class EmBlogContent {
                             onclick: () => {
                                 this._delBlogNews(payload.nid);
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
-                                t.remove();
+                                // t.remove();
                             }
                         }));
+                        t && t.attr('data-id', payload.nid);
                     }
                 } else if (payload.cmd == 'OU') {
                     if (!this.blog || payload.id != this.blog.id) {
@@ -70,9 +71,10 @@ export class EmBlogContent {
                             onclick: () => {
                                 this._delBlogNews(payload.nid);
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
-                                t.remove();
+                                // t.remove();
                             }
                         }));
+                        t && t.attr('data-id', payload.nid);
                     }
                 } else if (payload.cmd == 'U') {
                     if (this.blog && (payload.id == this.blog.id)) {
@@ -80,9 +82,10 @@ export class EmBlogContent {
                             onclick: () => {
                                 this._delBlogNews(payload.nid);
                                 this.refreshHandler(payload.id);
-                                t.remove();
+                                // t.remove();
                             }
                         }));
+                        t && t.attr('data-id', payload.nid);
                     }
                 } else if (payload.cmd == 'F') {
                     if (!this.blog || payload.id != this.blog.id) {
@@ -90,9 +93,10 @@ export class EmBlogContent {
                             onclick: () => {
                                 this._delBlogNews(payload.nid);
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
-                                t.remove();
+                                // t.remove();
                             }
                         }));
+                        t && t.attr('data-id', payload.nid);
                     }
                 } else if (payload.cmd == 'CAt') {
                     let t = toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, _.extend(toastrOps, {
@@ -103,9 +107,10 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
-                            t.remove();
+                            // t.remove();
                         }
                     }));
+                    t && t.attr('data-id', payload.nid);
                 } else if (payload.cmd == 'FCC') {
                     let t = toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
@@ -115,9 +120,10 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
-                            t.remove();
+                            // t.remove();
                         }
                     }));
+                    t && t.attr('data-id', payload.nid);
                 } else if (payload.cmd == 'FCU') {
                     let t = toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
@@ -127,9 +133,10 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
-                            t.remove();
+                            // t.remove();
                         }
                     }));
+                    t && t.attr('data-id', payload.nid);
                 } else if (payload.cmd == 'CC') {
                     let t = toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
@@ -139,9 +146,10 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
-                            t.remove();
+                            // t.remove();
                         }
                     }));
+                    t && t.attr('data-id', payload.nid);
                 } else if (payload.cmd == 'CU') {
                     let t = toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
@@ -151,9 +159,10 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
-                            t.remove();
+                            // t.remove();
                         }
                     }));
+                    t && t.attr('data-id', payload.nid);
                 }
             } else {
                 // if (payload.cmd == 'U') {
@@ -175,7 +184,7 @@ export class EmBlogContent {
 
         $.post('/admin/blog/news/delete', { id: id }, (data, textStatus, xhr) => {
             if (data.success) {
-                ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
+                // ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
             }
         });
     }

@@ -55,6 +55,11 @@ export class Blog {
                 ea.publish(nsCons.EVENT_WS_BLOG_UPDATE, JSON.parse(msg.body));
                 ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
             });
+            stompClient.subscribe('/user/blog/toastr', (msg) => {
+                let msgBody = JSON.parse(msg.body);
+                $(`[data-id="${msgBody.id}"]`).remove();
+                ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
+            });
         }, (err) => {
             utils.errorAutoTry(() => {
                 this._initSock();

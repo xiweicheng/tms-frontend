@@ -104,6 +104,11 @@ export class Chat {
             stompClient.subscribe('/user/blog/update', (msg) => {
                 this._blogUpdateToastr(JSON.parse(msg.body));
             });
+            stompClient.subscribe('/user/blog/toastr', (msg) => {
+                let msgBody = JSON.parse(msg.body);
+                $(`[data-id="${msgBody.id}"]`).remove();
+                ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
+            });
         }, (err) => {
             utils.errorAutoTry(() => {
                 this._initSock();
@@ -120,61 +125,69 @@ export class Chat {
             }
 
             if (payload.cmd == 'At') {
-                toastr.info(`博文【${payload.title}】有提及到你，点击可查看！`, null, _.extend(toastrOps, {
+                let t = toastr.info(`博文【${payload.title}】有提及到你，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
                         this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
+                t && t.attr('data-id', payload.nid);
             } else if (payload.cmd == 'OU') {
-                toastr.info(`您的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
+                let t = toastr.info(`您的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
                         this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
+                t && t.attr('data-id', payload.nid);
             } else if (payload.cmd == 'F') {
-                toastr.info(`您关注的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
+                let t = toastr.info(`您关注的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
                         this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
+                t && t.attr('data-id', payload.nid);
             } else if (payload.cmd == 'CAt') {
-                toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, _.extend(toastrOps, {
+                let t = toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
                         this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
+                t && t.attr('data-id', payload.nid);
             } else if (payload.cmd == 'FCC') {
-                toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
+                let t = toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
                         this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
+                t && t.attr('data-id', payload.nid);
             } else if (payload.cmd == 'FCU') {
-                toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
+                let t = toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
                         this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
+                t && t.attr('data-id', payload.nid);
             } else if (payload.cmd == 'CC') {
-                toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
+                let t = toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
                         this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
+                t && t.attr('data-id', payload.nid);
             } else if (payload.cmd == 'CU') {
-                toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
+                let t = toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
                         this._delBlogNews(payload.nid);
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
+                t && t.attr('data-id', payload.nid);
             }
         }
     }
@@ -185,7 +198,7 @@ export class Chat {
 
         $.post('/admin/blog/news/delete', { id: id }, (data, textStatus, xhr) => {
             if (data.success) {
-                ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
+                // ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
             }
         });
     }

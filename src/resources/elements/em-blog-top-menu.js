@@ -215,7 +215,7 @@ export class EmBlogTopMenu {
     newsHandler(item) {
         $.post('/admin/blog/news/delete', { id: item.id }, (data, textStatus, xhr) => {
             if (data.success) {
-                this._getNews();
+                // this._getNews();
             }
         });
         return true;
