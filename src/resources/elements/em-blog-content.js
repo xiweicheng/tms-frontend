@@ -60,7 +60,7 @@ export class EmBlogContent {
                             onclick: () => {
                                 this._delBlogNews(payload.nid);
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
-                                // t.remove();
+                                // toastr.clear(t);
                             }
                         }));
                         t && t.attr('data-id', payload.nid);
@@ -71,7 +71,6 @@ export class EmBlogContent {
                             onclick: () => {
                                 this._delBlogNews(payload.nid);
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
-                                // t.remove();
                             }
                         }));
                         t && t.attr('data-id', payload.nid);
@@ -82,7 +81,6 @@ export class EmBlogContent {
                             onclick: () => {
                                 this._delBlogNews(payload.nid);
                                 this.refreshHandler(payload.id);
-                                // t.remove();
                             }
                         }));
                         t && t.attr('data-id', payload.nid);
@@ -93,7 +91,6 @@ export class EmBlogContent {
                             onclick: () => {
                                 this._delBlogNews(payload.nid);
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
-                                // t.remove();
                             }
                         }));
                         t && t.attr('data-id', payload.nid);
@@ -107,7 +104,6 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
-                            // t.remove();
                         }
                     }));
                     t && t.attr('data-id', payload.nid);
@@ -120,7 +116,6 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
-                            // t.remove();
                         }
                     }));
                     t && t.attr('data-id', payload.nid);
@@ -133,7 +128,6 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
-                            // t.remove();
                         }
                     }));
                     t && t.attr('data-id', payload.nid);
@@ -146,7 +140,6 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
-                            // t.remove();
                         }
                     }));
                     t && t.attr('data-id', payload.nid);
@@ -159,7 +152,6 @@ export class EmBlogContent {
                             } else {
                                 this.refreshHandler();
                             }
-                            // t.remove();
                         }
                     }));
                     t && t.attr('data-id', payload.nid);

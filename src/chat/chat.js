@@ -96,6 +96,11 @@ export class Chat {
             stompClient.subscribe('/user/channel/schedule', (msg) => {
                 ea.publish(nsCons.EVENT_WS_SCHEDULE_UPDATE, JSON.parse(msg.body));
             });
+            stompClient.subscribe('/user/channel/toastr', (msg) => {
+                let msgBody = JSON.parse(msg.body);
+                // $(`[data-id="${msgBody.id}"]`).remove();
+                toastr.clear($(`[data-id="${msgBody.id}"]`));
+            });
 
             // 注册发送消息
             stompClient.subscribe('/blog/update', (msg) => {
@@ -106,8 +111,8 @@ export class Chat {
             });
             stompClient.subscribe('/user/blog/toastr', (msg) => {
                 let msgBody = JSON.parse(msg.body);
-                $(`[data-id="${msgBody.id}"]`).remove();
-                ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
+                // $(`[data-id="${msgBody.id}"]`).remove();
+                toastr.clear($(`[data-id="${msgBody.id}"]`));
             });
         }, (err) => {
             utils.errorAutoTry(() => {
@@ -197,9 +202,7 @@ export class Chat {
         if (!id) return;
 
         $.post('/admin/blog/news/delete', { id: id }, (data, textStatus, xhr) => {
-            if (data.success) {
-                // ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
-            }
+            if (data.success) {}
         });
     }
 
@@ -407,7 +410,7 @@ export class Chat {
                         let chat = _.find(this.chats, { id: payload.id });
                         chat && (_.extend(chat, data.data));
 
-                        this.updateNotifyDirect(chat, `【${updaterName}】更新了消息[#${payload.id}]的内容，可点击查看！`);
+                        this.updateNotifyDirect(chat, `【${updaterName}】更新了消息[#${payload.id}]的内容，可点击查看！`, payload);
                     });
                 } else if (payload.cmd == 'D') {
                     this.chats = _.reject(this.chats, { id: payload.id });
@@ -419,7 +422,7 @@ export class Chat {
                     this.saveNewMsgCnt(`@${user.username}`, user.newMsgCnt);
                     bs.signal('sg-users-refresh');
 
-                    this.updateNotifyDirect(null, `【${updaterName}】私聊有消息更新，请注意关注！`);
+                    this.updateNotifyDirect(null, `【${updaterName}】私聊有消息更新，请注意关注！`, payload);
                 }
             }
 
@@ -453,7 +456,7 @@ export class Chat {
 
                     let ccid = payload.ccid ? payload.ccid : payload.id;
 
-                    toastr.info(`[${payload.from}]: ${payload.content}`, `频道@消息通知【${payload.ctitle}】`, _.extend(toastrOps, {
+                    let t = toastr.info(`[${payload.from}]: ${payload.content}`, `频道@消息通知【${payload.ctitle}】`, _.extend(toastrOps, {
                         onclick: () => {
 
                             if (this.channel && this.channel.id == payload.cid && _.some(this.chats, { id: ccid })) {
@@ -490,8 +493,16 @@ export class Chat {
                                     });
                                 }
                             }
+
+                            $.post('/admin/chat/channel/news/delete', { id: payload.uuid }, (data, textStatus, xhr) => {
+                                if (data.success) {
+
+                                }
+                            });
                         }
                     }));
+
+                    t && t.attr('data-id', payload.uuid);
 
                     push.create(`TMS沟通频道@消息通知【${payload.ctitle}】`, {
                         body: `[${payload.from}]: ${payload.content}`,
@@ -583,17 +594,24 @@ export class Chat {
         localStorage.setItem(nsCons.KEY_CHAT_NEW_MSG_CNT, JSON.stringify(item));
     }
 
-    updateNotifyDirect(chat, message) {
+    updateNotifyDirect(chat, message, msgItem) {
 
         let alarm = utils.getAlarm();
 
         if (!alarm.off && alarm.news) {
 
-            toastr.info(message, null, _.extend(toastrOps, {
+            let t = toastr.info(message, null, _.extend(toastrOps, {
                 onclick: () => {
                     chat && this.scrollToAfterImgLoaded(chat.id);
+                    $.post('/admin/chat/channel/news/delete', { id: msgItem.uuid }, (data, textStatus, xhr) => {
+                        if (data.success) {
+
+                        }
+                    });
                 }
             }));
+
+            t && t.attr('data-id', msgItem.uuid);
 
             push.create('TMS沟通私聊消息通知', {
                 body: _.replace(message, '可点击查看', '请注意关注'),
@@ -621,7 +639,7 @@ export class Chat {
 
         if (!alarm.off && alarm.news) {
 
-            toastr.info(message, null, _.extend(toastrOps, {
+            let t = toastr.info(message, null, _.extend(toastrOps, {
                 onclick: () => {
                     chat && this.scrollToAfterImgLoaded(chat.id);
                     // 不安全的判断方式
@@ -631,8 +649,15 @@ export class Chat {
                             rid: (msgItem ? msgItem.rid : null)
                         });
                     }
+                    $.post('/admin/chat/channel/news/delete', { id: msgItem.uuid }, (data, textStatus, xhr) => {
+                        if (data.success) {
+
+                        }
+                    });
                 }
             }));
+
+            t && t.attr('data-id', msgItem.uuid);
 
             push.create(`TMS沟通频道消息通知`, {
                 body: _.replace(message, '可点击查看', '请注意关注'),

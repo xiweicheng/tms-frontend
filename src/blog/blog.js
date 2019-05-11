@@ -57,7 +57,8 @@ export class Blog {
             });
             stompClient.subscribe('/user/blog/toastr', (msg) => {
                 let msgBody = JSON.parse(msg.body);
-                $(`[data-id="${msgBody.id}"]`).remove();
+                // $(`[data-id="${msgBody.id}"]`).remove();
+                toastr.clear($(`[data-id="${msgBody.id}"]`));
                 ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
             });
         }, (err) => {

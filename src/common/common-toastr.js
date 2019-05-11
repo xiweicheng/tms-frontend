@@ -1,5 +1,6 @@
 export default {
     timeOut: 0,
+    hideDuration: 0,
     extendedTimeOut: 0,
     tapToDismiss: false,
     closeButton: true,
