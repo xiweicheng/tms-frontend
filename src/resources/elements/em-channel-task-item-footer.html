@@ -9,6 +9,6 @@
             <div class="detail ${item | canDelLblCls:loginUser & signal:'sg-chatlabel-refresh'}">${item.voters.length}</div>
             <i show.bind="item | canDelLbl:loginUser & signal:'sg-chatlabel-refresh'" class="remove red link icon" title="删除标签" click.delegate="delLabelHandler(item, $event)"></i>
         </div>
-        <span ref="addTagRef"><i title="添加标签" click.delegate="addTagHandler(col)" class="add link icon"></i></span>
+        <span class="tms-add" ref="addTagRef"><i title="添加标签" click.delegate="addTagHandler(col)" class="add link icon"></i></span>
     </div>
 </template>
