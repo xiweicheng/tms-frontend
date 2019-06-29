@@ -49,7 +49,11 @@ export class EmChannelTask {
                     let task = _.find(col.page.content, { id: payload.task.id });
                     if (task) {
                         let lbl = _.find(task.chatLabels, { id: payload.label.id });
-                        lbl & (lbl.voters = payload.label.voters);
+                        if (lbl) {
+                            lbl.voters = payload.label.voters
+                        } else {
+                            task.chatLabels.push(payload.label);
+                        }
                     }
                 }
             });
