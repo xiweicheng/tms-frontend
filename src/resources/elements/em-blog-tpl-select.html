@@ -16,7 +16,7 @@
                             ${item.title}
                         </div>
                         <div class="meta">
-                            <a>${item.creator.username}</a> 创建于<a title="${item.createDate | date}"> ${item.createDate | timeago}</a> <span style="float: right;">热度：<a>${item.readCnt}</a></span>
+                            <a>${item.creator.name ? item.creator.name : item.creator.username}</a> 创建于<a title="${item.createDate | date}"> ${item.createDate | timeago}</a> <span style="float: right;">热度：<a>${item.readCnt}</a></span>
                         </div>
                         <div class="description" innerhtml.bind="item.tplDesc | parseMd">></div>
                     </div>
