@@ -1,0 +1,31 @@
+<template>
+    <require from="./em-blog-tpl-select.css"></require>
+    <em-modal classes="" em-modal.ref="emModal" autofocus.bind="!0" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
+        <div slot="header">基于博文模板创建</div>
+        <div slot="content" class="em-blog-tpl-select">
+            <div class="ui fluid input">
+                <input type="text" value.bind="search" placeholder="过滤查找...">
+            </div>
+            <div class="ui divider"></div>
+            <div class="ui three cards" style="height: 400px; overflow-y: auto; overflow-x: hidden;">
+                <div repeat.for="item of tpls | filter:search:'title' | sort:'readCnt':true" class="card">
+                    <div class="content">
+                        <!-- <span style="float: right;"><em-user-avatar user.bind="item.creator"></em-user-avatar></span> -->
+                        <span if.bind="isSuper || item.creator.username == loginUser.username" class="tms-del" click.delegate="delHandler(item)"><i class="large circle outline red remove link icon"></i></span>
+                        <div class="header">
+                            ${item.title}
+                        </div>
+                        <div class="meta">
+                            <a>${item.creator.username}</a> 创建于<a title="${item.createDate | date}"> ${item.createDate | timeago}</a> <span style="float: right;">热度：<a>${item.readCnt}</a></span>
+                        </div>
+                        <div class="description" innerhtml.bind="item.tplDesc | parseMd">></div>
+                    </div>
+                    <div class="extra content">
+                        <div class="ui blue basic fluid button" click.delegate="createHandler(item)">创建</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </em-modal>
+    <em-confirm-modal em-confirm-modal.ref="confirmMd"></em-confirm-modal>
+</template>

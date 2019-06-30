@@ -395,6 +395,9 @@ export class EmBlogContent {
             }).bind('keydown', 'alt+o', (event) => { // open edit
                 event.preventDefault();
                 this.openEditHandler();
+            }).bind('keydown', 'alt+t', (event) => { // tpl edit
+                event.preventDefault();
+                this.tplEditHandler();
             }).bind('keydown', 'alt+ctrl+d', (event) => { // delete
                 event.preventDefault();
                 this.deleteHandler();
@@ -762,5 +765,11 @@ export class EmBlogContent {
                 toastr.error(data.data);
             }
         });
+    }
+
+    tplEditHandler() {
+        if (this.isSuper || this.blog.creator.username == this.loginUser.username) {
+            this.blogTplEditVm.show(this.blog);
+        }
     }
 }

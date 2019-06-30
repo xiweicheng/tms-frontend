@@ -241,4 +241,8 @@ export class EmBlogTopMenu {
         $('a[href="#modaal-blog-write-html"]').click();
         return false;
     }
+
+    selectTplHandler() {
+        this.blogTplSelectMd.show();
+    }
 }

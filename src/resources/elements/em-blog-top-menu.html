@@ -32,6 +32,9 @@
                             <div class="ui blue empty circular label"></div> HTML</a>
                         <a click.delegate="createHandler()" class="item">
                             <div class="ui blue empty circular label"></div> Markdown</a>
+                        <div class="ui divider"></div>
+                        <a click.delegate="selectTplHandler()" class="item">
+                            <div class="ui blue empty circular label"></div> 基于模板</a>
                     </div>
                 </div>
             </div>
@@ -94,4 +97,5 @@
         </div>
     </div>
     <em-user-edit user.bind="loginUser" view-model.ref="userEditMd"></em-user-edit>
+    <em-blog-tpl-select view-model.ref="blogTplSelectMd"></em-blog-tpl-select>
 </template>

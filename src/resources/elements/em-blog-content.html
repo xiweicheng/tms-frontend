@@ -54,6 +54,10 @@
                                 <span class="description">alt + m</span>
                                 <i class="exchange icon"></i> 移动
                             </div>
+                            <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="tplEditHandler()" class="item">
+                                <span class="description">alt + t</span>
+                                <i class="clone icon"></i> 模板
+                            </div>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="openEditHandler()" class="item">
                                 <span class="description">alt + o</span>
                                 <i class="write icon"></i> ${blog.openEdit ? '关闭编辑' : '开放编辑'}
@@ -246,4 +250,5 @@
     <em-blog-space-update view-model.ref="blogSpaceUpdateVm"></em-blog-space-update>
     <em-blog-history view-model.ref="blogHistoryVm"></em-blog-history>
     <em-blog-space-auth view-model.ref="blogSpaceAuthVm"></em-blog-space-auth>
+    <em-blog-tpl-edit view-model.ref="blogTplEditVm"></em-blog-tpl-edit>
 </template>

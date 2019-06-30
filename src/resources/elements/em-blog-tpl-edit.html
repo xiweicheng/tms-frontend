@@ -1,0 +1,34 @@
+<template>
+    <require from="./em-blog-tpl-edit.css"></require>
+    <em-modal classes="small tms-md450" em-modal.ref="emModal" autofocus.bind="!0" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
+        <div slot="header">博文模板属性编辑</div>
+        <div slot="content" class="em-blog-tpl-edit">
+            <div class="ui form">
+                <div ref="tplRef" class="fields">
+                    <label for="tpl">选择模板类型：</label>
+                    <div class="field">
+                        <div class="ui radio checkbox" data-value="1">
+                            <input type="radio" name="tpl" tabindex="0">
+                            <label>私有模板</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox" data-value="2">
+                            <input type="radio" name="tpl" tabindex="0">
+                            <label>公开模板</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox" data-value="0">
+                            <input type="radio" name="tpl" tabindex="0">
+                            <label>取消模板</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <textarea value.bind="desc" placeholder="可选的博文模板描述(支持markdown)"></textarea>
+                </div>
+            </div>
+        </div>
+    </em-modal>
+</template>

@@ -94,5 +94,7 @@ export function configure(aurelia) {
         'resources/elements/em-channel-task-item-header',
         'resources/elements/em-channel-tasks-modal',
         'resources/elements/em-channel-chat-task-talk-modal',
+        'resources/elements/em-blog-tpl-edit',
+        'resources/elements/em-blog-tpl-select',
     ]);
 }
