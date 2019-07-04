@@ -155,7 +155,21 @@ export class EmBlogContent {
                         }
                     }));
                     t && t.attr('data-id', payload.nid);
+                } else if (payload.cmd == 'Open') {
+                    let nid = new Date().getTime();
+                    let t = toastr.info(`博文【${payload.title}】${payload.openEdit ? '开放了' : '关闭了'}编辑权限，点击可查看！`, null, _.extend(toastrOps, {
+                        onclick: () => {
+                            toastr.clear($(`[data-id="${nid}"]`));
+                            if (!this.blog || payload.id != this.blog.id) {
+                                utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
+                            } else {
+                                this.refreshHandler();
+                            }
+                        }
+                    }));
+                    t && t.attr('data-id', nid);
                 }
+
             } else {
                 // if (payload.cmd == 'U') {
                 //     if (this.blog && (payload.id == this.blog.id) && (payload.version != this.blog.version) && (this.blog.editor == 'Html')) {

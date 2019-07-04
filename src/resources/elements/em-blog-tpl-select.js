@@ -13,6 +13,11 @@ export class EmBlogTplSelect {
         $.get('/admin/blog/tpl/list', (data) => {
             if (data.success) {
                 this.tpls = data.data;
+                _.forEach(this.tpls, item => {
+                    if (_.isNil(item.tplHotCnt)) {
+                        item.tplHotCnt = 0;
+                    }
+                });
             } else {
                 toastr.error(data.data);
             }
@@ -55,6 +60,20 @@ export class EmBlogTplSelect {
             ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'copy', id: item.id });
         }
         this.emModal.hide();
+
+        this.incHotCnt(item);
+    }
+
+    incHotCnt(blog) {
+        $.get('/admin/blog/tpl/hotCnt/inc', {
+            id: blog.id
+        }, (data) => {
+            if (data.success) {
+                blog.tplHotCnt = _.isNil(blog.tplHotCnt) ? 1 : (blog.tplHotCnt + 1);
+            } else {
+                toastr.error(data.data);
+            }
+        });
     }
 
     delHandler(item) {

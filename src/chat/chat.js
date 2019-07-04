@@ -193,6 +193,15 @@ export class Chat {
                     }
                 }));
                 t && t.attr('data-id', payload.nid);
+            } else if (payload.cmd == 'Open') {
+                let nid = new Date().getTime();
+                let t = toastr.info(`博文【${payload.title}】${payload.openEdit ? '开放了' : '关闭了'}编辑权限，点击可查看！`, null, _.extend(toastrOps, {
+                    onclick: () => {
+                        toastr.clear($(`[data-id="${nid}"]`));
+                        utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
+                    }
+                }));
+                t && t.attr('data-id', nid);
             }
         }
     }

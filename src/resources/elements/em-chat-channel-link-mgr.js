@@ -37,9 +37,20 @@ export class EmChatChannelLinkMgr {
     }
 
     addHandler() {
+
+        if (!_.trim(this.title)) {
+            toastr.error(`链接标题不能为空！`);
+            return;
+        }
+
+        if (!_.trim(this.href)) {
+            toastr.error(`链接地址不能为空！`);
+            return;
+        }
+
         $.post('/admin/link/create', {
-            title: this.title,
-            href: this.href,
+            title: _.trim(this.title),
+            href: _.trim(this.href),
             channelId: this.channel.id
         }, (data, textStatus, xhr) => {
             if (data.success) {
