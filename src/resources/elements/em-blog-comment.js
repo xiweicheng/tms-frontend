@@ -114,7 +114,7 @@ export class EmBlogComment {
         });
 
         $('.em-blog-comment .comments').on('dblclick', '.comment', (event) => {
-            if (event.ctrlKey) {
+            if (event.ctrlKey && event.shiftKey) {
                 let cid = $(event.currentTarget).attr('data-id');
                 let $t = $(event.currentTarget).find('.content > textarea');
                 let item = _.find(this.comments, { id: +cid });
@@ -780,6 +780,7 @@ export class EmBlogComment {
                 toastr.success('博文评论更新成功!');
                 item.isEditing = false;
                 item.version = data.data.version;
+                item.updateDate = data.data.updateDate;
             } else {
                 toastr.error(data.data, '博文评论更新失败!');
             }

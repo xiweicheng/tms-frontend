@@ -20,7 +20,7 @@
                     <a if.bind="dir" class="ui basic mini button" title="博文目录 (d)" click.delegate="catalogHandler()">
                         <i class="unordered list icon"></i> 目录
                     </a>
-                    <a if.bind="blog.openEdit || isSuper || blog.creator.username == loginUser.username" title="博文编辑 (e | ctrl+dblclick)" class="ui basic mini button" click.delegate="editHandler()">
+                    <a if.bind="blog.openEdit || isSuper || blog.creator.username == loginUser.username" title="博文编辑 (e | ctrl+shift+dblclick)" class="ui basic mini button" click.delegate="editHandler()">
                         <i class="large icon edit"></i> 编辑
                     </a>
                     <a title="${!blogFollower ? '关注' : '取消关注'}博文更新 (f)" class="ui basic mini button" click.delegate="followerHandler()">

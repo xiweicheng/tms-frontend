@@ -8,7 +8,8 @@
                 <div class="content">
                     <a class="author" data-value=${item.creator.username}>${item.creator.name}</a>
                     <div class="metadata">
-                        <span class="date" data-timeago="${item.createDate}" title="${item.createDate | date}">${item.createDate | timeago}</span>
+                        <span if.bind="item.createDate == item.updateDate" title="创建于${item.createDate | date}"><span>创建于</span><span class="date" data-timeago="${item.createDate}">${item.createDate | timeago}</span></span>
+                        <span if.bind="item.createDate != item.updateDate" title="创建于${item.createDate | date}，更新于${item.updateDate | date}"><span>更新于</span><span class="date" data-timeago="${item.updateDate}">${item.updateDate | timeago}</span></span>
                         <div class="rating">
                             <i click.delegate="rateHandler(item)" style="cursor: pointer;" title="赞一下" class="cbutton cbutton--effect-novak thumbs ${item.voteZan && item.voteZan.split(',').includes(loginUser.username) ? '' : 'outline'} up icon"></i> <span title="${item.voteZan}">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>
                         </div>
@@ -31,7 +32,7 @@
                     </div>
                     <div class="actions">
                         <a if.bind="item.creator.username != loginUser.username" click.delegate="replyHandler(item)" class="reply" title="回复消息"><i class="large reply icon link"></i></a>
-                        <a if.bind="isSuper || item.creator.username == loginUser.username" click.delegate="editHandler(item, editTxtRef)" title="评论编辑(ctrl+dblclick)" class="reply"><i class="large link edit icon"></i></a>
+                        <a if.bind="isSuper || item.creator.username == loginUser.username" click.delegate="editHandler(item, editTxtRef)" title="评论编辑(ctrl+shift+dblclick)" class="reply"><i class="large link edit icon"></i></a>
                         <a class="item tms-clipboard" data-clipboard-text="${item.content}" title="复制评论内容"><i class="large link icon copy"></i></a>
                         <em-blog-comment-share blog.bind="blog" comment.bind="item" login-user.bind="loginUser"></em-blog-comment-share>
                         <div if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown" title="移除评论">

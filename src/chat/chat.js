@@ -1361,7 +1361,7 @@ export class Chat {
         $(this.commentsRef).on('click', '.comment.item', (event) => {
             this.focusedComment = $(event.currentTarget);
         }).on('dblclick', '.comment.item', (event) => {
-            if (event.ctrlKey) {
+            if (event.ctrlKey && event.shiftKey) {
                 let chatId = $(event.currentTarget).attr('data-id');
                 let $t = $(event.currentTarget).find('.content > textarea');
                 let item = _.find(this.chats, { id: Number.parseInt(chatId) });

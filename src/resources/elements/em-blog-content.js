@@ -252,7 +252,7 @@ export class EmBlogContent {
         });
 
         $(this.mkbodyRef).on('dblclick', (event) => {
-            if (event.ctrlKey) {
+            if (event.ctrlKey && event.shiftKey) {
                 if (this.blog.openEdit || this.isSuper || this.blog.creator.username == this.loginUser.username) {
                     this.editHandler();
                 }

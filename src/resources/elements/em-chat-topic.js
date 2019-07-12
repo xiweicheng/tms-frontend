@@ -82,7 +82,7 @@ export class EmChatTopic {
 
     attached() {
         $(this.commentsRef).on('dblclick', '.comment.tms-reply', (event) => {
-            if (event.ctrlKey) {
+            if (event.ctrlKey && event.shiftKey) {
                 let chatId = $(event.currentTarget).attr('data-id');
                 let $t = $(event.currentTarget).find('.content > textarea');
                 let item = _.find(this.chat.chatReplies, { id: Number.parseInt(chatId) });

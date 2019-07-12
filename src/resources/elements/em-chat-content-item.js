@@ -209,6 +209,7 @@ export class EmChatContentItem {
                         this.chats = _.reject(this.chats, {
                             id: item.id
                         });
+                        // this.chats.splice(_.findIndex(this.chats, { id: item.id }), 1);
                         toastr.success('删除消息成功!');
                     } else {
                         toastr.error(data.data, '删除消息失败!');

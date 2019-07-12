@@ -14,7 +14,7 @@ export class EmChannelTask {
         this._sortMembers();
     }
 
-    size = 10;
+    size = 20;
 
     cols = [{
         name: '待处理',
@@ -252,6 +252,13 @@ export class EmChannelTask {
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 toastr.success('操作成功！');
+
+                try {
+                    col.page.content.splice(col.page.content.indexOf(item), 1);
+                } catch (e) {
+                    console.log(e);
+                }
+
                 this._refresh(col.name);
                 ea.publish(nsCons.EVENT_CHANNEL_TASK_LABELS_REFRESH, {
                     col: col,

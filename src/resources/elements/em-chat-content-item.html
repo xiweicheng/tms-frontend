@@ -40,7 +40,7 @@
             </div>
             <div if.bind="item._show && item.__hovered" class="actions">
                 <a if.bind="!isAt && (item.creator.username != loginUser.username)" click.delegate="replyHandler(item)" class="tms-reply" title="回复消息"><i class="large reply icon link"></i></a>
-                <a if.bind="item.openEdit || (item.creator.username == loginUser.username)" click.delegate="editHandler(item, editTxtRef)" class="tms-edit" title="编辑消息(ctrl+dblclick)"><i class="large link edit icon"></i></a>
+                <a if.bind="item.openEdit || (item.creator.username == loginUser.username)" click.delegate="editHandler(item, editTxtRef)" class="tms-edit" title="编辑消息(ctrl+shift+dblclick)"><i class="large link edit icon"></i></a>
                 <a if.bind="!isAt" click.delegate="talkHandler(item, $event)" class="tms-reply" title="话题讨论"><i class="large talk outline icon link"></i></a>
                 <em-chat-share chat.bind="item" channel.bind="channel" is-at.bind="isAt" login-user.bind="loginUser"></em-chat-share>
                 <div ui-dropdown-hover-action=".tms-comments-container" class="ui top right pointing dropdown">

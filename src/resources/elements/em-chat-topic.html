@@ -55,7 +55,7 @@
                             </button>
                         </div>
                         <div class="actions">
-                            <a style="margin-right: 5px;" if.bind="!isAt && (item.creator.username == loginUser.username)" click.delegate="editHandler(item, editTxtRef)" class="tms-edit" title="编辑回复内容(ctrl+dblclick)"><i class="large link edit icon"></i></a>
+                            <a style="margin-right: 5px;" if.bind="!isAt && (item.creator.username == loginUser.username)" click.delegate="editHandler(item, editTxtRef)" class="tms-edit" title="编辑回复内容(ctrl+shift+dblclick)"><i class="large link edit icon"></i></a>
                             <a style="margin-right: 5px;" if.bind="!isAt" data-clipboard-text="${basePath + '#/chat/' + channel.name + '?id=' + chat.id + '&rid=' + item.id}" class="tms-clipboard" title="复制分享消息链接"><i class="large link external share icon"></i></a>
                             <a style="margin-right: 0; color: red;" if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action class="ui icon top right pointing dropdown" title="删除回复">
                                 <i class="large trash outline icon"></i>
