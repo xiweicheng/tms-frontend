@@ -57,6 +57,7 @@
                 <div if.bind="isCustomTag" class="ui ${!isCustomTag ? 'transparent' : ''} icon input">
                     <input ref="tagRef" keyup.trigger="tagKeyupHandler() & key" type="text" placeholder="">
                     <i click.delegate="toggleCustomTagHandler()" title="添加自定义标签" class="add link icon"></i>
+                    <i click.delegate="closeCustomTagHandler()" title="关闭窗口" style="position: absolute; top: -12px; right: -2px; width: auto; height: auto;" class="circle red link big remove icon"></i>
                 </div>
                 <i if.bind="!isCustomTag" click.delegate="toggleCustomTagHandler()" title="添加自定义标签" style="margin-right: 0; display: inline;" class="add big blue circle link icon"></i>
             </div>

@@ -75,8 +75,9 @@ export class EmChatContentItemFootbar {
                     hide: 300
                 },
                 onHide: () => {
-                    this.isCustomTag = false;
-                    $(this.tagRef).val('');
+                    // this.isCustomTag = false;
+                    // $(this.tagRef).val('');
+                    return !this.isCustomTag;
                 }
             });
     }
@@ -125,8 +126,13 @@ export class EmChatContentItemFootbar {
             }
         } else {
             _.defer(() => $(this.tagRef).focus());
+            this.isCustomTag = !this.isCustomTag;
         }
-        this.isCustomTag = !this.isCustomTag;
+        // this.isCustomTag = !this.isCustomTag;
+    }
+
+    closeCustomTagHandler() {
+        this.isCustomTag = false;
     }
 
     tagKeyupHandler() {
