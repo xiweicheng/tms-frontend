@@ -29,7 +29,11 @@ export class EmBlogContent {
         });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_CHANGED, (payload) => {
             if (payload.action == 'updated') {
+
+                if (!payload.blog.dir) this.blog.dir = null;
+
                 _.extend(this.blog, payload.blog);
+
                 _.defer(() => this.catalogHandler(true));
 
                 if (this.loginUser.username != this.blog.creator.username && !this.blogFollower && payload.autoFollow) {

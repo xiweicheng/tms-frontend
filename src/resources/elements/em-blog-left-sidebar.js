@@ -35,10 +35,13 @@ export class EmBlogLeftSidebar {
                 _.delay(() => this._scrollTo(payload.blog.id), 1000);
                 ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, { to: `#/blog/${payload.blog.id}` });
             } else if (payload.action == 'updated') {
-                _.extend(_.find(this.blogs, { id: payload.blog.id }), payload.blog);
+                let blog = _.find(this.blogs, { id: payload.blog.id });
+                if (!payload.blog.dir) blog.dir = null;
+                _.extend(blog, payload.blog);
                 // 同步更新收藏博文
                 let bs = _.find(this.blogStows, item => item.blog.id === payload.blog.id);
                 if (bs) {
+                    if (!payload.blog.dir) bs.blog.dir = null;
                     _.extend(bs.blog, payload.blog);
                 }
                 this.calcTree();
