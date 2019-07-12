@@ -286,17 +286,24 @@ export class EmBlogLeftSidebar {
                 s.open = true;
             }
 
+            let spaceHidden = true;
             _.each(s.dirs, d => {
                 if (!_.some(d.blogs, b => !b._hidden)) {
-                    s._hidden = true;
                     d._hidden = true;
                 } else {
-                    s._hidden = false;
                     s.open = true;
                     d._hidden = false;
                     d.open = true;
+                    spaceHidden = false;
                 }
             });
+
+            if (_.some(s.blogs, b => !b._hidden)) spaceHidden = false;
+
+            s._hidden = spaceHidden;
+            s.open = !spaceHidden;
+
+
         });
 
         _.each(this.blogStows, bs => {

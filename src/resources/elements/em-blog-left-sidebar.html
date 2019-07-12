@@ -59,7 +59,7 @@
                                     ${space.name}
                                 </span>
                                 <template repeat.for="dir of space.dirs | sort:'name'">
-                                    <div class="list dir" show.bind="space.open" if.bind="dir.status != 'Deleted'">
+                                    <div class="list dir" show.bind="space.open && !dir._hidden" if.bind="dir.status != 'Deleted'">
                                         <i click.delegate="dirToggleHandler(dir)" class="angle ${dir.open ? 'down' : 'right'} link icon"></i>
                                         <div class="content">
                                             <span style="cursor: pointer;" click.delegate="dirToggleHandler(dir)" title="${dir.name}">
