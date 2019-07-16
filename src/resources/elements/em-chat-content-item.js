@@ -51,6 +51,9 @@ export class EmChatContentItem {
 
         this.subscribe2 = ea.subscribe(nsCons.EVENT_MARKDOWN_TASK_ITEM_STATUS_TOGGLE, (payload) => {
             // console.log(payload);
+
+            if (payload.case != 'chat') return;
+
             let chat = _.find(this.chats, { id: +payload.id });
 
             if (chat && (chat.creator.username == this.loginUser.username || chat.openEdit)) {
@@ -65,10 +68,10 @@ export class EmChatContentItem {
                         if (++index == payload.index) {
                             if (/^\- \s*\[[x]\]\s*/.test(lines[i])) {
                                 lines[i] = lines[i].replace(/^\- \s*\[[x]\]/, `- [ ]`);
-                                console.log('==' + lines[i])
+                                // console.log('==' + lines[i])
                             } else if (/^\- \s*\[[ ]\]\s*/.test(lines[i])) {
                                 lines[i] = lines[i].replace(/^\- \s*\[[ ]\]/, `- [x]`);
-                                console.log('==' + lines[i])
+                                // console.log('==' + lines[i])
                             }
 
                             break;

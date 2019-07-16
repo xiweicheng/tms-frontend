@@ -35,6 +35,70 @@ export class EmChatTopic {
         this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_MEMBER_ADD_OR_REMOVE, (payload) => {
             this.members = [nsCtx.memberAll, ...payload.members];
         });
+
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_MARKDOWN_TASK_ITEM_STATUS_TOGGLE, (payload) => {
+            // console.log(payload);
+
+            if (payload.case != 'topic' || !this.chat || payload.from != this.name) return;
+
+            let topic = _.find(this.chat.chatReplies, { id: +payload.id });
+
+            if (topic && (topic.creator.username == this.loginUser.username)) {
+                let lines = topic.content.split('\n');
+                // console.log(lines)
+                let index = -1;
+                for (var i = 0; i < lines.length; i++) {
+
+                    // console.log(lines[i])
+
+                    if (/^\- \s*\[[x ]\]\s*/.test(lines[i])) {
+                        if (++index == payload.index) {
+                            if (/^\- \s*\[[x]\]\s*/.test(lines[i])) {
+                                lines[i] = lines[i].replace(/^\- \s*\[[x]\]/, `- [ ]`);
+                                // console.log('==' + lines[i])
+                            } else if (/^\- \s*\[[ ]\]\s*/.test(lines[i])) {
+                                lines[i] = lines[i].replace(/^\- \s*\[[ ]\]/, `- [x]`);
+                                // console.log('==' + lines[i])
+                            }
+
+                            break;
+
+                        }
+                    }
+                }
+
+                this.sending = true;
+
+                topic.contentOld = topic.content;
+                topic.content = lines.join('\n');;
+
+                var html = utils.md2html(topic.content, true);
+                // var htmlOld = utils.md2html(topic.contentOld, true);
+
+                $.post(`/admin/chat/channel/reply/update`, {
+                    url: utils.getUrl(),
+                    rid: topic.id,
+                    version: topic.version,
+                    usernames: utils.parseUsernames(topic.content, this.members, this.channel).join(','),
+                    content: topic.content,
+                    diff: utils.diffS(topic.contentOld, topic.content),
+                }, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        toastr.success('更新消息成功!');
+                        // topic.isEditing = false;
+                        topic.version = data.data.version;
+                    } else {
+                        toastr.error(data.data, '更新消息失败!');
+                    }
+                }).always(() => {
+                    this.sending = false;
+                });
+
+            } else {
+                payload.event && payload.event.preventDefault();
+            }
+
+        });
     }
 
     scrollToBottom() {
@@ -120,6 +184,7 @@ export class EmChatTopic {
     unbind() {
         this.subscribe.dispose();
         this.subscribe1.dispose();
+        this.subscribe2.dispose();
         // poll.stop();
     }
 

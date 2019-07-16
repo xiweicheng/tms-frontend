@@ -186,6 +186,8 @@ export class EmBlogContent {
         this.subscribe6 = ea.subscribe(nsCons.EVENT_MARKDOWN_TASK_ITEM_STATUS_TOGGLE, (payload) => {
             // console.log(payload);
 
+            if (payload.case != 'blog') return;
+
             if (this.blog && (this.blog.creator.username == this.loginUser.username || this.blog.openEdit || this.isSuper)) {
                 let lines = this.blog.content.split('\n');
                 // console.log(lines)
@@ -198,10 +200,10 @@ export class EmBlogContent {
                         if (++index == payload.index) {
                             if (/^\- \s*\[[x]\]\s*/.test(lines[i])) {
                                 lines[i] = lines[i].replace(/^\- \s*\[[x]\]/, `- [ ]`);
-                                console.log('==' + lines[i])
+                                // console.log('==' + lines[i])
                             } else if (/^\- \s*\[[ ]\]\s*/.test(lines[i])) {
                                 lines[i] = lines[i].replace(/^\- \s*\[[ ]\]/, `- [x]`);
-                                console.log('==' + lines[i])
+                                // console.log('==' + lines[i])
                             }
 
                             break;

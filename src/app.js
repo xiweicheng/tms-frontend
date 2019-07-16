@@ -56,19 +56,24 @@ export class App {
         });
 
         $('body').on('click', '.markdown-body li.task-item input:checkbox', event => {
-            // event.preventDefault();
+
             let $item = $(event.currentTarget);
 
-            let $items = $item.parents('.markdown-body').find('li.task-item input:checkbox');
+            let $md = $item.parents('.markdown-body[data-case]');
 
-            let index = $items.index($item);
+            if (!$md || $md.length == 0) {
+                event.preventDefault();
+                return;
+            }
 
-            let id = $item.closest('.em-chat-content-item').attr('data-id');
+            let $items = $md.find('li.task-item input:checkbox');
 
             ea.publish(nsCons.EVENT_MARKDOWN_TASK_ITEM_STATUS_TOGGLE, {
                 event: event,
-                id: id,
-                index: index
+                id: $md.attr('data-id'),
+                case: $md.attr('data-case'),
+                from: $md.attr('data-from'),
+                index: $items.index($item)
             });
 
         });

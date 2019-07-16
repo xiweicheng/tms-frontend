@@ -33,6 +33,74 @@ export class EmBlogComment {
             this.insertContent(`${payload.content}`);
             this._scrollTo('b');
         });
+
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_MARKDOWN_TASK_ITEM_STATUS_TOGGLE, (payload) => {
+            // console.log(payload);
+
+            if (payload.case != 'comment') return;
+
+            let comment = _.find(this.comments, { id: +payload.id });
+
+            if (comment && (comment.creator.username == this.loginUser.username)) {
+                let lines = comment.content.split('\n');
+                // console.log(lines)
+                let index = -1;
+                for (var i = 0; i < lines.length; i++) {
+
+                    // console.log(lines[i])
+
+                    if (/^\- \s*\[[x ]\]\s*/.test(lines[i])) {
+                        if (++index == payload.index) {
+                            if (/^\- \s*\[[x]\]\s*/.test(lines[i])) {
+                                lines[i] = lines[i].replace(/^\- \s*\[[x]\]/, `- [ ]`);
+                                // console.log('==' + lines[i])
+                            } else if (/^\- \s*\[[ ]\]\s*/.test(lines[i])) {
+                                lines[i] = lines[i].replace(/^\- \s*\[[ ]\]/, `- [x]`);
+                                // console.log('==' + lines[i])
+                            }
+
+                            break;
+
+                        }
+                    }
+                }
+
+                this.sending = true;
+
+                comment.contentOld = comment.content;
+                comment.content = lines.join('\n');
+
+                var html = utils.md2html(comment.content, true);
+                // var htmlOld = utils.md2html(comment.contentOld, true);
+
+                let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
+                $.post(`/admin/blog/comment/update`, {
+                    basePath: utils.getBasePath(),
+                    id: this.blog.id,
+                    cid: comment.id,
+                    version: comment.version,
+                    users: utils.parseUsernames(comment.content, users).join(','),
+                    content: comment.content,
+                    contentHtml: html,
+                    diff: utils.diffS(comment.contentOld, comment.content),
+                }, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        toastr.success('博文评论更新成功!');
+                        // comment.isEditing = false;
+                        comment.version = data.data.version;
+                        comment.updateDate = data.data.updateDate;
+                    } else {
+                        toastr.error(data.data, '博文评论更新失败!');
+                    }
+                }).always(() => {
+                    this.sending = false;
+                });
+
+            } else {
+                payload.event && payload.event.preventDefault();
+            }
+
+        });
     }
 
     /**
@@ -40,6 +108,7 @@ export class EmBlogComment {
      */
     unbind() {
         this.subscribe.dispose();
+        this.subscribe2.dispose();
     }
 
     _refresh() {
