@@ -48,6 +48,84 @@ export class EmChatContentItem {
         this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_CHANNEL_MEMBER_ADD_OR_REMOVE, (payload) => {
             this.members = [nsCtx.memberAll, ...payload.members];
         });
+
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_MARKDOWN_TASK_ITEM_STATUS_TOGGLE, (payload) => {
+            // console.log(payload);
+            let chat = _.find(this.chats, { id: +payload.id });
+
+            if (chat && (chat.creator.username == this.loginUser.username || chat.openEdit)) {
+                let lines = chat.content.split('\n');
+                // console.log(lines)
+                let index = -1;
+                for (var i = 0; i < lines.length; i++) {
+
+                    // console.log(lines[i])
+
+                    if (/^\- \s*\[[x ]\]\s*/.test(lines[i])) {
+                        if (++index == payload.index) {
+                            if (/^\- \s*\[[x]\]\s*/.test(lines[i])) {
+                                lines[i] = lines[i].replace(/^\- \s*\[[x]\]/, `- [ ]`);
+                                console.log('==' + lines[i])
+                            } else if (/^\- \s*\[[ ]\]\s*/.test(lines[i])) {
+                                lines[i] = lines[i].replace(/^\- \s*\[[ ]\]/, `- [x]`);
+                                console.log('==' + lines[i])
+                            }
+
+                            break;
+
+                        }
+                    }
+                }
+
+                this.sending = true;
+
+                chat.contentOld = chat.content;
+                chat.content = lines.join('\n');
+
+                // var html = utils.md2html(chat.content, true);
+                // var htmlOld = utils.md2html(chat.contentOld, true);
+
+                let url;
+                let data;
+
+                if (this.isAt) {
+                    url = `/admin/chat/direct/update`;
+                    data = {
+                        baseUrl: utils.getBaseUrl(),
+                        path: wurl('path'),
+                        id: chat.id,
+                        content: chat.content,
+                        diff: utils.diffS(chat.contentOld, chat.content)
+                    };
+                } else {
+                    url = `/admin/chat/channel/update`;
+                    data = {
+                        url: utils.getUrl(),
+                        id: chat.id,
+                        version: chat.version,
+                        usernames: utils.parseUsernames(chat.content, this.members, this.channel).join(','),
+                        content: chat.content,
+                        diff: utils.diffS(chat.contentOld, chat.content)
+                    };
+                }
+
+                $.post(url, data, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        toastr.success('更新消息成功!');
+                        // chat.isEditing = false;
+                        chat.version = data.data.version;
+                    } else {
+                        toastr.error(data.data, '更新消息失败!');
+                    }
+                }).always(() => {
+                    this.sending = false;
+                });
+
+            } else {
+                payload.event && payload.event.preventDefault();
+            }
+
+        });
     }
 
     /**
@@ -55,6 +133,7 @@ export class EmChatContentItem {
      */
     unbind() {
         this.subscribe.dispose();
+        this.subscribe2.dispose();
     }
 
     /**
@@ -269,8 +348,8 @@ export class EmChatContentItem {
 
         item.content = $(txtRef).val();
 
-        var html = utils.md2html(item.content, true);
-        var htmlOld = utils.md2html(item.contentOld, true);
+        // var html = utils.md2html(item.content, true);
+        // var htmlOld = utils.md2html(item.contentOld, true);
 
         let url;
         let data;

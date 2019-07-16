@@ -54,6 +54,24 @@ export class App {
             let $item = $(event.currentTarget);
             tableExport($item.parents('.export-table-wrapper').children('table').attr('id'), `tms-export-table_${$.format.date(new Date(), "yyyy-MM-dd_hhmmss") }`, 'csv');
         });
+
+        $('body').on('click', '.markdown-body li.task-item input:checkbox', event => {
+            // event.preventDefault();
+            let $item = $(event.currentTarget);
+
+            let $items = $item.parents('.markdown-body').find('li.task-item input:checkbox');
+
+            let index = $items.index($item);
+
+            let id = $item.closest('.em-chat-content-item').attr('data-id');
+
+            ea.publish(nsCons.EVENT_MARKDOWN_TASK_ITEM_STATUS_TOGGLE, {
+                event: event,
+                id: id,
+                index: index
+            });
+
+        });
     }
 
     /**
