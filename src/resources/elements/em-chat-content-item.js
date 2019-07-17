@@ -126,6 +126,7 @@ export class EmChatContentItem {
 
             } else {
                 payload.event && payload.event.preventDefault();
+                toastr.warning(`更新权限不足!`);
             }
 
         });

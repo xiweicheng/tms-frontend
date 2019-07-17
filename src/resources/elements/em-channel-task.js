@@ -65,6 +65,76 @@ export class EmChannelTask {
             this.talkVm.show(payload);
 
         });
+
+        this.subscribe4 = ea.subscribe(nsCons.EVENT_MARKDOWN_TASK_ITEM_STATUS_TOGGLE, (payload) => {
+            // console.log(payload);
+
+            if (payload.case != 'task') return;
+
+            let col = _.find(this.cols, { name: payload.from });
+
+            let task = _.find(col.page.content, { id: +payload.id });
+
+            if (task && (task.creator.username == this.loginUser.username || task.openEdit)) {
+                let lines = task.content.split('\n');
+                // console.log(lines)
+                let index = -1;
+                for (var i = 0; i < lines.length; i++) {
+
+                    // console.log(lines[i])
+
+                    if (/^\- \s*\[[x ]\]\s*/.test(lines[i])) {
+                        if (++index == payload.index) {
+                            if (/^\- \s*\[[x]\]\s*/.test(lines[i])) {
+                                lines[i] = lines[i].replace(/^\- \s*\[[x]\]/, `- [ ]`);
+                                // console.log('==' + lines[i])
+                            } else if (/^\- \s*\[[ ]\]\s*/.test(lines[i])) {
+                                lines[i] = lines[i].replace(/^\- \s*\[[ ]\]/, `- [x]`);
+                                // console.log('==' + lines[i])
+                            }
+
+                            break;
+
+                        }
+                    }
+                }
+
+                this.sending = true;
+
+                task.contentOld = task.content;
+                task.content = lines.join('\n');
+
+                // var html = utils.md2html(chat.content, true);
+                // var htmlOld = utils.md2html(chat.contentOld, true);
+
+                let url = `/admin/chat/channel/update`;
+                let data = {
+                    url: utils.getUrl(),
+                    id: task.id,
+                    version: task.version,
+                    usernames: utils.parseUsernames(task.content, [nsCtx.memberAll, ...this.channel.members], this.channel).join(','),
+                    content: task.content,
+                    diff: utils.diffS(task.contentOld, task.content)
+                };
+
+                $.post(url, data, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        toastr.success('更新消息成功!');
+                        // chat.isEditing = false;
+                        task.version = data.data.version;
+                    } else {
+                        toastr.error(data.data, '更新消息失败!');
+                    }
+                }).always(() => {
+                    this.sending = false;
+                });
+
+            } else {
+                payload.event && payload.event.preventDefault();
+                toastr.warning(`更新权限不足!`);
+            }
+
+        });
     }
 
     /**
@@ -75,6 +145,7 @@ export class EmChannelTask {
         this.subscribe.dispose();
         this.subscribe2.dispose();
         this.subscribe3.dispose();
+        this.subscribe4.dispose();
     }
 
     async _getTasks(label, page) {
