@@ -3,7 +3,7 @@
     <div class="em-channel-task">
         <div ref="containerRef" class="ui equal width internally celled grid">
             <div class="row" style="height: 100%">
-                <div class="column" style="height: 100%" repeat.for="col of cols">
+                <div class="column" style="height: 100%; padding-left: 6px; padding-right: 6px;" repeat.for="col of cols">
                     <h4 class="ui top attached center aligned header">
                   ${col.name}（${col.page.totalElements ? col.page.totalElements : 0}）
                    <div ref="filterRef" class="ui inline dropdown tms-task-filter" title="按任务关联人过滤" data-col-name="${col.name}" task.bind="initFilterHandler(filterRef, col)">

@@ -17,6 +17,9 @@ export class EmChannelTask {
     size = 20;
 
     cols = [{
+        name: '待规划',
+        value: 'new',
+    }, {
         name: '待处理',
         value: 'todo',
     }, {
