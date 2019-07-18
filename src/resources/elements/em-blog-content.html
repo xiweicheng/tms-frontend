@@ -151,7 +151,7 @@
                                     <span>更新了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的可见性</span>
                                 </template>
                                 <template if.bind="item.action=='Update' && item.properties=='space'">
-                                    <span>更新了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的所属空间</span>
+                                    <span>更新了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的空间分类</span>
                                 </template>
                                 <template if.bind="item.action=='Update' && item.properties=='openEdit'">
                                     <span>${item.newValue == 'true' ? '开放' : '关闭'}了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的协作编辑权限</span>
