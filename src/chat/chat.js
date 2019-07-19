@@ -363,6 +363,8 @@ export class Chat {
                     this.updateNotify(chat, msg, (msg.action != 'Delete' ? `【${updaterName}】更新了消息[#${chat.id}]的表情标签，可点击查看！` : null));
                 } else if (msg.type == 'Reply') {
                     this.updateNotify(chat, msg, (msg.action != 'Delete' ? `【${updaterName}】更新了消息[#${chat.id}]的话题回复，可点击查看！` : null));
+                } else if (msg.type == 'OpenEdit') {
+                    this.updateNotify(chat, msg, `【${updaterName}】${msg.openEdit ? '开放' : '关闭'}了消息[#${chat.id}]的编辑权限，可点击查看！`);
                 }
             });
 
