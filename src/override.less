@@ -1,23 +1,24 @@
 .ui.dimmer {
-    background-color: rgba(0, 0, 0, 0.5)!important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+
     &.page.modals {
         z-index: 10000;
     }
 }
 
 .ui.modal {
-    > .actions {
-        > .ui.left.floated.button {
+    >.actions {
+        >.ui.left.floated.button {
             margin-left: 3.5px;
         }
     }
 }
 
 .ui.list .list .item {
-    display: list-item!important;
+    display: list-item !important;
     table-layout: fixed;
-    height: auto!important;
-    visibility: visible!important;
+    height: auto !important;
+    visibility: visible !important;
 }
 
 .ui.list .list .item:after {
@@ -26,4 +27,10 @@
     height: 0;
     clear: both;
     visibility: hidden;
+}
+
+.toast-close-button {
+    right: -0.3em!important;
+    top: -0.44em !important;
+    font-size: 35px !important;
 }
