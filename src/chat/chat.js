@@ -1298,7 +1298,7 @@ export class Chat {
         });
 
         $(this.chatContainerRef).on('click', 'code[data-code]', function(event) {
-            if (event.ctrlKey) {
+            if (event.ctrlKey || event.metaKey) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
                 clipboard.copy($(event.currentTarget).attr('data-code')).then(
@@ -1309,7 +1309,7 @@ export class Chat {
         });
 
         $(this.chatContainerRef).on('click', '.pre-code-wrapper', function(event) {
-            if (event.ctrlKey) {
+            if (event.ctrlKey || event.metaKey) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
                 clipboard.copy($(event.currentTarget).find('i[data-clipboard-text]').attr('data-clipboard-text')).then(
