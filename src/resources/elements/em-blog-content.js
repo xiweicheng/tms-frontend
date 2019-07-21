@@ -484,6 +484,9 @@ export class EmBlogContent {
             }).bind('keydown', 'alt+t', (event) => { // tpl edit
                 event.preventDefault();
                 this.tplEditHandler();
+            }).bind('keydown', 'alt+e', (event) => { // change editor
+                event.preventDefault();
+                this.changeEditorHandler();
             }).bind('keydown', 'alt+ctrl+d', (event) => { // delete
                 event.preventDefault();
                 this.deleteHandler();
@@ -856,6 +859,33 @@ export class EmBlogContent {
     tplEditHandler() {
         if (this.isSuper || this.blog.creator.username == this.loginUser.username) {
             this.blogTplEditVm.show(this.blog);
+        }
+    }
+
+    changeEditorHandler() {
+        if ((this.blog.editor != 'Html') && (this.isSuper || this.blog.creator.username == this.loginUser.username)) {
+            this.emConfirmModal.show({
+                title: 'Markdown转HTML确认',
+                content: '确认要将该博文转为HTML吗（可通过历史恢复）?',
+                onapprove: () => {
+                    $.post("/admin/blog/editor/change", {
+                        id: this.blog.id,
+                        version: this.blog.version,
+                        content: marked(utils.preParse(this.blog.content)),
+                        editor: 'Html'
+                    }, (data, textStatus, xhr) => {
+                        if (data.success) {
+                            toastr.success('博文转HTML成功!');
+                            ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                                action: 'updated',
+                                blog: data.data
+                            });
+                        } else {
+                            toastr.error(data.data, '博文转HTML失败!');
+                        }
+                    });
+                }
+            });
         }
     }
 }

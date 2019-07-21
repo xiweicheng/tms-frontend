@@ -63,6 +63,10 @@
                                 <span class="description">alt + o</span>
                                 <i class="write icon"></i> ${blog.openEdit ? '关闭编辑' : '开放编辑'}
                             </div>
+                            <div if.bind="(blog.editor != 'Html') && (isSuper || blog.creator.username == loginUser.username)" click.delegate="changeEditorHandler()" class="item">
+                                <span class="description">alt + e</span>
+                                <i class="html5 icon"></i> 转HTML
+                            </div>
                             <div class="divider"></div>
                             <a href="/admin/blog/download/${blog.id}?type=pdf" class="item">
                                 <i class="file pdf outline icon"></i> 导出为PDF
