@@ -11,6 +11,7 @@ export class EmChatSidebarLeft {
     @bindable onlines;
     filter = '';
     isSuper = nsCtx.isSuper;
+    isAdmin = nsCtx.isAdmin;
     isMobile = utils.isMobile();
     isLeftBarHide = true;
 

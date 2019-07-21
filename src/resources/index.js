@@ -87,6 +87,7 @@ export function configure(aurelia) {
         'resources/elements/em-blog-space-dir-edit',
         'resources/elements/em-user-avatar',
         'resources/elements/em-user-edit',
+        'resources/elements/em-user-create',
         'resources/elements/em-blog-comment-share',
         'resources/elements/em-audio-alert',
         'resources/elements/em-channel-task',

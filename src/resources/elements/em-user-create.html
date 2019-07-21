@@ -1,0 +1,43 @@
+<template>
+    <require from="./em-user-create.css"></require>
+    <em-modal classes="small tms-md540" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)" confirm-label="创建">
+        <div slot="header">创建用户</div>
+        <div slot="content" class="em-user-create">
+            <!-- <div class="ui basic segment"> -->
+            <div ref="frm" class="ui form">
+                <div class="required field">
+                    <label>用户名:</label>
+                    <input name="username" value.bind="username" placeholder="用户名" type="text">
+                </div>
+                <div class="required field">
+                    <label>密码:</label>
+                    <input name="password" value.bind="password" placeholder="密码" type="text">
+                </div>
+                <div class="required field">
+                    <label>姓名:</label>
+                    <input name="name" value.bind="name" placeholder="姓名" type="text">
+                </div>
+                <div class="required field">
+                    <label>邮箱:</label>
+                    <input name="mail" value.bind="mails" placeholder="邮箱" type="text">
+                </div>
+                <div class="inline fields">
+                    <label for="role">用户角色:</label>
+                    <div class="field">
+                        <div ui-checkbox class="ui radio checkbox">
+                            <input type="radio" name="role" value="user" checked="">
+                            <label>普通用户</label>
+                        </div>
+                    </div>
+                    <div if.bind="isSuper" class="field">
+                        <div ui-checkbox class="ui radio checkbox">
+                            <input type="radio" name="role" value="admin">
+                            <label>管理员</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- </div> -->
+        </div>
+    </em-modal>
+</template>

@@ -1,7 +1,7 @@
 /**
  * 账户注册
  */
-export class ViewModel {
+export class UserRegister {
 
     header = '账户激活页面';
 
