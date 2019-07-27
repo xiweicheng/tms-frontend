@@ -109,6 +109,7 @@
                                     <i class="large ellipsis horizontal icon"></i>
                                     <div class="menu">
                                         <div class="item" click.delegate="createDirHandler(space)"><i class="icon folder outline"></i>创建分类</div>
+                                        <div class="item" click.delegate="updateChannelHandler(space)"><i class="icon hashtag"></i>关联频道</div>
                                         <div class="item" click.delegate="editSpaceHandler(space)"><i class="icon edit"></i>编辑</div>
                                         <div class="item" click.delegate="authSpaceHandler(space)"><i class="lock icon"></i>限制</div>
                                         <!-- <div class="divider"></div> -->
@@ -164,4 +165,5 @@
     <em-blog-space-auth view-model.ref="blogSpaceAuthVm"></em-blog-space-auth>
     <em-blog-space-dir-create view-model.ref="spaceDirCreateVm"></em-blog-space-dir-create>
     <em-blog-space-dir-edit view-model.ref="spaceDirEditVm"></em-blog-space-dir-edit>
+    <em-blog-space-channel-edit view-model.ref="spaceChannelEditVm"></em-blog-space-channel-edit>
 </template>

@@ -74,12 +74,15 @@ export class EmBlogComment {
                 // var htmlOld = utils.md2html(comment.contentOld, true);
 
                 let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
+
+                let channel = this.blog.space ? this.blog.space.channel : null;
+
                 $.post(`/admin/blog/comment/update`, {
                     basePath: utils.getBasePath(),
                     id: this.blog.id,
                     cid: comment.id,
                     version: comment.version,
-                    users: utils.parseUsernames(comment.content, users).join(','),
+                    users: utils.parseUsernames(comment.content, users, channel).join(','),
                     content: comment.content,
                     contentHtml: html,
                     diff: utils.diffS(comment.contentOld, comment.content),
@@ -473,13 +476,30 @@ export class EmBlogComment {
                 return txt;
             },
             search: (term, callback) => {
-                callback($.map(nsCtx.users, (member) => {
-                    return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
-                }));
+                // callback($.map(nsCtx.users, (member) => {
+                //     return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
+                // }));
+
+                let channel = this.blog.space ? this.blog.space.channel : null;
+
+                let users = $.map(nsCtx.users, (member) => {
+                    return (member.enabled && member.username.indexOf(term) >= 0) ? member : null;
+                });
+                let groups = $.map(channel ? channel.channelGroups : [], (grp) => {
+                    return ((grp.status != 'Deleted') && grp.name.indexOf(term) >= 0) ? grp : null;
+                });
+                callback([...users, ...groups]);
             },
             template: (value, term) => {
-                let user = _.find(nsCtx.users, { username: value });
-                return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
+                // let user = _.find(nsCtx.users, { username: value });
+                // return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
+
+                if (value.username) { // @user
+                    // let user = _.find(this.members, { username: value });
+                    return `${value.name ? value.name : value.username} - ${value.mails} (${value.username})`;
+                } else { // @group
+                    return `${value.name} - ${value.title} (${value.members.length}人)`;
+                }
             },
             replace: (value) => {
                 let cm = this.simplemde.codemirror;
@@ -489,7 +509,12 @@ export class EmBlogComment {
                     ch: 0
                 }, cursor);
 
-                cm.replaceRange(txt.replace(/@(\w*)$/, `{~${value}} `), {
+                // cm.replaceRange(txt.replace(/@(\w*)$/, `{~${value}} `), {
+                //     line: cursor.line,
+                //     ch: 0
+                // }, cursor);
+
+                cm.replaceRange(txt.replace(/@(\w*)$/, `{${value.username ? '' : '!'}~${value.username ? value.username : value.name}} `), {
                     line: cursor.line,
                     ch: 0
                 }, cursor);
@@ -618,10 +643,12 @@ export class EmBlogComment {
         var html = utils.md2html(content, true);
         let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
 
+        let channel = this.blog.space ? this.blog.space.channel : null;
+
         $.post(`/admin/blog/comment/create`, {
             basePath: utils.getBasePath(),
             id: this.blog.id,
-            users: utils.parseUsernames(content, users).join(','),
+            users: utils.parseUsernames(content, users, channel).join(','),
             content: content,
             contentHtml: html
         }, (data, textStatus, xhr) => {
@@ -836,12 +863,15 @@ export class EmBlogComment {
         var htmlOld = utils.md2html(item.contentOld, true);
 
         let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
+
+        let channel = this.blog.space ? this.blog.space.channel : null;
+        
         $.post(`/admin/blog/comment/update`, {
             basePath: utils.getBasePath(),
             id: this.blog.id,
             cid: item.id,
             version: item.version,
-            users: utils.parseUsernames(item.content, users).join(','),
+            users: utils.parseUsernames(item.content, users, channel).join(','),
             content: item.content,
             contentHtml: html,
             diff: utils.diffS(item.contentOld, item.content),

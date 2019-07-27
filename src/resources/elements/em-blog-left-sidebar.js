@@ -347,6 +347,10 @@ export class EmBlogLeftSidebar {
         this.spaceDirCreateVm.show(space);
     }
 
+    updateChannelHandler(space) {
+        this.spaceChannelEditVm.show(space);
+    }
+
     editDirHandler(dir, space) {
         this.spaceDirEditVm.show(dir);
     }

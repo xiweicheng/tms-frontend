@@ -80,41 +80,6 @@ export class Blog {
             });
         }, 5000);
 
-        // 用户信息popup
-        $('.tms-blog').on('mouseenter', 'span[data-value].at-user:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
-            event.preventDefault();
-            let target = event.currentTarget;
-
-            if (this.hoverTimeoutRef) {
-                if (this.hoverUserTarget === target) {
-                    return;
-                } else {
-                    clearTimeout(this.hoverTimeoutRef);
-                    this.hoverTimeoutRef = null;
-                }
-            }
-            this.hoverUserTarget = target;
-
-            this.hoverTimeoutRef = setTimeout(() => {
-                ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {
-                    username: $(target).attr('data-value'),
-                    target: target
-                });
-                this.hoverTimeoutRef = null;
-            }, 500);
-        });
-
-        // 用户信息popup
-        $('.tms-blog').on('mouseleave', 'span[data-value].at-user:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
-            event.preventDefault();
-            if (this.hoverTimeoutRef) {
-                if (this.hoverUserTarget === event.currentTarget) {
-                    clearTimeout(this.hoverTimeoutRef);
-                    this.hoverTimeoutRef = null;
-                }
-            }
-        });
-
         $('.tms-blog .em-blog-content').on('click', 'a.avatar[data-value], a.author[data-value], .at-user[data-value]', (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_BLOG_COMMENT_MSG_INSERT, {

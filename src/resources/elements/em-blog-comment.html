@@ -14,11 +14,11 @@
                             <i click.delegate="rateHandler(item)" style="cursor: pointer;" title="赞一下" class="cbutton cbutton--effect-novak thumbs ${item.voteZan && item.voteZan.split(',').includes(loginUser.username) ? '' : 'outline'} up icon"></i> <span title="${item.voteZan}">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>
                         </div>
                     </div>
-                    <div data-id="${item.id}" data-case="comment" fancybox show.bind="!item.isEditing" ref="mkbodyRef" class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd | emoji:mkbodyRef"></div>
+                    <div data-id="${item.id}" data-case="comment" fancybox show.bind="!item.isEditing" ref="mkbodyRef" class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:blog.space.channel | emoji:mkbodyRef"></div>
                     <div class="textcomplete-container" show.bind="item.isEditing">
                         <div class="append-to"></div>
                     </div>
-                    <textarea ref="editTxtRef" data-id="${item.id}" textcomplete.bind="{users: users, channel: null}" pastable autosize dropzone keydown.trigger="eidtKeydownHandler($event, item, editTxtRef)" show.bind="item.isEditing" value.bind="item.content & oneWay" class="tms-blog-comment-edit-textarea" rows="1"></textarea>
+                    <textarea ref="editTxtRef" data-id="${item.id}" textcomplete.bind="{users: users, channel: blog.space.channel}" pastable autosize dropzone keydown.trigger="eidtKeydownHandler($event, item, editTxtRef)" show.bind="item.isEditing" value.bind="item.content & oneWay" class="tms-blog-comment-edit-textarea" rows="1"></textarea>
                     <div show.bind="item.isEditing" class="ui compact icon buttons tms-blog-comment-edit-actions">
                         <button click.delegate="editOkHandler($event, item, editTxtRef)" title="保存 (ctrl+enter)" class="ui left attached compact icon button">
                             <i class="checkmark icon"></i>

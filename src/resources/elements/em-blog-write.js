@@ -391,14 +391,31 @@ export class EmBlogWrite {
                 // callback($.map(nsCtx.users, (member) => {
                 //     return (member.enabled && member.username.indexOf(term) >= 0) ? member.username : null;
                 // }));
-                callback($.map(nsCtx.users, (member) => {
+                let users = $.map(nsCtx.users, (member) => {
                     return (member.enabled && member.username.indexOf(term) >= 0) ? member : null;
-                }));
+                });
+
+                let cgrps = (this.blog && this.blog.space && this.blog.space.channel) ? this.blog.space.channel.channelGroups : [];
+                let groups = $.map(cgrps ? cgrps : [], (grp) => {
+                    return ((grp.status != 'Deleted') && grp.name.indexOf(term) >= 0) ? grp : null;
+                });
+                callback([...users, ...groups]);
+
+                // callback($.map(nsCtx.users, (member) => {
+                //     return (member.enabled && member.username.indexOf(term) >= 0) ? member : null;
+                // }));
             },
             template: (value, term) => {
                 // let user = _.find(nsCtx.users, { username: value });
                 // return `${user.name ? user.name : user.username} - ${user.mails} (${user.username})`;
-                return `${value.name ? value.name : value.username} - ${value.mails} (${value.username})`;
+                // return `${value.name ? value.name : value.username} - ${value.mails} (${value.username})`;
+
+                if (value.username) { // @user
+                    // let user = _.find(this.members, { username: value });
+                    return `${value.name ? value.name : value.username} - ${value.mails} (${value.username})`;
+                } else { // @group
+                    return `${value.name} - ${value.title} (${value.members.length}人)`;
+                }
             },
             replace: (value) => {
                 // return `$1{~${value}}`;
@@ -409,7 +426,12 @@ export class EmBlogWrite {
                     ch: 0
                 }, cursor);
 
-                cm.replaceRange(txt.replace(/@(\w*)$/, `{~${value.username}} `), {
+                // cm.replaceRange(txt.replace(/@(\w*)$/, `{~${value.username}} `), {
+                //     line: cursor.line,
+                //     ch: 0
+                // }, cursor);
+
+                cm.replaceRange(txt.replace(/@(\w*)$/, `{${value.username ? '' : '!'}~${value.username ? value.username : value.name}} `), {
                     line: cursor.line,
                     ch: 0
                 }, cursor);
@@ -644,11 +666,14 @@ export class EmBlogWrite {
             var html = utils.md2html(content, true);
             let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
 
+            let channel = this.blog.space ? this.blog.space.channel : null;
+
             $.post('/admin/blog/update', {
                 url: utils.getBasePath(),
                 id: this.blog.id,
                 version: this.blog.version,
-                usernames: utils.parseUsernames(content, users).join(','),
+                // usernames: utils.parseUsernames(content, users).join(','),
+                usernames: utils.parseUsernames(content, users, channel).join(','),
                 title: title,
                 content: content,
                 diff: utils.diffS(this.blog.content, content),

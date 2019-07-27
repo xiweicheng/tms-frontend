@@ -219,11 +219,13 @@ export class EmBlogContent {
                 // var html = utils.md2html(content, true);
                 let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
 
+                let channel = this.blog.space ? this.blog.space.channel : null;
+
                 $.post('/admin/blog/update', {
                     url: utils.getBasePath(),
                     id: this.blog.id,
                     version: this.blog.version,
-                    usernames: utils.parseUsernames(content, users).join(','),
+                    usernames: utils.parseUsernames(content, users, channel).join(','),
                     title: this.blog.title,
                     content: content,
                     diff: utils.diffS(this.blog.content, content)
@@ -372,6 +374,43 @@ export class EmBlogContent {
 
         // 消息popup
         $(this.feedRef).on('mouseleave', '.event a[href*="#/blog/"]:not(.pp-not)', (event) => {
+            event.preventDefault();
+            if (this.hoverTimeoutRef) {
+                if (this.hoverUserTarget === event.currentTarget) {
+                    clearTimeout(this.hoverTimeoutRef);
+                    this.hoverTimeoutRef = null;
+                }
+            }
+        });
+
+         // 用户信息popup
+        $('.tms-blog').on('mouseenter', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+            event.preventDefault();
+            let target = event.currentTarget;
+
+            if (this.hoverTimeoutRef) {
+                if (this.hoverUserTarget === target) {
+                    return;
+                } else {
+                    clearTimeout(this.hoverTimeoutRef);
+                    this.hoverTimeoutRef = null;
+                }
+            }
+            this.hoverUserTarget = target;
+
+            this.hoverTimeoutRef = setTimeout(() => {
+                ea.publish(nsCons.EVENT_CHAT_MEMBER_POPUP_SHOW, {
+                    channel: (this.blog.space ? this.blog.space.channel : null),
+                    username: $(target).attr('data-value'),
+                    type: $(target).attr('class'),
+                    target: target
+                });
+                this.hoverTimeoutRef = null;
+            }, 500);
+        });
+
+        // 用户信息popup
+        $('.tms-blog').on('mouseleave', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
             event.preventDefault();
             if (this.hoverTimeoutRef) {
                 if (this.hoverUserTarget === event.currentTarget) {

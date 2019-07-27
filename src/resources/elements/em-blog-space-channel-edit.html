@@ -1,0 +1,24 @@
+<template>
+    <require from="./em-blog-space-channel-edit.css"></require>
+    <em-modal classes="small tms-md450" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
+        <div slot="header">关联频道</div>
+        <div slot="content" class="em-blog-space-channel-edit">
+            <div class="ui form">
+                <div class="field">
+                    <label>选择频道</label>
+                    <div ref="channelsRef" class="ui fluid search selection dropdown" ui-dropdown="activate">
+                        <input type="hidden" name="channel">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">选择频道(可选)</div>
+                        <div class="menu">
+                            <div class="item" data-value="">(不指定频道)</div>
+                            <template repeat.for="item of channels | sort:'name'">
+                                <div if.bind="item.status != 'Deleted'" task.bind="initChannelsHandler($last)" class="item" data-value="${item.id}"><i class="hashtag icon"></i>${item.title}（${item.name}）</div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </em-modal>
+</template>

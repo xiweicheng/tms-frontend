@@ -68,9 +68,11 @@ export class EmBlogSave {
 
         localStorage && localStorage.setItem(nsCons.KEY_BLOG_COMMON_SPACE, spaceId);
 
+        let space = _.find(this.spaces, { id: +spaceId });
+
         $.post(`/admin/blog/create`, {
             url: utils.getBasePath(),
-            usernames: utils.parseUsernames(this.blogInfo.content, users).join(','),
+            usernames: utils.parseUsernames(this.blogInfo.content, users, space ? space.channel : null).join(','),
             title: this.blogInfo.title,
             content: this.blogInfo.content,
             spaceId: spaceId,
@@ -120,8 +122,7 @@ export class EmBlogSave {
         if (last) {
             _.defer(() => {
                 $(this.dirsRef).dropdown('clear').dropdown({
-                    onChange: (value, text, $choice) => {
-                    }
+                    onChange: (value, text, $choice) => {}
                 });
             });
         }
