@@ -465,7 +465,17 @@ export class EmChatContentItem {
         });
     }
 
-    openEditHandler(item) {
+    openEditHandler(item, event, editTxtRef) {
+
+        if (item.creator.username != this.loginUser.username) {
+
+            if (item.openEdit) {
+                this.editHandler(item, editTxtRef);
+            }
+
+            return;
+        };
+
         $.post('/admin/chat/channel/openEdit', {
             id: item.id,
             open: !item.openEdit

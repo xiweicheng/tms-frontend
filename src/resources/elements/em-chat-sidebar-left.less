@@ -1,6 +1,8 @@
 @import '../../variables';
+
 .tms-left-sidebar {
     overflow: hidden;
+
     .tms-body {
         position: absolute;
         top: 98px;
@@ -8,55 +10,67 @@
         height: e("calc(100% - 150px)");
         overflow: hidden;
         padding-right: 2px;
+
         i.circular.icon {
             box-shadow: 0 0 0 .1em rgb(65, 131, 196) inset;
         }
+
         .title {
             position: relative;
             margin-left: 10px;
+
             .ui.header {
                 display: inline-block;
                 margin-top: 2px;
                 margin-bottom: 0;
             }
+
             i.plus.icon {
                 box-sizing: content-box;
                 position: absolute;
                 right: 10px;
                 font-size: 12px;
-                width: 12px!important;
-                height: 12px!important;
+                width: 12px !important;
+                height: 12px !important;
             }
         }
+
         .ui.list {
             margin-top: 10px;
             padding-top: 5px;
             box-shadow: 0px -1px 1px -1px rgba(65, 131, 196, 0.5);
+
             >.item {
                 padding-left: 16px;
                 border-radius: 0;
+
                 >.icon+.content {
                     padding: 0;
                 }
+
                 &.active {
                     background: rgba(0, 0, 0, 0.2);
                 }
+
                 &:hover {
-                    background: rgba(0, 0, 0, 0.1)!important;
+                    background: rgba(0, 0, 0, 0.1) !important;
                 }
+
                 &.disabled-user {
                     text-decoration: line-through;
                     font-style: italic;
                 }
+
                 .ui.empty.circular.label {
                     width: 0.1em;
                     height: 0.1em;
                     top: 11px;
                     left: 22px;
-                    padding: .4em!important;
+                    padding: .4em !important;
                 }
             }
         }
+
         .tms-name {
             white-space: nowrap;
             overflow: hidden;
@@ -64,17 +78,13 @@
             max-width: 160px;
             min-width: 160px;
         }
-        .tms-users {
-            .ui.list {
-                a.item {
-                    position: relative;
-                }
-            }
-        }
+
+        .tms-users,
         .tms-channels {
             .ui.list {
                 a.item {
                     position: relative;
+
                     &:hover {
                         .actions {
                             display: inline-block;
@@ -82,28 +92,56 @@
                     }
                 }
             }
+
             .actions {
+                font-style: normal;
                 display: none;
                 position: absolute;
                 right: 10px;
                 top: 5px;
             }
         }
+
+        // .tms-channels {
+        //     .ui.list {
+        //         a.item {
+        //             position: relative;
+
+        //             &:hover {
+        //                 .actions {
+        //                     display: inline-block;
+        //                 }
+        //             }
+        //         }
+        //     }
+
+        //     .actions {
+        //         display: none;
+        //         position: absolute;
+        //         right: 10px;
+        //         top: 5px;
+        //     }
+        // }
+
         .scroll-element.scroll-y {
             background-color: @sidebar-bg-color;
         }
     }
+
     &.ui.left.sidebar {
         background-color: @sidebar-bg-color;
         -webkit-transition: all .15s ease-out 0s;
         transition: all .15s ease-out 0s;
         width: 220px;
+
         .my-theme {
             color: @sidebar-font-color;
         }
+
         .ui.list>a.item i.icon {
             color: @sidebar-font-color;
         }
+
         .tms-header {
             >input {
                 background-color: transparent;
@@ -115,37 +153,47 @@
                 padding: 4px 16px;
                 margin-left: -8px;
                 width: 203px;
+
                 &::-webkit-input-placeholder {
-                    color: @sidebar-input-placeholder-color!important;
+                    color: @sidebar-input-placeholder-color  !important;
                 }
+
                 &::-moz-placeholder {
-                    color: @sidebar-input-placeholder-color!important;
+                    color: @sidebar-input-placeholder-color  !important;
                 }
+
                 &:-ms-input-placeholder {
-                    color: @sidebar-input-placeholder-color!important;
+                    color: @sidebar-input-placeholder-color  !important;
                 }
+
                 &:focus {
                     &::-webkit-input-placeholder {
-                        color: @sidebar-input-placeholder-focus-color!important;
+                        color: @sidebar-input-placeholder-focus-color  !important;
                     }
+
                     &::-moz-placeholder {
-                        color: @sidebar-input-placeholder-focus-color!important;
+                        color: @sidebar-input-placeholder-focus-color  !important;
                     }
+
                     &:-ms-input-placeholder {
-                        color: @sidebar-input-placeholder-focus-color!important;
+                        color: @sidebar-input-placeholder-focus-color  !important;
                     }
                 }
             }
+
             padding: 9px 16px;
             box-shadow: 0 1px 1px -1px rgb(65, 131, 196);
+
             h1.ui.header {
                 margin: 0;
+
                 img {
                     width: 30px;
                     height: 30px;
                     margin: 0;
                 }
             }
+
             i.close.icon {
                 position: absolute;
                 right: 16px;
@@ -153,32 +201,40 @@
             }
         }
     }
+
     .tms-footer {
         position: absolute;
         bottom: 0;
         left: 0;
         right: 0;
+
         .ui.menu {
             border-radius: 0;
-            background-color: rgba(27, 28, 29, 0.2)!important;
+            background-color: rgba(27, 28, 29, 0.2) !important;
+
             .dropdown.item .menu {
                 border-radius: 0;
             }
+
             .item {
-                font-size: 12px!important;
+                font-size: 12px !important;
             }
+
             .item:before {
                 width: 0;
             }
+
             .ui.button.item {
                 width: 140px;
                 margin-right: 0;
                 padding-left: 0;
+
                 .visible.content {
                     margin-right: 0;
                     width: 100%;
                 }
             }
+
             .right.menu {
                 .ui.dropdown {
                     .menu {

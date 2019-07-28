@@ -55,8 +55,19 @@
                         <a repeat.for="item of users | sortUsers2:loginUser.username & signal:'sg-users-refresh'" click.delegate="userHandler()" title="${item.name}(@${item.username}) ${item.onlineDate | date:'MM-dd HH:mm'}${item.onlineDate ? ' 上线' : ''} ${item.level ? '\n职位: ' + item.level : ''} ${item.phone ? '\n座机: ' + item.phone : ''} ${item.mobile ? '\n手机: ' + item.mobile : ''} ${item.place ? '\n位置: ' + item.place : ''} ${item.hobby ? '\n爱好: ' + item.hobby : ''}" show.bind="!item.hidden" href="#/chat/@${item.username}" class="item my-theme ${(isAt && item.username == chatTo) ? 'active' : ''} ${!item.enabled ? 'disabled-user' : ''}" data-id="${item.username}">
                             <i style="font-weight: bold;" class="at icon my-theme"></i>
                             <div class="content">
-                                <div class="tms-name my-theme">${item.username == loginUser.username ? '我' : (item.name ? item.name : item.username)} ${(item.onlineStatus == 'Online' ? '(在线)' : '')  & signal:'sg-users-refresh'}</div>
+                                <div class="tms-name my-theme">${item.username == loginUser.username ? '我' : (item.name ? item.name : item.username)} ${(item.onlineStatus == 'Online' ? '(在线)' : '') & signal:'sg-users-refresh'}</div>
                                 <div show.bind="item.newMsgCnt && item.newMsgCnt > 0" class="floating ui red empty circular label"></div>
+                            </div>
+                            <div class="actions" show.bind="isSuper || (isAdmin && (item.creator == loginUser.username))">
+                                <div ui-dropdown class="ui right pointing dropdown">
+                                    <i class="large ellipsis horizontal icon"></i>
+                                    <div class="menu">
+                                        <div if.bind="item.enabled" class="item" click.delegate="editUserHandler(item)"><i class="edit icon"></i>编辑用户</div>
+                                        <div if.bind="item.enabled" class="divider"></div>
+                                        <div if.bind="item.enabled" class="item" style="color: red;" click.delegate="disableHandler(item)"><i class="red stop circle outline icon"></i>停用用户</div>
+                                        <div if.bind="!item.enabled" class="item" style="color: red;" click.delegate="enableHandler(item)"><i class="red play circle outline icon"></i>启用用户</div>
+                                    </div>
+                                </div>
                             </div>
                         </a>
                     </div>
@@ -86,4 +97,6 @@
     <em-chat-channel-edit channel.bind="selectedChannel" em-chat-channel-edit.ref="channelEditMd"></em-chat-channel-edit>
     <em-chat-channel-members-mgr users.bind="users" channel.bind="selectedChannel" onlines.bind="onlines" em-chat-channel-members-mgr.ref="channelMembersMgrMd"></em-chat-channel-members-mgr>
     <em-chat-channel-members-show channel.bind="selectedChannel" em-chat-channel-members-show.ref="channelMembersShowMd"></em-chat-channel-members-show>
+    <em-user-edit view-model.ref="userEditVm"></em-user-edit>
+    <em-confirm-modal view-model.ref="confirmVm"></em-confirm-modal>
 </template>

@@ -1,7 +1,7 @@
 <template>
     <require from="./em-user-edit.css"></require>
     <em-modal classes="small em-user-edit-modal" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)" confirm-label="更新">
-        <div slot="header">个人信息编辑</div>
+        <div slot="header">用户信息编辑</div>
         <div slot="content" class="tms-em-user-edit">
             <div ref="tabRef" ui-tab class="ui pointing secondary menu">
                 <a class="item active" data-tab="user-basic-info">基本信息</a>
@@ -51,7 +51,7 @@
                     </div>
                     <div class="inline field">
                         <label>介绍:</label>
-                        <textarea name="introduce" value.bind="introduce" placeholder="个人介绍" rows="3"></textarea>
+                        <textarea name="introduce" value.bind="introduce" placeholder="用户介绍" rows="3"></textarea>
                     </div>
                 </div>
             </div>

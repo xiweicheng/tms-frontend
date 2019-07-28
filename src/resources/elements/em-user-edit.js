@@ -5,7 +5,10 @@ export class EmUserEdit {
 
     @bindable user;
 
-    show() {
+    show(user) {
+
+        user && (this.user = user);
+
         this.emModal.show({
             hideOnApprove: false,
             autoDimmer: true
@@ -61,9 +64,9 @@ export class EmUserEdit {
                     modal.hide();
                     this.user.password = '';
                     if (data.success) {
-                        toastr.success('更新个人信息成功!');
+                        toastr.success('更新用户信息成功!');
                     } else {
-                        toastr.error(data.data, '更新个人信息失败!');
+                        toastr.error(data.data, '更新用户信息失败!');
                     }
                 });
             } else {
@@ -82,9 +85,9 @@ export class EmUserEdit {
             }, (data) => {
                 modal.hide();
                 if (data.success) {
-                    toastr.success('更新个人扩展信息成功!');
+                    toastr.success('更新用户扩展信息成功!');
                 } else {
-                    toastr.error(data.data, '更新个人扩展信息失败!');
+                    toastr.error(data.data, '更新用户扩展信息失败!');
                 }
             });
         }

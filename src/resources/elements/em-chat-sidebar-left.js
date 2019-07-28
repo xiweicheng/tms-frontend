@@ -26,6 +26,7 @@ export class EmChatSidebarLeft {
     loginUserChanged() {
         if (this.loginUser) {
             this.isSuper = utils.isSuperUser(this.loginUser);
+            this.isAdmin = utils.isAdminUser(this.loginUser);
         }
     }
 
@@ -191,6 +192,48 @@ export class EmChatSidebarLeft {
     userHandler() {
         ea.publish(nsCons.EVENT_CHAT_TOGGLE_LEFT_SIDEBAR, true); // 移动端,切换沟通对象时,隐藏左侧边栏
         return true;
+    }
+
+    editUserHandler(item) {
+        this.userEditVm.show(item);
+    }
+
+    disableHandler(item) {
+        this.confirmVm.show({
+            content: `确定要停用该用户吗?`,
+            onapprove: () => {
+                $.post('/admin/user/update', {
+                    username: item.username,
+                    enabled: false
+                }, (data) => {
+                    if (data.success) {
+                        item.enabled = false;
+                        toastr.success('停用用户成功!');
+                    } else {
+                        toastr.error(data.data, '停用用户失败!');
+                    }
+                });
+            }
+        });
+    }
+
+    enableHandler(item) {
+        this.confirmVm.show({
+            content: `确定要启用该用户吗?`,
+            onapprove: () => {
+                $.post('/admin/user/update', {
+                    username: item.username,
+                    enabled: true
+                }, (data) => {
+                    if (data.success) {
+                        item.enabled = true;
+                        toastr.success('启用用户成功!');
+                    } else {
+                        toastr.error(data.data, '启用用户失败!');
+                    }
+                });
+            }
+        });
     }
 
 }
