@@ -8,8 +8,8 @@
                 <div class="content">
                     <a class="author" data-value=${item.creator.username}>${item.creator.name}</a>
                     <div class="metadata">
-                        <span if.bind="item.createDate == item.updateDate" title="创建于${item.createDate | date}"><span>创建于</span><span class="date" data-timeago="${item.createDate}">${item.createDate | timeago}</span></span>
-                        <span if.bind="item.createDate != item.updateDate" title="创建于${item.createDate | date}，更新于${item.updateDate | date}"><span>更新于</span><span class="date" data-timeago="${item.updateDate}">${item.updateDate | timeago}</span></span>
+                        <span if.bind="item.createDate == item.updateDate" title="创建于${item.createDate | date}"><span class="date" data-timeago="${item.createDate}">${item.createDate | timeago}</span></span>
+                        <span if.bind="item.createDate != item.updateDate" title="创建于${item.createDate | date}，更新于${item.updateDate | date}"><span class="date" data-timeago="${item.updateDate}">${item.updateDate | timeago}</span><span>(更新)</span></span>
                         <div class="rating">
                             <i click.delegate="rateHandler(item)" style="cursor: pointer;" title="赞一下" class="cbutton cbutton--effect-novak thumbs ${item.voteZan && item.voteZan.split(',').includes(loginUser.username) ? '' : 'outline'} up icon"></i> <span title="${item.voteZan}">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>
                         </div>

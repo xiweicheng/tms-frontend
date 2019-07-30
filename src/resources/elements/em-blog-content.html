@@ -95,6 +95,10 @@
                     <span click.delegate="refreshHandler()" class="readCnt" show.bind="blog.readCnt" title="点击刷新博文 (alt+r)"><i class="unhide icon"></i><a>${blog.readCnt}</a>次浏览</span>
                     <span click.delegate="commentsHandler()" class="commentCnt" show.bind="comments" title="点击快速去评论 (r)"><i class="comments outline icon"></i><a>${comments.length}</a>个评论</span>
                     <span class="followersCnt" show.bind="blogFollowers.length > 0" title="${followers}"><i class="users icon"></i><a>${blogFollowers.length}人关注</a></span>
+                    <span style="margin-left: 16px;">
+                    <span if.bind="blog.editor == 'Html'" title="HTML编辑器"><i style="color: black;" class="html5 icon"></i></span>
+                    <span if.bind="blog.editor != 'Html'" title="Markdown编辑器"><img style="width: 14px;" src="img/markdown.png" alt=""></span>
+                    </span>
                 </div>
             </h1>
             </div>
