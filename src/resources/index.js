@@ -74,6 +74,7 @@ export function configure(aurelia) {
         'resources/elements/em-blog-top-menu',
         'resources/elements/em-blog-share',
         'resources/elements/em-blog-comment',
+        'resources/elements/em-blog-comment-footer',
         'resources/elements/em-blog-save',
         'resources/elements/em-blog-space-create',
         'resources/elements/em-blog-space-edit',

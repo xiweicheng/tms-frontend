@@ -1,0 +1,15 @@
+<template>
+    <require from="./em-blog-comment-footer.css"></require>
+    <div class="em-blog-comment-footer">
+        <div repeat.for="item of comment.labels | sort:'createDate'" class="ui ${item | labelColor} tags label tms-tag-item" css.bind="item | labelCss" data-position="top left" data-tooltip="${item.creator} 添加于${item.createDate | timeago}" click.delegate="toggleHandler(item)">${item.name}</div>
+        <span ref="addTagRef" class="add-btn add-tag-btn ${!comment.labels.length ? 'no-tags' : ''}">+<i class="tags icon large link"></i></span>
+        <div class="ui popup top left transition hidden}">
+            <div class="content">
+                <div class="ui icon input">
+                    <input value.bind="name" ref="tagRef" keyup.trigger="addHandler() & key" type="text" placeholder="">
+                    <i click.delegate="addHandler()" title="添加自定义标签" class="add link icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
