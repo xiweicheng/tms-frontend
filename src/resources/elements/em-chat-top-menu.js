@@ -41,6 +41,21 @@ export class EmChatTopMenu {
         $(this.channelGanttsDdRef).find('.menu > .search > input').val('');
         this._refreshChannelLinks();
         this._refreshChannelGantts();
+        this._getNotice();
+    }
+
+    _getNotice() {
+        if (this.channel) {
+            $.get('/admin/channel/notice/top', {
+                id: this.channel.id
+            }, (data) => {
+                if (data.success) {
+                    this.notice = data.data;
+                } else {
+                    this.notice = null;
+                }
+            });
+        }
     }
 
     _refreshChannelLinks() {
@@ -177,6 +192,11 @@ export class EmChatTopMenu {
 
         this.subscribe8 = ea.subscribe(nsCons.EVENT_CHANNEL_GANTTS_REFRESH, (payload) => {
             this._refreshChannelGantts();
+        });
+
+        this.subscribe9 = ea.subscribe(nsCons.EVENT_WS_CHANNEL_NOTICE, (payload) => {
+            if (this.channel.id != payload.cid) return;
+            this._getNotice();
         });
     }
 
@@ -695,5 +715,24 @@ export class EmChatTopMenu {
 
     channelTasksHandler() {
         this.channelTasksVm.show();
+    }
+
+    gotoChatHandler() {
+        if (!this.notice) return;
+
+        ea.publish(nsCons.EVENT_CHAT_TOPIC_SCROLL_TO, { chat: { id: this.notice.id } });
+    }
+
+    removeNoticeHandler() {
+        if (this.channel.creator.username != this.loginUser.username) return;
+
+        $.post(`/admin/chat/channel/notice/remove`, { id: this.notice.id }, (data) => {
+            if (data.success) {
+                toastr.success(`解除公告消息成功!`);
+                this.notice = null;
+            } else {
+                toastr.error(data.data);
+            }
+        });
     }
 }

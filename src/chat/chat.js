@@ -114,6 +114,31 @@ export class Chat {
                 // $(`[data-id="${msgBody.id}"]`).remove();
                 toastr.clear($(`[data-id="${msgBody.id}"]`));
             });
+            stompClient.subscribe('/user/channel/notice', (msg) => {
+
+                if (!this.channel) return;
+
+                let msgBody = JSON.parse(msg.body);
+
+                ea.publish(nsCons.EVENT_WS_CHANNEL_NOTICE, msgBody);
+
+                if (msgBody.cmd == 'C') {
+                    _.each(this.chats, c => {
+                        if (msgBody.id != c.id && c.notice) {
+                            c.notice = null;
+                        }
+                    });
+                } else if (msgBody.cmd == 'D') {
+                    _.each(this.chats, c => {
+                        c.notice && (c.notice = null);
+                    });
+                }
+
+                if (msgBody.cmd != 'D' && (this.channel.creator.username != this.loginUser.username)) {
+                    this.updateNotifyChannel({ id: msgBody.id }, "频道公告消息有更新！", msgBody);
+                }
+
+            });
         }, (err) => {
             utils.errorAutoTry(() => {
                 this._initSock();

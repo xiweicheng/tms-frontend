@@ -25,6 +25,31 @@
                 padding-bottom: 5px;
                 padding-left: 16px;
                 cursor: default;
+
+                .tms-notice {
+                    position: relative;
+                    font-size: 12px;
+
+                    a.content {
+                        display: inline-block;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        max-width: 400px;
+                    }
+                    .remove.icon {
+                        display: none;
+                        position: absolute;
+                        margin-right: 0;
+                        top: -4px;
+                        right: 0;
+                    }
+                    &:hover {
+                        .remove.icon {
+                            display: inline-block;
+                        }
+                    }
+                }
             }
 
             >.tms-metadata {

@@ -49,7 +49,8 @@
                     <div class="menu">
                         <div class="item" if.bind="!isAt && (item.creator.username == loginUser.username)" click.delegate="openEditHandler(item)" title="${item.openEdit ? '关闭协作编辑' :'开启协作编辑'}"><i class="write icon"></i> ${item.openEdit ? '关闭协作编辑' :'开启协作编辑'}</div>
                         <div class="item tms-clipboard" data-clipboard-text="${item.content}" title="复制消息内容到剪贴板"><i class="icon copy"></i> 复制到剪贴板</div>
-                        <div class="item" if.bind="!isAt" click.delegate="pinHandler(item)" title="${item._pined ? '解除固定频道消息' : '固定频道消息'}"><i class="pin icon"></i> ${item._pined ? '解除固定' : '固定至频道'}</div>
+                        <div class="item" if.bind="!isAt" click.delegate="pinHandler(item)" title="${item._pined ? '解除固定频道消息' : '固定至频道消息'}"><i class="pin icon"></i> ${item._pined ? '解除固定频道消息' : '固定至频道消息'}</div>
+                        <div class="item" if.bind="!isAt && (channel.creator.username == loginUser.username)" click.delegate="noticeHandler(item)" title="${item.notice ? '解除公告消息' : '发布为公告消息'}"><i class="announcement icon"></i> ${item.notice ? '解除公告消息' : '发布为公告消息'}</div>
                         <a target="_blank" href="#/blog/create?${isAt ? 'cdid' : 'ccid'}=${item.id}" style="display: block; color: rgba(0,0,0,.87); margin-right: 0px;" class="item">
                             <i class="wikipedia icon"></i> 转为博文
                         </a>

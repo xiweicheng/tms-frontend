@@ -510,6 +510,7 @@ export class EmChatContentItem {
         $.get('/admin/chat/channel/get', {
             id: item.id
         }, (data) => {
+            data.data.notice = !!data.data.notice;
             _.extend(item, data.data);
             toastr.success('刷新同步成功!');
         });
@@ -552,6 +553,21 @@ export class EmChatContentItem {
             if (data.success) {
                 toastr.success(`${data.code == 200 ? '固定频道消息成功!' : '解除固定频道消息成功!'}`);
                 item._pined = (data.code == 200);
+            } else {
+                toastr.error(data.data);
+            }
+        });
+    }
+
+    noticeHandler(item) {
+
+        if (this.channel.creator.username != this.loginUser.username) return;
+
+        let notice = item.notice;
+        $.post(`/admin/chat/channel/notice/${notice ? 'remove' : 'add'}`, { id: item.id }, (data) => {
+            if (data.success) {
+                toastr.success(`${notice ? '解除公告消息成功!' : '发布为公告消息成功!'}`);
+                item.notice = !notice;
             } else {
                 toastr.error(data.data);
             }
