@@ -1178,7 +1178,7 @@ export class Chat {
                     return item.creator.username == this.loginUser.username;
                 });
                 let alarm = utils.getAlarm();
-                if (!alarm.off || hasOwn) this.scrollToAfterImgLoaded('b');
+                if ((!alarm.off || hasOwn) && !this._isEditing()) this.scrollToAfterImgLoaded('b');
             } else {
                 toastr.error(data.data, '轮询获取消息失败!');
             }
@@ -1190,6 +1190,10 @@ export class Chat {
         }).always(() => {
             this.pollChatsOngoing = false;
         });
+    }
+
+    _isEditing() {
+        return _.some(this.chats, c => !!c.isEditing);
     }
 
     _getStowsAndPins() {
