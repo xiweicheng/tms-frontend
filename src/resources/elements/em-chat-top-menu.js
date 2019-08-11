@@ -720,7 +720,7 @@ export class EmChatTopMenu {
     gotoChatHandler() {
         if (!this.notice) return;
 
-        ea.publish(nsCons.EVENT_CHAT_TOPIC_SCROLL_TO, { chat: { id: this.notice.id } });
+        ea.publish(nsCons.EVENT_CHAT_TOPIC_SCROLL_TO, { chat: { id: this.notice.id, channel: this.channel } });
     }
 
     removeNoticeHandler() {
