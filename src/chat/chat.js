@@ -269,7 +269,8 @@ export class Chat {
             $(this.contentBodyRef).children('.scroll-wrapper').css('width', '100%');
         }
 
-        $('.tms-em-chat-top-menu .tms-notice').width($(window).width() - 870);
+        // $('.tms-em-chat-top-menu .tms-notice').width($(window).width() - 870);
+        $('.tms-em-chat-top-menu .tms-notice').css({ 'max-width': $(window).width() - 870 });
     }
 
     initSubscribeEvent() {
