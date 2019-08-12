@@ -27,16 +27,19 @@
                 cursor: default;
 
                 .tms-notice {
+                    display: inline-block;
                     position: relative;
                     font-size: 12px;
                     cursor: pointer;
+                    // width: e("calc(100vw - 870px)");
 
                     a.content {
                         display: inline-block;
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
-                        max-width: 400px;
+                        // max-width: 400px;
+                        width: 100%;
                     }
                     .remove.icon {
                         display: none;
