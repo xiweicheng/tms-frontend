@@ -269,7 +269,7 @@ export class Chat {
             $(this.contentBodyRef).children('.scroll-wrapper').css('width', '100%');
         }
 
-        $('.tms-em-chat-top-menu .tms-notice').css({ 'max-width': $(window).width() - 920 });
+        $('.tms-em-chat-top-menu .tms-notice').css({ 'max-width': $(window).width() - 1000 });
     }
 
     initSubscribeEvent() {

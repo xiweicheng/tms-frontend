@@ -251,7 +251,7 @@ export class EmChatTopMenu {
             ea.publish(nsCons.EVENT_CHANNEL_GANTTS_REFRESH, ev.data);
         }, false);
 
-        $('.tms-em-chat-top-menu .tms-notice').css({ 'max-width': $(window).width() - 920 });
+        $('.tms-em-chat-top-menu .tms-notice').css({ 'max-width': $(window).width() - 1000 });
     }
 
     initChannelLinksHandler(last) {
