@@ -554,7 +554,7 @@ export class EmBlogWrite {
                                     .replace(/\{name\}/g, item.name)
                                     .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
                                     .replace(/\{path\}/g, "admin/file/download/")
-                                    .replace(/\{uuidName\}/g, item.id));
+                                    .replace(/\{uuidName\}/g, item.uuid));
                             }
                         });
                         toastr.success('上传成功!');
