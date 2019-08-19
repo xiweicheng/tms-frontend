@@ -77,6 +77,37 @@ export class App {
             });
 
         });
+
+        // file online preview
+        $('body').on('mouseenter', '.markdown-body a[href*="admin/file/download/"]', (event) => {
+            event.preventDefault();
+
+            if (!window.tmsSysConfig || !window.tmsSysConfig.fileViewUrl) return;
+
+            let $a = $(event.currentTarget);
+
+            if ($a.children('.tms-file-online-view-wrapper').length === 0) {
+                $a.append(`<span class="tms-file-online-view-wrapper"><i class="unhide large black link icon" title="在线文件预览"></i></span>`);
+            }
+
+        });
+
+        $('body').on('click', '.tms-file-online-view-wrapper i.unhide.icon', event => {
+            event.preventDefault();
+
+            if (!window.tmsSysConfig || !window.tmsSysConfig.fileViewUrl) return;
+
+            let $item = $(event.currentTarget);
+
+            let $a = $item.closest('a');
+
+            if ($a.length === 0) return;
+
+            let url = `${$a.attr('href')}?fullfilename=${$a.text()}`;
+
+            window.open(`${window.tmsSysConfig.fileViewUrl}/onlinePreview?url=` + encodeURIComponent(url));
+        });
+
     }
 
     /**

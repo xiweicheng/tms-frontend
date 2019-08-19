@@ -16,6 +16,7 @@ export function configure(aurelia, params) {
         .initHttp()
         .initAjax()
         .initToastr()
+        .initSysConfig()
         .initMarked()
         .initAnimateCss()
         .initEmoji()

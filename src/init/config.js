@@ -270,6 +270,17 @@ export class Config {
         return this;
     }
 
+    initSysConfig() {
+        $.get('/free/config/sys', (data) => {
+            if (data.success) {
+                window.tmsSysConfig = data.data;
+            } else {
+                console.error(data.data);
+            }
+        });
+        return this;
+    }
+
     context(aurelia) {
         this.aurelia = aurelia;
         return this;
