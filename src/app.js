@@ -79,7 +79,7 @@ export class App {
         });
 
         // file online preview
-        $('body').on('mouseenter', '.markdown-body a[href*="admin/file/download/"]', (event) => {
+        $('body').on('mouseenter', '.markdown-body a[href*="admin/file/download/"],a.tms-file-download-item', (event) => {
             event.preventDefault();
 
             if (!window.tmsSysConfig || !window.tmsSysConfig.fileViewUrl) return;
