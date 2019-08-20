@@ -2,12 +2,14 @@ export class UserLogin {
 
     username = '';
     password = '';
+    userRegister;
 
     /**
      * 当视图被附加到DOM中时被调用
      */
     attached() {
         $(this.rememberMeRef).checkbox();
+        _.delay(() => this.userRegister = _.isNil(tmsSysConfig.userRegister) ? true : tmsSysConfig.userRegister, 100);
     }
 
     kdHandler(evt) {
