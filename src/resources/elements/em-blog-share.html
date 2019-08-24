@@ -51,11 +51,11 @@
             <button if.bind="isSuper || loginUser.username == blog.creator.username" show.bind="!blog.shareId" class="ui basic icon mini button" click.delegate="createShareHandler()" data-tooltip="生成免登分享链接">
                 <i class="external share icon"></i>
             </button>
-            <div if.bind="isSuper || loginUser.username == blog.creator.username" show.bind="blog.shareId" class="tms-share-wrapper">
+            <div show.bind="blog.shareId" class="tms-share-wrapper">
                 <button class="ui basic icon mini button tms-clipboard" data-tooltip="复制免登分享链接" data-clipboard-text="${baseUrl}#/blog/share/${blog.shareId}?read">
                     <i class="copy icon"></i>
                 </button>
-                <i class="red remove link icon" click.delegate="removeShareHandler()" title="删除免登分享链接"></i>
+                <i if.bind="isSuper || loginUser.username == blog.creator.username" class="red remove link icon" click.delegate="removeShareHandler()" title="删除免登分享链接"></i>
             </div>
             <a click.delegate="cancelHandler()" href="" class="btn-cancel">取消</a>
             <button click.delegate="shareHandler()" class="ui basic ${shares.length == 0 || (ajaxS && ajaxS.readyState != 4) ? 'disabled' : ''} right floated mini button">
