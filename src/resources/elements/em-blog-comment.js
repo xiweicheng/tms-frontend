@@ -6,6 +6,7 @@ import {
     default as Dropzone
 } from 'dropzone';
 import emojis from 'common/common-emoji';
+import toastrOps from 'common/common-toastr';
 
 @containerless
 export class EmBlogComment {
@@ -105,6 +106,30 @@ export class EmBlogComment {
             }
 
         });
+
+        this.subscribe3 = ea.subscribe(nsCons.EVENT_WS_BLOG_COMMENT_UPDATE, (payload) => {
+
+            if (this.blog.id != payload.bid) return;
+
+            if (payload.username == this.loginUser.username) return;
+
+            let c = _.find(this.comments, { id: payload.id });
+            if (c) {
+                $.get('/admin/blog/comment/get', {
+                    cid: payload.id
+                }, (data) => {
+                    if (data.success) {
+                        c.labels = data.data.labels;
+
+                        let t = toastr.info(`当前博文评论标签有更新，点击可查看！`, null, _.extend(toastrOps, {
+                            onclick: () => {
+                                this._scrollTo(payload.id);
+                            }
+                        }));
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -113,6 +138,7 @@ export class EmBlogComment {
     unbind() {
         this.subscribe.dispose();
         this.subscribe2.dispose();
+        this.subscribe3.dispose();
     }
 
     _refresh() {
@@ -865,7 +891,7 @@ export class EmBlogComment {
         let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
 
         let channel = this.blog.space ? this.blog.space.channel : null;
-        
+
         $.post(`/admin/blog/comment/update`, {
             basePath: utils.getBasePath(),
             id: this.blog.id,

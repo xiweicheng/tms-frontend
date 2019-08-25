@@ -61,6 +61,9 @@ export class Blog {
                 toastr.clear($(`[data-id="${msgBody.id}"]`));
                 ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
             });
+            stompClient.subscribe('/blog/comment/update', (msg) => {
+                ea.publish(nsCons.EVENT_WS_BLOG_COMMENT_UPDATE, JSON.parse(msg.body));
+            });
         }, (err) => {
             utils.errorAutoTry(() => {
                 this._initSock();
