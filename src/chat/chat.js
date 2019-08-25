@@ -161,7 +161,7 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
-                t && t.attr('data-id', payload.nid);
+                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
             } else if (payload.cmd == 'OU') {
                 let t = toastr.info(`您的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -169,7 +169,7 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
-                t && t.attr('data-id', payload.nid);
+                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
             } else if (payload.cmd == 'F') {
                 let t = toastr.info(`您关注的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -177,7 +177,7 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
-                t && t.attr('data-id', payload.nid);
+                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
             } else if (payload.cmd == 'CAt') {
                 let t = toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -185,7 +185,7 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
-                t && t.attr('data-id', payload.nid);
+                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
             } else if (payload.cmd == 'FCC') {
                 let t = toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -193,7 +193,7 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
-                t && t.attr('data-id', payload.nid);
+                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
             } else if (payload.cmd == 'FCU') {
                 let t = toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -201,7 +201,7 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
-                t && t.attr('data-id', payload.nid);
+                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
             } else if (payload.cmd == 'CC') {
                 let t = toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -209,7 +209,7 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
-                t && t.attr('data-id', payload.nid);
+                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
             } else if (payload.cmd == 'CU') {
                 let t = toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -217,7 +217,7 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
-                t && t.attr('data-id', payload.nid);
+                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
             } else if (payload.cmd == 'Open') {
                 let nid = new Date().getTime();
                 let t = toastr.info(`博文【${payload.title}】${payload.openEdit ? '开放了' : '关闭了'}编辑权限，点击可查看！`, null, _.extend(toastrOps, {
@@ -226,9 +226,18 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
-                t && t.attr('data-id', nid);
+                t && t.attr({ 'data-id': nid, 'data-type': 'blog' });
             }
         }
+    }
+
+    _delChatNews(id) {
+
+        if (!id) return;
+
+        $.post('/admin/chat/channel/news/delete', { id: id }, (data) => {
+            if (data.success) {}
+        });
     }
 
     _delBlogNews(id) {
@@ -532,15 +541,11 @@ export class Chat {
                                 }
                             }
 
-                            $.post('/admin/chat/channel/news/delete', { id: payload.uuid }, (data, textStatus, xhr) => {
-                                if (data.success) {
-
-                                }
-                            });
+                            this._delChatNews(payload.uuid);
                         }
                     }));
 
-                    t && t.attr('data-id', payload.uuid);
+                    t && t.attr({ 'data-id': payload.uuid, 'data-type': 'chat' });
 
                     push.create(`TMS沟通频道@消息通知【${payload.ctitle}】`, {
                         body: `[${payload.from}]: ${payload.content}`,
@@ -553,6 +558,16 @@ export class Chat {
 
                     (!alarm.off && alarm.audio) && ea.publish(nsCons.EVENT_AUDIO_ALERT, {});
                 }
+            }
+
+        });
+
+        this.subscribe18 = ea.subscribe(nsCons.EVENT_TOASTR_CLOSE, (payload) => {
+
+            if (payload.type == 'chat') {
+                this._delChatNews(payload.id);
+            } else if (payload.type == 'blog') {
+                this._delBlogNews(payload.id);
             }
 
         });
@@ -641,15 +656,11 @@ export class Chat {
             let t = toastr.info(message, null, _.extend(toastrOps, {
                 onclick: () => {
                     chat && this.scrollToAfterImgLoaded(chat.id);
-                    $.post('/admin/chat/channel/news/delete', { id: msgItem.uuid }, (data, textStatus, xhr) => {
-                        if (data.success) {
-
-                        }
-                    });
+                    this._delChatNews(msgItem.uuid);
                 }
             }));
 
-            t && t.attr('data-id', msgItem.uuid);
+            t && t.attr({ 'data-id': msgItem.uuid, 'data-type': 'chat' });
 
             push.create('TMS沟通私聊消息通知', {
                 body: _.replace(message, '可点击查看', '请注意关注'),
@@ -687,15 +698,11 @@ export class Chat {
                             rid: (msgItem ? msgItem.rid : null)
                         });
                     }
-                    $.post('/admin/chat/channel/news/delete', { id: msgItem.uuid }, (data, textStatus, xhr) => {
-                        if (data.success) {
-
-                        }
-                    });
+                    this._delChatNews(msgItem.uuid);
                 }
             }));
 
-            t && t.attr('data-id', msgItem.uuid);
+            t && t.attr({ 'data-id': msgItem.uuid, 'data-type': 'chat' });
 
             push.create(`TMS沟通频道消息通知`, {
                 body: _.replace(message, '可点击查看', '请注意关注'),
@@ -750,6 +757,7 @@ export class Chat {
         this.subscribe15.dispose();
         this.subscribe16.dispose();
         this.subscribe17.dispose();
+        this.subscribe18.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();

@@ -67,7 +67,7 @@ export class EmBlogContent {
                                 // toastr.clear(t);
                             }
                         }));
-                        t && t.attr('data-id', payload.nid);
+                        t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
                     }
                 } else if (payload.cmd == 'OU') {
                     if (!this.blog || payload.id != this.blog.id) {
@@ -77,7 +77,7 @@ export class EmBlogContent {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
                             }
                         }));
-                        t && t.attr('data-id', payload.nid);
+                        t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
                     }
                 } else if (payload.cmd == 'U') {
                     if (this.blog && (payload.id == this.blog.id)) {
@@ -87,7 +87,7 @@ export class EmBlogContent {
                                 this.refreshHandler(payload.id);
                             }
                         }));
-                        t && t.attr('data-id', payload.nid);
+                        t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
                     }
                 } else if (payload.cmd == 'F') {
                     if (!this.blog || payload.id != this.blog.id) {
@@ -97,7 +97,7 @@ export class EmBlogContent {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
                             }
                         }));
-                        t && t.attr('data-id', payload.nid);
+                        t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
                     }
                 } else if (payload.cmd == 'CAt') {
                     let t = toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, _.extend(toastrOps, {
@@ -110,7 +110,7 @@ export class EmBlogContent {
                             }
                         }
                     }));
-                    t && t.attr('data-id', payload.nid);
+                    t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
                 } else if (payload.cmd == 'FCC') {
                     let t = toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
@@ -122,7 +122,7 @@ export class EmBlogContent {
                             }
                         }
                     }));
-                    t && t.attr('data-id', payload.nid);
+                    t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
                 } else if (payload.cmd == 'FCU') {
                     let t = toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
@@ -134,7 +134,7 @@ export class EmBlogContent {
                             }
                         }
                     }));
-                    t && t.attr('data-id', payload.nid);
+                    t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
                 } else if (payload.cmd == 'CC') {
                     let t = toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
@@ -146,7 +146,7 @@ export class EmBlogContent {
                             }
                         }
                     }));
-                    t && t.attr('data-id', payload.nid);
+                    t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
                 } else if (payload.cmd == 'CU') {
                     let t = toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
@@ -158,7 +158,7 @@ export class EmBlogContent {
                             }
                         }
                     }));
-                    t && t.attr('data-id', payload.nid);
+                    t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
                 } else if (payload.cmd == 'Open') {
                     let nid = new Date().getTime();
                     let t = toastr.info(`博文【${payload.title}】${payload.openEdit ? '开放了' : '关闭了'}编辑权限，点击可查看！`, null, _.extend(toastrOps, {
@@ -171,7 +171,7 @@ export class EmBlogContent {
                             }
                         }
                     }));
-                    t && t.attr('data-id', nid);
+                    t && t.attr({ 'data-id': nid, 'data-type': 'blog' });
                 }
 
             } else {
@@ -252,6 +252,16 @@ export class EmBlogContent {
 
         });
 
+        this.subscribe7 = ea.subscribe(nsCons.EVENT_TOASTR_CLOSE, (payload) => {
+
+            if (payload.type == 'chat') {
+                // this._delChatNews(payload.id);
+            } else if (payload.type == 'blog') {
+                this._delBlogNews(payload.id);
+            }
+
+        });
+
         this.throttleCreateHandler = _.throttle(() => { this.createHandler() }, 1000, { 'trailing': false });
         this.throttleEditHandler = _.throttle(() => { this.editHandler() }, 1000, { 'trailing': false });
         this.throttleCopyHandler = _.throttle(() => { this.copyHandler() }, 1000, { 'trailing': false });
@@ -262,9 +272,7 @@ export class EmBlogContent {
         if (!id) return;
 
         $.post('/admin/blog/news/delete', { id: id }, (data, textStatus, xhr) => {
-            if (data.success) {
-                // ea.publish(nsCons.EVENT_WS_BLOG_NEWS_UPDATE, {});
-            }
+            if (data.success) {}
         });
     }
 
@@ -278,6 +286,7 @@ export class EmBlogContent {
         this.subscribe4.dispose();
         this.subscribe5.dispose();
         this.subscribe6.dispose();
+        this.subscribe7.dispose();
     }
 
     /**
@@ -383,7 +392,7 @@ export class EmBlogContent {
             }
         });
 
-         // 用户信息popup
+        // 用户信息popup
         $('.tms-blog').on('mouseenter', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
             event.preventDefault();
             let target = event.currentTarget;
