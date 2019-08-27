@@ -27,7 +27,8 @@
                         </div>
                         <a if.bind="item.chatAt.chatReply" click.delegate="gotoChatReplyParentHandler(item)" class="tms-goto" title="定位到父消息" href=""><i class="large arrow alternate circle up outline icon"></i></a>
                         <a if.bind="item.chatAt" click.delegate="removeAtHandler(item)" class="tms-read" title="标记@消息已读" href=""><i class="large icons"><i class="at icon"></i><i class="corner remove red icon"></i></i></a>
-                        <a click.delegate="gotoChatHandler(item)" class="tms-goto" href="" title="定位到消息${item.chatAt ? '(标记已读)' : ''}"><i class="large crosshairs icon"></i></a>
+                        <!-- <a click.delegate="gotoChatHandler(item)" class="tms-goto" href="" title="定位到消息${item.chatAt ? '(标记已读)' : ''}"><i class="large crosshairs icon"></i></a> -->
+                        <a click.delegate="gotoChatHandler(item)" class="tms-goto" href="" title="定位到消息"><i class="large crosshairs icon"></i></a>
                         <a class="tms-copy tms-clipboard" data-clipboard-text="${item.content}" title="复制消息内容到剪贴板"><i class="copy icon large"></i></a>
                         <a class="tms-share tms-clipboard" data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}" title="复制消息链接到剪贴板"><i class="share alternate icon large"></i></a>
                     </div>

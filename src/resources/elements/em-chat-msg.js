@@ -95,9 +95,9 @@ export class EmChatMsg {
     gotoChatHandler(item) {
         ea.publish(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, { chatItem: item });
 
-        if (this.actived.payload.action == nsCons.ACTION_TYPE_AT) {
-            this.removeAtHandler(item);
-        }
+        // if (this.actived.payload.action == nsCons.ACTION_TYPE_AT) {
+        //     this.removeAtHandler(item);
+        // }
     }
 
     gotoChatReplyParentHandler(item) {
