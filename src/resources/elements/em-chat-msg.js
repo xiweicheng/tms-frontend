@@ -92,12 +92,14 @@ export class EmChatMsg {
         item.isHover = true;
     }
 
-    gotoChatHandler(item) {
+    gotoChatHandler(item, event) {
         ea.publish(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, { chatItem: item });
 
-        // if (this.actived.payload.action == nsCons.ACTION_TYPE_AT) {
-        //     this.removeAtHandler(item);
-        // }
+        if ((this.actived.payload.action == nsCons.ACTION_TYPE_AT) && (event.shiftKey)) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            this.removeAtHandler(item);
+        }
     }
 
     gotoChatReplyParentHandler(item) {
