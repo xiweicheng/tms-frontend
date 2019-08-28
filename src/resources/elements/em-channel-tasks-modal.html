@@ -1,7 +1,7 @@
 <template>
     <require from="./em-channel-tasks-modal.css"></require>
     <em-modal classes="fullscreen em-channel-tasks-modal-parent" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
-        <div slot="header">频道任务看板</div>
+        <div slot="header">频道任务看板 <span data-position="right center" data-inverted="" data-tooltip="按下 Shift 键拖拽时可同时拖动他人卡片任务"><i class="info circle icon"></i></span></div>
         <div slot="content" class="em-channel-tasks-modal">
             <em-channel-task view-model.ref="channelTaskVm" channel.bind="channel" login-user.bind="loginUser"></em-channel-task>
         </div>

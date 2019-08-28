@@ -268,6 +268,7 @@ export class EmChannelTask {
                 id: id,
                 from: s,
                 to: t,
+                all: window.event ? window.event.shiftKey : false
             }, (data, textStatus, xhr) => {
                 if (data.success) {
                     toastr.success('操作成功！');
