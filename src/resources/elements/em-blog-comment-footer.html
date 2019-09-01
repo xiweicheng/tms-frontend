@@ -1,7 +1,7 @@
 <template>
     <require from="./em-blog-comment-footer.css"></require>
     <div class="em-blog-comment-footer">
-        <div repeat.for="item of comment.labels | sort:'createDate'" class="ui ${item | labelColor} tags label tms-tag-item" css.bind="item | labelCss" data-position="top left" data-tooltip="${item.creator} 添加于${item.createDate | timeago}" click.delegate="toggleHandler(item)">${item.name}</div>
+        <div repeat.for="item of comment.labels | sort:'createDate'" class="ui ${item | labelColor} tags label tms-tag-item" css.bind="item | labelCss" data-position="top left" data-tooltip="${item.creator | userName} 添加于${item.createDate | timeago}" click.delegate="toggleHandler(item)">${item.name}</div>
         <span ref="addTagRef" class="add-btn add-tag-btn ${!comment.labels.length ? 'no-tags' : ''}">+<i class="tags icon large link"></i></span>
         <div class="ui popup top left transition hidden}">
             <div class="content">
