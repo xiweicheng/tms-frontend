@@ -4,7 +4,7 @@
         <a class="icon item toggle-bar" click.delegate="toggleLeftBarHandler()"><i class="large sidebar icon"></i></a>
         <div class="item tms-item-header tms-chat-at">
             <div class="tms-title">${isAt ? '@ ' + (chatUser.name ? chatUser.name : chatUser.username) : '# ' + channel.title}
-                <span show.bind="notice" class="tms-notice"><a click.delegate="gotoChatHandler()" class="content"><i title="频道公告消息" class="announcement icon"></i><span>[#${notice.id}] </span><span title="${notice.content}">${notice.content}</span></a><i if.bind="channel.creator.username == loginUser.username" click.delegate="removeNoticeHandler()" title="解除频道公告消息" class="red circle large link remove icon"></i></span>
+                <span show.bind="notice && !isAt" class="tms-notice"><a click.delegate="gotoChatHandler()" class="content"><i title="频道公告消息" class="announcement icon"></i><span>[#${notice.id}] </span><span title="${notice.content}">${notice.content}</span></a><i if.bind="channel.creator.username == loginUser.username" click.delegate="removeNoticeHandler()" title="解除频道公告消息" class="red circle large link remove icon"></i></span>
             </div>
             <div class="tms-metadata">
                 <div show.bind="!isAt" ref="channelLinksDdRef" class="ui dropdown icon item tms-channel-links">
