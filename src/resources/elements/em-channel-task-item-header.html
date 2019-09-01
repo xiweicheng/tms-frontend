@@ -1,7 +1,7 @@
 <template>
     <require from="./em-channel-task-item-header.css"></require>
     <div class="em-channel-task-item-header">
-        <a class="task-id" style="cursor: pointer;" click.delegate="idHandler()">#${taskItem.id}</a>
+        <a class="task-id tms-clipboard" data-clipboard-text="${basePath + '#/chat/' + channel.name + '?id=' + taskItem.id}" style="cursor: pointer;" data-tooltip="点击定位消息并复制" data-position="right center" click.delegate="idHandler()">#${taskItem.id}</a>
         <a style="font-size: 12px; margin-left: 8px;" title="更新于${taskItem.updateDate | date}">${taskItem.updateDate | timeago}</a>
         <a click.delegate="talkHandler()" class="tms-talk" title="任务评论数"><i class="talk outline icon"></i><span class="count" show.bind="taskItem.chatReplies.length > 0">${taskItem.chatReplies.length}</span></a>
         <span style="float: right;"><em-user-avatar user.bind="taskItem.creator"></em-user-avatar></span>

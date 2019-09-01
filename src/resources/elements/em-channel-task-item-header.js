@@ -5,6 +5,7 @@ export class EmChannelTaskItemHeader {
 
     @bindable taskItem;
     @bindable channel;
+    basePath = utils.getBasePath();
 
     idHandler() {
         ea.publish(nsCons.EVENT_CLOSE_CHANNEL_TASKS_MODAL, {});
