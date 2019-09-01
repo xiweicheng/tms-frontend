@@ -33,6 +33,7 @@ window.nsCons = {
     EVENT_CHAT_TOGGLE_RIGHT_SIDEBAR: 'event_chat_toggle_right_sidebar',
     EVENT_CHAT_DO_MSG_SEARCH: 'event_chat_do_msg_search',
     EVENT_CHAT_DO_MSG_FILTER: 'event_chat_do_msg_filter',
+    EVENT_CHAT_TO_OBJECT_CHANGED: 'event_chat_to_object_changed',
     EVENT_SWITCH_CHAT_TO: 'event_switch_chat_to',
     EVENT_CHANNEL_ACTIONS: 'event_channel_actions',
     EVENT_CHANNEL_LINKS_REFRESH: 'event_channel_links_refresh',

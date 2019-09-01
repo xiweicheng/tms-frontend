@@ -11,7 +11,7 @@ export class EmChatSidebarRight {
         [nsCons.ACTION_TYPE_DIR]: { handler: this.dirHandler, nodata: '', show: 'dir', icon: 'unordered list', title: '消息目录' },
         [nsCons.ACTION_TYPE_AT]: { nodata: '暂无@消息', show: 'msg', icon: 'at', title: '我的消息' },
         [nsCons.ACTION_TYPE_STOW]: { nodata: '暂无收藏消息', show: 'msg', icon: 'empty star', title: '我的收藏' },
-        [nsCons.ACTION_TYPE_ATTACH]: { handler: this.attachHandler, nodata: '', show: 'attach', icon: 'attach', title: '频道附件' },
+        [nsCons.ACTION_TYPE_ATTACH]: { handler: this.attachHandler, nodata: '', show: 'attach', icon: 'attach', title: '频道附件', titleAt: '私聊附件' },
         [nsCons.ACTION_TYPE_SCHEDULE]: { handler: this.scheduleHandler, nodata: '', show: 'schedule', icon: 'calendar outline', title: '我的日程' },
         [nsCons.ACTION_TYPE_SEARCH]: { nodata: '无符合检索结果', show: 'msg', icon: 'search', title: '检索结果' },
         [nsCons.ACTION_TYPE_PIN]: { nodata: '暂无频道固定消息', show: 'msg', icon: 'pin', title: '频道固定消息' },
@@ -36,6 +36,15 @@ export class EmChatSidebarRight {
             $('.em-chat-sidebar-right div[ref="scrollbarRef"]').scrollTo(payload, { axis: 'y' }, 120);
         });
 
+        // 沟通对象切换时处理
+        this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_TO_OBJECT_CHANGED, (payload) => {
+            if (this.actived && this.actived.payload.action == nsCons.ACTION_TYPE_ATTACH) {
+                if (this.actived.handler) {
+                    _.bind(this.actived.handler, this, this.actived.payload)();
+                }
+            }
+        });
+
     }
 
     /**
@@ -44,6 +53,7 @@ export class EmChatSidebarRight {
     unbind() {
         this.subscribe.dispose();
         this.subscribe1.dispose();
+        this.subscribe2.dispose();
     }
 
     attachHandler(payload) {

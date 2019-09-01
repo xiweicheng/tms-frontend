@@ -5,7 +5,7 @@
             <h2 class="ui header">
               <i class="${actived.icon} icon" style="font-size: 1em;"></i>
               <div class="content">
-                ${actived.title}
+                ${isAt && actived.titleAt ? actived.titleAt : actived.title}
               </div>
             </h2>
             <i click.delegate="closeHandler()" title="关闭右侧边栏" class="large grey link close icon"></i>

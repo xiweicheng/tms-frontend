@@ -798,6 +798,12 @@ export class Chat {
 
         let newMsgCntItem = localStorage ? localStorage.getItem(nsCons.KEY_CHAT_NEW_MSG_CNT) : {};
 
+        ea.publish(nsCons.EVENT_CHAT_TO_OBJECT_CHANGED, {
+            isAt: this.isAt,
+            chatTo: this.chatTo,
+            chatId: this.chatId
+        });
+
         return Promise.all([chatService.loginUser(true).then((user) => {
                 this.loginUser = user;
                 nsCtx.loginUser = user;
