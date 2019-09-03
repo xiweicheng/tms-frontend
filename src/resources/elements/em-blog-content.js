@@ -484,7 +484,7 @@ export class EmBlogContent {
                 if (this.blog.openEdit || this.isSuper || this.blog.creator.username == this.loginUser.username) {
                     this.throttleEditHandler();
                 }
-            }).bind('keyup', 'c', (evt) => { // create
+            }).bind('keyup', 'w', (evt) => { // create
                 evt.preventDefault();
                 this.throttleCreateHandler();
             }).bind('keydown', 'd', (evt) => { // dir
