@@ -68,7 +68,7 @@ export class EmChannelTask {
             this.talkVm.show(payload);
 
         });
-
+        
         this.subscribe4 = ea.subscribe(nsCons.EVENT_MARKDOWN_TASK_ITEM_STATUS_TOGGLE, (payload) => {
             // console.log(payload);
 
@@ -138,6 +138,13 @@ export class EmChannelTask {
             }
 
         });
+
+        this.subscribe5 = ea.subscribe(nsCons.EVENT_CHANNEL_TASK_EDIT, (payload) => {
+
+            this.addVm.showEdit(payload);
+
+        });
+
     }
 
     /**
@@ -149,6 +156,7 @@ export class EmChannelTask {
         this.subscribe2.dispose();
         this.subscribe3.dispose();
         this.subscribe4.dispose();
+        this.subscribe5.dispose();
     }
 
     async _getTasks(label, page) {
@@ -364,5 +372,9 @@ export class EmChannelTask {
 
             }
         });
+    }
+
+    addHandler(col) {
+        this.addVm.show(col);
     }
 }

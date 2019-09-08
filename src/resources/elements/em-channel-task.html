@@ -30,6 +30,9 @@
                             </div>
                         </div>
                         <span class="btn-wrapper">
+                            <button click.delegate="addHandler(col)" title="创建任务" class="mini circular ui icon basic button">
+                                <i class="plus icon"></i>
+                            </button>
                             <button click.delegate="refreshHandler(col)" title="刷新同步" class="mini circular ui icon basic button">
                                 <i class="refresh icon"></i>
                             </button>
@@ -49,4 +52,5 @@
         </div>
     </div>
     <em-channel-chat-task-talk-modal channel.bind="channel" view-model.ref="talkVm"></em-channel-chat-task-talk-modal>
+    <em-channel-task-create channel.bind="channel" view-model.ref="addVm"></em-channel-task-create>
 </template>

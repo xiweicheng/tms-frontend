@@ -6,6 +6,7 @@ export class EmChannelTaskItemHeader {
     @bindable taskItem;
     @bindable channel;
     basePath = utils.getBasePath();
+    loginUser = nsCtx.loginUser;
 
     idHandler() {
         ea.publish(nsCons.EVENT_CLOSE_CHANNEL_TASKS_MODAL, {});
@@ -15,5 +16,9 @@ export class EmChannelTaskItemHeader {
 
     talkHandler() {
         ea.publish(nsCons.EVENT_CHANNEL_TASK_TALK_SHOW, this.taskItem);
+    }
+
+    editHandler() {
+        ea.publish(nsCons.EVENT_CHANNEL_TASK_EDIT, this.taskItem);
     }
 }
