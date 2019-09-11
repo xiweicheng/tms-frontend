@@ -59,7 +59,7 @@ class ChatService {
                             label: item,
                             value: item,
                             type: 'tag',
-                            undel: _.includes(['待处理', '进行中', '已完成', '已验收'], item)
+                            undel: _.includes(['待规划', '待处理', '进行中', '已完成', '已验收'], item)
                         }
                     })
                 }

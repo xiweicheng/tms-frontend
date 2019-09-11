@@ -1,4 +1,9 @@
 export default [{
+    label: '待规划',
+    value: '待规划',
+    color: 'orange',
+    type: 'tag'
+}, {
     label: '待处理',
     value: '待处理',
     color: 'green',

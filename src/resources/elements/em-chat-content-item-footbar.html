@@ -32,7 +32,7 @@
             </div>
         </div>
         <span ref="addTagRef" class="add-btn add-tag-btn ${chat.chatLabels | chatLabelExist & signal:'sg-chatlabel-refresh'}">+<i class="tags icon large link"></i></span>
-        <div class="ui popup top left transition hidden tags ${isCustomTag ? 'customTag' : ''}">
+        <div class="ui popup top left transition hidden tags ${isCustomTag ? 'customTag' : ''}" style="padding-right: 4px;">
             <div class="content">
                 <div show.bind="!isCustomTag" ui-dropdown class="ui ${last ? 'bottom' : (lastPre ?  '' : 'top')} left pointing dropdown mini icon">
                     <i class="ellipsis vertical icon"></i>
@@ -59,7 +59,7 @@
                     <i click.delegate="toggleCustomTagHandler()" title="添加自定义标签" class="add link icon"></i>
                     <i click.delegate="closeCustomTagHandler()" title="关闭窗口" style="position: absolute; top: -12px; right: -2px; width: auto; height: auto;" class="circle red link big remove icon"></i>
                 </div>
-                <i if.bind="!isCustomTag" click.delegate="toggleCustomTagHandler()" title="添加自定义标签" style="margin-right: 0; display: inline;" class="add big blue circle link icon"></i>
+                <i if.bind="!isCustomTag" click.delegate="toggleCustomTagHandler()" title="添加自定义标签" style="margin-right: 0; display: inline; font-size: 1.8em;" class="add big blue circle link icon"></i>
             </div>
         </div>
     </div>
