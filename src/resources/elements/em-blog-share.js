@@ -14,6 +14,27 @@ export class EmBlogShare {
     isSuper = nsCtx.isSuper;
     loginUser = nsCtx.loginUser;
 
+    blogChanged(blog) {
+        if (blog) {
+
+            blog._encodeTitle = blog.title
+                .replace(/\+/g, '_')
+                .replace(/`/g, '_')
+                .replace(/\s/g, '_')
+                .replace(/\//g, '_')
+                .replace(/\?/g, '_')
+                .replace(/%/g, '_')
+                .replace(/&/g, '_')
+                .replace(/=/g, '_')
+                .replace(/#/g, '_')
+                .replace(/\$/g, '_')
+                .replace(/\^/g, '_')
+                .replace(/\*/g, '_')
+                .replace(/\\/g, '_')
+                .replace(/_+/g, '_');
+        }
+    }
+
     /**
      * 当视图被附加到DOM中时被调用
      */
