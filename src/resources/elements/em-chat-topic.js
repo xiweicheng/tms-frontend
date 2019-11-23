@@ -226,7 +226,7 @@ export class EmChatTopic {
         this.channel = null;
         this.members = [];
         this.chat = [];
-        // this.commentsRef = null;
+        this.commentsRef = null;
         this.ajaxTopic = null;
         this.followers = null;
     }
