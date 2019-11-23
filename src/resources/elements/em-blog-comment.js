@@ -785,7 +785,7 @@ export class EmBlogComment {
 
     scrollToAfterImgLoaded(to) {
         _.defer(() => {
-            new ImagesLoaded($('.em-blog-content')[0]).always(() => {
+            ($('.em-blog-content').length > 0) && new ImagesLoaded($('.em-blog-content')[0]).always(() => {
                 this._scrollTo(to);
             });
 

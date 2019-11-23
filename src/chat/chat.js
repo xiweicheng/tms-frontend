@@ -1084,7 +1084,7 @@ export class Chat {
 
     scrollToAfterImgLoaded(to) {
         _.defer(() => {
-            new ImagesLoaded(this.commentsRef).always(() => {
+            this.commentsRef && new ImagesLoaded(this.commentsRef).always(() => {
                 this._scrollTo(to);
             });
 
