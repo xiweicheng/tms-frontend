@@ -7,9 +7,9 @@ export class EmChannelTask {
     @bindable loginUser;
 
     channelChanged() {
-        _.each(this.mapping, (v, k) => {
-            this[v] = {};
-        });
+        // _.each(this.mapping, (v, k) => {
+        //     this[v] = {};
+        // });
 
         this._sortMembers();
     }
@@ -68,7 +68,7 @@ export class EmChannelTask {
             this.talkVm.show(payload);
 
         });
-        
+
         this.subscribe4 = ea.subscribe(nsCons.EVENT_MARKDOWN_TASK_ITEM_STATUS_TOGGLE, (payload) => {
             // console.log(payload);
 
@@ -237,6 +237,18 @@ export class EmChannelTask {
         });
     }
 
+    detached() {
+
+        this.drake.destroy();
+        this.drake = null;
+
+        $('.em-channel-task').off('click', '.tms-task-filter > .text .remove.icon', this.taskClickHandler);
+
+        this.taskClickHandler = null;
+        this.channel = null;
+        this.loginUser = null;
+    }
+
     attached() {
         this.drake = dragula($(this.containerRef).find('.tms-dd-container').toArray(), {
             // isContainer: function(el) {
@@ -287,7 +299,7 @@ export class EmChannelTask {
 
         });
 
-        $('.em-channel-task').on('click', '.tms-task-filter > .text .remove.icon', event => {
+        this.taskClickHandler = event => {
 
             let $dd = $(event.currentTarget).parents('.tms-task-filter');
             $dd.dropdown('clear').dropdown('hide');
@@ -298,7 +310,9 @@ export class EmChannelTask {
                     item._hidden = false;
                 });
             }
-        })
+        };
+
+        $('.em-channel-task').on('click', '.tms-task-filter > .text .remove.icon', this.taskClickHandler);
     }
 
     _sortMembers() {

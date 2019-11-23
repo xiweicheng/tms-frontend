@@ -117,6 +117,6 @@ export class AttrDropzone {
         this.dropzones = [];
         this.eventAggregator = null;
         this.subscribe.dispose();
-        Dropzone = null;
+        // Dropzone = null;
     }
 }
