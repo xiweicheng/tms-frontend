@@ -28,7 +28,7 @@ export class AttrTablesortCustomAttribute {
 
     unbind() {
 
-        console.log('AttrTablesortCustomAttribute--unbind');
+        window.__debug && console.log('AttrTablesortCustomAttribute--unbind');
 
         this.tablesort && this.tablesort.destroy();
 

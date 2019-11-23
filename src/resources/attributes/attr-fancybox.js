@@ -68,7 +68,7 @@ export class AttrFancyboxCustomAttribute {
     }
 
     unbind() {
-        console.log('AttrFancyboxCustomAttribute--unbind');
+        window.__debug && console.log('AttrFancyboxCustomAttribute--unbind');
         $(this.element).off('click', 'img', this.imgHandler);
         this.imgHandler = null;
         this.element = null;

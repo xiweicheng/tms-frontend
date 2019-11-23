@@ -105,7 +105,7 @@ export class AttrDropzone {
      * 当数据绑定引擎从视图解除绑定时被调用
      */
     unbind() {
-        console.log('AttrDropzone--unbind');
+        window.__debug && console.log('AttrDropzone--unbind');
         try {
             $.each(this.dropzones, (i, dropzone) => {
                 dropzone.destroy();

@@ -42,7 +42,7 @@ export class EmUserAvatar {
     }
 
     detached() {
-        console.log('EmUserAvatar--detached');
+        window.__debug && console.log('EmUserAvatar--detached');
         $(this.avatarRef).unbind('mouseenter').unbind('mouseleave');
         this.avatarRef = null;
         this.user = null;

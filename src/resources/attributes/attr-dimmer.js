@@ -24,7 +24,7 @@ export class AttrDimmer {
     }
 
     unbind() {
-        console.log('AttrDimmer--unbind');
+        window.__debug && console.log('AttrDimmer--unbind');
         this.$dimmer && this.$dimmer.remove();
         this.$dimmer = null;
         this.element = null;

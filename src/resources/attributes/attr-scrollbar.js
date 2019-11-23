@@ -30,7 +30,7 @@ export class AttrScrollbarCustomAttribute {
      */
     unbind() {
 
-        console.log('AttrScrollbarCustomAttribute--unbind');
+        window.__debug && console.log('AttrScrollbarCustomAttribute--unbind');
         try {
             jQuery(this.element).removeClass(this.cls).scrollbar('destroy');
         } catch (err) {}

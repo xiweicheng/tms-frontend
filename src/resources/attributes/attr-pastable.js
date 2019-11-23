@@ -45,7 +45,7 @@ export class AttrPastable {
     }
 
     unbind() {
-        console.log('AttrPastable--unbind');
+        window.__debug && console.log('AttrPastable--unbind');
         $(this.element).pastableTextarea().off('pasteImage', this.pasteHandler).off('pasteImageError', this.errHandler);
         this.element = null;
         this.pasteHandler = null;

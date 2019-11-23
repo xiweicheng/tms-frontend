@@ -151,7 +151,7 @@ export class AttrTextcompleteCustomAttribute {
 
     unbind() {
 
-        console.log('AttrTextcompleteCustomAttribute--unbind');
+        window.__debug && console.log('AttrTextcompleteCustomAttribute--unbind');
 
         try {
             $(this.element).textcomplete('destroy');

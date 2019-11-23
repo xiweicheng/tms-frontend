@@ -44,7 +44,7 @@ export class EmChatContentItemFootbar {
         type: 'emoji'
     }];
 
-    myTags = nsCtx.myTags;
+    myTags;
 
     /**
      * 构造函数
@@ -52,7 +52,7 @@ export class EmChatContentItemFootbar {
     constructor() {}
 
     detached() {
-        console.log('EmChatContentItemFootbar--detached');
+        window.__debug && console.log('EmChatContentItemFootbar--detached');
 
         $([this.addEmojiRef]).popup('destroy');
         $([this.addTagRef]).popup('destroy');
@@ -67,6 +67,7 @@ export class EmChatContentItemFootbar {
 
     bind() {
         this.tags = tags;
+        this.myTags = nsCtx.myTags;
     }
 
     /**

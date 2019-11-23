@@ -21,7 +21,7 @@ export class AttrAutosize {
      * 当数据绑定引擎从视图解除绑定时被调用
      */
     unbind() {
-        console.log('AttrAutosize--unbind');
+        window.__debug && console.log('AttrAutosize--unbind');
         autosize.destroy(this.element);
         this.element = null;
     }

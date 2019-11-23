@@ -32,7 +32,7 @@ export class AttrTask {
     }
 
     unbind() {
-        console.log('AttrTask--unbind');
+        window.__debug && console.log('AttrTask--unbind');
         this.element = null;
         this.task = null;
         this.bindingCtx = null;
