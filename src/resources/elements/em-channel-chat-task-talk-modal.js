@@ -32,6 +32,17 @@ export class EmChannelChatTaskTalkModal {
         });
     }
 
+    detached() {
+        window.__debug && console.log('EmChannelChatTaskTalkModal--detached');
+
+        this.channel = null;
+        this.task = null;
+        this.actived = null;
+        this.chatTopicVm = null;
+        this.emModal = null;
+
+    }
+
     /**
      * 当数据绑定引擎从视图解除绑定时被调用
      */
@@ -40,6 +51,7 @@ export class EmChannelChatTaskTalkModal {
     }
 
     approveHandler(modal) {
+        this.chatTopicVm.commit();
         this.emModal.hide();
     }
 }

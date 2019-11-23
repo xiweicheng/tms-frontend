@@ -211,8 +211,29 @@ export class EmChatTopic {
 
     }
 
+    detached() {
+        window.__debug && console.log('EmChatTopic--detached');
+
+        $(this.commentsRef).off('dblclick', '.comment.tms-reply', this.replydblclickHandler);
+        $(this.commentsRef).off('click', '.markdown-body .at-user', this.atUserHandler);
+        $(this.commentsRef).off('click', '.markdown-body .at-group', this.atGroupHandler);
+
+        this.replydblclickHandler = null;
+        this.atUserHandler = null;
+        this.atGroupHandler = null;
+
+        this.actived = null;
+        this.channel = null;
+        this.members = [];
+        this.chat = [];
+        this.commentsRef = null;
+        this.ajaxTopic = null;
+        this.followers = null;
+    }
+
     attached() {
-        $(this.commentsRef).on('dblclick', '.comment.tms-reply', (event) => {
+
+        this.replydblclickHandler = (event) => {
             if (event.ctrlKey && event.shiftKey) {
                 let chatId = $(event.currentTarget).attr('data-id');
                 let $t = $(event.currentTarget).find('.content > textarea');
@@ -229,23 +250,29 @@ export class EmChatTopic {
                     autosize.update($t.get(0));
                 });
             }
-        });
+        };
 
-        $(this.commentsRef).on('click', '.markdown-body .at-user', (event) => {
+        $(this.commentsRef).on('dblclick', '.comment.tms-reply', this.replydblclickHandler);
+
+        this.atUserHandler = (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_INSERT, {
                 from: this.name,
                 content: `{~${$(event.currentTarget).attr('data-value')}} `
             });
-        });
+        };
 
-        $(this.commentsRef).on('click', '.markdown-body .at-group', (event) => {
+        $(this.commentsRef).on('click', '.markdown-body .at-user', this.atUserHandler);
+
+        this.atGroupHandler = (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_INSERT, {
                 from: this.name,
                 content: `{!~${$(event.currentTarget).attr('data-value')}} `
             });
-        });
+        };
+
+        $(this.commentsRef).on('click', '.markdown-body .at-group', this.atGroupHandler);
     }
 
     unbind() {
@@ -550,5 +577,9 @@ export class EmChatTopic {
             from: this.name,
             content: `{~${item.creator.username}} `
         });
+    }
+
+    commit() {
+        this.chatTopicInputVm.sendChatMsgHandler();
     }
 }

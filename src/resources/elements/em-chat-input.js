@@ -66,6 +66,13 @@ export class EmChatInput {
         this.initHotkeys();
     }
 
+    detached() {
+        window.__debug && console.log('EmChatInput--detached');
+        try {
+            $(this.$chatMsgInputRef).textcomplete('destroy');
+        } catch (err) {}
+    }
+
     initPaste() {
 
         let $paste;

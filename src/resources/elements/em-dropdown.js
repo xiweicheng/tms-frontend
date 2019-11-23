@@ -39,4 +39,12 @@ export class EmDropdown {
             });
         }
     }
+
+    detached() {
+        window.__debug && console.log('EmDropdown--detached');
+
+        this.selectedItem = null;
+        this.menuItems = [];
+        this.dropdown = null;
+    }
 }
