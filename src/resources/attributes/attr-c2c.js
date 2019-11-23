@@ -37,6 +37,9 @@ export class AttrC2cCustomAttribute {
     }
 
     unbind() {
+        console.log('AttrC2cCustomAttribute--unbind');
         this.clipboard && this.clipboard.destroy();
+        this.clipboard = null;
+        this.element = null;
     }
 }

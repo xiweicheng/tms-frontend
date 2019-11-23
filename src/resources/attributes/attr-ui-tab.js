@@ -21,4 +21,8 @@ export class AttrUiTabCustomAttribute {
     bind() {
         this._init();
     }
+
+    unbind() {
+        this.element = null;
+    }
 }

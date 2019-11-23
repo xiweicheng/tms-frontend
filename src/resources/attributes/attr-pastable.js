@@ -12,8 +12,8 @@ export class AttrPastable {
     }
 
     valueChanged(newValue, oldValue) {
-        // clipboard paste image
-        $(this.element).pastableTextarea().on('pasteImage', (ev, data) => {
+
+        this.pasteHandler = (ev, data) => {
 
             $.post('/admin/file/base64', {
                 dataURL: data.dataURL,
@@ -29,12 +29,27 @@ export class AttrPastable {
                         .replace(/\{uuidName\}/g, data.data.uuidName));
                 }
             });
-        }).on('pasteImageError', (ev, data) => {
+        };
+
+        this.errHandler = (ev, data) => {
             toastr.error(data.message, '剪贴板粘贴图片错误!');
-        });
+        };
+
+        // https://github.com/layerssss/paste.js
+        // clipboard paste image
+        $(this.element).pastableTextarea().on('pasteImage', this.pasteHandler).on('pasteImageError', this.errHandler);
     }
 
     bind(bindingContext) {
         this.valueChanged(this.value);
+    }
+
+    unbind() {
+        console.log('AttrPastable--unbind');
+        $(this.element).pastableTextarea().off('pasteImage', this.pasteHandler).off('pasteImageError', this.errHandler);
+        this.element = null;
+        this.pasteHandler = null;
+        this.errHandler = null;
+
     }
 }

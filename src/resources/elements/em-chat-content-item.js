@@ -140,25 +140,66 @@ export class EmChatContentItem {
         this.subscribe2.dispose();
     }
 
+    detached() {
+
+        $(document).unbind('keydown', 'e', this.keydownHandler);
+        $('.tms-content-body').off('click', '.markdown-body .at-user', this.atUserHandler);
+        $('.tms-content-body').off('click', '.markdown-body .at-group', this.atGroupHandler);
+        $('.tms-chat').off('mouseenter', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', this.msgPpMiHandler);
+        $('.tms-chat').off('mouseleave', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', this.msgPpMlHandler);
+        $('.tms-chat').off('mouseenter', '.tms-content-body .em-chat-content-item', this.wikiDirMiHandler);
+        $('.tms-chat').off('mouseleave', '.tms-content-body .em-chat-content-item', this.wikiDirMlHandler);
+        $('.tms-chat').off('click', '.panel-wiki-dir .wiki-dir-item', this.wikiDirItemClickHandler);
+        $('.tms-chat').off('mouseenter', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', this.userInfoPpMiHandler);
+        $('.tms-chat').off('mouseleave', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', this.userInfoPpMlHandler);
+
+
+        this.keydownHandler = null;
+        this.atUserHandler = null;
+        this.atGroupHandler = null;
+        this.msgPpMiHandler = null;
+        this.msgPpMlHandler = null;
+        this.wikiDirMiHandler = null;
+        this.wikiDirMlHandler = null;
+        this.wikiDirItemClickHandler = null;
+        this.userInfoPpMiHandler = null;
+        this.userInfoPpMlHandler = null;
+
+        this.chats = null;
+        this.loginUser = null;
+        this.isAt = null;
+        this.channel = null;
+        this.markId = null;
+        this.chatTo = null;
+        this.members = [];
+
+        this.hoverMsgTimeoutRef = null;
+        this.hoverMsgTarget = null;
+
+    }
+
     /**
      * 当视图被附加到DOM中时被调用
      */
     attached() {
-        $('.tms-content-body').on('click', '.markdown-body .at-user', (event) => {
+        this.atUserHandler = (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_CHAT_MSG_INSERT, {
                 content: `{~${$(event.currentTarget).attr('data-value')}} `
             });
-        });
-        $('.tms-content-body').on('click', '.markdown-body .at-group', (event) => {
+        };
+
+        this.atGroupHandler = (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_CHAT_MSG_INSERT, {
                 content: `{!~${$(event.currentTarget).attr('data-value')}} `
             });
-        });
+        };
 
-        // 消息popup
-        $('.tms-chat').on('mouseenter', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', (event) => {
+        $('.tms-content-body').on('click', '.markdown-body .at-user', this.atUserHandler);
+        $('.tms-content-body').on('click', '.markdown-body .at-group', this.atGroupHandler);
+
+        this.msgPpMiHandler = (event) => {
             event.preventDefault();
             let target = event.currentTarget;
 
@@ -181,9 +222,9 @@ export class EmChatContentItem {
                 this.hoverMsgTimeoutRef = null;
             }, 500);
 
-        });
+        };
 
-        $('.tms-chat').on('mouseleave', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', (event) => {
+        this.msgPpMlHandler = (event) => {
             event.preventDefault();
             if (this.hoverMsgTimeoutRef) {
                 if (this.hoverMsgTarget === event.currentTarget) {
@@ -191,10 +232,14 @@ export class EmChatContentItem {
                     this.hoverMsgTimeoutRef = null;
                 }
             }
-        });
+        };
 
-        // wiki dir
-        $('.tms-chat').on('mouseenter', '.tms-content-body .em-chat-content-item', (event) => {
+        // 消息popup
+        $('.tms-chat').on('mouseenter', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', this.msgPpMiHandler);
+        $('.tms-chat').on('mouseleave', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', this.msgPpMlHandler);
+
+
+        this.wikiDirMiHandler = (event) => {
             event.preventDefault();
             var $c = $(event.currentTarget);
 
@@ -205,23 +250,28 @@ export class EmChatContentItem {
             let chat = _.find(this.chats, { id: +$c.attr('data-id') });
             chat && (chat._hovered = true);
             chat && (chat.__hovered = true);
-        });
+        };
 
-        $('.tms-chat').on('mouseleave', '.tms-content-body .em-chat-content-item', (event) => {
+        this.wikiDirMlHandler = (event) => {
             event.preventDefault();
             var $c = $(event.currentTarget);
 
             let chat = _.find(this.chats, { id: +$c.attr('data-id') });
             chat && (chat._hovered = false);
-        });
+        };
 
-        $('.tms-chat').on('click', '.panel-wiki-dir .wiki-dir-item', (event) => {
+        // wiki dir
+        $('.tms-chat').on('mouseenter', '.tms-content-body .em-chat-content-item', this.wikiDirMiHandler);
+        $('.tms-chat').on('mouseleave', '.tms-content-body .em-chat-content-item', this.wikiDirMlHandler);
+
+        this.wikiDirItemClickHandler = (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_CHAT_CONTENT_SCROLL_TO, { target: $('#' + $(event.currentTarget).attr('data-id')) });
-        });
+        };
 
-        // 用户信息popup
-        $('.tms-chat').on('mouseenter', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+        $('.tms-chat').on('click', '.panel-wiki-dir .wiki-dir-item', this.wikiDirItemClickHandler);
+
+        this.userInfoPpMiHandler = (event) => {
             event.preventDefault();
             let target = event.currentTarget;
 
@@ -246,10 +296,9 @@ export class EmChatContentItem {
                 this.hoverTimeoutRef = null;
             }, 500);
 
-        });
+        };
 
-        // 用户信息popup
-        $('.tms-chat').on('mouseleave', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+        this.userInfoPpMlHandler = (event) => {
             event.preventDefault();
             if (this.hoverTimeoutRef) {
                 if (this.hoverUserTarget === event.currentTarget) {
@@ -258,7 +307,11 @@ export class EmChatContentItem {
                 }
             }
 
-        });
+        };
+
+        // 用户信息popup
+        $('.tms-chat').on('mouseenter', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', this.userInfoPpMiHandler);
+        $('.tms-chat').on('mouseleave', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', this.userInfoPpMlHandler);
 
         this.initHotkeys();
     }
@@ -304,13 +357,14 @@ export class EmChatContentItem {
     }
 
     initHotkeys() {
-        $(document).bind('keydown', 'e', (evt) => {
+        this.keydownHandler = (evt) => {
             evt.preventDefault();
             let chat = _.findLast(this.chats, c => c.creator.username == this.loginUser.username);
             if (chat) {
                 this.editHandler(chat, $(`.em-chat-content-item[data-id="${chat.id}"]`).find('> .content > textarea'));
             }
-        });
+        };
+        $(document).bind('keydown', 'e', this.keydownHandler);
     }
 
     editHandler(item, editTxtRef) {

@@ -26,9 +26,12 @@ export class AttrTextcompleteCustomAttribute {
     }
 
     valueChanged() {
+        
         if (this.value) {
             this.members = this.value.users;
             this.channel = this.value.channel;
+
+            // https://github.com/yuku/jquery-textcomplete
             $(this.element).textcomplete([{ // chat msg help
                 match: /(|\b)(\/.*)$/,
                 search: (term, callback) => {
@@ -120,8 +123,12 @@ export class AttrTextcompleteCustomAttribute {
 
     initHotkeys() {
 
+        this.keydowns = [];
+
         _.each(_.filter(_.values(tips), 'key'), (value) => {
-            $(this.element).bind('keydown', value.key, (evt) => {
+
+            let key = value.key;
+            let handler = (evt) => {
                 evt.preventDefault();
                 $(this.element).insertAtCaret(value.value);
                 let cr = utils.getCursortPosition(this.element);
@@ -130,14 +137,34 @@ export class AttrTextcompleteCustomAttribute {
                 _.defer(() => {
                     autosize.update(this.element);
                 });
+            };
+
+            this.keydowns.push({
+                key: key,
+                handler: handler
             });
+
+            $(this.element).bind('keydown', key, handler);
         });
 
     }
 
     unbind() {
+
+        console.log('AttrTextcompleteCustomAttribute--unbind');
+
         try {
             $(this.element).textcomplete('destroy');
         } catch (err) {}
+
+
+        _.each(this.keydowns, (item) => {
+            $(this.element).unbind('keydown', item.key, item.handler);
+        });
+
+        this.members = null;
+        this.channel = null;
+        this.element = null;
+        this.keydowns = [];
     }
 }

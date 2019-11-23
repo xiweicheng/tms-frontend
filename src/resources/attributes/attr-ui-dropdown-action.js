@@ -24,4 +24,8 @@ export class AttrUiDropdownActionCustomAttribute {
     bind() {
         this._init(this.value ? this.value : window);
     }
+
+    unbind() {
+        this.element = null;
+    }
 }

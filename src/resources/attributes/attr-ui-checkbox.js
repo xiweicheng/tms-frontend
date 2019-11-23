@@ -12,4 +12,8 @@ export class AttrUiCheckboxCustomAttribute {
     valueChanged(newValue, oldValue) {
         $(this.element).checkbox();
     }
+
+    unbind() {
+    	this.element = null;
+    }
 }

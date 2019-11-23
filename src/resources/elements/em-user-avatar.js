@@ -32,11 +32,20 @@ export class EmUserAvatar {
      * 当视图被附加到DOM中时被调用
      */
     attached() {
+
         $(this.avatarRef).hover(() => {
             this._calcNameChar(false);
         }, () => {
             this._calcNameChar();
         });
+
+    }
+
+    detached() {
+        console.log('EmUserAvatar--detached');
+        $(this.avatarRef).unbind('mouseenter').unbind('mouseleave');
+        this.avatarRef = null;
+        this.user = null;
     }
 
     dblclickHandler() {

@@ -49,7 +49,23 @@ export class EmChatContentItemFootbar {
     /**
      * 构造函数
      */
-    constructor() {
+    constructor() {}
+
+    detached() {
+        console.log('EmChatContentItemFootbar--detached');
+
+        $([this.addEmojiRef]).popup('destroy');
+        $([this.addTagRef]).popup('destroy');
+
+        this.chat = null;
+        this.myTags = null;
+        this.tags = null;
+        this.addEmojiRef = null;
+        this.addTagRef = null;
+        this.tagRef = null;
+    }
+
+    bind() {
         this.tags = tags;
     }
 
@@ -57,6 +73,7 @@ export class EmChatContentItemFootbar {
      * 当视图被附加到DOM中时被调用
      */
     attached() {
+
         $([this.addEmojiRef])
             .popup({
                 inline: true,

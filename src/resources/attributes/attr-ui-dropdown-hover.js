@@ -24,4 +24,8 @@ export class AttrUiDropdownHoverCustomAttribute {
     bind() {
         this._init(this.value ? this.value : 'hide');
     }
+
+    unbind() {
+        this.element = null;
+    }
 }
