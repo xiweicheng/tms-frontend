@@ -56,6 +56,15 @@ export class EmChatSidebarRight {
         this.subscribe2.dispose();
     }
 
+    detached() {
+        window.__debug && console.log('EmChatSidebarRight--detached');
+
+        this.loginUser = null;
+        this.channels = null;
+        this.actived = null;
+
+    }
+
     attachHandler(payload) {
         this.chatAttachVm.fetch();
     }

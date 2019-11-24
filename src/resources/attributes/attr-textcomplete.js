@@ -26,7 +26,7 @@ export class AttrTextcompleteCustomAttribute {
     }
 
     valueChanged() {
-        
+
         if (this.value) {
             this.members = this.value.users;
             this.channel = this.value.channel;
@@ -159,7 +159,7 @@ export class AttrTextcompleteCustomAttribute {
 
 
         _.each(this.keydowns, (item) => {
-            $(this.element).unbind('keydown', item.key, item.handler);
+            $(this.element).unbind('keydown', item.handler);
         });
 
         this.members = null;

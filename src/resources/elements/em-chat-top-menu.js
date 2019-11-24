@@ -30,6 +30,29 @@ export class EmChatTopMenu {
     channelLinks = [];
     channelGantts = [];
 
+
+    detached() {
+        window.__debug && console.log('EmChatTopMenu--detached');
+
+        window.removeEventListener && window.removeEventListener('message', this.messageHandler, false);
+        $(document).unbind('keydown', this.sidebarHandler);
+
+        this.messageHandler = null;
+        this.sidebarHandler = null;
+
+        this.loginUser = null;
+        this.chatUser = null;
+        this.users = null;
+        this.channels = null;
+        this.channel = null;
+        this.chatId = null;
+        this.chatTo = null;
+        this.onlines = null;
+        this.channelLinks = [];
+        this.channelGantts = [];
+
+    }
+
     loginUserChanged() {
         if (this.loginUser) {
             this.isSuper = utils.isSuperUser(this.loginUser);
@@ -242,14 +265,16 @@ export class EmChatTopMenu {
             }
         });
 
-        window.addEventListener && window.addEventListener('message', function(ev) {
+        this.messageHandler = function(ev) {
             // console.info('message from parent:', ev.data);
             if (ev.origin != window.location.origin) return;
 
             if (ev.data.source != 'gantt') return;
 
             ea.publish(nsCons.EVENT_CHANNEL_GANTTS_REFRESH, ev.data);
-        }, false);
+        };
+
+        window.addEventListener && window.addEventListener('message', this.messageHandler, false);
 
         $('.tms-em-chat-top-menu .tms-notice').css({ 'max-width': $(window).width() - 1000 });
     }
@@ -360,16 +385,17 @@ export class EmChatTopMenu {
     }
 
     initHotkeys() {
-        $(document).bind('keydown', 's', (event) => { // sidebar
+
+        this.sidebarHandler = (event) => { // sidebar
             event.preventDefault();
             this.toggleRightSidebar();
-        }).bind('keydown', 'ctrl+k', (event) => {
-            event.preventDefault();
-        });
+        };
 
-        $(this.filterChatToUser).bind('keydown', 'ctrl+k', (event) => {
-            event.preventDefault();
-        });
+        $(document).bind('keydown', 's', this.sidebarHandler);
+
+        // $(this.filterChatToUser).bind('keydown', 'ctrl+k', (event) => {
+        //     event.preventDefault();
+        // });
     }
 
     searchFocusHandler() {

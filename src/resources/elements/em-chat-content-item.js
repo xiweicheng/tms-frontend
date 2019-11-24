@@ -142,7 +142,7 @@ export class EmChatContentItem {
 
     detached() {
 
-        $(document).unbind('keydown', 'e', this.keydownHandler);
+        $(document).unbind('keydown', this.keydownHandler);
         $('.tms-content-body').off('click', '.markdown-body .at-user', this.atUserHandler);
         $('.tms-content-body').off('click', '.markdown-body .at-group', this.atGroupHandler);
         $('.tms-chat').off('mouseenter', '.markdown-body a[href*="#/chat/"]:not(.pp-not)', this.msgPpMiHandler);

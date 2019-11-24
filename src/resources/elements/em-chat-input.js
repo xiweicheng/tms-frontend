@@ -5,6 +5,9 @@ import emojis from 'common/common-emoji';
 import {
     default as SimpleMDE
 } from 'simplemde';
+import {
+    default as Dropzone
+} from 'dropzone';
 
 @containerless
 export class EmChatInput {
@@ -68,39 +71,87 @@ export class EmChatInput {
 
     detached() {
         window.__debug && console.log('EmChatInput--detached');
+
+        this.chatTo = null;
+        this.isAt = null;
+        this.channel = null;
+        this.members = [];
+
+        if (this.$paste) {
+            this.$paste.off('pasteImage', this.pasteHandler).off('pasteImageError', this.errHandler);
+            this.pasteHandler = null;
+            this.errHandler = null;
+
+            this.$paste = null;
+        }
+
+        $(this.chatBtnRef).popup('destroy');
+        this.chatBtnRef = null;
+
+        $('.CodeMirror-wrap', this.inputRef).each((index, elem) => {
+            let dd = Dropzone.forElement(elem);
+            dd && dd.destroy();
+        });
+        this.inputRef = null;
+
+        $(this.btnItemUploadRef).children().andSelf().each((index, elem) => {
+            let dd = Dropzone.forElement(elem);
+            dd && dd.destroy();
+        });
+        this.btnItemUploadRef = null;
+
+        $(this.btnItemCsvRef).children().andSelf().each((index, elem) => {
+            let dd = Dropzone.forElement(elem);
+            dd && dd.destroy();
+        });
+        this.btnItemCsvRef = null;
+
         try {
+            // https://github.com/sparksuite/simplemde-markdown-editor
+            this.simplemde.toTextArea();
+            this.simplemde = null;
+
             $(this.$chatMsgInputRef).textcomplete('destroy');
-        } catch (err) {}
+            this.$chatMsgInputRef = null;
+        } catch (err) {
+            console.error(err);
+        }
+
     }
 
     initPaste() {
 
-        let $paste;
         if (this.$chatMsgInputRef.is('textarea')) {
-            $paste = $(this.$chatMsgInputRef).pastableTextarea();
+            this.$paste = $(this.$chatMsgInputRef).pastableTextarea();
         } else {
-            $paste = $(this.$chatMsgInputRef).pastableContenteditable();
+            this.$paste = $(this.$chatMsgInputRef).pastableContenteditable();
         }
 
-        $paste && ($paste.on('pasteImage', (ev, data) => {
+        if (this.$paste) {
 
-            $.post('/admin/file/base64', {
-                dataURL: data.dataURL,
-                type: data.blob.type,
-                toType: nsCtx.isAt ? 'User' : 'Channel',
-                toId: nsCtx.chatTo
-            }, (data, textStatus, xhr) => {
-                if (data.success) {
-                    this.insertContent('![{name}]({baseURL}{path}{uuidName})'
-                        .replace(/\{name\}/g, data.data.name)
-                        .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
-                        .replace(/\{path\}/g, data.data.path)
-                        .replace(/\{uuidName\}/g, data.data.uuidName));
-                }
-            });
-        }).on('pasteImageError', (ev, data) => {
-            toastr.error(data.message, '剪贴板粘贴图片错误!');
-        }));
+            this.pasteHandler = (ev, data) => {
+
+                $.post('/admin/file/base64', {
+                    dataURL: data.dataURL,
+                    type: data.blob.type,
+                    toType: nsCtx.isAt ? 'User' : 'Channel',
+                    toId: nsCtx.chatTo
+                }, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        this.insertContent('![{name}]({baseURL}{path}{uuidName})'
+                            .replace(/\{name\}/g, data.data.name)
+                            .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
+                            .replace(/\{path\}/g, data.data.path)
+                            .replace(/\{uuidName\}/g, data.data.uuidName));
+                    }
+                });
+            };
+
+            this.errHandler = (ev, data) => {
+                toastr.error(data.message, '剪贴板粘贴图片错误!');
+            };
+            this.$paste.on('pasteImage', this.pasteHandler).on('pasteImageError', this.errHandler);
+        }
     }
 
     initDropzone() {

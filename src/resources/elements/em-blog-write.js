@@ -16,6 +16,64 @@ export class EmBlogWrite {
 
     baseRes = utils.getResourceBase();
 
+    detached() {
+
+        window.__debug && console.log('EmBlogWrite--detached');
+
+        this.members = null;
+        this.blog = null;
+
+        if (this.$paste) {
+            this.$paste.off('pasteImage', this.pasteHandler).off('pasteImageError', this.errHandler);
+            this.pasteHandler = null;
+            this.errHandler = null;
+
+            this.$paste = null;
+        }
+
+        $('#blog-save-btn').off('click', this.blogSaveHandler);
+        $('#switch-html').off('click', this.switchHandler);
+
+        this.blogSaveHandler = null;
+        this.switchHandler = null;
+
+        $('#blog-title-input').off('keyup', this.blogTitleInputKuHandler);
+
+        $('.CodeMirror-wrap', '#txt-blog-write-wrapper').each((index, elem) => {
+            let dd = Dropzone.forElement(elem);
+            dd && dd.destroy();
+        });
+
+        $('.editor-toolbar .fa.fa-upload', '#txt-blog-write-wrapper').each((index, elem) => {
+            let dd = Dropzone.forElement(elem);
+            dd && dd.destroy();
+        });
+
+        $('.editor-toolbar .fa.fa-file-excel-o', '#txt-blog-write-wrapper').each((index, elem) => {
+            let dd = Dropzone.forElement(elem);
+            dd && dd.destroy();
+        });
+
+        try {
+
+            $(this.$chatMsgInputRef).textcomplete('destroy');
+            this.$chatMsgInputRef = null;
+
+            if (this.simplemde) {
+
+                this.simplemde.codemirror.off('keyup', this.editKuHandler);
+                this.editKuHandler = null;
+
+                this.simplemde.value('');
+                this.simplemde.toTextArea();
+                this.simplemde = null;
+            }
+
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     /**
      * 构造函数
      */
@@ -53,23 +111,25 @@ export class EmBlogWrite {
 
         });
 
-        this.blogTitleInputKeyupInit = _.once(() => {
-            $('#blog-title-input').keyup((e) => {
-                let $t = $(e.currentTarget);
+        this.blogTitleInputKuHandler = (e) => {
+            let $t = $(e.currentTarget);
 
-                if (!e.shiftKey && e.keyCode == 13) { // Enter
-                    if (this.simplemde.value()) {
-                        this.save(e, true);
-                    } else {
-                        this.simplemde.codemirror.focus();
-                    }
-
-                } else if (e.shiftKey && e.keyCode == 13) { // Esc
+            if (!e.shiftKey && e.keyCode == 13) { // Enter
+                if (this.simplemde.value()) {
+                    this.save(e, true);
+                } else {
                     this.simplemde.codemirror.focus();
-                } else if (e.keyCode == 27) { // Esc
-                    $t.val('');
                 }
-            });
+
+            } else if (e.shiftKey && e.keyCode == 13) { // Esc
+                this.simplemde.codemirror.focus();
+            } else if (e.keyCode == 27) { // Esc
+                $t.val('');
+            }
+        };
+
+        this.blogTitleInputKeyupInit = _.once(() => {
+            $('#blog-title-input').keyup(this.blogTitleInputKuHandler);
         });
     }
 
@@ -89,9 +149,12 @@ export class EmBlogWrite {
         $('#blog-save-btn span').text('保存');
         $('#blog-save-btn').attr('title', 'ctrl+click快速保存');
         $('#blog-title-input').val('');
-        this.simplemde.value('');
-        this.simplemde.toTextArea();
-        this.simplemde = null;
+        if (this.simplemde) {
+            this.simplemde.value('');
+            this.simplemde.toTextArea();
+            this.simplemde = null;
+        }
+
     }
 
     _editInit() {
@@ -276,7 +339,7 @@ export class EmBlogWrite {
             },
         });
 
-        this.simplemde.codemirror.on('keyup', (cm, e) => {
+        this.editKuHandler = (cm, e) => {
             if (e.ctrlKey && e.keyCode == 13) { // Ctrl+Enter
                 this.save(e, true);
             } else if (e.keyCode == 27) { // Esc
@@ -290,7 +353,9 @@ export class EmBlogWrite {
                     }
                 }
             }
-        });
+        };
+
+        this.simplemde.codemirror.on('keyup', this.editKuHandler);
 
         this.$chatMsgInputRef = $('#txt-blog-write-wrapper').find('.CodeMirror textarea');
         if (this.$chatMsgInputRef.size() === 0) {
@@ -488,31 +553,37 @@ export class EmBlogWrite {
 
     initPaste() {
 
-        let $paste;
         if (this.$chatMsgInputRef.is('textarea')) {
-            $paste = $(this.$chatMsgInputRef).pastableTextarea();
+            this.$paste = $(this.$chatMsgInputRef).pastableTextarea();
         } else {
-            $paste = $(this.$chatMsgInputRef).pastableContenteditable();
+            this.$paste = $(this.$chatMsgInputRef).pastableContenteditable();
         }
 
-        $paste && ($paste.on('pasteImage', (ev, data) => {
+        if (this.$paste) {
 
-            $.post('/admin/file/base64', {
-                dataURL: data.dataURL,
-                type: data.blob.type,
-                toType: 'Blog'
-            }, (data, textStatus, xhr) => {
-                if (data.success) {
-                    this.insertContent('![{name}]({baseURL}{path}{uuidName})'
-                        .replace(/\{name\}/g, data.data.name)
-                        .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
-                        .replace(/\{path\}/g, data.data.path)
-                        .replace(/\{uuidName\}/g, data.data.uuidName));
-                }
-            });
-        }).on('pasteImageError', (ev, data) => {
-            toastr.error(data.message, '剪贴板粘贴图片错误!');
-        }));
+            this.pasteHandler = (ev, data) => {
+
+                $.post('/admin/file/base64', {
+                    dataURL: data.dataURL,
+                    type: data.blob.type,
+                    toType: 'Blog'
+                }, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        this.insertContent('![{name}]({baseURL}{path}{uuidName})'
+                            .replace(/\{name\}/g, data.data.name)
+                            .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
+                            .replace(/\{path\}/g, data.data.path)
+                            .replace(/\{uuidName\}/g, data.data.uuidName));
+                    }
+                });
+            };
+
+            this.errHandler = (ev, data) => {
+                toastr.error(data.message, '剪贴板粘贴图片错误!');
+            };
+
+            this.$paste.on('pasteImage', this.pasteHandler).on('pasteImageError', this.errHandler);
+        }
     }
 
     initUploadDropzone(domRef, getInputTargetCb, clickable) {
@@ -599,13 +670,17 @@ export class EmBlogWrite {
      * 当视图被附加到DOM中时被调用
      */
     attached() {
-        $('#blog-save-btn').click((event) => {
-            this.save(event);
-        });
 
-        $('#switch-html').click((event) => {
+        this.blogSaveHandler = (event) => {
+            this.save(event);
+        };
+
+        this.switchHandler = (event) => {
             this.switchEditorHandler();
-        });
+        };
+
+        $('#blog-save-btn').click(this.blogSaveHandler);
+        $('#switch-html').click(this.switchHandler);
     }
 
     save(event, isKey) {

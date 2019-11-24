@@ -54,13 +54,29 @@ export class EmChatSidebarLeft {
         this.subscribe2.dispose();
     }
 
+    detached() {
+        window.__debug && console.log('EmChatSidebarLeft--detached');
+
+        $(this.logoRef).off('mouseenter', this.logoMeHandler);
+
+        this.logoMeHandler = null;
+        this.users = null;
+        this.loginUser = null;
+        this.channels = null;
+        this.onlines = null;
+
+    }
+
     /**
      * 当视图被附加到DOM中时被调用
      */
     attached() {
-        $(this.logoRef).on('mouseenter', (event) => {
+
+        this.logoMeHandler = (event) => {
             $(this.logoRef).animateCss('flip');
-        });
+        };
+
+        $(this.logoRef).on('mouseenter', this.logoMeHandler);
     }
 
     _filter() {
@@ -164,7 +180,7 @@ export class EmChatSidebarLeft {
     //  }
 
     isSubscribed(item) {
-        return _.some(item.subscriber, { username: this.loginUser.username });
+        return _.some(item.subscriber, { username: this.loginUser ? this.loginUser.username : '' });
     }
 
     subscribeHandler(item) {

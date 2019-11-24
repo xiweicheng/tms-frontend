@@ -20,12 +20,28 @@ export class EmChatMsg {
         this.initHotkeys();
     }
 
+    detached() {
+        window.__debug && console.log('EmChatMsg--detached');
+
+        $(document).unbind('keydown', this.openKeydownHandler);
+
+        this.openKeydownHandler = null;
+        this.loginUser = null;
+        this.channel = null;
+        this.chats = null;
+        this.actived = null;
+
+    }
+
     initHotkeys() {
-        $(document).bind('keydown', 'o', (event) => {
+
+        this.openKeydownHandler = (event) => {
             event.preventDefault();
             let item = _.find(this.chats, { isHover: true });
             item && (item.isOpen = !item.isOpen);
-        });
+        };
+
+        $(document).bind('keydown', 'o', this.openKeydownHandler);
 
     }
 

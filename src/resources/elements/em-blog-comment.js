@@ -18,12 +18,83 @@ export class EmBlogComment {
     offset = 0;
     isSuper = nsCtx.isSuper;
     loginUser = nsCtx.loginUser;
-    users = nsCtx.users;
+    users;
 
     @bindable blog;
 
     blogChanged(newValue, oldValue) {
         this._refresh();
+    }
+
+    bind() {
+        this.users = nsCtx.users;
+    }
+
+    detached() {
+        window.__debug && console.log('EmBlogComment--detached');
+
+        this.comments = null;
+        this.users = null;
+        this.blog = null;
+        this.focusedComment = null;
+
+        // 消息popup
+        $('.em-blog-comment .comments').off('mouseenter', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', this.blogCommentMeHandler);
+        $('.em-blog-comment .comments').off('mouseleave', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', this.blogCommentMlHandler);
+        this.blogCommentMeHandler = null;
+        this.blogCommentMlHandler = null;
+
+        $('.em-blog-comment .comments').off('dblclick', '.comment', this.commentsDblHandler);
+        $('.em-blog-comment .comments').off('click', '.comment', this.commentsClHandler);
+        this.commentsDblHandler = null;
+        this.commentsClHandler = null;
+
+        $(document).unbind('keydown', this.kdRHandler).unbind('keydown', this.kdAltUpHandler).unbind('keydown', this.kdAltDownHandler);
+        this.kdRHandler = null;
+        this.kdAltUpHandler = null;
+        this.kdAltDownHandler = null;
+
+        if (this.$paste) {
+            this.$paste.off('pasteImage', this.pasteHandler).off('pasteImageError', this.errHandler);
+            this.pasteHandler = null;
+            this.errHandler = null;
+
+            this.$paste = null;
+        }
+
+        $('.CodeMirror-wrap', this.markdownRef).each((index, elem) => {
+            let dd = Dropzone.forElement(elem);
+            dd && dd.destroy();
+        });
+
+        $('.editor-toolbar .fa.fa-upload', this.markdownRef).each((index, elem) => {
+            let dd = Dropzone.forElement(elem);
+            dd && dd.destroy();
+        });
+
+        $('.editor-toolbar .fa.fa-file-excel-o', this.markdownRef).each((index, elem) => {
+            let dd = Dropzone.forElement(elem);
+            dd && dd.destroy();
+        });
+        this.markdownRef = null;
+
+        try {
+
+            if (this.simplemde) {
+                this.simplemde.codemirror.off('keyup', this.editKeyHandler);
+                this.editKeyHandler = null;
+
+                // https://github.com/sparksuite/simplemde-markdown-editor
+                this.simplemde.toTextArea();
+                this.simplemde = null;
+            }
+
+            $(this.$chatMsgInputRef).textcomplete('destroy');
+            this.$chatMsgInputRef = null;
+        } catch (err) {
+            console.error(err);
+        }
+
     }
 
     /**
@@ -174,8 +245,7 @@ export class EmBlogComment {
     attached() {
         this._init();
 
-        // 消息popup
-        $('.em-blog-comment .comments').on('mouseenter', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', (event) => {
+        this.blogCommentMeHandler = (event) => {
 
             event.preventDefault();
             let target = event.currentTarget;
@@ -199,10 +269,9 @@ export class EmBlogComment {
                 this.hoverTimeoutRef = null;
             }, 500);
 
-        });
+        };
 
-        // 消息popup
-        $('.em-blog-comment .comments').on('mouseleave', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', (event) => {
+        this.blogCommentMlHandler = (event) => {
             event.preventDefault();
             if (this.hoverTimeoutRef) {
                 if (this.hoverUserTarget === event.currentTarget) {
@@ -210,9 +279,13 @@ export class EmBlogComment {
                     this.hoverTimeoutRef = null;
                 }
             }
-        });
+        };
 
-        $('.em-blog-comment .comments').on('dblclick', '.comment', (event) => {
+        // 消息popup
+        $('.em-blog-comment .comments').on('mouseenter', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', this.blogCommentMeHandler);
+        $('.em-blog-comment .comments').on('mouseleave', '.markdown-body a[href*="#/blog/"]:not(.pp-not)', this.blogCommentMlHandler);
+
+        this.commentsDblHandler = (event) => {
             if (event.ctrlKey && event.shiftKey) {
                 let cid = $(event.currentTarget).attr('data-id');
                 let $t = $(event.currentTarget).find('.content > textarea');
@@ -221,33 +294,43 @@ export class EmBlogComment {
                     this.editHandler(item, $t);
                 }
             }
-        });
+        };
 
-        $('.em-blog-comment .comments').on('click', '.comment', (event) => {
+        this.commentsClHandler = (event) => {
             this.focusedComment = $(event.currentTarget);
-        });
+        };
+
+        $('.em-blog-comment .comments').on('dblclick', '.comment', this.commentsDblHandler);
+        $('.em-blog-comment .comments').on('click', '.comment', this.commentsClHandler);
 
         this.initHotkeys();
     }
 
     initHotkeys() {
-        $(document).bind('keydown', 'r', (evt) => { // reply
+
+        this.kdRHandler = (evt) => { // reply
             evt.preventDefault();
             $('.em-blog-content').scrollTo(`max`, 120, {
                 offset: 0
             });
             this.simplemde.codemirror.focus();
-        }).bind('keydown', 'alt+up', (evt) => { // comment pre
+        };
+
+        this.kdAltUpHandler = (evt) => { // comment pre
             evt.preventDefault();
             $('.em-blog-content').scrollTo(this.getScrollTargetComment(true), 120, {
                 offset: 0
             });
-        }).bind('keydown', 'alt+down', (evt) => { // comment next
+        };
+
+        this.kdAltDownHandler = (evt) => { // comment next
             evt.preventDefault();
             $('.em-blog-content').scrollTo(this.getScrollTargetComment(), 120, {
                 offset: 0
             });
-        });
+        };
+
+        $(document).bind('keydown', 'r', this.kdRHandler).bind('keydown', 'alt+up', this.kdAltUpHandler).bind('keydown', 'alt+down', this.kdAltDownHandler);
 
     }
 
@@ -412,13 +495,15 @@ export class EmBlogComment {
             },
         });
 
-        this.simplemde.codemirror.on('keyup', (cm, e) => {
+        this.editKeyHandler = (cm, e) => {
             if (e.ctrlKey && e.keyCode == 13) { // Ctrl+Enter
                 this.addHandler();
             } else if (e.keyCode == 27) { // Esc
                 this.simplemde.value('');
             }
-        });
+        };
+
+        this.simplemde.codemirror.on('keyup', this.editKeyHandler);
 
         this.$chatMsgInputRef = $(this.markdownRef).find('.CodeMirror textarea');
         if (this.$chatMsgInputRef.size() === 0) {
@@ -607,9 +692,12 @@ export class EmBlogComment {
 
     _reset() {
         this.blog = null;
-        this.simplemde.value('');
-        this.simplemde.toTextArea();
-        this.simplemde = null;
+
+        if (this.simplemde) {
+            this.simplemde.value('');
+            this.simplemde.toTextArea();
+            this.simplemde = null;
+        }
     }
 
     /**
@@ -698,31 +786,38 @@ export class EmBlogComment {
 
     initPaste() {
 
-        let $paste;
         if (this.$chatMsgInputRef.is('textarea')) {
-            $paste = $(this.$chatMsgInputRef).pastableTextarea();
+            this.$paste = $(this.$chatMsgInputRef).pastableTextarea();
         } else {
-            $paste = $(this.$chatMsgInputRef).pastableContenteditable();
+            this.$paste = $(this.$chatMsgInputRef).pastableContenteditable();
         }
 
-        $paste && ($paste.on('pasteImage', (ev, data) => {
+        if (this.$paste) {
 
-            $.post('/admin/file/base64', {
-                dataURL: data.dataURL,
-                type: data.blob.type,
-                toType: 'Blog'
-            }, (data, textStatus, xhr) => {
-                if (data.success) {
-                    this.insertContent('![{name}]({baseURL}{path}{uuidName})'
-                        .replace(/\{name\}/g, data.data.name)
-                        .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
-                        .replace(/\{path\}/g, data.data.path)
-                        .replace(/\{uuidName\}/g, data.data.uuidName));
-                }
-            });
-        }).on('pasteImageError', (ev, data) => {
-            toastr.error(data.message, '剪贴板粘贴图片错误!');
-        }));
+            this.pasteHandler = (ev, data) => {
+
+                $.post('/admin/file/base64', {
+                    dataURL: data.dataURL,
+                    type: data.blob.type,
+                    toType: 'Blog'
+                }, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        this.insertContent('![{name}]({baseURL}{path}{uuidName})'
+                            .replace(/\{name\}/g, data.data.name)
+                            .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
+                            .replace(/\{path\}/g, data.data.path)
+                            .replace(/\{uuidName\}/g, data.data.uuidName));
+                    }
+                });
+            };
+
+            this.errHandler = (ev, data) => {
+                toastr.error(data.message, '剪贴板粘贴图片错误!');
+            };
+
+            this.$paste.on('pasteImage', this.pasteHandler).on('pasteImageError', this.errHandler);
+
+        }
     }
 
     initUploadDropzone(domRef, getInputTargetCb, clickable) {
