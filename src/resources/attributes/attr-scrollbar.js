@@ -29,8 +29,12 @@ export class AttrScrollbarCustomAttribute {
      * 当数据绑定引擎从视图解除绑定时被调用
      */
     unbind() {
+
+        window.__debug && console.log('AttrScrollbarCustomAttribute--unbind');
         try {
             jQuery(this.element).removeClass(this.cls).scrollbar('destroy');
         } catch (err) {}
+
+        this.element = null;
     }
 }

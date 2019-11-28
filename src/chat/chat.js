@@ -60,8 +60,8 @@ export class Chat {
         // var socket = new SockJS('http://localhost:8080/ws');
         let socket = new SockJS('/ws');
         window.stompClient = Stomp.over(socket);
-        // window.stompClient.debug = () => {};
-        stompClient.debug = (msg) => { console.log(msg) };
+        window.stompClient.debug = () => {};
+        // stompClient.debug = (msg) => { console.log(msg) };
         window.stompClient.connect({}, (frame) => {
             // 同步在线用户
             this.getOnlineUsers();
@@ -1084,7 +1084,7 @@ export class Chat {
 
     scrollToAfterImgLoaded(to) {
         _.defer(() => {
-            new ImagesLoaded(this.commentsRef).always(() => {
+            this.commentsRef && new ImagesLoaded(this.commentsRef).always(() => {
                 this._scrollTo(to);
             });
 

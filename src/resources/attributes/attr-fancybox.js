@@ -11,7 +11,8 @@ export class AttrFancyboxCustomAttribute {
     }
 
     valueChanged(newValue, oldValue) {
-        $(this.element).on('click', 'img', (event) => {
+
+        this.imgHandler = (event) => {
             event.preventDefault();
             let $img = $(event.target);
             var imgs = [];
@@ -23,6 +24,7 @@ export class AttrFancyboxCustomAttribute {
                 }
             });
 
+            // https://fancyapps.com/fancybox/3/docs/#api
             $.fancybox.open(imgs, {
                 i18n: {
                     'zh': {
@@ -56,10 +58,21 @@ export class AttrFancyboxCustomAttribute {
                 ],
             }, initialIndexOnArray);
 
-        });
+        };
+
+        $(this.element).on('click', 'img', this.imgHandler);
     }
 
     bind(bindingContext) {
         this.valueChanged(this.value);
+    }
+
+    unbind() {
+        window.__debug && console.log('AttrFancyboxCustomAttribute--unbind');
+        $(this.element).off('click', 'img', this.imgHandler);
+        this.imgHandler = null;
+        this.element = null;
+
+        $.fancybox.destroy();
     }
 }

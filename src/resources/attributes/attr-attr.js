@@ -30,5 +30,7 @@ export class AttrAttr {
         this.valueChanged(this.value);
     }
 
-    unbind() {}
+    unbind() {
+        this.element = null;
+    }
 }

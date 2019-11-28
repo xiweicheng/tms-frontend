@@ -71,6 +71,16 @@ export class EmChatShare {
         });
     }
 
+    detached() {
+        $(this.shareRef).popup('destroy');
+
+        this.chat = null;
+        this.channel = null;
+        this.loginUser = null;
+        this.shareRef = null;
+        this.searchRef = null;
+    }
+
     shareSearchKeyupHandler(event) {
         if (event.keyCode === 13 && !$(this.searchRef).search('is visible')) {
             let val = $(this.inputSearchRef).val();

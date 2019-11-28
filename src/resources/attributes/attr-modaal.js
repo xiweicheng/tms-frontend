@@ -44,4 +44,10 @@ export class AttrModaalCustomAttribute {
         });
 
     }
+
+    unbind() {
+        window.__debug && console.log('AttrModaalCustomAttribute--unbind');
+        $(this.element).modaal('close');
+        this.element = null;
+    }
 }

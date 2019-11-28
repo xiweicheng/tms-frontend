@@ -14,13 +14,26 @@ export class AttrTablesortCustomAttribute {
 
     _init() {
         if ($(this.element).is('table')) {
+            // https://github.com/kylefox/jquery-tablesort
             $(this.element).addClass('sortable').tablesort();
+            this.tablesort = $(this.element).data('tablesort');
         } else {
-        	console.warn('tablesort element is not table tag!');
+            console.warn('tablesort element is not table tag!');
         }
     }
 
     bind() {
-    	this._init();
+        this._init();
+    }
+
+    unbind() {
+
+        window.__debug && console.log('AttrTablesortCustomAttribute--unbind');
+
+        this.tablesort && this.tablesort.destroy();
+
+        this.element = null;
+        this.tablesort = null;
+
     }
 }

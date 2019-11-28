@@ -55,6 +55,12 @@ export class EmChannelTaskCreate {
         });
 
         this.simplemde.value(this.taskItem.content);
+
+        _.delay(() => {
+            // this.simplemde.codemirror.focus();
+            this.simplemde.value(this.taskItem.content);
+        }, 500);
+
     }
 
     /**

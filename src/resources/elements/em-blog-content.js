@@ -13,9 +13,15 @@ export class EmBlogContent {
 
     blog;
 
-    loginUser = nsCtx.loginUser;
-    isSuper = nsCtx.isSuper;
-    isAdmin = nsCtx.isAdmin;
+    loginUser;
+    isSuper;
+    isAdmin;
+
+    bind() {
+        this.loginUser = nsCtx.loginUser;
+        this.isSuper = nsCtx.isSuper;
+        this.isAdmin = nsCtx.isAdmin;
+    }
 
     /**
      * 构造函数
@@ -289,6 +295,59 @@ export class EmBlogContent {
         this.subscribe7.dispose();
     }
 
+    detached() {
+        window.__debug && console.log('EmBlogContent--detached');
+
+        this.blog = null;
+        this.loginUser = null;
+        this.isSuper = null;
+        this.isAdmin = null;
+
+        $('.em-blog-content').off('click', 'code[data-code]', this.codeClHandler);
+        $('.em-blog-content').off('click', '.pre-code-wrapper', this.preCodeClHandler);
+        $('.em-blog-right-sidebar').off('click', '.panel-blog-dir .wiki-dir-item', this.wikiDirClHandler);
+        $(this.mkbodyRef).off('dblclick', this.mkDblHandler);
+        $('.em-blog-content').off('scroll', this.blogContentScrollHandler);
+        $(this.feedRef).off('mouseenter', '.event a[href*="#/blog/"]:not(.pp-not)', this.feedMeHandler);
+        $(this.feedRef).off('mouseleave', '.event a[href*="#/blog/"]:not(.pp-not)', this.feedMlHandler);
+        $('.tms-blog').off('mouseenter', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', this.userInfoMeHandler);
+        $('.tms-blog').off('mouseleave', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', this.userInfoMlHandler);
+
+        window.removeEventListener && window.removeEventListener('message', this.messageHandler, false);
+
+        this.codeClHandler = null;
+        this.preCodeClHandler = null;
+        this.wikiDirClHandler = null;
+        this.mkDblHandler = null;
+        this.blogContentScrollHandler = null;
+        this.feedMeHandler = null;
+        this.feedMlHandler = null;
+        this.userInfoMeHandler = null;
+        this.userInfoMlHandler = null;
+        this.messageHandler = null;
+
+        try {
+            $(document).unbind('keyup', this.docKuEHandler)
+                .unbind('keyup', this.docKuWHandler)
+                .unbind('keydown', this.docKuDHandler)
+                .unbind('keydown', this.docKuSHandler)
+                .unbind('keydown', this.docKuFHandler)
+                .unbind('keydown', this.docKuTHandler)
+                .unbind('keydown', this.docKuBHandler)
+                .unbind('keydown', this.docKuAltRHandler)
+                .unbind('keydown', this.docKuAltHHandler)
+                .unbind('keydown', this.docKuAltLHandler)
+                .unbind('keydown', this.docKuAltSHandler)
+                .unbind('keydown', this.docKuAltCHandler)
+                .unbind('keydown', this.docKuAltMHandler)
+                .unbind('keydown', this.docKuAltOHandler)
+                .unbind('keydown', this.docKuAltTHandler)
+                .unbind('keydown', this.docKuAltEHandler)
+                .unbind('keydown', this.docKuAltCtrlDHandler);
+        } catch (err) { console.log(err); }
+
+    }
+
     /**
      * 当视图被附加到DOM中时被调用
      */
@@ -302,7 +361,7 @@ export class EmBlogContent {
                 toastr.error('复制到剪贴板失败!');
             });
 
-        $('.em-blog-content').on('click', 'code[data-code]', function(event) {
+        this.codeClHandler = function(event) {
             if (event.ctrlKey || event.metaKey) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
@@ -311,9 +370,9 @@ export class EmBlogContent {
                     (err) => { toastr.error('复制到剪贴板失败!'); }
                 );
             }
-        });
+        };
 
-        $('.em-blog-content').on('click', '.pre-code-wrapper', function(event) {
+        this.preCodeClHandler = function(event) {
             if (event.ctrlKey || event.metaKey) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
@@ -322,9 +381,12 @@ export class EmBlogContent {
                     (err) => { toastr.error('复制到剪贴板失败!'); }
                 );
             }
-        });
+        };
 
-        $('.em-blog-right-sidebar').on('click', '.panel-blog-dir .wiki-dir-item', (event) => {
+        $('.em-blog-content').on('click', 'code[data-code]', this.codeClHandler);
+        $('.em-blog-content').on('click', '.pre-code-wrapper', this.preCodeClHandler);
+
+        this.wikiDirClHandler = (event) => {
             event.preventDefault();
             if ($(window).width() <= 768) {
                 ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, { isHide: true });
@@ -332,17 +394,21 @@ export class EmBlogContent {
             $('.em-blog-content').scrollTo(`#${$(event.currentTarget).attr('data-id')}`, 200, {
                 offset: 0
             });
-        });
+        };
 
-        $(this.mkbodyRef).on('dblclick', (event) => {
+        $('.em-blog-right-sidebar').on('click', '.panel-blog-dir .wiki-dir-item', this.wikiDirClHandler);
+
+        this.mkDblHandler = (event) => {
             if (event.ctrlKey && event.shiftKey) {
                 if (this.blog.openEdit || this.isSuper || this.blog.creator.username == this.loginUser.username) {
                     this.editHandler();
                 }
             }
-        });
+        };
 
-        $('.em-blog-content').scroll(_.throttle((event) => {
+        $(this.mkbodyRef).on('dblclick', this.mkDblHandler);
+
+        this.blogContentScrollHandler = _.throttle((event) => {
             try {
                 let sHeight = $('.em-blog-content')[0].scrollHeight;
                 let sTop = $('.em-blog-content')[0].scrollTop;
@@ -354,10 +420,11 @@ export class EmBlogContent {
 
             } catch (err) { this.progressWidth = 0; }
 
-        }, 10));
+        }, 10);
 
-        // 消息popup
-        $(this.feedRef).on('mouseenter', '.event a[href*="#/blog/"]:not(.pp-not)', (event) => {
+        $('.em-blog-content').scroll(this.blogContentScrollHandler);
+
+        this.feedMeHandler = (event) => {
             event.preventDefault();
             let target = event.currentTarget;
             let cid = utils.urlQuery('cid', $(target).attr('href'));
@@ -379,10 +446,9 @@ export class EmBlogContent {
                 });
                 this.hoverTimeoutRef = null;
             }, 500);
-        });
+        };
 
-        // 消息popup
-        $(this.feedRef).on('mouseleave', '.event a[href*="#/blog/"]:not(.pp-not)', (event) => {
+        this.feedMlHandler = (event) => {
             event.preventDefault();
             if (this.hoverTimeoutRef) {
                 if (this.hoverUserTarget === event.currentTarget) {
@@ -390,10 +456,13 @@ export class EmBlogContent {
                     this.hoverTimeoutRef = null;
                 }
             }
-        });
+        };
 
-        // 用户信息popup
-        $('.tms-blog').on('mouseenter', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+        // 消息popup
+        $(this.feedRef).on('mouseenter', '.event a[href*="#/blog/"]:not(.pp-not)', this.feedMeHandler);
+        $(this.feedRef).on('mouseleave', '.event a[href*="#/blog/"]:not(.pp-not)', this.feedMlHandler);
+
+        this.userInfoMeHandler = (event) => {
             event.preventDefault();
             let target = event.currentTarget;
 
@@ -416,10 +485,9 @@ export class EmBlogContent {
                 });
                 this.hoverTimeoutRef = null;
             }, 500);
-        });
+        };
 
-        // 用户信息popup
-        $('.tms-blog').on('mouseleave', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', (event) => {
+        this.userInfoMlHandler = (event) => {
             event.preventDefault();
             if (this.hoverTimeoutRef) {
                 if (this.hoverUserTarget === event.currentTarget) {
@@ -427,11 +495,14 @@ export class EmBlogContent {
                     this.hoverTimeoutRef = null;
                 }
             }
-        });
+        };
+        // 用户信息popup
+        $('.tms-blog').on('mouseenter', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', this.userInfoMeHandler);
+        $('.tms-blog').on('mouseleave', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', this.userInfoMlHandler);
 
         this.initHotkeys();
 
-        window.addEventListener && window.addEventListener('message', function(ev) {
+        this.messageHandler = function(ev) {
             // console.info('message from parent:', ev.data);
             if (ev.origin != window.location.origin) return;
 
@@ -444,7 +515,9 @@ export class EmBlogContent {
             ev.data.from = 'html';
 
             ea.publish(nsCons.EVENT_BLOG_CHANGED, ev.data);
-        }, false);
+        };
+
+        window.addEventListener && window.addEventListener('message', this.messageHandler, false);
     }
 
     fixDirItem() {
@@ -478,67 +551,103 @@ export class EmBlogContent {
     }
 
     initHotkeys() {
-        try {
-            $(document).bind('keyup', 'e', (evt) => { // edit
-                evt.preventDefault();
-                if (this.blog.openEdit || this.isSuper || this.blog.creator.username == this.loginUser.username) {
-                    this.throttleEditHandler();
-                }
-            }).bind('keyup', 'w', (evt) => { // create
-                evt.preventDefault();
-                this.throttleCreateHandler();
-            }).bind('keydown', 'd', (evt) => { // dir
-                evt.preventDefault();
-                if (this.dir) {
-                    this.catalogHandler();
-                }
-            }).bind('keydown', 's', (evt) => { // share
-                evt.preventDefault();
-                this.blogShareVm.show();
-            }).bind('keydown', 'f', (evt) => { // follow
-                evt.preventDefault();
-                this.followerHandler();
-            }).bind('keydown', 't', (event) => { // scroll top
-                event.preventDefault();
-                $('.em-blog-content').scrollTo(0, 200, {
-                    offset: 0
-                });
-            }).bind('keydown', 'b', (event) => { // scroll bottom
-                event.preventDefault();
-                $('.em-blog-content').scrollTo(`max`, 200, {
-                    offset: 0
-                });
-            }).bind('keydown', 'alt+r', (event) => { // refresh
-                event.preventDefault();
-                this.refreshHandler();
-            }).bind('keydown', 'alt+h', (event) => { // history
-                event.preventDefault();
-                this.historyHandler();
-            }).bind('keydown', 'alt+l', (event) => { // history
-                event.preventDefault();
-                this.authHandler();
-            }).bind('keydown', 'alt+s', (event) => { // stow
-                event.preventDefault();
-                this.stowHandler();
-            }).bind('keydown', 'alt+c', (event) => { // copy
-                event.preventDefault();
-                this.throttleCopyHandler();
-            }).bind('keydown', 'alt+m', (event) => { // move space
-                event.preventDefault();
-                this.updateSpaceHandler();
-            }).bind('keydown', 'alt+o', (event) => { // open edit
-                event.preventDefault();
-                this.openEditHandler();
-            }).bind('keydown', 'alt+t', (event) => { // tpl edit
-                event.preventDefault();
-                this.tplEditHandler();
-            }).bind('keydown', 'alt+e', (event) => { // change editor
-                event.preventDefault();
-                this.changeEditorHandler();
-            }).bind('keydown', 'alt+ctrl+d', (event) => { // delete
-                event.preventDefault();
-                this.deleteHandler();
+
+
+        this.docKuEHandler = (evt) => { // edit
+            evt.preventDefault();
+            if (this.blog.openEdit || this.isSuper || this.blog.creator.username == this.loginUser.username) {
+                this.throttleEditHandler();
+            }
+        };
+        this.docKuWHandler = (evt) => { // create
+            evt.preventDefault();
+            this.throttleCreateHandler();
+        };
+        this.docKuDHandler = (evt) => { // dir
+            evt.preventDefault();
+            if (this.dir) {
+                this.catalogHandler();
+            }
+        };
+        this.docKuSHandler = (evt) => { // share
+            evt.preventDefault();
+            this.blogShareVm.show();
+        };
+        this.docKuFHandler = (evt) => { // follow
+            evt.preventDefault();
+            this.followerHandler();
+        };
+        this.docKuTHandler = (event) => { // scroll top
+            event.preventDefault();
+            $('.em-blog-content').scrollTo(0, 200, {
+                offset: 0
             });
+        };
+        this.docKuBHandler = (event) => { // scroll bottom
+            event.preventDefault();
+            $('.em-blog-content').scrollTo(`max`, 200, {
+                offset: 0
+            });
+        };
+        this.docKuAltRHandler = (event) => { // refresh
+            event.preventDefault();
+            this.refreshHandler();
+        };
+        this.docKuAltHHandler = (event) => { // history
+            event.preventDefault();
+            this.historyHandler();
+        };
+        this.docKuAltLHandler = (event) => { // auth
+            event.preventDefault();
+            this.authHandler();
+        };
+        this.docKuAltSHandler = (event) => { // stow
+            event.preventDefault();
+            this.stowHandler();
+        };
+        this.docKuAltCHandler = (event) => { // copy
+            event.preventDefault();
+            this.throttleCopyHandler();
+        };
+        this.docKuAltMHandler = (event) => { // move space
+            event.preventDefault();
+            this.updateSpaceHandler();
+        };
+        this.docKuAltOHandler = (event) => { // open edit
+            event.preventDefault();
+            this.openEditHandler();
+        };
+        this.docKuAltTHandler = (event) => { // tpl edit
+            event.preventDefault();
+            this.tplEditHandler();
+        };
+        this.docKuAltEHandler = (event) => { // change editor
+            event.preventDefault();
+            this.changeEditorHandler();
+        };
+        this.docKuAltCtrlDHandler = (event) => { // delete
+            event.preventDefault();
+            this.deleteHandler();
+        };
+
+        try {
+            $(document).bind('keyup', 'e', this.docKuEHandler)
+                .bind('keyup', 'w', this.docKuWHandler)
+                .bind('keydown', 'd', this.docKuDHandler)
+                .bind('keydown', 's', this.docKuSHandler)
+                .bind('keydown', 'f', this.docKuFHandler)
+                .bind('keydown', 't', this.docKuTHandler)
+                .bind('keydown', 'b', this.docKuBHandler)
+                .bind('keydown', 'alt+r', this.docKuAltRHandler)
+                .bind('keydown', 'alt+h', this.docKuAltHHandler)
+                .bind('keydown', 'alt+l', this.docKuAltLHandler)
+                .bind('keydown', 'alt+s', this.docKuAltSHandler)
+                .bind('keydown', 'alt+c', this.docKuAltCHandler)
+                .bind('keydown', 'alt+m', this.docKuAltMHandler)
+                .bind('keydown', 'alt+o', this.docKuAltOHandler)
+                .bind('keydown', 'alt+t', this.docKuAltTHandler)
+                .bind('keydown', 'alt+e', this.docKuAltEHandler)
+                .bind('keydown', 'alt+ctrl+d', this.docKuAltCtrlDHandler);
         } catch (err) { console.log(err); }
 
     }

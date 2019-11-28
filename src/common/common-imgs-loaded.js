@@ -132,9 +132,9 @@
     function listener(element, eventName, handler, remove) {
         var events = eventName.split(' ');
         for (var i = 0, l = events.length; i < l; i++) {
-            if (element.addEventListener) {
+            if (element && element.addEventListener) {
                 element[remove ? 'removeEventListener' : 'addEventListener'](events[i], handler, false);
-            } else if (element.attachEvent) {
+            } else if (element && element.attachEvent) {
                 element[remove ? 'detachEvent' : 'attachEvent']('on' + events[i], handler);
             }
         }

@@ -17,4 +17,9 @@ export class AttrUiPpCustomAttribute {
         });
 
     }
+
+    unbind() {
+        $(this.element).popup('destroy');
+        this.element = null;
+    }
 }

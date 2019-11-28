@@ -20,6 +20,11 @@ export class EmChannelTasksModal {
         });
     }
 
+    detached() {
+        this.channel = null;
+        this.loginUser = null;
+    }
+
     /**
      * 当数据绑定引擎从视图解除绑定时被调用
      */

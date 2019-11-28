@@ -44,19 +44,37 @@ export class EmChatContentItemFootbar {
         type: 'emoji'
     }];
 
-    myTags = nsCtx.myTags;
+    myTags;
 
     /**
      * 构造函数
      */
-    constructor() {
+    constructor() {}
+
+    detached() {
+        window.__debug && console.log('EmChatContentItemFootbar--detached');
+
+        $([this.addEmojiRef]).popup('destroy');
+        $([this.addTagRef]).popup('destroy');
+
+        this.chat = null;
+        this.myTags = null;
+        this.tags = null;
+        this.addEmojiRef = null;
+        this.addTagRef = null;
+        this.tagRef = null;
+    }
+
+    bind() {
         this.tags = tags;
+        this.myTags = nsCtx.myTags;
     }
 
     /**
      * 当视图被附加到DOM中时被调用
      */
     attached() {
+
         $([this.addEmojiRef])
             .popup({
                 inline: true,

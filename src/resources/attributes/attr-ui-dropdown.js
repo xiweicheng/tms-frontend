@@ -23,4 +23,8 @@ export class AttrUiDropdownCustomAttribute {
     bind() {
         this._init(this.value ? this.value : 'hide');
     }
+
+    unbind() {
+        this.element = null;
+    }
 }

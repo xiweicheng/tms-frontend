@@ -32,4 +32,9 @@ export class AttrUiPopupCustomAttribute {
         });
 
     }
+
+    unbind() {
+        $(this.element).popup('destroy');
+        this.element = null;
+    }
 }

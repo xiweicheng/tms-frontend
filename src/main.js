@@ -8,6 +8,8 @@ Promise.config({
   }
 });
 
+// window.__debug = true;
+
 export function configure(aurelia) {
   aurelia.use
     .standardConfiguration()
