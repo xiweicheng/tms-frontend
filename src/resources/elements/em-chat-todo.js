@@ -48,7 +48,7 @@ export class EmChatTodo {
 
     }
 
-    addTodoHandler() {
+    addTodoHandler(ctrlKey) {
 
         $(this.todoInputRef).focus();
 
@@ -57,10 +57,16 @@ export class EmChatTodo {
             return;
         }
 
+        let topTodo = ctrlKey || (event && (event.ctrlKey || event.metaKey));
+
         this.ajax = $.post('/admin/todo/create', { title: this.title }, (data, textStatus, xhr) => {
             if (data.success) {
                 this.title = '';
                 this.todos = [data.data, ...this.todos];
+
+                if (topTodo) {
+                    this.topHandler(data.data);
+                }
             } else {
                 toastr.error(data.data, '创建待办事项失败！');
             }
@@ -70,7 +76,7 @@ export class EmChatTodo {
     addTodoKeyupHandler(event) {
 
         if (event.keyCode == 13) {
-            this.addTodoHandler();
+            this.addTodoHandler(event.ctrlKey);
         }
     }
 
