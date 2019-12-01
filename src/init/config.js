@@ -198,6 +198,7 @@ export class Config {
                 var style = {};
 
                 var width = _.trim(wurl('?width', href));
+                width = !width ? _.trim(wurl('?w', href)) : width;
                 if (width) {
                     if (_.isNumber(+width) && (+width <= 100)) {
                         style.width = width + '%';
@@ -207,6 +208,7 @@ export class Config {
                 }
 
                 var height = _.trim(wurl('?height', href));
+                height = !height ? _.trim(wurl('?h', href)) : height;
                 if (height) {
                     if (_.isNumber(+height) && +height <= 100) {
                         style.height = height + '%';
