@@ -418,6 +418,7 @@ export class EmChatInput {
             this.$tbar.toggle(this.tbarVisible);
 
             $('.tms-content-body .ui.comments').css(`margin-bottom`, this.tbarVisible ? '42px' : '12px');
+            $('.tms-msg-filter').css(`bottom`, this.tbarVisible ? '102px' : '72px');
         }
 
         this.initTextcomplete();
@@ -656,6 +657,7 @@ export class EmChatInput {
         localStorage && localStorage.setItem(`tms-md-editor-tbar-visible`, this.tbarVisible);
 
         $('.tms-content-body .ui.comments').css(`margin-bottom`, this.tbarVisible ? '42px' : '12px');
+        $('.tms-msg-filter').css(`bottom`, this.tbarVisible ? '102px' : '72px');
 
         ea.publish(nsCons.EVENT_MD_EDITOR_TBAR_VISIBLE_CHANGE, this.tbarVisible);
 
