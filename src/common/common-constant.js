@@ -81,6 +81,7 @@ window.nsCons = {
     EVENT_CHANNEL_TASK_TALK_SHOW: 'event_channel_task_talk_show',
     EVENT_CHANNEL_TASK_EDIT: 'event_channel_task_edit',
     EVENT_MARKDOWN_TASK_ITEM_STATUS_TOGGLE: 'event_markdown_task_item_status_toggle',
+    EVENT_MD_EDITOR_TBAR_VISIBLE_CHANGE: 'event_md_editor_tbar_visible_change',
     EVENT_TOASTR_CLOSE: 'event_toastr_close',
     ACTION_TYPE_SEARCH: 'action_type_search',
     ACTION_TYPE_STOW: 'action_type_stow',

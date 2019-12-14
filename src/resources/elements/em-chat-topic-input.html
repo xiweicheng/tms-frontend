@@ -1,6 +1,6 @@
 <template>
     <require from="./em-chat-topic-input.css"></require>
-    <div class="ui tms-msg-input em-chat-topic-input dropzone">
+    <div class="ui tms-msg-input em-chat-topic-input dropzone" data-name="${name}">
         <div ref="chatStatusBarRef" class="tms-chat-topic-status-bar dropzone-previews"></div>
         <div ref="inputRef" class="ui left action fluid icon input dropzone">
             <div ref="chatBtnRef" class="ui icon button">
@@ -19,7 +19,7 @@
                         上传表格
                     </div>
                 </a>
-                <a class="item" click.delegate="togglePreviewHandler()">
+                <a show.bind="!tbarVisible" class="item" click.delegate="togglePreviewHandler()">
                     <i class="unhide icon"></i>
                     <div class="content">
                         切换预览

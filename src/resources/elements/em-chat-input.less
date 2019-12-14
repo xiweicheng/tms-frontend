@@ -25,6 +25,7 @@
             border-left-color: transparent!important;
         }
         .textareaWrapper {
+            // background-color: white;
             width: calc(~"100% - 35px");
             border: 1px solid rgba(34, 36, 38, .15);
             border-top-right-radius: .28571429rem;
@@ -38,6 +39,19 @@
             .CodeMirror-scroll {
                 max-height: 300px;
             }
+            .editor-toolbar {
+                border: none;
+                padding: 0 6px;
+                // border-top: 1px solid rgba(34, 36, 38, 0.1);
+                border-radius: 0;
+            }
+
+            .editor-toolbar:before,
+            .editor-toolbar:after {
+                height: 0;
+                margin: 0;
+            }
+
         }
         .ui.input {
             margin-right: 5px;

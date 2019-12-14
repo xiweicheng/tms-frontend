@@ -100,7 +100,11 @@ export class EmChatInput {
         });
         this.btnItemUploadRef = null;
 
-        $(this.btnItemCsvRef).children().andSelf().each((index, elem) => {
+        $(this.btnItemCsvRef).children().andSelf().add('.tms-em-chat-input .editor-toolbar .fa.fa-file-excel-o').each((index, elem) => {
+            let dd = Dropzone.forElement(elem);
+            dd && dd.destroy();
+        });
+        $('.editor-toolbar .fa.fa-upload', '.tms-em-chat-input').each((index, elem) => {
             let dd = Dropzone.forElement(elem);
             dd && dd.destroy();
         });
@@ -162,6 +166,10 @@ export class EmChatInput {
             return this.$chatMsgInputRef
         }, true);
 
+        this.initUploadDropzone($('.editor-toolbar .fa.fa-upload', '.tms-em-chat-input'), () => {
+            return this.$chatMsgInputRef
+        }, true);
+
         this.initCsvDropzone();
 
         $(this.chatBtnRef).popup({
@@ -180,7 +188,9 @@ export class EmChatInput {
 
         let _this = this;
 
-        $($(this.btnItemCsvRef).children().andSelf()).dropzone({
+
+
+        $($(this.btnItemCsvRef).children().andSelf().add('.tms-em-chat-input .editor-toolbar .fa.fa-file-excel-o')).dropzone({
             url: "/admin/file/csv2md",
             paramName: 'file',
             clickable: true,
@@ -285,8 +295,100 @@ export class EmChatInput {
             spellChecker: false,
             status: false,
             autofocus: true,
-            toolbar: false,
+            // toolbar: true,
             // forceSync: true,
+            toolbar: [{
+                    name: "bold",
+                    action: SimpleMDE.toggleBold,
+                    className: "fa fa-bold",
+                    title: "粗体",
+                }, {
+                    name: "italic",
+                    action: SimpleMDE.toggleItalic,
+                    className: "fa fa-italic",
+                    title: "斜体",
+                }, {
+                    name: "strikethrough",
+                    action: SimpleMDE.toggleStrikethrough,
+                    className: "fa fa-strikethrough",
+                    title: "删除线",
+                }, {
+                    name: "heading",
+                    action: SimpleMDE.toggleHeadingSmaller,
+                    className: "fa fa-header",
+                    title: "标题",
+                }, "|", {
+                    name: "code",
+                    action: SimpleMDE.toggleCodeBlock,
+                    className: "fa fa-code",
+                    title: "代码",
+                }, {
+                    name: "quote",
+                    action: SimpleMDE.toggleBlockquote,
+                    className: "fa fa-quote-left",
+                    title: "引用",
+                }, {
+                    name: "unordered-list",
+                    action: SimpleMDE.toggleUnorderedList,
+                    className: "fa fa-list-ul",
+                    title: "无序列表",
+                }, {
+                    name: "ordered-list",
+                    action: SimpleMDE.toggleOrderedList,
+                    className: "fa fa-list-ol",
+                    title: "有序列表",
+                }, {
+                    name: "tasks",
+                    action: (editor) => {
+                        this.insertContent('- [ ] 未完成任务\n- [x] 已完成任务');
+                    },
+                    className: "fa fa-check-square-o ",
+                    title: "任务列表",
+                }, {
+                    name: "details",
+                    action: (editor) => {
+                        this.insertContent('<details>\n<summary>标题</summary>\n<p>详情内容</p>\n</details>');
+                    },
+                    className: "fa fa-play ",
+                    title: "折叠详情",
+                }, "|", {
+                    name: "link",
+                    action: SimpleMDE.drawLink,
+                    className: "fa fa-link",
+                    title: "创建链接",
+                }, {
+                    name: "image",
+                    action: SimpleMDE.drawImage,
+                    className: "fa fa-picture-o",
+                    title: "插入图片",
+                }, {
+                    name: "table",
+                    action: SimpleMDE.drawTable,
+                    className: "fa fa-table",
+                    title: "插入表格",
+                }, {
+                    name: "horizontal-rule",
+                    action: SimpleMDE.drawHorizontalRule,
+                    className: "fa fa-minus",
+                    title: "插入水平分割线",
+                }, "|", {
+                    name: "upload",
+                    action: function(editor) {},
+                    className: "fa fa-upload",
+                    title: "上传文件",
+                }, {
+                    name: "csv2md",
+                    action: function(editor) {},
+                    className: "fa fa-file-excel-o",
+                    title: "上传Excel|CSV转Markdown表格",
+                }, "|", {
+                    name: "preview",
+                    action: SimpleMDE.togglePreview,
+                    className: "fa fa-eye no-disable",
+                    title: "切换预览",
+                }
+
+            ],
             autoDownloadFontAwesome: false,
             insertTexts: {
                 table: ["", "\n\n| 列1 | 列2 | 列3 |\n| ------ | ------ | ------ |\n| 文本 | 文本 | 文本 |\n\n"],
@@ -303,6 +405,19 @@ export class EmChatInput {
         this.$chatMsgInputRef = $(this.inputRef).find('.textareaWrapper .CodeMirror textarea');
         if (this.$chatMsgInputRef.size() === 0) {
             this.$chatMsgInputRef = $(this.inputRef).find('.textareaWrapper .CodeMirror [contenteditable="true"]');
+        }
+
+        this.$tbar = $('.tms-em-chat-input .editor-toolbar');
+
+        this.$tbar.insertAfter(this.$tbar.next());
+
+        this.tbarVisible = false;
+        if (localStorage) {
+            let visible = localStorage.getItem(`tms-md-editor-tbar-visible`);
+            this.tbarVisible = (visible == 'true');
+            this.$tbar.toggle(this.tbarVisible);
+
+            $('.tms-content-body .ui.comments').css(`margin-bottom`, this.tbarVisible ? '42px' : '12px');
         }
 
         this.initTextcomplete();
@@ -527,6 +642,23 @@ export class EmChatInput {
 
     togglePreviewHandler() {
         this.simplemde.togglePreview();
+    }
+
+    toggleToolbarHandler() {
+
+        if (this.$tbar.is(":visible")) {
+            this.$tbar.hide();
+        } else {
+            this.$tbar.show();
+        }
+
+        this.tbarVisible = this.$tbar.is(":visible");
+        localStorage && localStorage.setItem(`tms-md-editor-tbar-visible`, this.tbarVisible);
+
+        $('.tms-content-body .ui.comments').css(`margin-bottom`, this.tbarVisible ? '42px' : '12px');
+
+        ea.publish(nsCons.EVENT_MD_EDITOR_TBAR_VISIBLE_CHANGE, this.tbarVisible);
+
     }
 
 }

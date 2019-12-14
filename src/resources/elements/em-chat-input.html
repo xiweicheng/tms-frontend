@@ -14,22 +14,28 @@
                         博文写作
                     </div>
                 </a>
-                <a ref="btnItemUploadRef" class="item">
+                <a show.bind="!tbarVisible" ref="btnItemUploadRef" class="item">
                     <i class="upload icon"></i>
                     <div class="content">
                         上传文件
                     </div>
                 </a>
-                <a ref="btnItemCsvRef" class="item" title="上传Excel|CSV转Markdown表格">
+                <a show.bind="!tbarVisible" ref="btnItemCsvRef" class="item" title="上传Excel|CSV转Markdown表格">
                     <i class="file excel outline icon"></i>
                     <div class="content">
                         上传表格
                     </div>
                 </a>
-                <a class="item" click.delegate="togglePreviewHandler()">
+                <a show.bind="!tbarVisible" class="item" click.delegate="togglePreviewHandler()">
                     <i class="unhide icon"></i>
                     <div class="content">
                         切换预览
+                    </div>
+                </a>
+                <a class="item" click.delegate="toggleToolbarHandler()">
+                    <i class="bold icon"></i>
+                    <div class="content">
+                        ${tbarVisible ? '隐藏底栏' : '显示底栏'}
                     </div>
                 </a>
             </div>
