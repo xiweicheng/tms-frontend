@@ -4,18 +4,24 @@
     background-color: white;
     padding-bottom: 22px;
     // position: relative;
-    .tms-chat-topic-status-bar {
-        position: absolute;
-        bottom: 71px;
-        width: 100%;
-        .dz-preview {
-            display: block!important;
-            width: auto!important;
-            background: #e0e1e2;
-            margin: 0;
-            padding: 7px;
+    .tms-chat-topic-status-bar-wrapper {
+        position: relative;
+
+        .tms-chat-topic-status-bar {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+
+            .dz-preview {
+                display: block !important;
+                width: auto !important;
+                background: #e0e1e2;
+                margin: 0;
+                padding: 7px;
+            }
         }
     }
+    
     .ui[class*="left action"].input>textarea {
         border-top-left-radius: 0!important;
         border-bottom-left-radius: 0!important;
@@ -28,7 +34,7 @@
         border-bottom-right-radius: .28571429rem;
         .CodeMirror,
         .CodeMirror-scroll {
-            min-height: 0;
+            min-height: 27px;
             border: none;
             border-top-right-radius: .28571429rem;
         }
@@ -40,6 +46,7 @@
             padding: 0 6px;
             // border-top: 1px solid rgba(34, 36, 38, 0.1);
             border-radius: 0;
+            background-color: #f7f7f7;
         }
 
         .editor-toolbar:before,
@@ -54,8 +61,13 @@
         min-height: 49px;
         i.send.icon {
             z-index: 1;
-            right: 7px!important;
+            right: 7px !important;
+
+            &.tbar:before {
+                margin-top: -1.5em;
+            }
         }
+
         textarea {
             resize: none;
             width: 100%;

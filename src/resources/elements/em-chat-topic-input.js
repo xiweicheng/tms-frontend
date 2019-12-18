@@ -162,7 +162,8 @@ export class EmChatTopicInput {
         $(this.chatBtnRef).popup({
             inline: true,
             hoverable: true,
-            position: 'bottom left',
+            // position: 'bottom left',
+            position: 'top left',
             delay: {
                 show: 300,
                 hide: 300

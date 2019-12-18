@@ -44,6 +44,7 @@
                 padding: 0 6px;
                 // border-top: 1px solid rgba(34, 36, 38, 0.1);
                 border-radius: 0;
+                background-color: #f7f7f7;
             }
 
             .editor-toolbar:before,
@@ -57,8 +58,13 @@
             margin-right: 5px;
             i.send.icon {
                 z-index: 1;
-                right: 7px!important;
+                right: 7px !important;
+
+                &.tbar:before {
+                    margin-top: -1.5em;
+                }
             }
+
             textarea {
                 resize: none;
                 width: 100%;
