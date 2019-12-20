@@ -21,4 +21,36 @@ export class EmChannelTaskItemHeader {
     editHandler() {
         ea.publish(nsCons.EVENT_CHANNEL_TASK_EDIT, this.taskItem);
     }
+
+    stowHandler() {
+
+        if (!this.taskItem._stowed) {
+            $.post('/admin/chat/channel/stow', {
+                id: this.taskItem.id
+            }, (data, textStatus, xhr) => {
+                this.taskItem._stowed = true;
+                if (data.success) {
+                    this.taskItem.stowId = data.data.id;
+                } else {
+                    this.taskItem.stowId = (data.msgs && data.msgs.length > 0) ? data.msgs[0].id : '';
+                }
+                toastr.success('收藏任务成功!');
+            });
+        } else {
+            this.unstowHandler();
+        }
+    }
+
+    unstowHandler() {
+
+        if (this.taskItem._stowed) {
+            $.post('/admin/chat/channel/removeStow', {
+                id: this.taskItem.stowId
+            }, (data, textStatus, xhr) => {
+                this.taskItem.stowId = '';
+                this.taskItem._stowed = false;
+                toastr.success('取消收藏任务成功!');
+            });
+        }
+    }
 }

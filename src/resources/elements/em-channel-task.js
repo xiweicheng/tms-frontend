@@ -391,4 +391,19 @@ export class EmChannelTask {
     addHandler(col) {
         this.addVm.show(col);
     }
+
+    mouseenterHandler(item) {
+        if (!item.hasOwnProperty('_stowed') || _.isUndefined(item._stowed)) {
+            $.get('/admin/chat/channel/isMyStow', {
+                id: item.id
+            }, (data, textStatus, xhr) => {
+                if (data.data) {
+                    item._stowed = true;
+                    item.stowId = data.data.id;
+                } else {
+                    item._stowed = false;
+                }
+            });
+        }
+    }
 }
