@@ -1,4 +1,7 @@
-import { bindable, inject } from 'aurelia-framework';
+import {
+    bindable,
+    inject
+} from 'aurelia-framework';
 import poll from "common/common-poll";
 import {
     default as Clipboard
@@ -23,9 +26,11 @@ export class Chat {
 
     originalHref = wurl();
 
+    poll;
     loginUser;
     users = [];
     channels = [];
+    channel = null;
     chatTo = null;
     onlines = [];
     isLeftBarHide = true;
@@ -39,17 +44,20 @@ export class Chat {
         Dropzone.autoDiscover = false;
         this.poll = poll;
 
+        // https://www.npmjs.com/package/clipboard
         // new Clipboard('.tms-chat .tms-clipboard')
-        new Clipboard('.tms-clipboard')
-            .on('success', function(e) {
+        this.tmsClipboard = new Clipboard('.tms-clipboard')
+            .on('success', function (e) {
                 toastr.success('复制到剪贴板成功!');
-            }).on('error', function(e) {
+            }).on('error', function (e) {
                 toastr.error('复制到剪贴板失败!');
             });
 
-        $(window).resize((event) => {
+        this.winResizeHandler = (event) => {
             this.doResize();
-        });
+        };
+
+        $(window).resize(this.winResizeHandler);
 
         this.initSubscribeEvent();
 
@@ -75,8 +83,9 @@ export class Chat {
             stompClient.subscribe('/channel/online', (msg) => {
                 let online = JSON.parse(msg.body);
                 ea.publish(nsCons.EVENT_WS_CHANNEL_ONLINE, online);
+                
                 _.each(this.users, user => {
-                    if (user.username == online.username) {
+                    if (user && (user.username == online.username)) {
                         if (online.cmd == 'ON') {
                             user.onlineStatus = 'Online';
                             user.onlineDate = new Date().getTime();
@@ -135,7 +144,9 @@ export class Chat {
                 }
 
                 if (msgBody.cmd != 'D' && (this.channel.creator.username != this.loginUser.username)) {
-                    this.updateNotifyChannel({ id: msgBody.id }, "频道公告消息有更新！", msgBody);
+                    this.updateNotifyChannel({
+                        id: msgBody.id
+                    }, "频道公告消息有更新！", msgBody);
                 }
 
             });
@@ -161,7 +172,10 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
-                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                t && t.attr({
+                    'data-id': payload.nid,
+                    'data-type': 'blog'
+                });
             } else if (payload.cmd == 'OU') {
                 let t = toastr.info(`您的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -169,7 +183,10 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
-                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                t && t.attr({
+                    'data-id': payload.nid,
+                    'data-type': 'blog'
+                });
             } else if (payload.cmd == 'F') {
                 let t = toastr.info(`您关注的博文【${payload.title}】有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -177,7 +194,10 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
-                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                t && t.attr({
+                    'data-id': payload.nid,
+                    'data-type': 'blog'
+                });
             } else if (payload.cmd == 'CAt') {
                 let t = toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -185,7 +205,10 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
-                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                t && t.attr({
+                    'data-id': payload.nid,
+                    'data-type': 'blog'
+                });
             } else if (payload.cmd == 'FCC') {
                 let t = toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -193,7 +216,10 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
-                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                t && t.attr({
+                    'data-id': payload.nid,
+                    'data-type': 'blog'
+                });
             } else if (payload.cmd == 'FCU') {
                 let t = toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -201,7 +227,10 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
-                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                t && t.attr({
+                    'data-id': payload.nid,
+                    'data-type': 'blog'
+                });
             } else if (payload.cmd == 'CC') {
                 let t = toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -209,7 +238,10 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
-                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                t && t.attr({
+                    'data-id': payload.nid,
+                    'data-type': 'blog'
+                });
             } else if (payload.cmd == 'CU') {
                 let t = toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                     onclick: () => {
@@ -217,7 +249,10 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                     }
                 }));
-                t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                t && t.attr({
+                    'data-id': payload.nid,
+                    'data-type': 'blog'
+                });
             } else if (payload.cmd == 'Open') {
                 let nid = new Date().getTime();
                 let t = toastr.info(`博文【${payload.title}】${payload.openEdit ? '开放了' : '关闭了'}编辑权限，点击可查看！`, null, _.extend(toastrOps, {
@@ -226,7 +261,10 @@ export class Chat {
                         utils.openNewWin(utils.getBasePath() + '#/blog/' + payload.id);
                     }
                 }));
-                t && t.attr({ 'data-id': nid, 'data-type': 'blog' });
+                t && t.attr({
+                    'data-id': nid,
+                    'data-type': 'blog'
+                });
             }
         }
     }
@@ -235,7 +273,9 @@ export class Chat {
 
         if (!id) return;
 
-        $.post('/admin/chat/channel/news/delete', { id: id }, (data) => {
+        $.post('/admin/chat/channel/news/delete', {
+            id: id
+        }, (data) => {
             if (data.success) {}
         });
     }
@@ -244,7 +284,9 @@ export class Chat {
 
         if (!id) return;
 
-        $.post('/admin/blog/news/delete', { id: id }, (data, textStatus, xhr) => {
+        $.post('/admin/blog/news/delete', {
+            id: id
+        }, (data, textStatus, xhr) => {
             if (data.success) {}
         });
     }
@@ -254,7 +296,9 @@ export class Chat {
             if (data.success) {
                 this.onlines = data.data;
                 _.each(this.users, user => {
-                    let online = _.find(this.onlines, { username: user.username });
+                    let online = _.find(this.onlines, {
+                        username: user.username
+                    });
                     if (online || (user.username == this.loginUser.username)) {
                         user.onlineStatus = 'Online';
                         user.onlineDate = online.date;
@@ -278,7 +322,9 @@ export class Chat {
             $(this.contentBodyRef).children('.scroll-wrapper').css('width', '100%');
         }
 
-        $('.tms-em-chat-top-menu .tms-notice').css({ 'max-width': $(window).width() - 1000 });
+        $('.tms-em-chat-top-menu .tms-notice').css({
+            'max-width': $(window).width() - 1000
+        });
     }
 
     initSubscribeEvent() {
@@ -334,7 +380,9 @@ export class Chat {
                 window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
             }
 
-            this.channels = _.reject(this.channels, { id: payload.channel.id });
+            this.channels = _.reject(this.channels, {
+                id: payload.channel.id
+            });
 
         });
 
@@ -342,7 +390,9 @@ export class Chat {
 
             if (payload.item.__scroll) {
                 this.replyId && ea.publish(nsCons.EVENT_CHAT_TOPIC_SHOW, {
-                    chat: _.find(this.chats, { id: +this.markId }),
+                    chat: _.find(this.chats, {
+                        id: +this.markId
+                    }),
                     rid: this.replyId
                 });
                 this.scrollToAfterImgLoaded(this.markId ? this.markId : 'b');
@@ -381,7 +431,9 @@ export class Chat {
         this.subscribe12 = ea.subscribe(nsCons.EVENT_CHAT_MSG_POLL_UPDATE, (payload) => {
 
             _.forEach(payload, (msg) => {
-                let chat = _.find(this.chats, { id: msg.id });
+                let chat = _.find(this.chats, {
+                    id: msg.id
+                });
                 if (!chat) {
                     return;
                 }
@@ -391,7 +443,9 @@ export class Chat {
 
                 if (msg.type == 'Content') {
                     if (msg.action == 'Delete') {
-                        this.chats = _.reject(this.chats, { id: chat.id });
+                        this.chats = _.reject(this.chats, {
+                            id: chat.id
+                        });
                     } else {
                         this.updateNotify(chat, msg, `【${updaterName}】更新了消息[#${chat.id}]的内容，可点击查看！`);
                     }
@@ -417,7 +471,9 @@ export class Chat {
                     }
                 } else {
                     if (payload.cmd == 'R') {
-                        let channel = _.find(this.channels, { id: payload.id });
+                        let channel = _.find(this.channels, {
+                            id: payload.id
+                        });
                         if (channel) {
                             channel.newMsgCnt = _.isNumber(channel.newMsgCnt) ? (channel.newMsgCnt + 1) : 1;
                             this.saveNewMsgCnt(channel.name, channel.newMsgCnt);
@@ -441,8 +497,12 @@ export class Chat {
 
                 if (payload.username == this.loginUser.username) {
                     if (payload.cmd == 'U') { // url 摘要解析更新
-                        $.get('/admin/chat/direct/get', { id: payload.id }, (data) => {
-                            let chat = _.find(this.chats, { id: payload.id });
+                        $.get('/admin/chat/direct/get', {
+                            id: payload.id
+                        }, (data) => {
+                            let chat = _.find(this.chats, {
+                                id: payload.id
+                            });
                             chat && (_.extend(chat, data.data));
                         });
                     }
@@ -453,17 +513,25 @@ export class Chat {
                     console.log('ws: poll reset');
                     poll.reset();
                 } else if (payload.cmd == 'U') {
-                    $.get('/admin/chat/direct/get', { id: payload.id }, (data) => {
-                        let chat = _.find(this.chats, { id: payload.id });
+                    $.get('/admin/chat/direct/get', {
+                        id: payload.id
+                    }, (data) => {
+                        let chat = _.find(this.chats, {
+                            id: payload.id
+                        });
                         chat && (_.extend(chat, data.data));
 
                         this.updateNotifyDirect(chat, `【${updaterName}】更新了消息[#${payload.id}]的内容，可点击查看！`, payload);
                     });
                 } else if (payload.cmd == 'D') {
-                    this.chats = _.reject(this.chats, { id: payload.id });
+                    this.chats = _.reject(this.chats, {
+                        id: payload.id
+                    });
                 }
             } else {
-                let user = _.find(this.users, { username: payload.username });
+                let user = _.find(this.users, {
+                    username: payload.username
+                });
                 if (user) {
                     user.newMsgCnt = _.isNumber(user.newMsgCnt) ? (user.newMsgCnt + 1) : 1;
                     this.saveNewMsgCnt(`@${user.username}`, user.newMsgCnt);
@@ -506,12 +574,16 @@ export class Chat {
                     let t = toastr.info(`[${payload.from}]: ${payload.content}`, `频道@消息通知【${payload.ctitle}】`, _.extend(toastrOps, {
                         onclick: () => {
 
-                            if (this.channel && this.channel.id == payload.cid && _.some(this.chats, { id: ccid })) {
+                            if (this.channel && this.channel.id == payload.cid && _.some(this.chats, {
+                                    id: ccid
+                                })) {
 
                                 this.scrollToAfterImgLoaded(ccid);
                                 if (payload.cmd == 'RC' || payload.cmd == 'RU') {
                                     ea.publish(nsCons.EVENT_CHAT_TOPIC_SHOW, {
-                                        chat: _.find(this.chats, { id: payload.ccid }),
+                                        chat: _.find(this.chats, {
+                                            id: payload.ccid
+                                        }),
                                         rid: payload.id
                                     });
                                 }
@@ -545,7 +617,10 @@ export class Chat {
                         }
                     }));
 
-                    t && t.attr({ 'data-id': payload.uuid, 'data-type': 'chat' });
+                    t && t.attr({
+                        'data-id': payload.uuid,
+                        'data-type': 'chat'
+                    });
 
                     push.create(`TMS沟通频道@消息通知【${payload.ctitle}】`, {
                         body: `[${payload.from}]: ${payload.content}`,
@@ -578,7 +653,9 @@ export class Chat {
         this._filter = false;
         _.each(this.chats, item => {
             item._hidden = false;
-            _.each(item.chatLabels, cl => { cl._filter = false; });
+            _.each(item.chatLabels, cl => {
+                cl._filter = false;
+            });
         });
         // bs.signal('sg-chatlabel-refresh');
     }
@@ -639,6 +716,8 @@ export class Chat {
 
         item = JSON.parse(item);
 
+        if (!this.loginUser) return;
+        
         let loginItem = item[this.loginUser.username];
         if (!loginItem) return;
 
@@ -660,7 +739,10 @@ export class Chat {
                 }
             }));
 
-            t && t.attr({ 'data-id': msgItem.uuid, 'data-type': 'chat' });
+            t && t.attr({
+                'data-id': msgItem.uuid,
+                'data-type': 'chat'
+            });
 
             push.create('TMS沟通私聊消息通知', {
                 body: _.replace(message, '可点击查看', '请注意关注'),
@@ -702,7 +784,10 @@ export class Chat {
                 }
             }));
 
-            t && t.attr({ 'data-id': msgItem.uuid, 'data-type': 'chat' });
+            t && t.attr({
+                'data-id': msgItem.uuid,
+                'data-type': 'chat'
+            });
 
             push.create(`TMS沟通频道消息通知`, {
                 body: _.replace(message, '可点击查看', '请注意关注'),
@@ -761,6 +846,11 @@ export class Chat {
 
         clearInterval(this.timeagoTimer);
         poll.stop();
+
+        this.tmsClipboard.destroy();
+
+        $(window).unbind('resize', this.winResizeHandler);
+        this.winResizeHandler = null;
     }
 
     /**
@@ -948,7 +1038,9 @@ export class Chat {
                 !this.last && (this.lastCnt = data.msgs[0] - data.data.length);
                 this.scrollToAfterImgLoaded(start);
 
-                _.delay(() => { _.each(data.data, item => item._show = true) }, this.delayMs);
+                _.delay(() => {
+                    _.each(data.data, item => item._show = true)
+                }, this.delayMs);
             } else {
                 toastr.error(data.data, '获取更多消息失败!');
             }
@@ -996,7 +1088,9 @@ export class Chat {
                 !this.first && (this.firstCnt = data.msgs[0] - data.data.length);
                 this.scrollToAfterImgLoaded(start);
 
-                _.delay(() => { _.each(data.data, item => item._show = true) }, this.delayMs);
+                _.delay(() => {
+                    _.each(data.data, item => item._show = true)
+                }, this.delayMs);
             } else {
                 toastr.error(data.data, '获取更多消息失败!');
             }
@@ -1056,7 +1150,9 @@ export class Chat {
             !this.last && (this.lastCnt = data.data.totalElements - data.data.numberOfElements);
             !this.first && (this.firstCnt = data.data.size * data.data.number);
 
-            _.delay(() => { _.each(this.chats, item => item._show = true) }, this.delayMs);
+            _.delay(() => {
+                _.each(this.chats, item => item._show = true)
+            }, this.delayMs);
         }
     }
 
@@ -1069,7 +1165,9 @@ export class Chat {
         } else if (to == 't') {
             $(this.commentsRef).parent().scrollTo(0);
         } else {
-            if (_.some(this.chats, { id: +to })) {
+            if (_.some(this.chats, {
+                    id: +to
+                })) {
                 $(this.commentsRef).parent().scrollTo(`.em-chat-content-item.comment[data-id="${to}"]`, {
                     offset: this.offset
                 });
@@ -1188,7 +1286,9 @@ export class Chat {
 
                 this.chats = _.unionBy(this.chats, data.data, 'id');
 
-                _.delay(() => { _.each(data.data, item => item._show = true) }, this.delayMs);
+                _.delay(() => {
+                    _.each(data.data, item => item._show = true)
+                }, this.delayMs);
 
                 let hasOwn = _.some(data.data, (item) => {
                     return item.creator.username == this.loginUser.username;
@@ -1220,7 +1320,9 @@ export class Chat {
             $.get(`/admin/chat/channel/stow/list`, {}, (data) => {
                 this.stows = data.data;
             }),
-            $.get(`/admin/channel/pin/listBy`, { id: this.channel.id }, (data) => {
+            $.get(`/admin/channel/pin/listBy`, {
+                id: this.channel.id
+            }, (data) => {
                 this.pins = data.data;
             })).done(() => this._stowAndPin(this.chats));
     }
@@ -1230,7 +1332,9 @@ export class Chat {
         if (_.isEmpty(chats)) return;
 
         _.each(this.stows, item => {
-            let chat = _.find(chats, { id: item[1] });
+            let chat = _.find(chats, {
+                id: item[1]
+            });
             if (chat != null) {
                 chat._stowed = true;
                 chat.stowId = item[0];
@@ -1238,7 +1342,9 @@ export class Chat {
         });
 
         _.each(this.pins, item => {
-            let chat = _.find(chats, { id: item[1] });
+            let chat = _.find(chats, {
+                id: item[1]
+            });
             if (chat != null) {
                 chat._pined = true;
                 chat.pinId = item[0];
@@ -1316,7 +1422,7 @@ export class Chat {
 
         this._initSock();
 
-        $(this.scrollbarRef).on('mouseenter', '.em-chat-content-item', (event) => {
+        this.chatContentItemMeHandler = (event) => {
             event.preventDefault();
             let $item = $(event.currentTarget);
             this.$hoveredItem = $item;
@@ -1327,44 +1433,60 @@ export class Chat {
             } else {
                 this.isShowFoot = false;
             }
-        }).on('mouseleave', (event) => {
+        };
+
+        this.chatContentItemMlHandler = (event) => {
             event.preventDefault();
             this.isShowHead = false;
             this.isShowFoot = false;
-        });
+        };
 
-        $(this.commentsRef).on('click', '.cbutton', function(event) {
+        $(this.scrollbarRef).on('mouseenter', '.em-chat-content-item', this.chatContentItemMeHandler).on('mouseleave', this.chatContentItemMlHandler);
+
+        $(this.commentsRef).on('click', '.cbutton', function (event) {
             event.preventDefault();
             let $btn = $(this);
             $btn.addClass('cbutton--click');
-            setTimeout(function() {
+            setTimeout(function () {
                 $btn.removeClass('cbutton--click');
             }, 500);
         });
 
-        $(this.chatContainerRef).on('click', 'code[data-code]', function(event) {
+        this.dataCodeClickHandler = function (event) {
             if (event.ctrlKey || event.metaKey) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
                 clipboard.copy($(event.currentTarget).attr('data-code')).then(
-                    () => { toastr.success('复制到剪贴板成功!'); },
-                    (err) => { toastr.error('复制到剪贴板失败!'); }
+                    () => {
+                        toastr.success('复制到剪贴板成功!');
+                    },
+                    (err) => {
+                        toastr.error('复制到剪贴板失败!');
+                    }
                 );
             }
-        });
+        };
 
-        $(this.chatContainerRef).on('click', '.pre-code-wrapper', function(event) {
+        $('body').on('click', 'code[data-code]', this.dataCodeClickHandler);
+
+        this.preCodeWrapperClickHandler = function (event) {
             if (event.ctrlKey || event.metaKey) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
                 clipboard.copy($(event.currentTarget).find('i[data-clipboard-text]').attr('data-clipboard-text')).then(
-                    () => { toastr.success('复制到剪贴板成功!'); },
-                    (err) => { toastr.error('复制到剪贴板失败!'); }
+                    () => {
+                        toastr.success('复制到剪贴板成功!');
+                    },
+                    (err) => {
+                        toastr.error('复制到剪贴板失败!');
+                    }
                 );
             }
-        });
+        };
 
-        $(this.chatContainerRef).on('click', '.tms-chat-msg-code-trigger', function(event) {
+        $('body').on('click', '.pre-code-wrapper', this.preCodeWrapperClickHandler);
+
+        this.codeTriggerClickHandler = function (event) {
 
             let $pre = $(this).parent().children('pre');
             $pre.toggleClass('fold');
@@ -1373,35 +1495,91 @@ export class Chat {
             } else {
                 $(this).text('折叠');
             }
-        });
+        };
 
-        $(this.chatContainerRef).on('mouseenter', 'pre.fold', function(event) {
+        $('body').on('click', '.tms-chat-msg-code-trigger', this.codeTriggerClickHandler);
+
+        this.preFoldMeHandler = function (event) {
 
             let $pre = $(event.currentTarget);
             if ($pre.height() < 100) {
                 $pre.parent().children('.tms-chat-msg-code-trigger').remove();
             }
-        });
+        };
 
-        $('.tms-comments-container[ref="scrollbarRef"]').scroll(_.throttle((event) => {
+        $('body').on('mouseenter', 'pre.fold', this.preFoldMeHandler);
+
+        this.commentsContainerScrollHandler = _.throttle((event) => {
             try {
                 let sHeight = $(event.currentTarget)[0].scrollHeight;
                 let sTop = $(event.currentTarget)[0].scrollTop;
 
                 let scale = sTop * 1.0 / (sHeight - $(event.currentTarget).outerHeight());
                 this.progressWidth = $(event.currentTarget).outerWidth() * scale;
-            } catch (err) { this.progressWidth = 0; }
+            } catch (err) {
+                this.progressWidth = 0;
+            }
 
-        }, 10));
+        }, 10);
+        $('.tms-comments-container[ref="scrollbarRef"]').scroll(this.commentsContainerScrollHandler);
+
+    }
+
+    detached() {
+        window.__debug && console.log('Chat--detached');
+
+        this.loginUser = null;
+        this.users = [];
+        this.chats = [];
+        this.channels = [];
+        this.chatTo = null;
+        this.onlines = [];
+        this.poll = null;
+        this.channel = null;
+
+        $('body').off('click', 'code[data-code]', this.dataCodeClickHandler);
+        $('body').off('click', '.pre-code-wrapper', this.preCodeWrapperClickHandler);
+        $('body').off('click', '.tms-chat-msg-code-trigger', this.codeTriggerClickHandler);
+        $('body').off('mouseenter', 'pre.fold', this.preFoldMeHandler);
+
+        this.dataCodeClickHandler = null;
+        this.preCodeWrapperClickHandler = null;
+        this.codeTriggerClickHandler = null;
+        this.preFoldMeHandler = null;
+
+        $(this.scrollbarRef).off('mouseenter', '.em-chat-content-item', this.chatContentItemMeHandler).off('mouseleave', this.chatContentItemMlHandler);
+        $('.tms-comments-container[ref="scrollbarRef"]').off('scroll', this.commentsContainerScrollHandler);
+
+        this.chatContentItemMeHandler = null;
+        this.chatContentItemMlHandler = null;
+        this.commentsContainerScrollHandler = null;
+
+        $(document).unbind('keydown', this.kdCtrlUHandler)
+            .unbind('keydown', this.kdCtrlXGHandler)
+            .unbind('keydown', this.kdAltUpHandler)
+            .unbind('keydown', this.kdAltDownHandler)
+            .unbind('keydown', this.kdTHandler)
+            .unbind('keydown', this.kdBHandler);
+
+        this.kdCtrlUHandler = null;
+        this.kdCtrlXGHandler = null;
+        this.kdAltUpHandler = null;
+        this.kdAltDownHandler = null;
+        this.kdTHandler = null;
+        this.kdBHandler = null;
 
     }
 
     goHeadHandler() {
-        this.scrollTo(this.$hoveredItem, 500, () => { this.isShowHead = false; });
+        this.scrollTo(this.$hoveredItem, 500, () => {
+            this.isShowHead = false;
+        });
     }
 
     goFootHandler() {
-        this.scrollTo(this.$hoveredItem.next(), 500, () => { this.isShowFoot = false; });
+        this.scrollTo(this.$hoveredItem.next(), 500, () => {
+            this.isShowFoot = false;
+        });
     }
 
     initFocusedComment() {
@@ -1411,7 +1589,9 @@ export class Chat {
             if (event.ctrlKey && event.shiftKey) {
                 let chatId = $(event.currentTarget).attr('data-id');
                 let $t = $(event.currentTarget).find('.content > textarea');
-                let item = _.find(this.chats, { id: Number.parseInt(chatId) });
+                let item = _.find(this.chats, {
+                    id: Number.parseInt(chatId)
+                });
 
                 if (!item.openEdit && (item.creator.username != this.loginUser.username)) {
                     return;
@@ -1478,25 +1658,43 @@ export class Chat {
     }
 
     initHotkeys() {
-        $(document).bind('keydown', 'ctrl+u', (evt) => {
+
+        this.kdCtrlUHandler = (evt) => {
             evt.preventDefault();
             $(this.emChatInputRef.btnItemUploadRef).find('.content').click();
-        }).bind('keydown', 'ctrl+/', (evt) => {
+        };
+
+        this.kdCtrlXGHandler = (evt) => {
             evt.preventDefault();
             this.emChatInputRef.emHotkeysModal.show();
-        }).bind('keydown', 'alt+up', (evt) => {
+        };
+
+        this.kdAltUpHandler = (evt) => {
             evt.preventDefault();
             this.scrollTo(this.getScrollTargetComment(true));
-        }).bind('keydown', 'alt+down', (evt) => {
+        };
+
+        this.kdAltDownHandler = (evt) => {
             evt.preventDefault();
             this.scrollTo(this.getScrollTargetComment());
-        }).bind('keydown', 't', (event) => {
+        };
+
+        this.kdTHandler = (event) => {
             event.preventDefault();
             this.scrollTo($(this.commentsRef).children('.comment.item:first'));
-        }).bind('keydown', 'b', (event) => {
+        };
+
+        this.kdBHandler = (event) => {
             event.preventDefault();
             this.scrollTo($(this.commentsRef).children('.comment.item:last'));
-        });
+        };
+
+        $(document).bind('keydown', 'ctrl+u', this.kdCtrlUHandler)
+            .bind('keydown', 'ctrl+/', this.kdCtrlXGHandler)
+            .bind('keydown', 'alt+up', this.kdAltUpHandler)
+            .bind('keydown', 'alt+down', this.kdAltDownHandler)
+            .bind('keydown', 't', this.kdTHandler)
+            .bind('keydown', 'b', this.kdBHandler);
 
     }
 
@@ -1504,7 +1702,9 @@ export class Chat {
 
         if (item.chatAt && item.chatAt.chatReply) {
 
-            let chat = _.find(this.chats, c => _.some(c.chatReplies, { id: item.id }));
+            let chat = _.find(this.chats, c => _.some(c.chatReplies, {
+                id: item.id
+            }));
 
             if (chat) {
                 this.scrollToAfterImgLoaded(chat.id);
@@ -1530,7 +1730,9 @@ export class Chat {
 
         if (item.chatStow && item.chatStow.chatReply) {
 
-            let chat = _.find(this.chats, c => _.some(c.chatReplies, { id: item.id }));
+            let chat = _.find(this.chats, c => _.some(c.chatReplies, {
+                id: item.id
+            }));
 
             if (chat) {
                 this.scrollToAfterImgLoaded(chat.id);
@@ -1554,7 +1756,9 @@ export class Chat {
             return;
         }
 
-        let chat = _.find(this.chats, { id: item.id });
+        let chat = _.find(this.chats, {
+            id: item.id
+        });
         if (chat) {
             this.scrollToAfterImgLoaded(item.id);
         } else {
