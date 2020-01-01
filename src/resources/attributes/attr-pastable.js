@@ -22,7 +22,7 @@ export class AttrPastable {
                 toId: nsCtx.chatTo
             }, (data, textStatus, xhr) => {
                 if (data.success) {
-                    $(this.element).insertAtCaret('![{name}]({baseURL}{path}{uuidName})'
+                    $(this.element).insertAtCaret('![{name}]({baseURL}{path}{uuidName}?width=100)'
                         .replace(/\{name\}/g, data.data.name)
                         .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
                         .replace(/\{path\}/g, data.data.path)

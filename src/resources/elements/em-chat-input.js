@@ -142,7 +142,7 @@ export class EmChatInput {
                     toId: nsCtx.chatTo
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
-                        this.insertContent('![{name}]({baseURL}{path}{uuidName})'
+                        this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100)'
                             .replace(/\{name\}/g, data.data.name)
                             .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
                             .replace(/\{path\}/g, data.data.path)
@@ -260,7 +260,7 @@ export class EmChatInput {
 
                         $.each(data.data, function(index, item) {
                             if (item.type == 'Image') {
-                                _this.insertContent('![{name}]({baseURL}{path}{uuidName}) '
+                                _this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100) '
                                     .replace(/\{name\}/g, item.name)
                                     .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
                                     .replace(/\{path\}/g, item.path)

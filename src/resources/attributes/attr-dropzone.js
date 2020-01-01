@@ -65,7 +65,7 @@ export class AttrDropzone {
 
                             $.each(data.data, function(index, item) {
                                 if (item.type == 'Image') {
-                                    $(target).insertAtCaret('![{name}]({baseURL}{path}{uuidName}) '
+                                    $(target).insertAtCaret('![{name}]({baseURL}{path}{uuidName}?width=100) '
                                         .replace(/\{name\}/g, item.name)
                                         .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
                                         .replace(/\{path\}/g, item.path)
