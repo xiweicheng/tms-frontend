@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 
 @containerless
 export class EmChatTopMenu {
@@ -29,6 +32,7 @@ export class EmChatTopMenu {
 
     channelLinks = [];
     channelGantts = [];
+    commonUseLinks = []; // 常用频道外链
 
 
     detached() {
@@ -88,6 +92,26 @@ export class EmChatTopMenu {
             }, (data) => {
                 if (data.success) {
                     this.channelLinks = data.data;
+
+                    this.commonUseLinks = [];
+
+                    // 加载最近使用频道外链
+                    if (localStorage) {
+                        let clinkIdsStr = localStorage.getItem(`tms-common-use-clinks-${this.channel.id}`);
+                        if (clinkIdsStr) {
+                            let clinkIds = JSON.parse(clinkIdsStr);
+                            let culinks = [];
+                            _.each(clinkIds, clid => {
+                                let clink = _.find(this.channelLinks, {
+                                    id: clid
+                                });
+                                clink && culinks.push(clink);
+                            });
+
+                            this.commonUseLinks = culinks;
+                        }
+                    }
+
                 } else {
                     this.channelLinks = [];
                 }
@@ -210,7 +234,9 @@ export class EmChatTopMenu {
         });
 
         this.subscribe7 = ea.subscribe(nsCons.EVENT_SHOW_SCHEDULE, (payload) => {
-            this.showScheduleHandler({ ctrlKey: true });
+            this.showScheduleHandler({
+                ctrlKey: true
+            });
         });
 
         this.subscribe8 = ea.subscribe(nsCons.EVENT_CHANNEL_GANTTS_REFRESH, (payload) => {
@@ -252,7 +278,9 @@ export class EmChatTopMenu {
             fullTextSearch: true,
             action: (text, value, element) => {
                 $(this.channelLinksDdRef).dropdown('hide');
-                $.post('/admin/link/count/inc', { id: $(element).attr('data-id') });
+                $.post('/admin/link/count/inc', {
+                    id: $(element).attr('data-id')
+                });
                 _.defer(() => utils.openNewWin(value));
             }
         });
@@ -265,7 +293,7 @@ export class EmChatTopMenu {
             }
         });
 
-        this.messageHandler = function(ev) {
+        this.messageHandler = function (ev) {
             // console.info('message from parent:', ev.data);
             if (ev.origin != window.location.origin) return;
 
@@ -276,7 +304,9 @@ export class EmChatTopMenu {
 
         window.addEventListener && window.addEventListener('message', this.messageHandler, false);
 
-        $('.tms-em-chat-top-menu .tms-notice').css({ 'max-width': $(window).width() - 1000 });
+        $('.tms-em-chat-top-menu .tms-notice').css({
+            'max-width': $(window).width() - 1000
+        });
     }
 
     initChannelLinksHandler(last) {
@@ -287,8 +317,36 @@ export class EmChatTopMenu {
                     fullTextSearch: true,
                     action: (text, value, element) => {
                         $(this.channelLinksDdRef).dropdown('hide');
-                        $.post('/admin/link/count/inc', { id: $(element).attr('data-id') });
-                        _.defer(() => utils.openNewWin(value));
+                        $.post('/admin/link/count/inc', {
+                            id: $(element).attr('data-id')
+                        });
+                        // _.defer(() => utils.openNewWin(value));
+
+                        // 保存最新使用外链
+                        let clink = _.find(this.channelLinks, {
+                            id: +$(element).attr('data-id')
+                        });
+                        if (clink) {
+                            if (_.some(this.commonUseLinks, {
+                                    id: clink.id
+                                })) {
+                                let links = _.reject(this.commonUseLinks, {
+                                    id: clink.id
+                                });
+                                this.commonUseLinks = [clink, ...links];
+                            } else {
+                                let links = [clink, ...this.commonUseLinks];
+                                if (links.length > 6) {
+                                    this.commonUseLinks = links.slice(0, links.length - 1);
+                                } else {
+                                    this.commonUseLinks = links;
+                                }
+                            }
+
+                            // 持久化到本机
+                            let clinkIds = _.map(this.commonUseLinks, 'id');
+                            localStorage && localStorage.setItem(`tms-common-use-clinks-${this.channel.id}`, JSON.stringify(clinkIds));
+                        }
                     }
                 });
             });
@@ -330,7 +388,7 @@ export class EmChatTopMenu {
 
         // 保存检索值
         var isExists = false;
-        $.each(this.searchSource, function(index, val) {
+        $.each(this.searchSource, function (index, val) {
             if (val.title == search) {
                 isExists = true;
                 return false;
@@ -682,7 +740,9 @@ export class EmChatTopMenu {
     }
 
     isSubscribed(item) {
-        return _.some(item.subscriber, { username: this.loginUser.username });
+        return _.some(item.subscriber, {
+            username: this.loginUser.username
+        });
     }
 
     subscribeHandler(item) {
@@ -721,7 +781,9 @@ export class EmChatTopMenu {
                 $.post(`/admin/gantt/delete/${item.id}`, (data, textStatus, xhr) => {
                     if (data.success) {
                         toastr.success('删除甘特图成功!');
-                        this.channelGantts = _.reject(this.channelGantts, { id: item.id });
+                        this.channelGantts = _.reject(this.channelGantts, {
+                            id: item.id
+                        });
                     } else {
                         toastr.error(data.data, '删除甘特图失败!');
                     }
@@ -748,13 +810,20 @@ export class EmChatTopMenu {
     gotoChatHandler() {
         if (!this.notice) return;
 
-        ea.publish(nsCons.EVENT_CHAT_TOPIC_SCROLL_TO, { chat: { id: this.notice.id, channel: this.channel } });
+        ea.publish(nsCons.EVENT_CHAT_TOPIC_SCROLL_TO, {
+            chat: {
+                id: this.notice.id,
+                channel: this.channel
+            }
+        });
     }
 
     removeNoticeHandler() {
         if (this.channel.creator.username != this.loginUser.username) return;
 
-        $.post(`/admin/chat/channel/notice/remove`, { id: this.notice.id }, (data) => {
+        $.post(`/admin/chat/channel/notice/remove`, {
+            id: this.notice.id
+        }, (data) => {
             if (data.success) {
                 toastr.success(`解除公告消息成功!`);
                 this.notice = null;
