@@ -62,13 +62,19 @@ export class EmChannelTask {
                             id: payload.label.id
                         });
                         if (lbl) {
-                            lbl.voters = payload.label.voters
+                            lbl.voters = payload.label.voters;
                         } else {
                             task.chatLabels.push(payload.label);
                         }
                     }
                 }
             });
+
+            if (payload.label.voters.length == 0) {
+                this._removeFilterLbl(payload.label);
+            } else {
+                this._addFilterLbl(payload.label);
+            }
 
         });
 
@@ -158,6 +164,37 @@ export class EmChannelTask {
 
         });
 
+    }
+
+    _addFilterLbl(lbl) {
+
+        if (!_.some(this.filterLbls, flbl => flbl.name == lbl.name)) {
+            this.filterLbls.push({
+                name: lbl.name,
+                active: false
+            });
+        }
+
+    }
+
+    _removeFilterLbl(lbl) {
+
+        // 如果全部task不再包含删除的标签
+        if (!_.some(this.cols, col => {
+                return _.some(col.page.content, task => {
+                    return _.some(task.chatLabels, clbl => {
+                        return (clbl.name == lbl.name && clbl.voters.length > 0);
+                    });
+                });
+            })) {
+            let flbl = _.find(this.filterLbls, item => item.name == lbl.name);
+            if (flbl) {
+                _.remove(this.filterLbls, flbl => flbl.name == lbl.name);
+                if (flbl.active) {
+                    this.lblFilterHandler(flbl);
+                }
+            }
+        }
     }
 
     /**
@@ -426,6 +463,7 @@ export class EmChannelTask {
                     col: col,
                     label: {
                         id: label.id,
+                        name: label.name,
                         voters: []
                     },
                     task: item
