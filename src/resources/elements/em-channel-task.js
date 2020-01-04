@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 
 @containerless
 export class EmChannelTask {
@@ -33,6 +36,8 @@ export class EmChannelTask {
         value: 'verified',
     }];
 
+    filterLbls = []; // 过滤任务标签
+
     /**
      * 构造函数
      */
@@ -49,9 +54,13 @@ export class EmChannelTask {
 
             _.each(this.cols, col => {
                 if (col.name != payload.col.name) {
-                    let task = _.find(col.page.content, { id: payload.task.id });
+                    let task = _.find(col.page.content, {
+                        id: payload.task.id
+                    });
                     if (task) {
-                        let lbl = _.find(task.chatLabels, { id: payload.label.id });
+                        let lbl = _.find(task.chatLabels, {
+                            id: payload.label.id
+                        });
                         if (lbl) {
                             lbl.voters = payload.label.voters
                         } else {
@@ -74,9 +83,13 @@ export class EmChannelTask {
 
             if (payload.case != 'task') return;
 
-            let col = _.find(this.cols, { name: payload.from });
+            let col = _.find(this.cols, {
+                name: payload.from
+            });
 
-            let task = _.find(col.page.content, { id: +payload.id });
+            let task = _.find(col.page.content, {
+                id: +payload.id
+            });
 
             if (task && (task.creator.username == this.loginUser.username || task.openEdit)) {
                 let lines = task.content.split('\n');
@@ -175,12 +188,39 @@ export class EmChannelTask {
         return pageTask;
     }
 
+    _filterLabels(tasks) {
+        let clbls = _.filter(_.flatMap(tasks, 'chatLabels'), clbl => clbl.status != 'Deleted');
+        let lbls = _.uniq(_.map(clbls, 'name'));
+
+        lbls = _.filter(lbls, lbl => {
+            return !_.find(this.cols, col => col.name == lbl)
+        });
+
+        lbls = _.flatMap(lbls, lbl => {
+            return {
+                name: lbl,
+                active: false
+            }
+        });
+
+        this.filterLbls = _.uniqBy([...this.filterLbls, ...lbls], 'name');
+
+        if (this.filterLbls.length > 0) {
+            $(this.containerRef).css('height', 'calc(100% - 54px)');
+        }
+    }
+
     init() {
+
+        this.filterLbls = [];
 
         _.each(this.cols, (col) => {
             this._getTasks(col.name, 0).then(data => {
                 col.page = data;
                 col.moreCnt = col.page.last ? 0 : col.page.totalElements - (col.page.number + 1) * col.page.size;
+
+                // task labels filter
+                this._filterLabels(data.content);
             });
         });
 
@@ -197,17 +237,26 @@ export class EmChannelTask {
 
     _refresh(label) {
         this._getTasks(label, 0).then(data => {
-            let col = _.find(this.cols, { name: label });
+            let col = _.find(this.cols, {
+                name: label
+            });
             col._filterVal && _.each(data.content, item => {
                 let crHas = _.some(item.chatReplies, cr => {
                     let crcHas = (_.includes(cr.content, `{~${col._filterVal}}`) || _.includes(cr.content, `{~all}`) || _.includes(cr.content, col._filterTxt));
-                    return cr.creator.username == value || crcHas;
+                    return cr.creator.username == col._filterVal || crcHas;
                 });
                 let cHas = (_.includes(item.content, `{~${col._filterVal}}`) || _.includes(item.content, `{~all}`) || _.includes(item.content, col._filterTxt));
-                item._hidden = (item.creator.username != value && !crHas && !cHas);
+                item._hidden = (item.creator.username != col._filterVal && !crHas && !cHas);
             });
+
             col.page = data;
+
+            this._lblFilter(col);
+
             col.moreCnt = col.page.last ? 0 : col.page.totalElements - (col.page.number + 1) * col.page.size;
+
+            // task labels filter
+            this._filterLabels(data.content);
         });
     }
 
@@ -223,16 +272,23 @@ export class EmChannelTask {
                 col._filterVal && _.each(data.data.content, item => {
                     let crHas = _.some(item.chatReplies, cr => {
                         let crcHas = (_.includes(cr.content, `{~${col._filterVal}}`) || _.includes(cr.content, `{~all}`) || _.includes(cr.content, col._filterTxt));
-                        return cr.creator.username == value || crcHas;
+                        return cr.creator.username == col._filterVal || crcHas;
                     });
                     let cHas = (_.includes(item.content, `{~${col._filterVal}}`) || _.includes(item.content, `{~all}`) || _.includes(item.content, col._filterTxt));
-                    item._hidden = (item.creator.username != value && !crHas && !cHas);
+                    item._hidden = (item.creator.username != col._filterVal && !crHas && !cHas);
                 });
+
                 col.page.content.push(...data.data.content);
+
+                this._lblFilter(col);
+
                 col.page.number++;
                 col.page.last = data.data.last;
                 col.page.first = data.data.first;
                 col.moreCnt = col.page.last ? 0 : col.page.totalElements - (col.page.number + 1) * col.page.size;
+
+                // task labels filter
+                this._filterLabels(data.data.content);
             }
         });
     }
@@ -247,6 +303,7 @@ export class EmChannelTask {
         this.taskClickHandler = null;
         this.channel = null;
         this.loginUser = null;
+        this.filterLbls = [];
     }
 
     attached() {
@@ -303,12 +360,16 @@ export class EmChannelTask {
 
             let $dd = $(event.currentTarget).parents('.tms-task-filter');
             $dd.dropdown('clear').dropdown('hide');
-            let col = _.find(this.cols, { name: $dd.attr('data-col-name') });
+            let col = _.find(this.cols, {
+                name: $dd.attr('data-col-name')
+            });
             if (col) {
                 delete col['_filter'];
                 _.each(col.page.content, item => {
                     item._hidden = false;
                 });
+                // 继续判断是否标签过滤筛选
+                this._lblFilter(col);
             }
         };
 
@@ -317,10 +378,14 @@ export class EmChannelTask {
 
     _sortMembers() {
         if (this.channel) {
-            let me = _.find(this.channel.members, { username: nsCtx.loginUser.username });
+            let me = _.find(this.channel.members, {
+                username: nsCtx.loginUser.username
+            });
             let members = _.sortBy(this.channel.members, ['name', 'username']);
             if (me) {
-                members = _.reject(members, { username: nsCtx.loginUser.username });
+                members = _.reject(members, {
+                    username: nsCtx.loginUser.username
+                });
                 this.channel.members = [me, ...members];
             } else {
                 this.channel.members = members;
@@ -384,6 +449,8 @@ export class EmChannelTask {
                     item._hidden = (item.creator.username != value && !crHas && !cHas);
                 });
 
+                this._lblFilter(col);
+
             }
         });
     }
@@ -405,5 +472,49 @@ export class EmChannelTask {
                 }
             });
         }
+    }
+
+    _lblFilter(col) {
+        let aLbls = _.filter(this.filterLbls, 'active');
+        if (aLbls.length > 0) {
+            _.each(col.page.content, item => {
+                if (!item._hidden) {
+                    item._hidden = !_.some(aLbls, aLbl => {
+                        return _.some(item.chatLabels, clbl => {
+                            return (clbl.name == aLbl.name) && (clbl.status != 'Deleted');
+                        });
+                    });
+                }
+            })
+        }
+    }
+
+    // 标签过滤是否隐藏
+    _isLblFilterHidden(item) {
+
+        let aLbls = _.filter(this.filterLbls, 'active');
+
+        if (aLbls.length == 0) {
+            return false;
+        } else {
+            return !_.some(aLbls, aLbl => {
+                return _.some(item.chatLabels, clbl => {
+                    return (clbl.name == aLbl.name) && (clbl.status != 'Deleted');
+                });
+            });
+        }
+
+    }
+
+    lblFilterHandler(lbl) {
+        lbl.active = !lbl.active;
+
+        _.each(this.cols, col => {
+            _.each(col.page.content, item => {
+                if (!(col._filterVal && item._hidden)) { // 如果列非（按照人过滤筛选 & 隐藏状态）
+                    item._hidden = this._isLblFilterHidden(item);
+                }
+            })
+        });
     }
 }

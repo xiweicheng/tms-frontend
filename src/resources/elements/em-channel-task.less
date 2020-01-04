@@ -2,13 +2,27 @@
 
     height: 100%;
 
-    .scroll-wrapper {
-        height: e("calc(100% - 40px)");
+    .lbl-filter.ui.segment {
+        margin-bottom: 0;
+        // max-height: 54px;
+        height: 54px;
+        overflow: hidden;
+
+        .ui.label {
+            margin-bottom: 0;
+            user-select: none;
+        }
     }
 
     .ui.equal.width.internally.celled.grid {
         // height: e("calc(100% - 60px)");
         height: 100%;
+        // height: e("calc(100% - 54px)");
+
+        .scroll-wrapper {
+            height: e("calc(100% - 40px)");
+            // height: e("calc(100% - 94px)");
+        }
 
         .row {
             height: 100%;
