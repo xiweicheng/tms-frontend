@@ -168,7 +168,7 @@ export class EmBlogShare {
         });
     }
 
-    removeShareHandler() {
+    removeBlogShareHandler() {
 
         $.post('/admin/blog/share/remove', {
             id: this.blog.id
