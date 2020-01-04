@@ -320,7 +320,7 @@ export class EmChatTopMenu {
                         $.post('/admin/link/count/inc', {
                             id: $(element).attr('data-id')
                         });
-                        // _.defer(() => utils.openNewWin(value));
+                        _.defer(() => utils.openNewWin(value));
 
                         // 保存最新使用外链
                         let clink = _.find(this.channelLinks, {
