@@ -552,6 +552,8 @@ export class EmChannelTask {
     lblFilterHandler(lbl) {
         lbl.active = !lbl.active;
 
+        this.showClearLblFilter = _.some(this.filterLbls, 'active');
+
         _.each(this.cols, col => {
             _.each(col.page.content, item => {
                 if (!(col._filterVal && item._hidden)) { // 如果列非（按照人过滤筛选 & 隐藏状态）
@@ -559,5 +561,22 @@ export class EmChannelTask {
                 }
             })
         });
+    }
+
+    clearLblFilterHandler() {
+        _.each(this.filterLbls, flbl => {
+            flbl.active = false;
+        });
+
+        this.showClearLblFilter = false;
+
+        _.each(this.cols, col => {
+            _.each(col.page.content, item => {
+                if (!(col._filterVal && item._hidden)) { // 如果列非（按照人过滤筛选 & 隐藏状态）
+                    item._hidden = this._isLblFilterHidden(item);
+                }
+            })
+        });
+        
     }
 }

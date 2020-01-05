@@ -3,7 +3,12 @@
     <div class="em-channel-task">
         <div show.bind="filterLbls.length > 0" class="ui basic segment lbl-filter">
             <div scrollbar="scrollbar-macosx">
+                <!-- <span>过滤标签：</span> -->
                 <div class="ui labels">
+                    <a show.bind="showClearLblFilter" class="ui red label" click.delegate="clearLblFilterHandler()">
+                        清除筛选
+                        <i class="delete icon"></i>
+                    </a>
                     <a repeat.for="lbl of filterLbls | sort:'name'" class="ui ${lbl.active ? 'blue' : ''} label"
                         click.delegate="lblFilterHandler(lbl)">
                         ${lbl.name}
