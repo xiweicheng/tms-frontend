@@ -166,9 +166,14 @@ export class EmChannelTask {
 
     }
 
+    // 判断标签是否在泳道列标签类别中
+    _isInLblInCols(lbl) {
+        return _.some(this.cols, col => col.name == lbl.name);
+    }
+
     _addFilterLbl(lbl) {
 
-        if (!_.some(this.filterLbls, flbl => flbl.name == lbl.name)) {
+        if (!_.some(this.filterLbls, flbl => flbl.name == lbl.name) && !this._isInLblInCols(lbl)) {
             this.filterLbls.push({
                 name: lbl.name,
                 active: false
