@@ -808,7 +808,26 @@ export class Chat {
             $.get('/admin/chat/channel/get', {
                 id: chat.id
             }, (data) => {
+                let chatReplies = data.data.chatReplies;
+                delete data.data['chatReplies'];
+
                 _.extend(chat, data.data);
+
+                // 检查chatReplies是否一样
+                _.each(chatReplies, cr => {
+                    let cr2 = _.find(chat.chatReplies, {
+                        id: cr.id
+                    });
+                    if (cr2 && cr2.version != cr.version) { // 更新的
+                        _.extend(cr2, cr);
+                    } else if (cr2 == null) { // 新增的
+                        chat.chatReplies.push(cr);
+                    }
+                });
+
+                chat.chatReplies = _.reject(chat.chatReplies, cr => !_.some(chatReplies, { // 删除的
+                    id: cr.id
+                }));
 
                 let isOwn = msg.username == this.loginUser.username;
 

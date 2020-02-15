@@ -180,6 +180,9 @@ export class EmChatTopic {
     }
 
     _scrollTo(to) {
+        if (_.isNil(to)) {
+            return;
+        }
         if (to == 'b') {
             // $(this.commentsRef).closest('.scroll-content').scrollTo('max');
             $(this.commentsRef).closest('.scroll-content').scrollTo("100%", { axis: 'y' });
@@ -304,10 +307,17 @@ export class EmChatTopic {
             }, (data) => {
                 if (data.success) {
                     if (data.data.length > 0) {
+                        // 返回数组只要存在一个不在当前数组的元素，就需要进行合并更新
+                        // if (_.some(data.data, item => {
+                        //         return !_.some(this.chat.chatReplies, {
+                        //             id: item.id
+                        //         })
+                        //     })) {
                         this._checkNeedNotify(data);
                         this.chat.chatReplies = _.unionBy(this.chat.chatReplies, data.data, 'id');
                         this.scrollToBottom();
                         resetCb();
+                        // }
                     }
                 } else {
                     // toastr.error(data.data);
