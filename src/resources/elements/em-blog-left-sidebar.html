@@ -26,6 +26,32 @@
                         </div>
                     </div>
                     <div class="item" style="padding-top: 0.214286em;">
+                        <i click.delegate="spaceToggleHandler(spaceRecentOpen)"
+                            class="angle ${spaceRecentOpen.open ? 'down' : 'right'} link icon"></i>
+                        <div class="content">
+                            <span style="cursor: pointer;" click.delegate="spaceToggleHandler(spaceRecentOpen)">
+                                <i class="unhide icon" style="margin-right: 0; position: relative; left: -2px;"></i>
+                                ${spaceRecentOpen.name}
+                            </span>
+                            <div show.bind="spaceRecentOpen.open" class="ui bulleted list">
+                                <template
+                                    repeat.for="blog of blogs | hasProp:'_openTime' | sort:'_openTime':true | take:15 &
+                                    signal:'sg-recent-open-refresh'">
+                                    <div if.bind="blog.status != 'Deleted'" show.bind="!blog._hidden"
+                                        data-id="${blog.id}"
+                                        class="item blog-item ${blog.id == $parent.blog.id ? 'active' : ''}">
+                                        <a title="${blog.title}" href="#/blog/${blog.id}">
+                                            <i class="icons">
+                                                <i class="file outline icon"></i>
+                                                <i show.bind="blog.privated" class="corner lock icon"></i>
+                                            </i>
+                                            ${blog.title}</a>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item" style="padding-top: 0.214286em;">
                         <i click.delegate="spaceToggleHandler(spaceRecent)" class="angle ${spaceRecent.open ? 'down' : 'right'} link icon"></i>
                         <div class="content">
                             <span style="cursor: pointer;" click.delegate="spaceToggleHandler(spaceRecent)">

@@ -107,6 +107,12 @@ export class SortTodoValueConverter {
     }
 }
 
+export class HasPropValueConverter {
+    toView(value, prop) {
+        return _.filter(value, item => !_.isNil(item[prop]));
+    }
+}
+
 export class TakeValueConverter {
     toView(value, count, tail = false) {
         return _.isArray(value) ? (!tail ? _.take(value, count) : _.takeRight(value, count)) : value;

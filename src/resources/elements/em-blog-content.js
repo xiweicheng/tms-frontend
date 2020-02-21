@@ -696,9 +696,12 @@ export class EmBlogContent {
         }, (data) => {
             if (data.success) {
                 this.blog = data.data;
+                this.blog._openTime = new Date().getTime()
+
                 ea.publish(nsCons.EVENT_BLOG_VIEW_CHANGED, this.blog);
                 _.defer(() => this.catalogHandler(true));
                 this.getMyTags();
+
             } else {
                 toastr.error(data.data, "获取博文失败!");
             }

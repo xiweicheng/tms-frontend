@@ -23,6 +23,11 @@ export class EmBlogLeftSidebar {
         open: false
     };
 
+    spaceRecentOpen = {
+        name: '最近访问',
+        open: false
+    };
+
     /**
      * 构造函数
      */
@@ -79,6 +84,10 @@ export class EmBlogLeftSidebar {
             this._refreshBlogStows();
         });
 
+        this.subscribe7 = ea.subscribe(nsCons.EVENT_BLOG_VIEW_CHANGED, (payload) => {
+            this._recentOpenSave(payload);
+        });
+
         this._doFilerDebounce = _.debounce(() => this._doFiler(), 120, { leading: true });
     }
 
@@ -92,6 +101,7 @@ export class EmBlogLeftSidebar {
         this.subscribe4.dispose();
         this.subscribe5.dispose();
         this.subscribe6.dispose();
+        this.subscribe7.dispose();
     }
 
     /**
@@ -102,6 +112,74 @@ export class EmBlogLeftSidebar {
         this.refresh();
         // this._refreshSysLinks();
         this._refreshBlogStows();
+
+    }
+
+    _recentOpenSave(blog) {
+        // 记忆打开博文
+        if (localStorage) {
+            let recentOpenBlogs = [];
+            let robs = localStorage.getItem(`tms-blog-recent-open`);
+            if (robs) {
+                recentOpenBlogs = JSON.parse(robs);
+            }
+
+            // 删除已经删除的
+            if (this.blogs && this.blogs.length > 0) {
+                _.remove(recentOpenBlogs, item => !_.some(this.blogs, {
+                    id: item.id
+                }));
+            }
+
+            // 删除可能已经存在的
+            _.remove(recentOpenBlogs, {
+                id: blog.id
+            });
+
+            // 头部追加新打开的
+            recentOpenBlogs.unshift({
+                id: blog.id,
+                openTime: blog._openTime
+            });
+
+            if (recentOpenBlogs.length > 15) { // 只记忆最新打开的十个
+                recentOpenBlogs.splice(15, recentOpenBlogs.length - 15);
+            }
+
+            localStorage.setItem(`tms-blog-recent-open`, JSON.stringify(recentOpenBlogs));
+
+            let b = _.find(this.blogs, {
+                id: blog.id
+            });
+            if (b) {
+                b._openTime = blog._openTime;
+                bs.signal('sg-recent-open-refresh');
+            }
+
+        }
+    }
+
+    _recentOpenHandle(blogs) {
+        if (localStorage) {
+            let robs = localStorage.getItem(`tms-blog-recent-open`);
+            if (robs) {
+                let recentOpenBlogs = JSON.parse(robs);
+
+                _.each(recentOpenBlogs, b => {
+                    let blog = _.find(blogs, {
+                        id: b.id
+                    });
+                    if (blog) {
+                        blog._openTime = b.openTime;
+                    } else {
+                        // TODO 如果不存在（可能被删除了）
+                        b._deleted = true;
+                    }
+                });
+
+            }
+        }
+
     }
 
     _isBlogInView(id) {
@@ -201,6 +279,10 @@ export class EmBlogLeftSidebar {
     getBlogTree() {
         return $.get('/admin/blog/listMy', (data) => {
             if (data.success) {
+
+                // 最近打开博文处理
+                this._recentOpenHandle(data.data);
+
                 this.blogs = data.data;
                 this.blog = _.find(this.blogs, { id: +nsCtx.blogId });
             }
@@ -329,6 +411,15 @@ export class EmBlogLeftSidebar {
             this.spaceRecent.open = true;
         }
 
+        // 最近打开15条过滤目录展开控制
+        let recentOpen15 = _.takeRight(_.sortBy(_.filter(this.blogs, item => !_.isNil(item['_openTime'])), '_openTime'), 15);
+
+        if (!_.some(recentOpen15, b => !b._hidden)) {
+            this.spaceRecentOpen.open = false;
+        } else {
+            this.spaceRecentOpen.open = true;
+        }
+
         if (!this.filter) {
             _.each(this.spaces, s => {
                 if (_.find(s.blogs, { id: +nsCtx.blogId })) {
@@ -339,6 +430,7 @@ export class EmBlogLeftSidebar {
             });
             this.spaceStow.open = false;
             this.spaceRecent.open = false;
+            this.spaceRecentOpen.open = false;
         }
 
     }
