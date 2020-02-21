@@ -345,6 +345,9 @@ export class Chat {
         this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_SIDEBAR_TOGGLE, (payload) => {
 
             this.isRightSidebarShow = nsCtx.isRightSidebarShow = payload.isShow;
+
+            this.isRightSidebarShow ? $('body').addClass('tms-right-sidebar-show') : $('body').removeClass('tms-right-sidebar-show')
+            
             this.doResize();
         });
 
