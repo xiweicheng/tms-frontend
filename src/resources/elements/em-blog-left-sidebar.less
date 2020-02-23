@@ -178,4 +178,32 @@
             }
         }
     }
+
+    .ui.button.fold {
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 8px;
+        margin: 0;
+        opacity: 0.6;
+        &:hover {
+            opacity: 1;
+        }
+    }
+    &:hover {
+        .ui.button.fold {
+            display: block;
+        }
+    }
+    &.bar-fold {
+        left: -300px!important;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .em-blog-left-sidebar {
+        .ui.button.fold {
+            display: none !important;
+        }
+    }
 }

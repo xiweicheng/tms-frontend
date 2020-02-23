@@ -1,0 +1,28 @@
+.tms-blog {
+    &.pc-left-bar-show {
+        > .ui.button.fold {
+            display: none;
+        }
+    }
+
+    &.pc-left-bar-hide {
+        .em-blog-content-wrapper {
+            .em-blog-content {
+                left: 0;
+                width: 100% !important;
+            }
+        }
+        > .ui.button.fold {
+            display: block;
+            position: absolute;
+            top: 55px;
+            left: 0;
+            margin: 0;
+            opacity: 0.6;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+}

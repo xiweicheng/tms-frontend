@@ -12,6 +12,7 @@ export class EmBlogLeftSidebar {
     isSuper = nsCtx.isSuper;
 
     filter = ''; // 过滤查找条件
+    folded = false;
 
     spaceStow = {
         name: '我的收藏',
@@ -87,6 +88,9 @@ export class EmBlogLeftSidebar {
         this.subscribe7 = ea.subscribe(nsCons.EVENT_BLOG_VIEW_CHANGED, (payload) => {
             this._recentOpenSave(payload);
         });
+        this.subscribe8 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR_PC, (payload) => {
+            this.folded = payload;
+        });
 
         this._doFilerDebounce = _.debounce(() => this._doFiler(), 120, { leading: true });
     }
@@ -102,6 +106,7 @@ export class EmBlogLeftSidebar {
         this.subscribe5.dispose();
         this.subscribe6.dispose();
         this.subscribe7.dispose();
+        this.subscribe8.dispose();
     }
 
     /**
@@ -445,6 +450,11 @@ export class EmBlogLeftSidebar {
 
     editDirHandler(dir, space) {
         this.spaceDirEditVm.show(dir);
+    }
+
+    foldHandler() {
+        this.folded = !this.folded;
+        ea.publish(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR_PC, this.folded);
     }
 
     // sysLinkHandler(item) {

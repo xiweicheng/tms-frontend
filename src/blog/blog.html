@@ -1,11 +1,14 @@
 <template>
     <require from="./blog.css"></require>
-    <div ref="blogContainerRef" class="tms-blog ${!isHide ? 'left-sidebar-show' : ''} ${rightSidebarShow ? 'right-sidebar-show' : ''}">
+    <div ref="blogContainerRef"
+        class="tms-blog ${isHidePc ? 'pc-left-bar-hide' : 'pc-left-bar-show'} ${!isHide ? 'left-sidebar-show' : ''} ${rightSidebarShow ? 'right-sidebar-show' : ''}">
         <em-blog-top-menu></em-blog-top-menu>
         <em-blog-left-sidebar></em-blog-left-sidebar>
         <em-blog-content></em-blog-content>
         <em-blog-right-sidebar></em-blog-right-sidebar>
         <em-chat-member-popup></em-chat-member-popup>
+        <div click.delegate="foldHandler()" title="显示侧边栏" class="ui icon circular tiny button fold"><i class="chevron right icon"></i>
+        </div>
     </div>
     <em-blog-comment-popup></em-blog-comment-popup>
 </template>

@@ -5,6 +5,7 @@ export class Blog {
 
     rightSidebarShow = false;
     isHide = true;
+    isHidePc = false;
 
     /**
      * 构造函数
@@ -26,6 +27,9 @@ export class Blog {
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR, (payload) => {
             this.isHide = payload;
         });
+        this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR_PC, (payload) => {
+            this.isHidePc = payload;
+        });
     }
 
     /**
@@ -34,7 +38,7 @@ export class Blog {
     unbind() {
         this.subscribe.dispose();
         this.subscribe1.dispose();
-        this.subscribe2.dispose();
+        this.subscribe3.dispose();
 
         clearInterval(this.timeagoTimer);
     }
@@ -118,6 +122,11 @@ export class Blog {
 
         this._initSock();
 
+    }
+
+    foldHandler() {
+        this.isHidePc = !this.isHidePc;
+        ea.publish(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR_PC, this.isHidePc);
     }
 
     /**
