@@ -276,6 +276,7 @@ export class EmChatTopMenu {
 
         $(this.channelLinksDdRef).dropdown({
             fullTextSearch: true,
+            clearable: false,
             action: (text, value, element) => {
                 $(this.channelLinksDdRef).dropdown('hide');
                 $.post('/admin/link/count/inc', {
@@ -286,6 +287,7 @@ export class EmChatTopMenu {
         });
         $(this.channelGanttsDdRef).dropdown({
             fullTextSearch: true,
+            clearable: false,
             action: (text, value, element) => {
                 $(this.channelGanttsDdRef).dropdown('hide');
                 // $.post('/admin/link/count/inc', { id: $(element).attr('data-id') });
@@ -315,6 +317,7 @@ export class EmChatTopMenu {
                 $(this.channelLinksDdRef).find('.menu > .search > input').val('');
                 $(this.channelLinksDdRef).dropdown({
                     fullTextSearch: true,
+                    clearable: false,
                     action: (text, value, element) => {
                         $(this.channelLinksDdRef).dropdown('hide');
                         $.post('/admin/link/count/inc', {
