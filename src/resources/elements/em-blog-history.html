@@ -14,7 +14,7 @@
                             <th>版本</th>
                             <th>日期</th>
                             <th>更新人</th>
-                            <th>操作</th>
+                            <th class="right aligned">操作</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -22,10 +22,13 @@
                             <td>
                                 <em-checkbox checked.bind="blog.checked"></em-checkbox>
                             </td>
-                            <td><a click.delegate="viewHistoryHandler(blog, histories.length + 1, true)">当前</a>(v.${histories.length + 1}) <span show.bind="blog.editor == 'Html'"><i title="html" class="html5 icon"></i></span><span show.bind="blog.editor != 'Html'"><img title="markdown" style="width: 16px;" src="img/markdown.png" alt=""></span></td>
+                            <td><a click.delegate="viewHistoryHandler(blog, histories.length + 1, true)">当前</a>
+                                <span show.bind="blog.editor == 'Html'"><i title="html"
+                                        class="html5 icon"></i></span><span show.bind="blog.editor != 'Html'"><img
+                                        title="markdown" style="width: 16px;" src="img/markdown.png" alt=""></span></td>
                             <td title="${blog.updateDate | date}">${blog.updateDate | timeago}</td>
                             <td>${blog.updater.name}</td>
-                            <td></td>
+                            <td class="right aligned"></td>
                         </tr>
                         <tr repeat.for="item of histories">
                             <td>
@@ -34,8 +37,9 @@
                             <td><a click.delegate="viewHistoryHandler(item, histories.length - $index)">v.${histories.length - $index}</a> <span show.bind="item.editor == 'Html'"><i title="html" class="html5 icon"></i></span><span show.bind="item.editor != 'Html'"><img title="markdown" style="width: 16px;" src="img/markdown.png" alt=""></span></td>
                             <td title="${item.blogUpdateDate | date}">${item.blogUpdateDate | timeago}</td>
                             <td>${item.blogUpdater.name}</td>
-                            <td>
-                                <a if.bind="isSuper || blog.creator.username == loginUser.username || blog.openEdit" class="${!$parent.ajax1 || $parent.ajax1.readyState == 4 ? '' : 'tms-disabled'}" click.delegate="restoreHandler(item)">还原此版本</a> ·
+                            <td class="right aligned">
+                                <a if.bind="isSuper || blog.creator.username == loginUser.username || blog.openEdit" class="${!$parent.ajax1 || $parent.ajax1.readyState == 4 ? '' : 'tms-disabled'}" click.delegate="restoreHandler(item)">还原此版本</a>
+                                <span if.bind="isSuper || blog.creator.username == loginUser.username"> · </span>
                                 <a if.bind="isSuper || blog.creator.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown ${!$parent.ajax2 || $parent.ajax2.readyState == 4 ? '' : 'disabled'}" title="删除博文历史记录">
                                     <span style="color: red;">删除</span>
                                     <div class="menu">
