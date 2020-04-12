@@ -508,6 +508,23 @@ export class CommonUtils {
     }
 
     /**
+     * 打开浏览器窗口，并跳转到指定页面
+     * url:需要跳转的地址
+     */
+    openWin(url) {
+
+        if (url) {
+            let $a = $(`<a href="${url}" style="display:none;"></a>`).appendTo('body').end();
+            $(`<input type="button">`).appendTo($a).end().click();
+
+            _.delay(() => {
+                $a.remove();
+            }, 200);
+        }
+
+    }
+
+    /**
      * 打开url
      * url:需要跳转的地址
      */

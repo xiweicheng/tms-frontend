@@ -1048,4 +1048,18 @@ export class EmBlogContent {
             });
         }
     }
+
+    md2HtmlDownloadHandler() {
+
+        $.post(`/admin/blog/download/md2html/${this.blog.id}`, {
+            content: marked(utils.preParse(this.blog.content))
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                utils.openWin(`/admin/blog/download/${this.blog.id}?type=md2html`);
+            } else {
+                toastr.error(data.data);
+            }
+        });
+
+    }
 }

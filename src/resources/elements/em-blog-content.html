@@ -76,8 +76,11 @@
                             <a show.bind="blog.editor != 'Html'" href="/admin/blog/download/${blog.id}?type=md" class="item">
                                 <i class="file text outline icon"></i> 导出为Markdown
                             </a>
+                            <div show.bind="blog.editor != 'Html'" click.delegate="md2HtmlDownloadHandler()" class="item">
+                                <i class="html5 icon"></i> 导出为HTML
+                            </div>
                             <a show.bind="blog.editor == 'Html'" href="/admin/blog/download/${blog.id}?type=html" class="item">
-                                <i class="file text outline icon"></i> 导出为HTML
+                                <i class="html5 icon"></i> 导出为HTML
                             </a>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username" class="divider"></div>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="deleteHandler()" class="item" style="color: red;">
