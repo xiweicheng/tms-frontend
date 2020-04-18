@@ -61,6 +61,9 @@
                         <a href="/admin/chat/${isAt ? 'direct' : 'channel'}/download/${item.id}?type=md" style="display: block; color: rgba(0,0,0,.87); margin-right: 0px;" class="item">
                             <i class="file text outline icon"></i> 导出为Markdown
                         </a>
+                        <div click.delegate="md2HtmlDownloadHandler(item)" class="item">
+                            <i class="html5 icon"></i> 导出为HTML
+                        </div>
                         <div if.bind="item.creator.username == loginUser.username" class="divider"></div>
                         <div class="item tms-red" if.bind="item.creator.username == loginUser.username" click.delegate="deleteHandler(item)" title="删除消息"><i class="trash outline icon"></i> 删除</div>
                     </div>

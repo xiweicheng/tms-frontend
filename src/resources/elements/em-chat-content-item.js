@@ -1,9 +1,15 @@
-import { bindable, containerless, bindingMode } from 'aurelia-framework';
+import {
+    bindable,
+    containerless,
+    bindingMode
+} from 'aurelia-framework';
 
 @containerless
 export class EmChatContentItem {
 
-    @bindable({ defaultBindingMode: bindingMode.twoWay }) chats;
+    @bindable({
+        defaultBindingMode: bindingMode.twoWay
+    }) chats;
     @bindable loginUser;
     @bindable isAt;
     @bindable channel;
@@ -54,7 +60,9 @@ export class EmChatContentItem {
 
             if (payload.case != 'chat') return;
 
-            let chat = _.find(this.chats, { id: +payload.id });
+            let chat = _.find(this.chats, {
+                id: +payload.id
+            });
 
             if (chat && (chat.creator.username == this.loginUser.username || chat.openEdit)) {
                 let lines = chat.content.split('\n');
@@ -247,7 +255,9 @@ export class EmChatContentItem {
                 dir: utils.dir($c.find('> .content > .markdown-body'))
             });
 
-            let chat = _.find(this.chats, { id: +$c.attr('data-id') });
+            let chat = _.find(this.chats, {
+                id: +$c.attr('data-id')
+            });
             chat && (chat._hovered = true);
             chat && (chat.__hovered = true);
         };
@@ -256,7 +266,9 @@ export class EmChatContentItem {
             event.preventDefault();
             var $c = $(event.currentTarget);
 
-            let chat = _.find(this.chats, { id: +$c.attr('data-id') });
+            let chat = _.find(this.chats, {
+                id: +$c.attr('data-id')
+            });
             chat && (chat._hovered = false);
         };
 
@@ -266,7 +278,9 @@ export class EmChatContentItem {
 
         this.wikiDirItemClickHandler = (event) => {
             event.preventDefault();
-            ea.publish(nsCons.EVENT_CHAT_CONTENT_SCROLL_TO, { target: $('#' + $(event.currentTarget).attr('data-id')) });
+            ea.publish(nsCons.EVENT_CHAT_CONTENT_SCROLL_TO, {
+                target: $('#' + $(event.currentTarget).attr('data-id'))
+            });
         };
 
         $('.tms-chat').on('click', '.panel-wiki-dir .wiki-dir-item', this.wikiDirItemClickHandler);
@@ -618,7 +632,9 @@ export class EmChatContentItem {
         if (this.channel.creator.username != this.loginUser.username) return;
 
         let notice = item.notice;
-        $.post(`/admin/chat/channel/notice/${notice ? 'remove' : 'add'}`, { id: item.id }, (data) => {
+        $.post(`/admin/chat/channel/notice/${notice ? 'remove' : 'add'}`, {
+            id: item.id
+        }, (data) => {
             if (data.success) {
                 toastr.success(`${notice ? '解除公告消息成功!' : '发布为公告消息成功!'}`);
                 item.notice = !notice;
@@ -629,7 +645,9 @@ export class EmChatContentItem {
     }
 
     talkHandler(item, event) {
-        ea.publish(nsCons.EVENT_CHAT_TOPIC_SHOW, { chat: item });
+        ea.publish(nsCons.EVENT_CHAT_TOPIC_SHOW, {
+            chat: item
+        });
     }
 
     dateDblclickHandler(item) {
@@ -638,17 +656,25 @@ export class EmChatContentItem {
         let offsetD = parseInt(offset / 24);
 
         if (offsetD > 1) {
-            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:${offsetD - 1}d ${offsetD + 1}d` });
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, {
+                search: `date:${offsetD - 1}d ${offsetD + 1}d`
+            });
             return;
         } else if (offsetD > 0) {
-            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:2d` });
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, {
+                search: `date:2d`
+            });
             return;
         }
 
         if (offset < 2) {
-            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:2h` });
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, {
+                search: `date:2h`
+            });
         } else {
-            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:${offset - 1}h ${offset + 1}h` });
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, {
+                search: `date:${offset - 1}h ${offset + 1}h`
+            });
         }
     }
 
@@ -691,6 +717,18 @@ export class EmChatContentItem {
             if (data.success) {
                 toastr.success('添加日程提醒成功!');
                 ea.publish(nsCons.EVENT_SCHEDULE_REFRESH, {});
+            } else {
+                toastr.error(data.data);
+            }
+        });
+    }
+
+    md2HtmlDownloadHandler(chat) {
+        $.post(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/download/md2html/${chat.id}`, {
+            content: marked(utils.preParse(chat.content))
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                utils.openWin(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/download/${chat.id}?type=md2html`);
             } else {
                 toastr.error(data.data);
             }
