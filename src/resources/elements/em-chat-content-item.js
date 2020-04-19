@@ -725,7 +725,7 @@ export class EmChatContentItem {
 
     md2HtmlDownloadHandler(chat) {
         $.post(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/download/md2html/${chat.id}`, {
-            content: marked(utils.preParse(chat.content))
+            content: utils.md2html(chat.content)
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 utils.openWin(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/download/${chat.id}?type=md2html`);
