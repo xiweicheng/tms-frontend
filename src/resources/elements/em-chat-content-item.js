@@ -724,8 +724,9 @@ export class EmChatContentItem {
     }
 
     md2HtmlDownloadHandler(chat) {
+        
         $.post(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/download/md2html/${chat.id}`, {
-            content: utils.md2html(chat.content)
+            content: utils.md2html(`> 版权声明：本文为TMS版权所有，转载请附上原文出处链接和本声明。\n> 本文链接: ${utils.getBasePath()}#/chat/${this.isAt ? ('@' + this.loginUser.username) : this.channel.name}?id=${chat.id}\n\n` + chat.content)
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 utils.openWin(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/download/${chat.id}?type=md2html`);
