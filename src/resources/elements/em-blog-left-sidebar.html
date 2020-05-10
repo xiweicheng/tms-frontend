@@ -74,7 +74,7 @@
                         </div>
                     </div>
                     <template repeat.for="space of spaces | sort:'name'">
-                        <div class="item" show.bind="!space._hidden">
+                        <div class="item" show.bind="!space._hidden" task.bind="initSpaceHandler($last)">
                             <i click.delegate="spaceToggleHandler(space)" class="angle ${space.open ? 'down' : 'right'} link icon"></i>
                             <div class="content">
                                 <span style="cursor: pointer;" click.delegate="spaceToggleHandler(space)" title="${space.name}">
@@ -97,7 +97,7 @@
                                     ${dir.name}
                                 </span>
                                             <div show.bind="dir.open" class="ui bulleted list tms-sortable-elem" style="padding-left: 0;">
-                                                <div repeat.for="item of dir.blogs | sort:'title'" data-id="${item.id}" show.bind="!item._hidden" class="item blog-item ${item.id == blog.id ? 'active' : ''}">
+                                                <div repeat.for="item of dir.blogs | sortBlog" data-id="${item.id}" data-sort="${item.sort}" show.bind="!item._hidden" class="item blog-item ${item.id == blog.id ? 'active' : ''}">
                                                     <a title="${item.title}" href="#/blog/${item.id}">
                                             <i class="icons">
                                                 <i class="file outline icon"></i>
@@ -171,18 +171,6 @@
                 </div>
                 <div class="right menu">
                     <em-dropdown-links></em-dropdown-links>
-                    <!-- <div class="ui dropdown icon item" ui-dropdown>
-                        <i class="content icon"></i>
-                        <div class="menu">
-                            <div class="header">
-                                <i class="linkify icon"></i> 系统外链
-                            </div>
-                            <div class="scrolling menu">
-                                <div if.bind="!sysLinks || sysLinks.length == 0" class="item">暂无系统外链</div>
-                                <a repeat.for="item of sysLinks | sort:'title'" click.delegate="sysLinkHandler(item)" target="_blank" href="${item.href}" class="item">${item.title}</a>
-                            </div>
-                        </div>
-                    </div> -->
                 </div>
             </div>
         </div>

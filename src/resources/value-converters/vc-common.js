@@ -96,6 +96,18 @@ export class SortValueConverter {
     }
 }
 
+export class SortBlogValueConverter {
+    toView(value) {
+
+        if (!_.isArray(value) || value.length == 0) return value;
+
+        if (_.isNil(value[0].sort)) return _.sortBy(value, 'title');
+
+        return _.sortBy(value, 'sort');
+
+    }
+}
+
 export class SortTodoValueConverter {
     toView(value) {
         if (_.isArray(value)) {

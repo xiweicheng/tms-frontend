@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 
 @containerless
 export class EmBlogLeftSidebar {
@@ -39,9 +42,13 @@ export class EmBlogLeftSidebar {
                 nsCtx.blogId = payload.blog.id;
                 this.calcTree();
                 _.delay(() => this._scrollTo(payload.blog.id), 1000);
-                ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, { to: `#/blog/${payload.blog.id}` });
+                ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, {
+                    to: `#/blog/${payload.blog.id}`
+                });
             } else if (payload.action == 'updated') {
-                let blog = _.find(this.blogs, { id: payload.blog.id });
+                let blog = _.find(this.blogs, {
+                    id: payload.blog.id
+                });
                 if (!payload.blog.dir) blog.dir = null;
                 _.extend(blog, payload.blog);
                 // 同步更新收藏博文
@@ -53,7 +60,9 @@ export class EmBlogLeftSidebar {
                 this.calcTree();
             } else if (payload.action == 'deleted') {
                 this.blogStows = _.reject(this.blogStows, bs => bs.blog.id == payload.blog.id);
-                this.blogs = _.reject(this.blogs, { id: payload.blog.id });
+                this.blogs = _.reject(this.blogs, {
+                    id: payload.blog.id
+                });
                 this.calcTree();
             }
         });
@@ -62,7 +71,9 @@ export class EmBlogLeftSidebar {
                 this.spaces = [payload.space, ...this.spaces];
                 this.calcTree();
             } else if (payload.action == 'updated') {
-                _.extend(_.find(this.spaces, { id: payload.space.id }), payload.space);
+                _.extend(_.find(this.spaces, {
+                    id: payload.space.id
+                }), payload.space);
                 this.calcTree();
             }
         });
@@ -74,7 +85,9 @@ export class EmBlogLeftSidebar {
             }
         });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_SWITCH, (payload) => {
-            this.blog = _.find(this.blogs, { id: +nsCtx.blogId });
+            this.blog = _.find(this.blogs, {
+                id: +nsCtx.blogId
+            });
             this.calcTree();
             this.blog && _.delay(() => this._scrollTo(this.blog.id), 1000);
         });
@@ -92,7 +105,9 @@ export class EmBlogLeftSidebar {
             this.folded = payload;
         });
 
-        this._doFilerDebounce = _.debounce(() => this._doFiler(), 120, { leading: true });
+        this._doFilerDebounce = _.debounce(() => this._doFiler(), 120, {
+            leading: true
+        });
     }
 
     /**
@@ -117,27 +132,41 @@ export class EmBlogLeftSidebar {
         this.refresh();
         // this._refreshSysLinks();
         this._refreshBlogStows();
+    }
 
-        _.delay(() => {
-            $('.tms-sortable-elem').each((i, e) => {
-                Sortable.create(e, {
-                    onEnd: function (evt) {
-                        // var itemEl = evt.item; // dragged HTMLElement
-                        // evt.to; // target list
-                        // evt.from; // previous list
-                        // evt.oldIndex; // element's old index within old parent
-                        // evt.newIndex; // element's new index within new parent
-                        // evt.oldDraggableIndex; // element's old index within old parent, only counting draggable elements
-                        // evt.newDraggableIndex; // element's new index within new parent, only counting draggable elements
-                        // evt.clone // the clone element
-                        // evt.pullMode; // when item is in another sortable: `"clone"` if cloning, `true` if moving
-                        console.log(evt);
-                        
-                    },
-                });
-            })
-        }, 2000);
+    initSpaceHandler(last) {
+        if (last) {
+            _.defer(() => {
+                $('.tms-sortable-elem').each((i, e) => {
 
+                    Sortable.create(e, {
+                        onEnd: function (evt) {
+
+                            if (evt.newIndex === evt.oldIndex) return;
+
+                            var $all = $(evt.from).children('.blog-item');
+
+                            var items = [];
+                            $all.each((i, e) => {
+                                items.push({
+                                    id: $(e).attr('data-id'),
+                                    sort: i
+                                });
+                            })
+
+                            $.post("/admin/blog/sort", {
+                                items: JSON.stringify(items)
+                            }, (data) => {
+                                if (!data.success) {
+                                    toastr.error(data.data);
+                                }
+                            });
+
+                        },
+                    });
+                })
+            });
+        }
     }
 
     _recentOpenSave(blog) {
@@ -209,7 +238,7 @@ export class EmBlogLeftSidebar {
 
     _isBlogInView(id) {
         let isInView = false;
-        $(`.blog-item[data-id="${id}"]`).each(function(item) {
+        $(`.blog-item[data-id="${id}"]`).each(function (item) {
             let _isInView = utils.isElementInViewport($(this));
             if (_isInView) {
                 isInView = true;
@@ -275,7 +304,9 @@ export class EmBlogLeftSidebar {
                         }
                         let dirs = space.dirs;
                         if (blog.dir) {
-                            let dir = _.find(dirs, { id: blog.dir.id });
+                            let dir = _.find(dirs, {
+                                id: blog.dir.id
+                            });
                             if (dir && dir.status != 'Deleted') {
                                 dir.blogs.push(blog);
                                 if (nsCtx.blogId == blog.id) {
@@ -309,7 +340,9 @@ export class EmBlogLeftSidebar {
                 this._recentOpenHandle(data.data);
 
                 this.blogs = data.data;
-                this.blog = _.find(this.blogs, { id: +nsCtx.blogId });
+                this.blog = _.find(this.blogs, {
+                    id: +nsCtx.blogId
+                });
             }
         });
     }
@@ -334,7 +367,9 @@ export class EmBlogLeftSidebar {
                 }, (data) => {
                     if (data.success) {
                         toastr.success('删除空间成功!');
-                        this.spaces = _.reject(this.spaces, { id: space.id });
+                        this.spaces = _.reject(this.spaces, {
+                            id: space.id
+                        });
                         this.calcTree();
                     } else {
                         toastr.error(data.data, '删除空间失败!');
@@ -352,7 +387,9 @@ export class EmBlogLeftSidebar {
                 }, (data) => {
                     if (data.success) {
                         toastr.success('删除分类成功!');
-                        space.dirs = _.reject(space.dirs, { id: dir.id });
+                        space.dirs = _.reject(space.dirs, {
+                            id: dir.id
+                        });
                         this.calcTree();
                     } else {
                         toastr.error(data.data, '删除分类失败!');
@@ -447,7 +484,9 @@ export class EmBlogLeftSidebar {
 
         if (!this.filter) {
             _.each(this.spaces, s => {
-                if (_.find(s.blogs, { id: +nsCtx.blogId })) {
+                if (_.find(s.blogs, {
+                        id: +nsCtx.blogId
+                    })) {
                     s.open = true;
                 } else {
                     s.open = false;
