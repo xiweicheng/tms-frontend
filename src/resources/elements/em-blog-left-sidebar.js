@@ -136,36 +136,126 @@ export class EmBlogLeftSidebar {
 
     initSpaceHandler(last) {
         if (last) {
-            _.defer(() => {
-                $('.tms-sortable-elem').each((i, e) => {
+            _.delay(() => {
 
-                    Sortable.create(e, {
-                        onEnd: function (evt) {
+                // blogs sort
+                $('.tms-sortable-elem-blogs').each((i, e) => {
 
-                            if (evt.newIndex === evt.oldIndex) return;
+                    // console.log(`blogs sortable elements index: ${i}`);
 
-                            var $all = $(evt.from).children('.blog-item');
-
-                            var items = [];
-                            $all.each((i, e) => {
-                                items.push({
-                                    id: $(e).attr('data-id'),
-                                    sort: i
-                                });
-                            })
-
-                            $.post("/admin/blog/sort", {
-                                items: JSON.stringify(items)
-                            }, (data) => {
-                                if (!data.success) {
-                                    toastr.error(data.data);
-                                }
-                            });
-
-                        },
+                    let space = _.find(this.spaces, {
+                        id: +$(e).attr('data-id')
                     });
-                })
-            });
+
+                    // 没有从属空间 || 空间创建者 || 系统管理员
+                    if (space == null || (space.creator.username == this.loginUser.username) || this.isSuper) {
+
+                        Sortable.create(e, {
+                            onEnd: function (evt) {
+
+                                if (evt.newIndex === evt.oldIndex) return;
+
+                                var $all = $(evt.from).children('.blog-item');
+
+                                var items = [];
+                                $all.each((i, e) => {
+                                    items.push({
+                                        id: $(e).attr('data-id'),
+                                        sort: i
+                                    });
+                                })
+
+                                $.post("/admin/blog/sort", {
+                                    items: JSON.stringify(items)
+                                }, (data) => {
+                                    if (!data.success) {
+                                        toastr.error(data.data);
+                                    }
+                                });
+
+                            },
+                        });
+                    }
+                });
+
+                // dirs sort
+                $('.tms-sortable-elem-dirs').each((i, e) => {
+
+                    // console.log(`dirs sortable elements index: ${i}`);
+
+                    let space = _.find(this.spaces, {
+                        id: +$(e).attr('data-id')
+                    });
+
+                    // 空间创建者 || 系统管理员
+                    if ((space && (space.creator.username == this.loginUser.username)) || this.isSuper) {
+                        Sortable.create(e, {
+                            onEnd: function (evt) {
+
+                                if (evt.newIndex === evt.oldIndex) return;
+
+                                var $all = $(evt.from).children('.dir-item');
+
+                                var items = [];
+                                $all.each((i, e) => {
+                                    items.push({
+                                        id: $(e).attr('data-id'),
+                                        sort: i
+                                    });
+                                })
+
+                                $.post("/admin/blog/dir/sort", {
+                                    items: JSON.stringify(items)
+                                }, (data) => {
+                                    if (!data.success) {
+                                        toastr.error(data.data);
+                                    }
+                                });
+
+                            },
+                        });
+                    }
+
+                });
+
+                // spaces sort
+                // 系统管理员
+                if (this.isSuper) {
+
+                    $('.tms-sortable-elem-spaces').each((i, e) => {
+
+                        // console.log(`spaces sortable elements index: ${i}`);
+
+                        Sortable.create(e, {
+                            draggable: '.space-item',
+                            onEnd: function (evt) {
+
+                                if (evt.newIndex === evt.oldIndex) return;
+
+                                var $all = $(evt.from).children('.space-item');
+
+                                var items = [];
+                                $all.each((i, e) => {
+                                    items.push({
+                                        id: $(e).attr('data-id'),
+                                        sort: i
+                                    });
+                                })
+
+                                $.post("/admin/blog/space/sort", {
+                                    items: JSON.stringify(items)
+                                }, (data) => {
+                                    if (!data.success) {
+                                        toastr.error(data.data);
+                                    }
+                                });
+
+                            },
+                        });
+                    });
+                }
+
+            }, 2000);
         }
     }
 

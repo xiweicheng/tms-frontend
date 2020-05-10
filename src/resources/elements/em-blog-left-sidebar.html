@@ -4,21 +4,24 @@
         class="ui left visible sidebar em-blog-left-sidebar ${isHide ? 'mobile-hide' : ''} ${folded ? 'bar-fold' : 'bar-unfold'}">
         <div class="tms-body">
             <div scrollbar="scrollbar-macosx">
-                <div ref="treeRef" class="ui list space">
+                <div ref="treeRef" class="ui list space tms-sortable-elem-spaces">
                     <div class="item" style="padding-top: 0.214286em;">
-                        <i click.delegate="spaceToggleHandler(spaceStow)" class="angle ${spaceStow.open ? 'down' : 'right'} link icon"></i>
+                        <i click.delegate="spaceToggleHandler(spaceStow)"
+                            class="angle ${spaceStow.open ? 'down' : 'right'} link icon"></i>
                         <div class="content">
                             <span style="cursor: pointer;" click.delegate="spaceToggleHandler(spaceStow)">
-                                    <i class="empty star icon" style="margin-right: 0; position: relative; left: -2px;"></i>
-                                    ${spaceStow.name}
-                                </span>
+                                <i class="empty star icon" style="margin-right: 0; position: relative; left: -2px;"></i>
+                                ${spaceStow.name}
+                            </span>
                             <div show.bind="spaceStow.open" class="ui bulleted list">
                                 <template repeat.for="item of blogStows | sort:'blog.title'">
-                                    <div if.bind="item.blog.status != 'Deleted'" show.bind="!item._hidden" data-id="${item.blog.id}" class="item blog-item ${item.blog.id == $parent.blog.id ? 'active' : ''}">
+                                    <div if.bind="item.blog.status != 'Deleted'" show.bind="!item._hidden"
+                                        data-id="${item.blog.id}"
+                                        class="item blog-item ${item.blog.id == $parent.blog.id ? 'active' : ''}">
                                         <a title="${item.blog.title}" href="#/blog/${item.blog.id}">
                                             <i class="icons">
                                                 <i class="file outline icon"></i>
-                                            <i show.bind="item.blog.privated" class="corner lock icon"></i>
+                                                <i show.bind="item.blog.privated" class="corner lock icon"></i>
                                             </i>
                                             ${item.blog.title}</a>
                                     </div>
@@ -35,8 +38,7 @@
                                 ${spaceRecentOpen.name}
                             </span>
                             <div show.bind="spaceRecentOpen.open" class="ui bulleted list">
-                                <template
-                                    repeat.for="blog of blogs | hasProp:'_openTime' | sort:'_openTime':true | take:15 &
+                                <template repeat.for="blog of blogs | hasProp:'_openTime' | sort:'_openTime':true | take:15 &
                                     signal:'sg-recent-open-refresh'">
                                     <div if.bind="blog.status != 'Deleted'" show.bind="!blog._hidden"
                                         data-id="${blog.id}"
@@ -53,19 +55,22 @@
                         </div>
                     </div>
                     <div class="item" style="padding-top: 0.214286em;">
-                        <i click.delegate="spaceToggleHandler(spaceRecent)" class="angle ${spaceRecent.open ? 'down' : 'right'} link icon"></i>
+                        <i click.delegate="spaceToggleHandler(spaceRecent)"
+                            class="angle ${spaceRecent.open ? 'down' : 'right'} link icon"></i>
                         <div class="content">
                             <span style="cursor: pointer;" click.delegate="spaceToggleHandler(spaceRecent)">
-                                    <i class="history icon" style="margin-right: 0; position: relative; left: -2px;"></i>
-                                    ${spaceRecent.name}
-                                </span>
+                                <i class="history icon" style="margin-right: 0; position: relative; left: -2px;"></i>
+                                ${spaceRecent.name}
+                            </span>
                             <div show.bind="spaceRecent.open" class="ui bulleted list">
                                 <template repeat.for="blog of blogs | sort:'updateDate':true | take:20">
-                                    <div if.bind="blog.status != 'Deleted'" show.bind="!blog._hidden" data-id="${blog.id}" class="item blog-item ${blog.id == $parent.blog.id ? 'active' : ''}">
+                                    <div if.bind="blog.status != 'Deleted'" show.bind="!blog._hidden"
+                                        data-id="${blog.id}"
+                                        class="item blog-item ${blog.id == $parent.blog.id ? 'active' : ''}">
                                         <a title="${blog.title}" href="#/blog/${blog.id}">
                                             <i class="icons">
                                                 <i class="file outline icon"></i>
-                                            <i show.bind="blog.privated" class="corner lock icon"></i>
+                                                <i show.bind="blog.privated" class="corner lock icon"></i>
                                             </i>
                                             ${blog.title}</a>
                                     </div>
@@ -73,86 +78,114 @@
                             </div>
                         </div>
                     </div>
-                    <template repeat.for="space of spaces | sort:'name'">
-                        <div class="item" show.bind="!space._hidden" task.bind="initSpaceHandler($last)">
-                            <i click.delegate="spaceToggleHandler(space)" class="angle ${space.open ? 'down' : 'right'} link icon"></i>
+                    <template repeat.for="space of spaces | sortBlog:'name'">
+                        <div class="item space-item" data-id="${space.id}" data-sort="${space.sort}"
+                            show.bind="!space._hidden" task.bind="initSpaceHandler($last)">
+                            <i click.delegate="spaceToggleHandler(space)"
+                                class="angle ${space.open ? 'down' : 'right'} link icon"></i>
                             <div class="content">
-                                <span style="cursor: pointer;" click.delegate="spaceToggleHandler(space)" title="${space.name}">
+                                <span style="cursor: pointer;" click.delegate="spaceToggleHandler(space)"
+                                    title="${space.name}">
                                     <i class="icons">
                                         <!-- <i class="folder outline icon"></i> -->
                                         <i class="world icon"></i>
-                                    <i show.bind="space.privated" class="corner lock icon"></i>
+                                        <i show.bind="space.privated" class="corner lock icon"></i>
                                     </i>
                                     ${space.name}
                                 </span>
-                                <template repeat.for="dir of space.dirs | sort:'name'">
-                                    <div class="list dir" show.bind="space.open && !dir._hidden" if.bind="dir.status != 'Deleted'">
-                                        <i click.delegate="dirToggleHandler(dir)" class="angle ${dir.open ? 'down' : 'right'} link icon"></i>
-                                        <div class="content">
-                                            <span style="cursor: pointer;" click.delegate="dirToggleHandler(dir)" title="${dir.name}">
-                                    <i class="icons">
-                                        <i class="folder ${dir.open ? 'open' : ''} outline icon" style="width: 13px;"></i>
-                                    <i show.bind="dir.privated" class="corner lock icon"></i>
-                                    </i>
-                                    ${dir.name}
-                                </span>
-                                            <div show.bind="dir.open" class="ui bulleted list tms-sortable-elem" style="padding-left: 0;">
-                                                <div repeat.for="item of dir.blogs | sortBlog" data-id="${item.id}" data-sort="${item.sort}" show.bind="!item._hidden" class="item blog-item ${item.id == blog.id ? 'active' : ''}">
-                                                    <a title="${item.title}" href="#/blog/${item.id}">
-                                            <i class="icons">
-                                                <i class="file outline icon"></i>
-                                            <i show.bind="item.privated" class="corner lock icon"></i>
-                                            </i>
-                                            ${item.title}</a>
+                                <div class="dirs tms-sortable-elem-dirs" data-id="${space.id}">
+                                    <template repeat.for="dir of space.dirs | sortBlog:'name'">
+                                        <div class="list dir dir-item" data-id="${dir.id}" data-sort="${dir.sort}"
+                                            show.bind="space.open && !dir._hidden" if.bind="dir.status != 'Deleted'">
+                                            <i click.delegate="dirToggleHandler(dir)"
+                                                class="angle ${dir.open ? 'down' : 'right'} link icon"></i>
+                                            <div class="content">
+                                                <span style="cursor: pointer;" click.delegate="dirToggleHandler(dir)"
+                                                    title="${dir.name}">
+                                                    <i class="icons">
+                                                        <i class="folder ${dir.open ? 'open' : ''} outline icon"
+                                                            style="width: 13px;"></i>
+                                                        <i show.bind="dir.privated" class="corner lock icon"></i>
+                                                    </i>
+                                                    ${dir.name}
+                                                </span>
+                                                <div show.bind="dir.open"
+                                                    class="ui bulleted list tms-sortable-elem-blogs"
+                                                    data-id="${space.id}" style="padding-left: 0;">
+                                                    <div repeat.for="item of dir.blogs | sortBlog" data-id="${item.id}"
+                                                        data-sort="${item.sort}" show.bind="!item._hidden"
+                                                        class="item blog-item ${item.id == blog.id ? 'active' : ''}">
+                                                        <a title="${item.title}" href="#/blog/${item.id}">
+                                                            <i class="icons">
+                                                                <i class="file outline icon"></i>
+                                                                <i show.bind="item.privated"
+                                                                    class="corner lock icon"></i>
+                                                            </i>
+                                                            ${item.title}</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="actions">
+                                                <div if.bind="isSuper || space.creator.username == loginUser.username"
+                                                    ui-dropdown class="ui right pointing dropdown">
+                                                    <i class="large ellipsis horizontal icon"></i>
+                                                    <div class="menu">
+                                                        <div class="item" click.delegate="editDirHandler(dir, space)"><i
+                                                                class="icon edit"></i>编辑</div>
+                                                        <!-- <div class="item" click.delegate="authSpaceHandler(space)"><i class="lock icon"></i>限制</div> -->
+                                                        <!-- <div class="divider"></div> -->
+                                                        <div class="item" style="color: red;"
+                                                            click.delegate="delDirHandler(dir, space)"><i
+                                                                class="trash outline icon"></i>删除</div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="actions">
-                                            <div if.bind="isSuper || space.creator.username == loginUser.username" ui-dropdown class="ui right pointing dropdown">
-                                                <i class="large ellipsis horizontal icon"></i>
-                                                <div class="menu">
-                                                    <div class="item" click.delegate="editDirHandler(dir, space)"><i class="icon edit"></i>编辑</div>
-                                                    <!-- <div class="item" click.delegate="authSpaceHandler(space)"><i class="lock icon"></i>限制</div> -->
-                                                    <!-- <div class="divider"></div> -->
-                                                    <div class="item" style="color: red;" click.delegate="delDirHandler(dir, space)"><i class="trash outline icon"></i>删除</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
-                                <div show.bind="space.open" class="ui bulleted list">
-                                    <div repeat.for="item of space.blogs | sort:'title'" data-id="${item.id}" show.bind="!item._hidden" class="item blog-item ${item.id == blog.id ? 'active' : ''}">
+                                    </template>
+                                </div>
+                                <div show.bind="space.open" class="ui bulleted list tms-sortable-elem-blogs"
+                                    data-id="${space.id}">
+                                    <div repeat.for="item of space.blogs | sortBlog" data-id="${item.id}"
+                                        data-sort="${item.sort}" show.bind="!item._hidden"
+                                        class="item blog-item ${item.id == blog.id ? 'active' : ''}">
                                         <a title="${item.title}" href="#/blog/${item.id}">
                                             <i class="icons">
                                                 <i class="file outline icon"></i>
-                                            <i show.bind="item.privated" class="corner lock icon"></i>
+                                                <i show.bind="item.privated" class="corner lock icon"></i>
                                             </i>
                                             ${item.title}</a>
                                     </div>
                                 </div>
                             </div>
                             <div class="actions">
-                                <div if.bind="isSuper || space.creator.username == loginUser.username" ui-dropdown class="ui right pointing dropdown">
+                                <div if.bind="isSuper || space.creator.username == loginUser.username" ui-dropdown
+                                    class="ui right pointing dropdown">
                                     <i class="large ellipsis horizontal icon"></i>
                                     <div class="menu">
-                                        <div class="item" click.delegate="createDirHandler(space)"><i class="icon folder outline"></i>创建分类</div>
-                                        <div class="item" click.delegate="updateChannelHandler(space)"><i class="icon hashtag"></i>关联频道</div>
-                                        <div class="item" click.delegate="editSpaceHandler(space)"><i class="icon edit"></i>编辑</div>
-                                        <div class="item" click.delegate="authSpaceHandler(space)"><i class="lock icon"></i>限制</div>
+                                        <div class="item" click.delegate="createDirHandler(space)"><i
+                                                class="icon folder outline"></i>创建分类</div>
+                                        <div class="item" click.delegate="updateChannelHandler(space)"><i
+                                                class="icon hashtag"></i>关联频道</div>
+                                        <div class="item" click.delegate="editSpaceHandler(space)"><i
+                                                class="icon edit"></i>编辑</div>
+                                        <div class="item" click.delegate="authSpaceHandler(space)"><i
+                                                class="lock icon"></i>限制</div>
                                         <!-- <div class="divider"></div> -->
-                                        <div class="item" style="color: red;" click.delegate="delSpaceHandler(space)"><i class="trash outline icon"></i>删除</div>
+                                        <div class="item" style="color: red;" click.delegate="delSpaceHandler(space)"><i
+                                                class="trash outline icon"></i>删除</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </template>
                 </div>
-                <div class="ui bulleted list no-space">
-                    <div repeat.for="item of noSpaceBlogs | sort:'title'" data-id="${item.id}" show.bind="!item._hidden" class="item blog-item ${item.id == blog.id ? 'active' : ''}">
+                <div class="ui bulleted list no-space tms-sortable-elem-blogs" data-id="">
+                    <div repeat.for="item of noSpaceBlogs | sortBlog" data-id="${item.id}" data-sort="${item.sort}"
+                        show.bind="!item._hidden" class="item blog-item ${item.id == blog.id ? 'active' : ''}">
                         <a title="${item.title}" href="#/blog/${item.id}">
                             <i class="icons">
                                 <i class="file outline icon"></i>
-                            <i show.bind="item.privated" class="corner lock icon"></i>
+                                <i show.bind="item.privated" class="corner lock icon"></i>
                             </i>
                             </i>${item.title}</a>
                     </div>
@@ -164,10 +197,12 @@
                 <em-blog-space-create></em-blog-space-create>
                 <div class="item tms-search">
                     <div class="ui transparent left icon input">
-                        <input ref="filterInputRef" keyup.trigger="filterKeyupHandler($event)" value.bind="filter" type="text" placeholder="过滤查找...">
+                        <input ref="filterInputRef" keyup.trigger="filterKeyupHandler($event)" value.bind="filter"
+                            type="text" placeholder="过滤查找...">
                         <i class="search icon"></i>
                     </div>
-                    <i click.delegate="clearFilterHandler()" class="remove link icon ${!filter ? 'tms-hidden' : ''}"></i>
+                    <i click.delegate="clearFilterHandler()"
+                        class="remove link icon ${!filter ? 'tms-hidden' : ''}"></i>
                 </div>
                 <div class="right menu">
                     <em-dropdown-links></em-dropdown-links>

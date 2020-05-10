@@ -97,14 +97,15 @@ export class SortValueConverter {
 }
 
 export class SortBlogValueConverter {
-    toView(value) {
+    toView(value, prop = 'title') {
 
         if (!_.isArray(value) || value.length == 0) return value;
 
-        if (_.isNil(value[0].sort)) return _.sortBy(value, 'title');
+        if (_.some(value, item => !_.isNil(item.sort))) { // 数组中任意一个元素包含sort值，表示排过序
+            return _.sortBy(value, ['sort', prop]);
+        }
 
-        return _.sortBy(value, 'sort');
-
+        return _.sortBy(value, prop);
     }
 }
 
