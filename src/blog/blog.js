@@ -148,7 +148,10 @@ export class Blog {
         this.routeConfig = routeConfig;
         nsCtx.blogId = params.id;
 
-        ea.publish(nsCons.EVENT_BLOG_SWITCH, { id: params.id });
+        ea.publish(nsCons.EVENT_BLOG_SWITCH, {
+            id: params.id,
+            anchor: params.anchor
+        });
 
         return Promise.all([chatService.loginUser().then((user) => {
                 nsCtx.loginUser = user;

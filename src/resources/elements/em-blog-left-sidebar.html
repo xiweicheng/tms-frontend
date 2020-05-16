@@ -80,7 +80,7 @@
                     </div>
                     <template repeat.for="space of spaces | sortBlog:'name'">
                         <div class="item space-item" data-id="${space.id}" data-sort="${space.sort}"
-                            show.bind="!space._hidden" task.bind="initSpaceHandler($last)">
+                            show.bind="!space._hidden">
                             <i click.delegate="spaceToggleHandler(space)"
                                 class="angle ${space.open ? 'down' : 'right'} link icon"></i>
                             <div class="content">
@@ -96,7 +96,8 @@
                                 <div class="dirs tms-sortable-elem-dirs" data-id="${space.id}">
                                     <template repeat.for="dir of space.dirs | sortBlog:'name'">
                                         <div class="list dir dir-item" data-id="${dir.id}" data-sort="${dir.sort}"
-                                            show.bind="space.open && !dir._hidden" if.bind="dir.status != 'Deleted'">
+                                            data-space-id=${space.id} show.bind="space.open && !dir._hidden"
+                                            if.bind="dir.status != 'Deleted'">
                                             <i click.delegate="dirToggleHandler(dir)"
                                                 class="angle ${dir.open ? 'down' : 'right'} link icon"></i>
                                             <div class="content">
@@ -111,8 +112,10 @@
                                                 </span>
                                                 <div show.bind="dir.open"
                                                     class="ui bulleted list tms-sortable-elem-blogs"
-                                                    data-id="${space.id}" style="padding-left: 0;">
+                                                    data-id="${space.id}" data-dir-id=${dir.id}
+                                                    style="padding-left: 0;">
                                                     <div repeat.for="item of dir.blogs | sortBlog" data-id="${item.id}"
+                                                        data-space-id="${space.id}" data-dir-id=${dir.id}
                                                         data-sort="${item.sort}" show.bind="!item._hidden"
                                                         class="item blog-item ${item.id == blog.id ? 'active' : ''}">
                                                         <a title="${item.title}" href="#/blog/${item.id}">

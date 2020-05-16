@@ -11,22 +11,40 @@
                     <div show.bind="blog.dir" class="divider"> / </div>
                     <a show.bind="blog.dir" class="section active">${blog.dir.name}</a>
                     <!-- <span if.bind="isSuper || blog.creator.username == loginUser.username" data-tooltip="${blog.privated ? '私有博文,点击可公开' : '公开博文,点击可关闭'}" data-position="right center" style="margin-left: 16px;"><i click.delegate="updatePrivatedHandler()" class="link icon ${blog.privated ? 'lock' : 'unlock alternate'}"></i></span> -->
-                    <span if.bind="isSuper || blog.creator.username == loginUser.username && !blog.opened" data-tooltip="${blog.privated ? '私有博文（点击可修改）' : '公开博文 [登录可见]（点击可修改）'}" data-position="right center" style="margin-left: 16px;"><i click.delegate="authHandler()" class="link icon ${blog.privated ? 'lock' : 'unlock alternate'}"></i></span>
-                    <span if.bind="isSuper || blog.creator.username == loginUser.username && blog.opened" data-tooltip="${blog.privated ? '私有博文（点击可修改）' : '公开博文 [游客可见]（点击可修改）'}" data-position="right center" style="margin-left: 16px;"><i click.delegate="authHandler()" class="link icon ${blog.privated ? 'lock' : 'unlock'}"></i></span>
-                    <span if.bind="!isSuper && (blog.creator.username != loginUser.username) && !blog.opened" data-tooltip="${blog.privated ? '私有博文 [授权可见]' : '公开博文 [登录可见]'}" data-position="right center" style="margin-left: 16px;"><i class="icon ${blog.privated ? 'lock' : 'unlock alternate'}"></i></span>
-                    <span if.bind="!isSuper && (blog.creator.username != loginUser.username) && blog.opened" data-tooltip="${blog.privated ? '私有博文 [授权可见]' : '公开博文 [游客可见]'}" data-position="right center" style="margin-left: 16px;"><i class="icon ${blog.privated ? 'lock' : 'unlock'}"></i></span>
-                    <span if.bind="(isSuper || blog.creator.username == loginUser.username) && blog.openEdit" data-tooltip="开放编辑中（点击可关闭）" data-position="right center" style="margin-left: 8px;"><i click.delegate="openEditHandler()" class="link icon write"></i></span>
-                    <span data-tooltip="${blogStow ? '已收藏（点击可取消）' : '点击收藏该博文'}" data-position="right center" style="margin-left: 8px;"><i click.delegate="stowHandler()" class="link icon ${blogStow ? '' : 'empty'} star"></i></span>
+                    <span if.bind="isSuper || blog.creator.username == loginUser.username && !blog.opened"
+                        data-tooltip="${blog.privated ? '私有博文（点击可修改）' : '公开博文 [登录可见]（点击可修改）'}"
+                        data-position="right center" style="margin-left: 16px;"><i click.delegate="authHandler()"
+                            class="link icon ${blog.privated ? 'lock' : 'unlock alternate'}"></i></span>
+                    <span if.bind="isSuper || blog.creator.username == loginUser.username && blog.opened"
+                        data-tooltip="${blog.privated ? '私有博文（点击可修改）' : '公开博文 [游客可见]（点击可修改）'}"
+                        data-position="right center" style="margin-left: 16px;"><i click.delegate="authHandler()"
+                            class="link icon ${blog.privated ? 'lock' : 'unlock'}"></i></span>
+                    <span if.bind="!isSuper && (blog.creator.username != loginUser.username) && !blog.opened"
+                        data-tooltip="${blog.privated ? '私有博文 [授权可见]' : '公开博文 [登录可见]'}" data-position="right center"
+                        style="margin-left: 16px;"><i
+                            class="icon ${blog.privated ? 'lock' : 'unlock alternate'}"></i></span>
+                    <span if.bind="!isSuper && (blog.creator.username != loginUser.username) && blog.opened"
+                        data-tooltip="${blog.privated ? '私有博文 [授权可见]' : '公开博文 [游客可见]'}" data-position="right center"
+                        style="margin-left: 16px;"><i class="icon ${blog.privated ? 'lock' : 'unlock'}"></i></span>
+                    <span if.bind="(isSuper || blog.creator.username == loginUser.username) && blog.openEdit"
+                        data-tooltip="开放编辑中（点击可关闭）" data-position="right center" style="margin-left: 8px;"><i
+                            click.delegate="openEditHandler()" class="link icon write"></i></span>
+                    <span data-tooltip="${blogStow ? '已收藏（点击可取消）' : '点击收藏该博文'}" data-position="right center"
+                        style="margin-left: 8px;"><i click.delegate="stowHandler()"
+                            class="link icon ${blogStow ? '' : 'empty'} star"></i></span>
                     <!-- <span if.bind="blogStow" data-tooltip="点击取消收藏该博文" data-position="right center" style="margin-left: 8px;"><i click.delegate="stowHandler()" class="link icon star"></i></span> -->
                 </div>
                 <div class="actions">
                     <a if.bind="dir" class="ui basic mini button" title="博文目录 (d)" click.delegate="catalogHandler()">
                         <i class="unordered list icon"></i> 目录
                     </a>
-                    <a if.bind="blog.openEdit || isSuper || blog.creator.username == loginUser.username" title="博文编辑 (e | ctrl+shift+dblclick)" class="ui basic mini button" click.delegate="editHandler()">
+                    <a if.bind="blog.openEdit || isSuper || blog.creator.username == loginUser.username"
+                        title="博文编辑 (e | ctrl+shift+dblclick)" class="ui basic mini button"
+                        click.delegate="editHandler()">
                         <i class="large icon edit"></i> 编辑
                     </a>
-                    <a title="${!blogFollower ? '关注' : '取消关注'}博文更新 (f)" class="ui basic mini button" click.delegate="followerHandler()">
+                    <a title="${!blogFollower ? '关注' : '取消关注'}博文更新 (f)" class="ui basic mini button"
+                        click.delegate="followerHandler()">
                         <i class="${!blogFollower ? 'unhide' : 'hide'} large icon"></i> ${!blogFollower ? '关注' : '取消'}
                     </a>
                     <em-blog-share view-model.ref="blogShareVm" blog.bind="blog"></em-blog-share>
@@ -41,7 +59,8 @@
                                 <span class="description">alt + h</span>
                                 <i class="history icon"></i> 历史
                             </div>
-                            <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="authHandler()" class="item">
+                            <div if.bind="isSuper || blog.creator.username == loginUser.username"
+                                click.delegate="authHandler()" class="item">
                                 <span class="description">alt + l</span>
                                 <i class="lock icon"></i> 限制
                             </div>
@@ -53,19 +72,23 @@
                                 <span class="description">alt + c</span>
                                 <i class="copy icon"></i> 复制
                             </div>
-                            <div if.bind="isSuper || blog.creator.username == loginUser.username || (blog.space && blog.space.creator.username == loginUser.username)" click.delegate="updateSpaceHandler()" class="item">
+                            <div if.bind="isSuper || blog.creator.username == loginUser.username || (blog.space && blog.space.creator.username == loginUser.username)"
+                                click.delegate="updateSpaceHandler()" class="item">
                                 <span class="description">alt + m</span>
                                 <i class="exchange icon"></i> 移动
                             </div>
-                            <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="tplEditHandler()" class="item">
+                            <div if.bind="isSuper || blog.creator.username == loginUser.username"
+                                click.delegate="tplEditHandler()" class="item">
                                 <span class="description">alt + t</span>
                                 <i class="clone icon"></i> 模板
                             </div>
-                            <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="openEditHandler()" class="item">
+                            <div if.bind="isSuper || blog.creator.username == loginUser.username"
+                                click.delegate="openEditHandler()" class="item">
                                 <span class="description">alt + o</span>
                                 <i class="write icon"></i> ${blog.openEdit ? '关闭编辑' : '开放编辑'}
                             </div>
-                            <div if.bind="(blog.editor != 'Html') && (isSuper || blog.creator.username == loginUser.username)" click.delegate="changeEditorHandler()" class="item">
+                            <div if.bind="(blog.editor != 'Html') && (isSuper || blog.creator.username == loginUser.username)"
+                                click.delegate="changeEditorHandler()" class="item">
                                 <span class="description">alt + e</span>
                                 <i class="html5 icon"></i> 转HTML
                             </div>
@@ -73,17 +96,21 @@
                             <a href="/admin/blog/download/${blog.id}?type=pdf" class="item">
                                 <i class="file pdf outline icon"></i> 导出为PDF
                             </a>
-                            <a show.bind="blog.editor != 'Html'" href="/admin/blog/download/${blog.id}?type=md" class="item">
+                            <a show.bind="blog.editor != 'Html'" href="/admin/blog/download/${blog.id}?type=md"
+                                class="item">
                                 <i class="file text outline icon"></i> 导出为Markdown
                             </a>
-                            <div show.bind="blog.editor != 'Html'" click.delegate="md2HtmlDownloadHandler()" class="item">
+                            <div show.bind="blog.editor != 'Html'" click.delegate="md2HtmlDownloadHandler()"
+                                class="item">
                                 <i class="html5 icon"></i> 导出为HTML
                             </div>
-                            <a show.bind="blog.editor == 'Html'" href="/admin/blog/download/${blog.id}?type=html" class="item">
+                            <a show.bind="blog.editor == 'Html'" href="/admin/blog/download/${blog.id}?type=html"
+                                class="item">
                                 <i class="html5 icon"></i> 导出为HTML
                             </a>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username" class="divider"></div>
-                            <div if.bind="isSuper || blog.creator.username == loginUser.username" click.delegate="deleteHandler()" class="item" style="color: red;">
+                            <div if.bind="isSuper || blog.creator.username == loginUser.username"
+                                click.delegate="deleteHandler()" class="item" style="color: red;">
                                 <span class="description">ctrl + alt + d</span>
                                 <i class="trash outline icon"></i> 删除
                             </div>
@@ -93,23 +120,43 @@
             </div>
             <div class="header">
                 <h1 class="ui header">${blog.title}
-                <div class="sub header">
-                    <i click.delegate="historyHandler()" title="点击查看变更历史" class="wait link icon"></i> <a class="author" data-value="${blog.creator.username}">${blog.creator.username == loginUser.username ? '我' : blog.creator.name}</a> 创建于<span data-timeago="${blog.createDate}" title="${blog.createDate | date}">${blog.createDate | timeago}</span>, <a class="author" data-value="${blog.updater.username}">${blog.updater.username == loginUser.username ? '我' : blog.updater.name}</a> 最后修改于<span data-timeago="${blog.updateDate}" title="${blog.updateDate | date}">${blog.updateDate | timeago}</span>
-                    <span click.delegate="refreshHandler()" class="readCnt" show.bind="blog.readCnt" title="点击刷新博文 (alt+r)"><i class="unhide icon"></i><a>${blog.readCnt}</a>次浏览</span>
-                    <span click.delegate="commentsHandler()" class="commentCnt" show.bind="comments" title="点击快速去评论 (r)"><i class="comments outline icon"></i><a>${comments.length}</a>个评论</span>
-                    <span class="followersCnt" show.bind="blogFollowers.length > 0" title="${followers}"><i class="users icon"></i><a>${blogFollowers.length}人关注</a></span>
-                    <span style="margin-left: 16px;">
-                    <span if.bind="blog.editor == 'Html'" title="HTML编辑器"><i style="color: black;" class="html5 icon"></i></span>
-                    <span if.bind="blog.editor != 'Html'" title="Markdown编辑器"><img style="width: 14px;" src="img/markdown.png" alt=""></span>
-                    </span>
-                </div>
-            </h1>
+                    <div class="sub header">
+                        <i click.delegate="historyHandler()" title="点击查看变更历史" class="wait link icon"></i> <a
+                            class="author" data-value="${blog.creator.username}">${blog.creator.username ==
+                            loginUser.username ? '我' : blog.creator.name}</a> 创建于<span data-timeago="${blog.createDate}"
+                            title="${blog.createDate | date}">${blog.createDate | timeago}</span>, <a class="author"
+                            data-value="${blog.updater.username}">${blog.updater.username == loginUser.username ? '我' :
+                            blog.updater.name}</a> 最后修改于<span data-timeago="${blog.updateDate}"
+                            title="${blog.updateDate | date}">${blog.updateDate | timeago}</span>
+                        <span click.delegate="refreshHandler()" class="readCnt" show.bind="blog.readCnt"
+                            title="点击刷新博文 (alt+r)"><i class="unhide icon"></i><a>${blog.readCnt}</a>次浏览</span>
+                        <span click.delegate="commentsHandler()" class="commentCnt" show.bind="comments"
+                            title="点击快速去评论 (r)"><i class="comments outline icon"></i><a>${comments.length}</a>个评论</span>
+                        <span class="followersCnt" show.bind="blogFollowers.length > 0" title="${followers}"><i
+                                class="users icon"></i><a>${blogFollowers.length}人关注</a></span>
+                        <span style="margin-left: 16px;">
+                            <span if.bind="blog.editor == 'Html'" title="HTML编辑器"><i style="color: black;"
+                                    class="html5 icon"></i></span>
+                            <span if.bind="blog.editor != 'Html'" title="Markdown编辑器"><img style="width: 14px;"
+                                    src="img/markdown.png" alt=""></span>
+                        </span>
+                    </div>
+                </h1>
             </div>
-            <div data-id="${blog.id}" data-case="blog" fancybox ref="mkbodyRef" class="markdown-body fr-view" innerhtml.bind="blog.content | parseMd:blog.space.channel:blog.editor | emoji:mkbodyRef"></div>
+            <div data-id="${blog.id}" data-case="blog" fancybox ref="mkbodyRef" class="markdown-body fr-view"
+                innerhtml.bind="blog.content | parseMd:blog.space.channel:blog.editor | emoji:mkbodyRef"></div>
             <div class="footer">
-                <span click.delegate="rateHandler()" class="rate"><i class="link icon thumbs outline up"></i>${blog.voteZan && blog.voteZan.split(',').includes(loginUser.username) ? '踩' : '赞'}</span> <span show.bind="!blog.voteZanCnt">成为第一个赞同者</span> <span show.bind="blog.voteZan && blog.voteZan.split(',').includes(loginUser.username)" title="${blog.voteZan} ${blog.voteZanCnt}人赞了它">你赞了它</span> <span show.bind="blog.voteZan && !blog.voteZan.split(',').includes(loginUser.username)" title="${blog.voteZan}"><a href="javascript:void(0);">${blog.voteZanCnt}</a>人赞了它</span>
+                <span click.delegate="rateHandler()" class="rate"><i
+                        class="link icon thumbs outline up"></i>${blog.voteZan &&
+                    blog.voteZan.split(',').includes(loginUser.username) ? '踩' : '赞'}</span> <span
+                    show.bind="!blog.voteZanCnt">成为第一个赞同者</span> <span
+                    show.bind="blog.voteZan && blog.voteZan.split(',').includes(loginUser.username)"
+                    title="${blog.voteZan} ${blog.voteZanCnt}人赞了它">你赞了它</span> <span
+                    show.bind="blog.voteZan && !blog.voteZan.split(',').includes(loginUser.username)"
+                    title="${blog.voteZan}"><a href="javascript:void(0);">${blog.voteZanCnt}</a>人赞了它</span>
                 <div class="tags">
-                    <div ref="tagsRef" class="ui fluid multiple search selection dropdown ${isSuper || blog.openEdit || blog.creator.username == loginUser.username ? '' : 'disabled'}">
+                    <div ref="tagsRef"
+                        class="ui fluid multiple search selection dropdown ${isSuper || blog.openEdit || blog.creator.username == loginUser.username ? '' : 'disabled'}">
                         <input name="tags" type="hidden">
                         <!-- <i class="dropdown icon"></i> -->
                         <div class="default text">标签</div>
@@ -133,16 +180,19 @@
             </div>
             <div ref="feedRef" class="ui segment feed">
                 <h3 class="ui dividing header">
-                <i class="icon feed"></i>
-                <div class="content">博文更新</div>
+                    <i class="icon feed"></i>
+                    <div class="content">博文更新</div>
                 </h3>
-                <button click.delegate="refreshFeedHandler()" style="position: absolute; right: 0; top: 2px;" class="circular ui icon button ${(ajaxS && ajaxS.readyState != 4) ? 'disabled' : ''}" data-tooltip="刷新博文更新" data-position="top right">
+                <button click.delegate="refreshFeedHandler()" style="position: absolute; right: 0; top: 2px;"
+                    class="circular ui icon button ${(ajaxS && ajaxS.readyState != 4) ? 'disabled' : ''}"
+                    data-tooltip="刷新博文更新" data-position="top right">
                     <i class="icon refresh ${(ajaxS && ajaxS.readyState != 4) ? 'loading' : ''}"></i>
                 </button>
                 <div if.bind="!logs || logs.length==0" class="ui info massive message">
                     ${(ajaxS && ajaxS.readyState != 4) ? '博文更新内容加载中...' : '暂无博文更新!'}
                 </div>
-                <div repeat.for="item of logs" mouseleave.trigger="feedEventItemMouseleaveHandler(item)" class="event ${item.isOpen ? 'opened' : ''}">
+                <div repeat.for="item of logs" mouseleave.trigger="feedEventItemMouseleaveHandler(item)"
+                    class="event ${item.isOpen ? 'opened' : ''}">
                     <div class="label">
                         <em-user-avatar user.bind="item.creator"></em-user-avatar>
                     </div>
@@ -150,44 +200,56 @@
                         <div class="summary">
                             <a class="user author" data-value="${item.creator.username}">${item.creator.name}</a>
                             <template if.bind="item.target=='Blog'">
-                                <span if.bind="item.action=='Create'">创建了博文 <a href="#/blog/${item.targetId}">${item.newValue}</a></span>
-                                <span if.bind="item.action=='Delete'">删除了博文 <a href="javascript:void(0);">${item.newValue}</a></span>
+                                <span if.bind="item.action=='Create'">创建了博文 <a
+                                        href="#/blog/${item.targetId}?anchor">${item.newValue}</a></span>
+                                <span if.bind="item.action=='Delete'">删除了博文 <a
+                                        href="javascript:void(0);">${item.newValue}</a></span>
                                 <template if.bind="item.action=='Update' && item.properties=='content'">
-                                    <span>更新了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的内容</span>
+                                    <span>更新了博文 <a href="#/blog/${item.targetId}?anchor">${item.oldValue}</a> 的内容</span>
                                 </template>
                                 <template if.bind="item.action=='Update' && item.properties=='title'">
-                                    <span>更新了博文 <a href="#/blog/${item.targetId}">${item.newValue}</a> 的标题</span>
+                                    <span>更新了博文 <a href="#/blog/${item.targetId}?anchor">${item.newValue}</a> 的标题</span>
                                 </template>
                                 <template if.bind="item.action=='Update' && item.properties=='privated'">
-                                    <span>更新了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的可见性</span>
+                                    <span>更新了博文 <a href="#/blog/${item.targetId}?anchor">${item.oldValue}</a>
+                                        的可见性</span>
                                 </template>
                                 <template if.bind="item.action=='Update' && item.properties=='opened'">
-                                    <span>更新了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的可见性</span>
+                                    <span>更新了博文 <a href="#/blog/${item.targetId}?anchor">${item.oldValue}</a>
+                                        的可见性</span>
                                 </template>
                                 <template if.bind="item.action=='Update' && item.properties=='space'">
-                                    <span>更新了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的空间分类</span>
+                                    <span>更新了博文 <a href="#/blog/${item.targetId}?anchor">${item.oldValue}</a>
+                                        的空间分类</span>
                                 </template>
                                 <template if.bind="item.action=='Update' && item.properties=='openEdit'">
-                                    <span>${item.newValue == 'true' ? '开放' : '关闭'}了博文 <a href="#/blog/${item.targetId}">${item.oldValue}</a> 的协作编辑权限</span>
+                                    <span>${item.newValue == 'true' ? '开放' : '关闭'}了博文 <a
+                                            href="#/blog/${item.targetId}?anchor">${item.oldValue}</a> 的协作编辑权限</span>
                                 </template>
                                 <template if.bind="item.action=='Update' && item.properties=='voteZan'">
-                                    <span>投票赞了博文 <a href="#/blog/${item.targetId}">${item.newValue}</a> </span>
+                                    <span>投票赞了博文 <a href="#/blog/${item.targetId}?anchor">${item.newValue}</a> </span>
                                 </template>
                                 <template if.bind="item.action=='Update' && item.properties=='stow'">
-                                    <span>收藏了博文 <a href="#/blog/${item.targetId}">${item.newValue}</a> </span>
+                                    <span>收藏了博文 <a href="#/blog/${item.targetId}?anchor">${item.newValue}</a> </span>
                                 </template>
                                 <template if.bind="item.action=='Update' && item.properties=='follower'">
-                                    <span>关注了博文 <a href="#/blog/${item.targetId}">${item.newValue}</a> </span>
+                                    <span>关注了博文 <a href="#/blog/${item.targetId}?anchor">${item.newValue}</a> </span>
                                 </template>
                             </template>
                             <template if.bind="item.target=='Comment'">
-                                <span if.bind="item.action=='Create'">添加了评论 <a href="#/blog/${item.oldValue}?cid=${item.targetId}">#${item.targetId}</a></span>
-                                <span if.bind="item.action=='Delete'">删除了评论 <a href="javascript:void(0);">#${item.targetId}</a></span>
+                                <span if.bind="item.action=='Create'">添加了评论 <a
+                                        href="#/blog/${item.oldValue}?anchor&cid=${item.targetId}">#${item.targetId}</a></span>
+                                <span if.bind="item.action=='Delete'">删除了评论 <a
+                                        href="javascript:void(0);">#${item.targetId}</a></span>
                                 <template if.bind="item.action=='Update' && item.properties=='content'">
-                                    <span>更新了评论 <a href="#/blog/${item.oldValue}?cid=${item.targetId}">#${item.targetId}</a> 的内容</span>
+                                    <span>更新了评论 <a
+                                            href="#/blog/${item.oldValue}?anchor&cid=${item.targetId}">#${item.targetId}</a>
+                                        的内容</span>
                                 </template>
                                 <template if.bind="item.action=='Update' && item.properties=='voteZan'">
-                                    <span>投票赞了评论 <a href="#/blog/${item.newValue}?cid=${item.targetId}">#${item.targetId}</a> </span>
+                                    <span>投票赞了评论 <a
+                                            href="#/blog/${item.newValue}?anchor&cid=${item.targetId}">#${item.targetId}</a>
+                                    </span>
                                 </template>
                             </template>
                             <div class="date" title="${item.createDate | date}">
@@ -200,7 +262,8 @@
                                     <!-- <div textcontent.bind="item.newValue"></div> -->
                                     <div innerhtml.bind="item.newValue | diffHtml"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
-                                        <i title="${item.isOpen ? '点击收起' : '点击展开'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                        <i title="${item.isOpen ? '点击收起' : '点击展开'}"
+                                            class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>
                                 </div>
                             </template>
@@ -211,7 +274,8 @@
                                 <div class="extra text">可见性修改为: ${item.newValue == 'true' ? '私有' : '公开'}</div>
                             </template>
                             <template if.bind="item.action=='Update' && item.properties=='opened'">
-                                <div class="extra text">可见性修改为: ${item.newValue == 'true' ? '游客(匿名访客)可见' : '游客(匿名访客)不可见'}</div>
+                                <div class="extra text">可见性修改为: ${item.newValue == 'true' ? '游客(匿名访客)可见' :
+                                    '游客(匿名访客)不可见'}</div>
                             </template>
                             <template if.bind="item.action=='Update' && item.properties=='space'">
                                 <div class="extra text">所属空间修改为: ${item.newValue}</div>
@@ -222,7 +286,8 @@
                                 <div ref="mkbodyRef2" class="extra text markdown-body fr-view">
                                     <div fancybox innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef2"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
-                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}"
+                                            class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>
                                 </div>
                             </template>
@@ -230,7 +295,8 @@
                                 <div ref="mkbodyRef2" class="extra text markdown-body fr-view">
                                     <div fancybox innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef2"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
-                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}"
+                                            class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>
                                 </div>
                             </template>
@@ -238,7 +304,8 @@
                                 <div class="extra text">
                                     <div innerhtml.bind="item.newValue | diffHtml"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
-                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}"
+                                            class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>
                                 </div>
                             </template>
@@ -246,14 +313,17 @@
                                 <div ref="mkbodyRef2" class="extra text markdown-body fr-view">
                                     <div fancybox innerhtml.bind="item.oldValue | parseMd | emoji:mkbodyRef2"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
-                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}" class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}"
+                                            class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>
                                 </div>
                             </template>
                         </template>
                     </div>
                 </div>
-                <div if.bind="!hasNoMoreFeeds" class="ui fluid basic button ${(ajaxS && ajaxS.readyState != 4) ? 'disabled' : ''}" click.delegate="loadMoreFeedHandler()">
+                <div if.bind="!hasNoMoreFeeds"
+                    class="ui fluid basic button ${(ajaxS && ajaxS.readyState != 4) ? 'disabled' : ''}"
+                    click.delegate="loadMoreFeedHandler()">
                     <i show.bind="ajaxS && ajaxS.readyState != 4" class="spinner loading icon"></i> 加载更多
                 </div>
             </div>

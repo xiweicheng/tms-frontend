@@ -32,6 +32,8 @@ export class EmBlogLeftSidebar {
         open: false
     };
 
+    sortObjs = [];
+
     /**
      * 构造函数
      */
@@ -57,7 +59,9 @@ export class EmBlogLeftSidebar {
                     if (!payload.blog.dir) bs.blog.dir = null;
                     _.extend(bs.blog, payload.blog);
                 }
+
                 !payload.unCalcDir && this.calcTree();
+
             } else if (payload.action == 'deleted') {
                 this.blogStows = _.reject(this.blogStows, bs => bs.blog.id == payload.blog.id);
                 this.blogs = _.reject(this.blogs, {
@@ -88,7 +92,7 @@ export class EmBlogLeftSidebar {
             this.blog = _.find(this.blogs, {
                 id: +nsCtx.blogId
             });
-            this.calcTree();
+            payload.anchor && this.calcTree(); // TODO 这里存在bug,拖拽后重新计划目录，博文目录定位错乱，原因不明？？？
             this.blog && _.delay(() => this._scrollTo(this.blog.id), 1000);
         });
         this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR, (payload) => {
@@ -134,189 +138,193 @@ export class EmBlogLeftSidebar {
         this._refreshBlogStows();
     }
 
-    initSpaceHandler(last) {
-        if (last) {
-            _.delay(() => {
+    _initSortObjs() {
 
-                // blogs sort
-                $('.tms-sortable-elem-blogs').each((i, e) => {
+        _.delay(() => {
 
-                    // console.log(`blogs sortable elements index: ${i}`);
+            // blogs sort
+            $('.tms-sortable-elem-blogs').each((i, e) => {
 
-                    let space = _.find(this.spaces, {
-                        id: +$(e).attr('data-id')
+                // console.log(`blogs sortable elements index: ${i}`);
+
+                let space = _.find(this.spaces, {
+                    id: +$(e).attr('data-id')
+                });
+
+                // 没有从属空间 || 空间创建者 || 系统管理员
+                if ((space && (space.creator.username == this.loginUser.username)) || this.isSuper) {
+
+                    let sortObj = Sortable.create(e, {
+                        group: {
+                            name: 'blog'
+                        },
+                        onEnd: (evt) => {
+
+                            if (evt.from === evt.to) {
+
+                                if (evt.newIndex === evt.oldIndex) return;
+
+                                this._sortBlogs($(evt.from).children('.blog-item'));
+
+                            } else {
+
+                                let blogId = $(evt.item).attr('data-id');
+                                let spaceIdF = $(evt.from).attr('data-id');
+                                let spaceIdT = $(evt.to).attr('data-id');
+
+                                let $dir = $(evt.item).closest('.dir-item');
+                                let dirId = $dir ? $dir.attr('data-id') : null;
+
+                                $.post('/admin/blog/space/update', {
+                                    id: blogId,
+                                    sid: spaceIdT,
+                                    did: dirId
+                                }, (data, textStatus, xhr) => {
+                                    if (data.success) {
+                                        if (!data.data.space) {
+                                            data.data.space = null; // 确保_.extend(oldBlog, blog)更新空间属性
+                                        }
+
+                                        data.data.sort = evt.newIndex;
+
+                                        ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                                            action: 'updated',
+                                            blog: data.data,
+                                            unCalcDir: true
+                                        });
+                                    } else {
+                                        toastr.error(data.data);
+                                    }
+                                });
+
+                                // sort blogs
+                                this._sortBlogs($(evt.to).children('.blog-item'));
+
+                            }
+                        },
                     });
 
-                    // 没有从属空间 || 空间创建者 || 系统管理员
-                    if ((space && (space.creator.username == this.loginUser.username)) || this.isSuper) {
+                    this.sortObjs.push(sortObj);
+                }
+            });
 
-                        Sortable.create(e, {
-                            group: {
-                                name: 'blog'
-                            },
-                            onEnd: function (evt) {
+            // dirs sort
+            $('.tms-sortable-elem-dirs').each((i, e) => {
 
-                                if (evt.from === evt.to) {
-                                    // console.log('from === to');
-                                    if (evt.newIndex === evt.oldIndex) return;
+                // console.log(`dirs sortable elements index: ${i}`);
 
-                                    var $all = $(evt.from).children('.blog-item');
+                let space = _.find(this.spaces, {
+                    id: +$(e).attr('data-id')
+                });
 
-                                    var items = [];
-                                    $all.each((i, e) => {
-                                        items.push({
-                                            id: $(e).attr('data-id'),
-                                            sort: i
-                                        });
-                                    })
+                // 空间创建者 || 系统管理员
+                if ((space && (space.creator.username == this.loginUser.username)) || this.isSuper) {
+                    let sortObj = Sortable.create(e, {
+                        // group: {
+                        //     name: 'dir'
+                        // },
+                        onEnd: (evt) => {
 
-                                    $.post("/admin/blog/sort", {
-                                        items: JSON.stringify(items)
-                                    }, (data) => {
-                                        if (!data.success) {
-                                            toastr.error(data.data);
-                                        }
-                                    });
-                                } else {
-                                    // console.log('from !== to');
-                                    let blogId = $(evt.item).attr('data-id');
-                                    let spaceIdF = $(evt.from).attr('data-id');
-                                    let spaceIdT = $(evt.to).attr('data-id');
+                            if (evt.newIndex === evt.oldIndex) return;
 
-                                    let $dir = $(evt.item).closest('.dir-item');
-                                    let dirId = $dir ? $dir.attr('data-id') : null;
+                            var $all = $(evt.from).children('.dir-item');
 
-                                    // console.log(`spaceF: ${spaceIdF} spaceT: ${spaceIdT} dir: ${dirId}`);
+                            var items = [];
+                            $all.each((i, e) => {
+                                items.push({
+                                    id: $(e).attr('data-id'),
+                                    sort: i
+                                });
+                            })
 
-                                    $.post('/admin/blog/space/update', {
-                                        id: blogId,
-                                        sid: spaceIdT,
-                                        did: dirId
-                                    }, (data, textStatus, xhr) => {
-                                        if (data.success) {
-                                            if (!data.data.space) {
-                                                data.data.space = null; // 确保_.extend(oldBlog, blog)更新空间属性
-                                            }
-                                            ea.publish(nsCons.EVENT_BLOG_CHANGED, {
-                                                action: 'updated',
-                                                blog: data.data,
-                                                unCalcDir: true
-                                            });
-                                        } else {
-                                            toastr.error(data.data);
-                                        }
-                                    });
-
-                                    // sort blogs
-                                    var $all = $(evt.to).children('.blog-item');
-
-                                    var items = [];
-                                    $all.each((i, e) => {
-                                        items.push({
-                                            id: $(e).attr('data-id'),
-                                            sort: i
-                                        });
-                                    })
-
-                                    $.post("/admin/blog/sort", {
-                                        items: JSON.stringify(items)
-                                    }, (data) => {
-                                        if (!data.success) {
-                                            toastr.error(data.data);
-                                        }
-                                    });
-
+                            $.post("/admin/blog/dir/sort", {
+                                items: JSON.stringify(items)
+                            }, (data) => {
+                                if (!data.success) {
+                                    toastr.error(data.data);
                                 }
-                            },
-                        });
-                    }
-                });
+                            });
 
-                // dirs sort
-                $('.tms-sortable-elem-dirs').each((i, e) => {
-
-                    // console.log(`dirs sortable elements index: ${i}`);
-
-                    let space = _.find(this.spaces, {
-                        id: +$(e).attr('data-id')
+                        },
                     });
 
-                    // 空间创建者 || 系统管理员
-                    if ((space && (space.creator.username == this.loginUser.username)) || this.isSuper) {
-                        Sortable.create(e, {
-                            // group: {
-                            //     name: 'dir'
-                            // },
-                            onEnd: function (evt) {
-
-                                if (evt.newIndex === evt.oldIndex) return;
-
-                                var $all = $(evt.from).children('.dir-item');
-
-                                var items = [];
-                                $all.each((i, e) => {
-                                    items.push({
-                                        id: $(e).attr('data-id'),
-                                        sort: i
-                                    });
-                                })
-
-                                $.post("/admin/blog/dir/sort", {
-                                    items: JSON.stringify(items)
-                                }, (data) => {
-                                    if (!data.success) {
-                                        toastr.error(data.data);
-                                    }
-                                });
-
-                            },
-                        });
-                    }
-
-                });
-
-                // spaces sort
-                // 系统管理员
-                if (this.isSuper) {
-
-                    $('.tms-sortable-elem-spaces').each((i, e) => {
-
-                        // console.log(`spaces sortable elements index: ${i}`);
-
-                        Sortable.create(e, {
-                            // group: {
-                            //     name: 'space'
-                            // },
-                            draggable: '.space-item',
-                            onEnd: function (evt) {
-
-                                if (evt.newIndex === evt.oldIndex) return;
-
-                                var $all = $(evt.from).children('.space-item');
-
-                                var items = [];
-                                $all.each((i, e) => {
-                                    items.push({
-                                        id: $(e).attr('data-id'),
-                                        sort: i
-                                    });
-                                })
-
-                                $.post("/admin/blog/space/sort", {
-                                    items: JSON.stringify(items)
-                                }, (data) => {
-                                    if (!data.success) {
-                                        toastr.error(data.data);
-                                    }
-                                });
-
-                            },
-                        });
-                    });
+                    this.sortObjs.push(sortObj);
                 }
 
-            }, 2000);
-        }
+            });
+
+            // spaces sort
+            // 系统管理员
+            if (this.isSuper) {
+
+                $('.tms-sortable-elem-spaces').each((i, e) => {
+
+                    // console.log(`spaces sortable elements index: ${i}`);
+
+                    let sortObj = Sortable.create(e, {
+                        // group: {
+                        //     name: 'space'
+                        // },
+                        draggable: '.space-item',
+                        onEnd: (evt) => {
+
+                            if (evt.newIndex === evt.oldIndex) return;
+
+                            var $all = $(evt.from).children('.space-item');
+
+                            var items = [];
+                            $all.each((i, e) => {
+                                items.push({
+                                    id: $(e).attr('data-id'),
+                                    sort: i
+                                });
+                            })
+
+                            $.post("/admin/blog/space/sort", {
+                                items: JSON.stringify(items)
+                            }, (data) => {
+                                if (!data.success) {
+                                    toastr.error(data.data);
+                                }
+                            });
+
+                        },
+                    });
+
+                    this.sortObjs.push(sortObj);
+
+                });
+            }
+
+        }, 2000);
+    }
+
+    _sortBlogs($all) {
+        var items = [];
+        $all.each((i, e) => {
+            let bid = $(e).attr('data-id');
+            items.push({
+                id: bid,
+                sort: i
+            });
+
+            $(e).attr('data-sort', i);
+
+            // update blog sort value
+            let blog = _.find(this.blogs, {
+                id: +bid
+            });
+            blog && (blog.sort = i);
+
+        })
+
+        $.post("/admin/blog/sort", {
+            items: JSON.stringify(items)
+        }, (data) => {
+            if (!data.success) {
+                toastr.error(data.data);
+            }
+        });
     }
 
     _recentOpenSave(blog) {
@@ -462,6 +470,9 @@ export class EmBlogLeftSidebar {
                                 if (nsCtx.blogId == blog.id) {
                                     dir.open = true;
                                 }
+                                if (dir.id == 26) {
+                                    console.log(dir);
+                                }
                                 return;
                             }
                         }
@@ -472,6 +483,12 @@ export class EmBlogLeftSidebar {
         });
 
         this.noSpaceBlogs = _.filter(this.blogs, b => !b.space);
+
+        if (this.sortObjs.length > 0) {
+            _.each(this.sortObjs, sortObj => sortObj.destroy());
+            this.sortObjs = [];
+        }
+        this._initSortObjs();
     }
 
     spaceToggleHandler(space) {
