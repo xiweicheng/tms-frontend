@@ -57,7 +57,7 @@ export class EmBlogLeftSidebar {
                     if (!payload.blog.dir) bs.blog.dir = null;
                     _.extend(bs.blog, payload.blog);
                 }
-                this.calcTree();
+                !payload.unCalcDir && this.calcTree();
             } else if (payload.action == 'deleted') {
                 this.blogStows = _.reject(this.blogStows, bs => bs.blog.id == payload.blog.id);
                 this.blogs = _.reject(this.blogs, {
@@ -148,31 +148,85 @@ export class EmBlogLeftSidebar {
                     });
 
                     // 没有从属空间 || 空间创建者 || 系统管理员
-                    if (space == null || (space.creator.username == this.loginUser.username) || this.isSuper) {
+                    if ((space && (space.creator.username == this.loginUser.username)) || this.isSuper) {
 
                         Sortable.create(e, {
+                            group: {
+                                name: 'blog'
+                            },
                             onEnd: function (evt) {
 
-                                if (evt.newIndex === evt.oldIndex) return;
+                                if (evt.from === evt.to) {
+                                    // console.log('from === to');
+                                    if (evt.newIndex === evt.oldIndex) return;
 
-                                var $all = $(evt.from).children('.blog-item');
+                                    var $all = $(evt.from).children('.blog-item');
 
-                                var items = [];
-                                $all.each((i, e) => {
-                                    items.push({
-                                        id: $(e).attr('data-id'),
-                                        sort: i
+                                    var items = [];
+                                    $all.each((i, e) => {
+                                        items.push({
+                                            id: $(e).attr('data-id'),
+                                            sort: i
+                                        });
+                                    })
+
+                                    $.post("/admin/blog/sort", {
+                                        items: JSON.stringify(items)
+                                    }, (data) => {
+                                        if (!data.success) {
+                                            toastr.error(data.data);
+                                        }
                                     });
-                                })
+                                } else {
+                                    // console.log('from !== to');
+                                    let blogId = $(evt.item).attr('data-id');
+                                    let spaceIdF = $(evt.from).attr('data-id');
+                                    let spaceIdT = $(evt.to).attr('data-id');
 
-                                $.post("/admin/blog/sort", {
-                                    items: JSON.stringify(items)
-                                }, (data) => {
-                                    if (!data.success) {
-                                        toastr.error(data.data);
-                                    }
-                                });
+                                    let $dir = $(evt.item).closest('.dir-item');
+                                    let dirId = $dir ? $dir.attr('data-id') : null;
 
+                                    // console.log(`spaceF: ${spaceIdF} spaceT: ${spaceIdT} dir: ${dirId}`);
+
+                                    $.post('/admin/blog/space/update', {
+                                        id: blogId,
+                                        sid: spaceIdT,
+                                        did: dirId
+                                    }, (data, textStatus, xhr) => {
+                                        if (data.success) {
+                                            if (!data.data.space) {
+                                                data.data.space = null; // 确保_.extend(oldBlog, blog)更新空间属性
+                                            }
+                                            ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                                                action: 'updated',
+                                                blog: data.data,
+                                                unCalcDir: true
+                                            });
+                                        } else {
+                                            toastr.error(data.data);
+                                        }
+                                    });
+
+                                    // sort blogs
+                                    var $all = $(evt.to).children('.blog-item');
+
+                                    var items = [];
+                                    $all.each((i, e) => {
+                                        items.push({
+                                            id: $(e).attr('data-id'),
+                                            sort: i
+                                        });
+                                    })
+
+                                    $.post("/admin/blog/sort", {
+                                        items: JSON.stringify(items)
+                                    }, (data) => {
+                                        if (!data.success) {
+                                            toastr.error(data.data);
+                                        }
+                                    });
+
+                                }
                             },
                         });
                     }
@@ -190,6 +244,9 @@ export class EmBlogLeftSidebar {
                     // 空间创建者 || 系统管理员
                     if ((space && (space.creator.username == this.loginUser.username)) || this.isSuper) {
                         Sortable.create(e, {
+                            // group: {
+                            //     name: 'dir'
+                            // },
                             onEnd: function (evt) {
 
                                 if (evt.newIndex === evt.oldIndex) return;
@@ -227,6 +284,9 @@ export class EmBlogLeftSidebar {
                         // console.log(`spaces sortable elements index: ${i}`);
 
                         Sortable.create(e, {
+                            // group: {
+                            //     name: 'space'
+                            // },
                             draggable: '.space-item',
                             onEnd: function (evt) {
 
