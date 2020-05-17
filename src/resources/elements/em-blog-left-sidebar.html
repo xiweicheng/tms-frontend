@@ -115,7 +115,7 @@
                                                     data-id="${space.id}" data-dir-id=${dir.id}
                                                     style="padding-left: 0;">
                                                     <div repeat.for="item of dir.blogs | sortBlog" data-id="${item.id}"
-                                                        data-space-id="${space.id}" data-dir-id=${dir.id}
+                                                        data-space-id="${space.id}" data-dir-id="${dir.id}"
                                                         data-sort="${item.sort}" show.bind="!item._hidden"
                                                         class="item blog-item ${item.id == blog.id ? 'active' : ''}">
                                                         <a title="${item.title}" href="#/blog/${item.id}">
@@ -149,7 +149,8 @@
                                 <div show.bind="space.open" class="ui bulleted list tms-sortable-elem-blogs"
                                     data-id="${space.id}">
                                     <div repeat.for="item of space.blogs | sortBlog" data-id="${item.id}"
-                                        data-sort="${item.sort}" show.bind="!item._hidden"
+                                        data-space-id="" data-dir-id="" data-sort="${item.sort}"
+                                        show.bind="!item._hidden"
                                         class="item blog-item ${item.id == blog.id ? 'active' : ''}">
                                         <a title="${item.title}" href="#/blog/${item.id}">
                                             <i class="icons">

@@ -93,6 +93,7 @@ export class EmBlogLeftSidebar {
                 id: +nsCtx.blogId
             });
             payload.anchor && this.calcTree(); // TODO 这里存在bug,拖拽后重新计划目录，博文目录定位错乱，原因不明？？？
+            // payload.anchor && this.refresh(); // TODO 这里存在bug,拖拽后重新计划目录，博文目录定位错乱，原因不明？？？
             this.blog && _.delay(() => this._scrollTo(this.blog.id), 1000);
         });
         this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR, (payload) => {
@@ -408,12 +409,13 @@ export class EmBlogLeftSidebar {
 
     _scrollTo(to) {
         if (!this._isBlogInView(to)) {
-            if ($(`.blog-item[data-id="${to}"]`).length == 1) {
+            let size = $(`.blog-item[data-id="${to}"]`).length;
+            if (size == 1) {
                 $(this.treeRef).parent().scrollTo(`.blog-item[data-id="${to}"]`, {
                     offset: 0
                 });
-            } else if ($(`.blog-item[data-id="${to}"]`).length > 1) {
-                $(this.treeRef).parent().scrollTo($(`.blog-item[data-id="${to}"]`).get(1), {
+            } else if (size > 1) {
+                $(this.treeRef).parent().scrollTo($(`.blog-item[data-id="${to}"]`).get(size - 1), {
                     offset: 0
                 });
             }
@@ -469,9 +471,6 @@ export class EmBlogLeftSidebar {
                                 dir.blogs.push(blog);
                                 if (nsCtx.blogId == blog.id) {
                                     dir.open = true;
-                                }
-                                if (dir.id == 26) {
-                                    console.log(dir);
                                 }
                                 return;
                             }
