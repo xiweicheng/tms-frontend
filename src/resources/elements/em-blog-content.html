@@ -11,11 +11,11 @@
                     <div show.bind="blog.dir" class="divider"> / </div>
                     <a show.bind="blog.dir" class="section active">${blog.dir.name}</a>
                     <!-- <span if.bind="isSuper || blog.creator.username == loginUser.username" data-tooltip="${blog.privated ? '私有博文,点击可公开' : '公开博文,点击可关闭'}" data-position="right center" style="margin-left: 16px;"><i click.delegate="updatePrivatedHandler()" class="link icon ${blog.privated ? 'lock' : 'unlock alternate'}"></i></span> -->
-                    <span if.bind="isSuper || blog.creator.username == loginUser.username && !blog.opened"
+                    <span if.bind="(isSuper || blog.creator.username == loginUser.username) && !blog.opened"
                         data-tooltip="${blog.privated ? '私有博文（点击可修改）' : '公开博文 [登录可见]（点击可修改）'}"
                         data-position="right center" style="margin-left: 16px;"><i click.delegate="authHandler()"
                             class="link icon ${blog.privated ? 'lock' : 'unlock alternate'}"></i></span>
-                    <span if.bind="isSuper || blog.creator.username == loginUser.username && blog.opened"
+                    <span if.bind="(isSuper || blog.creator.username == loginUser.username) && blog.opened"
                         data-tooltip="${blog.privated ? '私有博文（点击可修改）' : '公开博文 [游客可见]（点击可修改）'}"
                         data-position="right center" style="margin-left: 16px;"><i click.delegate="authHandler()"
                             class="link icon ${blog.privated ? 'lock' : 'unlock'}"></i></span>
