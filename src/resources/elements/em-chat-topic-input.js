@@ -606,6 +606,7 @@ export class EmChatTopicInput {
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 this.simplemde.value('');
+                this.chat.version = data.msgs[0];
                 ea.publish(nsCons.EVENT_CHAT_TOPIC_MSG_SENDED, {
                     from: this.name,
                     data: data.data

@@ -87,6 +87,7 @@ export class EmChatTopic {
                         toastr.success('更新消息成功!');
                         // topic.isEditing = false;
                         topic.version = data.data.version;
+                        this.chat.version = data.msgs[0];
                     } else {
                         toastr.error(data.data, '更新消息失败!');
                     }
@@ -398,6 +399,7 @@ export class EmChatTopic {
         $.post('/admin/chat/channel/reply/remove', { rid: item.id }, (data, textStatus, xhr) => {
             if (data.success) {
                 this.chat.chatReplies = _.reject(this.chat.chatReplies, { id: data.data });
+                this.chat.version = data.msgs[0];
             } else {
                 toastr.error(data.data);
             }
@@ -456,6 +458,7 @@ export class EmChatTopic {
                 toastr.success('更新消息成功!');
                 item.isEditing = false;
                 item.version = data.data.version;
+                this.chat.version = data.msgs[0];
             } else {
                 toastr.error(data.data, '更新消息失败!');
             }
