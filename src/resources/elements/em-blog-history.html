@@ -24,7 +24,9 @@
                             </td>
                             <td><a click.delegate="viewHistoryHandler(blog, histories.length + 1, true)">当前</a>
                                 <span show.bind="blog.editor == 'Html'"><i title="html"
-                                        class="html5 icon"></i></span><span show.bind="blog.editor != 'Html'"><img
+                                        class="html5 icon"></i></span><span show.bind="blog.editor == 'Mind'"><i
+                                                title="mind" class="usb icon"></i></span><span
+                                            show.bind="blog.editor != 'Html' && blog.editor != 'Mind'"><img
                                         title="markdown" style="width: 16px;" src="img/markdown.png" alt=""></span></td>
                             <td title="${blog.updateDate | date}">${blog.updateDate | timeago}</td>
                             <td>${blog.updater.name}</td>
@@ -34,7 +36,13 @@
                             <td>
                                 <em-checkbox checked.bind="item.checked"></em-checkbox>
                             </td>
-                            <td><a click.delegate="viewHistoryHandler(item, histories.length - $index)">v.${histories.length - $index}</a> <span show.bind="item.editor == 'Html'"><i title="html" class="html5 icon"></i></span><span show.bind="item.editor != 'Html'"><img title="markdown" style="width: 16px;" src="img/markdown.png" alt=""></span></td>
+                            <td><a click.delegate="viewHistoryHandler(item, histories.length - $index)">v.${histories.length
+                                    - $index}</a> <span show.bind="item.editor == 'Html'"><i title="html"
+                                        class="html5 icon"></i></span><span show.bind="item.editor == 'Mind'"><i
+                                        title="mind" class="usb icon"></i></span><span
+                                    show.bind="item.editor != 'Html' && item.editor != 'Mind'"><img title="markdown"
+                                        style="width: 16px;"
+                                        src="img/markdown.png" alt=""></span></td>
                             <td title="${item.blogUpdateDate | date}">${item.blogUpdateDate | timeago}</td>
                             <td>${item.blogUpdater.name}</td>
                             <td class="right aligned">
