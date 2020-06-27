@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 import 'timeago';
 let tg = timeago();
 import search from 'common/common-search';
@@ -74,13 +77,15 @@ export class EmBlogTopMenu {
                     $(this.searchRef).search('hide results');
                     _.defer(() => {
                         $(this.searchRef).find('input').blur();
-                        ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, { to: result.url });
+                        ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, {
+                            to: result.url
+                        });
                     });
                     search.add(result);
                     return false;
                 },
                 apiSettings: {
-                    onResponse: function(resp) {
+                    onResponse: function (resp) {
                         var response = {
                             results: {
                                 blogs: {
@@ -131,7 +136,9 @@ export class EmBlogTopMenu {
         this._refreshSysLinks();
 
         if (nsCtx.blogId == 'create') {
-            _.defer(() => { $('a[href="#modaal-blog-write"]').click(); });
+            _.defer(() => {
+                $('a[href="#modaal-blog-write"]').click();
+            });
         }
 
         $(this.newsRef).popup({
@@ -213,7 +220,9 @@ export class EmBlogTopMenu {
     }
 
     newsHandler(item) {
-        $.post('/admin/blog/news/delete', { id: item.id }, (data, textStatus, xhr) => {
+        $.post('/admin/blog/news/delete', {
+            id: item.id
+        }, (data, textStatus, xhr) => {
             if (data.success) {}
         });
         return true;
@@ -234,9 +243,15 @@ export class EmBlogTopMenu {
         }
     }
 
-    htmlCreateHandler() {
+    createHtmlHandler() {
         $('.em-blog-write-html > iframe').attr('src', this.baseRes + 'blog.html' + '?_=' + new Date().getTime());
         $('a[href="#modaal-blog-write-html"]').click();
+        return false;
+    }
+
+    createMindHandler() {
+        $('.em-blog-write-mind > iframe').attr('src', this.baseRes + 'mind.html' + '?_=' + new Date().getTime());
+        $('a[href="#modaal-blog-write-mind"]').click();
         return false;
     }
 

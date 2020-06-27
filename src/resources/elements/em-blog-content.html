@@ -137,13 +137,20 @@
                         <span style="margin-left: 16px;">
                             <span if.bind="blog.editor == 'Html'" title="HTML编辑器"><i style="color: black;"
                                     class="html5 icon"></i></span>
-                            <span if.bind="blog.editor != 'Html'" title="Markdown编辑器"><img style="width: 14px;"
+                            <span if.bind="blog.editor == 'Mind'" title="思维导图编辑器"><i style="color: black;"
+                                    class="usb icon"></i></span>
+                            <span if.bind="blog.editor != 'Html' && blog.editor != 'Mind'" title="Markdown编辑器"><img
+                                    style="width: 14px;"
                                     src="img/markdown.png" alt=""></span>
                         </span>
                     </div>
                 </h1>
             </div>
-            <div data-id="${blog.id}" data-case="blog" fancybox ref="mkbodyRef" class="markdown-body fr-view"
+            <div show.bind="blog.editor == 'Mind'" data-id="${blog.id}">
+                <em-blog-mind blog.bind="blog"></em-blog-mind>
+            </div>
+            <div show.bind="blog.editor != 'Mind'" data-id="${blog.id}" data-case="blog" fancybox ref="mkbodyRef"
+                class="markdown-body fr-view"
                 innerhtml.bind="blog.content | parseMd:blog.space.channel:blog.editor | emoji:mkbodyRef"></div>
             <div class="footer">
                 <span click.delegate="rateHandler()" class="rate"><i

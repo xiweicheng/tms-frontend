@@ -27,11 +27,19 @@
                     <i class="dropdown icon"></i>
                     <div class="menu">
                         <div class="header"><i class="info circle icon"></i> 选择编辑器</div>
-                        <a class="item" click.delegate="htmlCreateHandler()"><div class="ui blue empty circular label"></div> HTML</a>
+                        <a class="item" click.delegate="createHtmlHandler()">
+                            <div class="ui blue empty circular label"></div> HTML
+                        </a>
                         <a modaal="blog-create-html" href="#modaal-blog-write-html" class="item" style="display: none;">
                             <div class="ui blue empty circular label"></div> HTML</a>
                         <a click.delegate="createHandler()" class="item">
                             <div class="ui blue empty circular label"></div> Markdown</a>
+                        <a class="item" click.delegate="createMindHandler()">
+                            <div class="ui blue empty circular label"></div> 思维导图
+                        </a>
+                        <a modaal="blog-create-mind" href="#modaal-blog-write-mind" class="item" style="display: none;">
+                            <div class="ui blue empty circular label"></div> 思维导图
+                        </a>
                         <div class="ui divider"></div>
                         <a click.delegate="selectTplHandler()" class="item">
                             <div class="ui blue empty circular label"></div> 基于模板</a>
@@ -44,6 +52,9 @@
         </div>
         <div id="modaal-blog-write-html" style="display:none;">
             <em-blog-write-html></em-blog-write-html>
+        </div>
+        <div id="modaal-blog-write-mind" style="display:none;">
+            <em-blog-write-mind></em-blog-write-mind>
         </div>
         <div class="right menu">
             <a ref="newsRef" show.bind="totalNews > 0" class="item icon" click.delegate="newsRefreshHandler()">

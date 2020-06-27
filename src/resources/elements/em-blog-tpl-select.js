@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 
 @containerless
 export class EmBlogTplSelect {
@@ -40,8 +43,6 @@ export class EmBlogTplSelect {
 
     approveHandler(modal) {
 
-
-
     }
 
     show(blog) {
@@ -56,8 +57,14 @@ export class EmBlogTplSelect {
         if (item.editor == 'Html') {
             $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-html"]').click();
+        } else if (item.editor == 'Mind') {
+            $('.em-blog-write-mind > iframe').attr('src', utils.getResourceBase() + 'mind.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-mind"]').click();
         } else if (!nsCtx.isModaalOpening) {
-            ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'copy', id: item.id });
+            ea.publish(nsCons.EVENT_BLOG_ACTION, {
+                action: 'copy',
+                id: item.id
+            });
         }
         this.emModal.hide();
 
@@ -88,7 +95,9 @@ export class EmBlogTplSelect {
                     desc: item.tplDesc
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
-                        this.tpls = _.reject(this.tpls, { id: item.id });
+                        this.tpls = _.reject(this.tpls, {
+                            id: item.id
+                        });
                         toastr.success('删除博文模板成功！');
                     } else {
                         toastr.error(data.data);

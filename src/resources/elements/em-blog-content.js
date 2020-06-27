@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 import {
     default as clipboard
 } from 'clipboard-js';
@@ -73,7 +76,10 @@ export class EmBlogContent {
                                 // toastr.clear(t);
                             }
                         }));
-                        t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                        t && t.attr({
+                            'data-id': payload.nid,
+                            'data-type': 'blog'
+                        });
                     }
                 } else if (payload.cmd == 'OU') {
                     if (!this.blog || payload.id != this.blog.id) {
@@ -83,7 +89,10 @@ export class EmBlogContent {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
                             }
                         }));
-                        t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                        t && t.attr({
+                            'data-id': payload.nid,
+                            'data-type': 'blog'
+                        });
                     }
                 } else if (payload.cmd == 'U') {
                     if (this.blog && (payload.id == this.blog.id)) {
@@ -93,7 +102,10 @@ export class EmBlogContent {
                                 this.refreshHandler(payload.id);
                             }
                         }));
-                        t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                        t && t.attr({
+                            'data-id': payload.nid,
+                            'data-type': 'blog'
+                        });
                     }
                 } else if (payload.cmd == 'F') {
                     if (!this.blog || payload.id != this.blog.id) {
@@ -103,7 +115,10 @@ export class EmBlogContent {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id);
                             }
                         }));
-                        t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                        t && t.attr({
+                            'data-id': payload.nid,
+                            'data-type': 'blog'
+                        });
                     }
                 } else if (payload.cmd == 'CAt') {
                     let t = toastr.info(`博文【${payload.title}】有评论提及到你，点击可查看！`, null, _.extend(toastrOps, {
@@ -116,7 +131,10 @@ export class EmBlogContent {
                             }
                         }
                     }));
-                    t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                    t && t.attr({
+                        'data-id': payload.nid,
+                        'data-type': 'blog'
+                    });
                 } else if (payload.cmd == 'FCC') {
                     let t = toastr.info(`您关注的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
@@ -128,7 +146,10 @@ export class EmBlogContent {
                             }
                         }
                     }));
-                    t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                    t && t.attr({
+                        'data-id': payload.nid,
+                        'data-type': 'blog'
+                    });
                 } else if (payload.cmd == 'FCU') {
                     let t = toastr.info(`您关注的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
@@ -140,7 +161,10 @@ export class EmBlogContent {
                             }
                         }
                     }));
-                    t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                    t && t.attr({
+                        'data-id': payload.nid,
+                        'data-type': 'blog'
+                    });
                 } else if (payload.cmd == 'CC') {
                     let t = toastr.info(`您的博文【${payload.title}】有新的评论，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
@@ -152,7 +176,10 @@ export class EmBlogContent {
                             }
                         }
                     }));
-                    t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                    t && t.attr({
+                        'data-id': payload.nid,
+                        'data-type': 'blog'
+                    });
                 } else if (payload.cmd == 'CU') {
                     let t = toastr.info(`您的博文【${payload.title}】评论有更新，点击可查看！`, null, _.extend(toastrOps, {
                         onclick: () => {
@@ -164,7 +191,10 @@ export class EmBlogContent {
                             }
                         }
                     }));
-                    t && t.attr({ 'data-id': payload.nid, 'data-type': 'blog' });
+                    t && t.attr({
+                        'data-id': payload.nid,
+                        'data-type': 'blog'
+                    });
                 } else if (payload.cmd == 'Open') {
                     let nid = new Date().getTime();
                     let t = toastr.info(`博文【${payload.title}】${payload.openEdit ? '开放了' : '关闭了'}编辑权限，点击可查看！`, null, _.extend(toastrOps, {
@@ -177,7 +207,10 @@ export class EmBlogContent {
                             }
                         }
                     }));
-                    t && t.attr({ 'data-id': nid, 'data-type': 'blog' });
+                    t && t.attr({
+                        'data-id': nid,
+                        'data-type': 'blog'
+                    });
                 }
 
             } else {
@@ -268,16 +301,30 @@ export class EmBlogContent {
 
         });
 
-        this.throttleCreateHandler = _.throttle(() => { this.createHandler() }, 1000, { 'trailing': false });
-        this.throttleEditHandler = _.throttle(() => { this.editHandler() }, 1000, { 'trailing': false });
-        this.throttleCopyHandler = _.throttle(() => { this.copyHandler() }, 1000, { 'trailing': false });
+        this.throttleCreateHandler = _.throttle(() => {
+            this.createHandler()
+        }, 1000, {
+            'trailing': false
+        });
+        this.throttleEditHandler = _.throttle(() => {
+            this.editHandler()
+        }, 1000, {
+            'trailing': false
+        });
+        this.throttleCopyHandler = _.throttle(() => {
+            this.copyHandler()
+        }, 1000, {
+            'trailing': false
+        });
     }
 
     _delBlogNews(id) {
 
         if (!id) return;
 
-        $.post('/admin/blog/news/delete', { id: id }, (data, textStatus, xhr) => {
+        $.post('/admin/blog/news/delete', {
+            id: id
+        }, (data, textStatus, xhr) => {
             if (data.success) {}
         });
     }
@@ -344,7 +391,9 @@ export class EmBlogContent {
                 .unbind('keydown', this.docKuAltTHandler)
                 .unbind('keydown', this.docKuAltEHandler)
                 .unbind('keydown', this.docKuAltCtrlDHandler);
-        } catch (err) { console.log(err); }
+        } catch (err) {
+            console.log(err);
+        }
 
     }
 
@@ -355,30 +404,38 @@ export class EmBlogContent {
         this.getBlog();
 
         new Clipboard('.em-blog-content .tms-clipboard')
-            .on('success', function(e) {
+            .on('success', function (e) {
                 toastr.success('复制到剪贴板成功!');
-            }).on('error', function(e) {
+            }).on('error', function (e) {
                 toastr.error('复制到剪贴板失败!');
             });
 
-        this.codeClHandler = function(event) {
+        this.codeClHandler = function (event) {
             if (event.ctrlKey || event.metaKey) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
                 clipboard.copy($(event.currentTarget).attr('data-code')).then(
-                    () => { toastr.success('复制到剪贴板成功!'); },
-                    (err) => { toastr.error('复制到剪贴板失败!'); }
+                    () => {
+                        toastr.success('复制到剪贴板成功!');
+                    },
+                    (err) => {
+                        toastr.error('复制到剪贴板失败!');
+                    }
                 );
             }
         };
 
-        this.preCodeClHandler = function(event) {
+        this.preCodeClHandler = function (event) {
             if (event.ctrlKey || event.metaKey) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
                 clipboard.copy($(event.currentTarget).find('i[data-clipboard-text]').attr('data-clipboard-text')).then(
-                    () => { toastr.success('复制到剪贴板成功!'); },
-                    (err) => { toastr.error('复制到剪贴板失败!'); }
+                    () => {
+                        toastr.success('复制到剪贴板成功!');
+                    },
+                    (err) => {
+                        toastr.error('复制到剪贴板失败!');
+                    }
                 );
             }
         };
@@ -389,7 +446,9 @@ export class EmBlogContent {
         this.wikiDirClHandler = (event) => {
             event.preventDefault();
             if ($(window).width() <= 768) {
-                ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, { isHide: true });
+                ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, {
+                    isHide: true
+                });
             }
             $('.em-blog-content').scrollTo(`#${$(event.currentTarget).attr('data-id')}`, 200, {
                 offset: 0
@@ -418,7 +477,9 @@ export class EmBlogContent {
 
                 this.fixDirItem();
 
-            } catch (err) { this.progressWidth = 0; }
+            } catch (err) {
+                this.progressWidth = 0;
+            }
 
         }, 10);
 
@@ -502,14 +563,15 @@ export class EmBlogContent {
 
         this.initHotkeys();
 
-        this.messageHandler = function(ev) {
+        this.messageHandler = function (ev) {
             // console.info('message from parent:', ev.data);
             if (ev.origin != window.location.origin) return;
 
             if (ev.data.source != 'blog') return;
 
             if (ev.data.action == 'created') {
-                $('a[href="#modaal-blog-write-html"]').modaal('close');
+                (ev.data.editor == 'html') && $('a[href="#modaal-blog-write-html"]').modaal('close');
+                (ev.data.editor == 'mind') && $('a[href="#modaal-blog-write-mind"]').modaal('close');
             }
 
             ev.data.from = 'html';
@@ -648,7 +710,9 @@ export class EmBlogContent {
                 .bind('keydown', 'alt+t', this.docKuAltTHandler)
                 .bind('keydown', 'alt+e', this.docKuAltEHandler)
                 .bind('keydown', 'alt+ctrl+d', this.docKuAltCtrlDHandler);
-        } catch (err) { console.log(err); }
+        } catch (err) {
+            console.log(err);
+        }
 
     }
 
@@ -781,8 +845,14 @@ export class EmBlogContent {
         if (this.blog.editor == 'Html') {
             $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?id=' + this.blog.id + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-html"]').click();
+        } else if (this.blog.editor == 'Mind') {
+            $('.em-blog-write-mind > iframe').attr('src', utils.getResourceBase() + 'mind.html?id=' + this.blog.id + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-mind"]').click();
         } else if (!nsCtx.isModaalOpening) {
-            ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'edit', id: this.blog.id });
+            ea.publish(nsCons.EVENT_BLOG_ACTION, {
+                action: 'edit',
+                id: this.blog.id
+            });
         }
     }
 
@@ -889,7 +959,9 @@ export class EmBlogContent {
 
     refreshHandler(id) {
         let p = this.getBlog(id);
-        p && p.done(() => { toastr.success('刷新操作成功!'); });
+        p && p.done(() => {
+            toastr.success('刷新操作成功!');
+        });
     }
 
     historyHandler() {
@@ -914,8 +986,14 @@ export class EmBlogContent {
         if (this.blog.editor == 'Html') {
             $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?id=' + this.blog.id + '&copy' + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-html"]').click();
+        } else if (this.blog.editor == 'Mind') {
+            $('.em-blog-write-mind > iframe').attr('src', utils.getResourceBase() + 'mind.html?id=' + this.blog.id + '&copy' + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-mind"]').click();
         } else if (!nsCtx.isModaalOpening) {
-            ea.publish(nsCons.EVENT_BLOG_ACTION, { action: 'copy', id: this.blog.id });
+            ea.publish(nsCons.EVENT_BLOG_ACTION, {
+                action: 'copy',
+                id: this.blog.id
+            });
         }
     }
 
@@ -926,7 +1004,10 @@ export class EmBlogContent {
             }, (data, textStatus, xhr) => {
                 if (data.success) {
                     this.blogStow = data.data;
-                    ea.publish(nsCons.EVENT_BLOG_STOW_CHANGED, { action: 'add', data: this.blogStow });
+                    ea.publish(nsCons.EVENT_BLOG_STOW_CHANGED, {
+                        action: 'add',
+                        data: this.blogStow
+                    });
                     toastr.success('博文收藏成功!');
                 } else {
                     toastr.error(data.data);
@@ -937,7 +1018,10 @@ export class EmBlogContent {
                 sid: this.blogStow.id
             }, (data, textStatus, xhr) => {
                 if (data.success) {
-                    ea.publish(nsCons.EVENT_BLOG_STOW_CHANGED, { action: 'remove', data: this.blogStow });
+                    ea.publish(nsCons.EVENT_BLOG_STOW_CHANGED, {
+                        action: 'remove',
+                        data: this.blogStow
+                    });
                     this.blogStow = null;
                     toastr.success('删除博文收藏成功!');
                 } else {
@@ -978,8 +1062,12 @@ export class EmBlogContent {
     }
 
     dimmerHandler() {
-        ea.publish(nsCons.EVENT_BLOG_LEFT_SIDEBAR_TOGGLE, { isHide: true });
-        ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, { isHide: true });
+        ea.publish(nsCons.EVENT_BLOG_LEFT_SIDEBAR_TOGGLE, {
+            isHide: true
+        });
+        ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, {
+            isHide: true
+        });
     }
 
     commentsHandler() {
