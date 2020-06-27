@@ -87,20 +87,23 @@
                                 <span class="description">alt + o</span>
                                 <i class="write icon"></i> ${blog.openEdit ? '关闭编辑' : '开放编辑'}
                             </div>
-                            <div if.bind="(blog.editor != 'Html') && (isSuper || blog.creator.username == loginUser.username)"
+                            <div if.bind="(blog.editor != 'Html' && blog.editor != 'Mind') && (isSuper || blog.creator.username == loginUser.username)"
                                 click.delegate="changeEditorHandler()" class="item">
                                 <span class="description">alt + e</span>
                                 <i class="html5 icon"></i> 转HTML
                             </div>
-                            <div class="divider"></div>
-                            <a href="/admin/blog/download/${blog.id}?type=pdf" class="item">
+                            <div show.bind="blog.editor != 'Mind'" class="divider"></div>
+                            <a show.bind="blog.editor != 'Mind'"
+                                href="/admin/blog/download/${blog.id}?type=pdf" class="item">
                                 <i class="file pdf outline icon"></i> 导出为PDF
                             </a>
-                            <a show.bind="blog.editor != 'Html'" href="/admin/blog/download/${blog.id}?type=md"
+                            <a show.bind="blog.editor != 'Html' && blog.editor != 'Mind'"
+                                href="/admin/blog/download/${blog.id}?type=md"
                                 class="item">
                                 <i class="file text outline icon"></i> 导出为Markdown
                             </a>
-                            <div show.bind="blog.editor != 'Html'" click.delegate="md2HtmlDownloadHandler()"
+                            <div show.bind="blog.editor != 'Html' && blog.editor != 'Mind'"
+                                click.delegate="md2HtmlDownloadHandler()"
                                 class="item">
                                 <i class="html5 icon"></i> 导出为HTML
                             </div>
