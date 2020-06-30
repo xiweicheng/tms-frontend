@@ -92,17 +92,17 @@
                                 <span class="description">alt + e</span>
                                 <i class="html5 icon"></i> 转HTML
                             </div>
-                            <div show.bind="blog.editor != 'Mind'" class="divider"></div>
-                            <a show.bind="blog.editor != 'Mind'"
+                            <div show.bind="blog.editor != 'Mind' && blog.editor != 'Excel'" class="divider"></div>
+                            <a show.bind="blog.editor != 'Mind' && blog.editor != 'Excel'"
                                 href="/admin/blog/download/${blog.id}?type=pdf" class="item">
                                 <i class="file pdf outline icon"></i> 导出为PDF
                             </a>
-                            <a show.bind="blog.editor != 'Html' && blog.editor != 'Mind'"
+                            <a show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor !='Excel'"
                                 href="/admin/blog/download/${blog.id}?type=md"
                                 class="item">
                                 <i class="file text outline icon"></i> 导出为Markdown
                             </a>
-                            <div show.bind="blog.editor != 'Html' && blog.editor != 'Mind'"
+                            <div show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel'"
                                 click.delegate="md2HtmlDownloadHandler()"
                                 class="item">
                                 <i class="html5 icon"></i> 导出为HTML
