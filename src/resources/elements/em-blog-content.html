@@ -142,7 +142,10 @@
                                     class="html5 icon"></i></span>
                             <span if.bind="blog.editor == 'Mind'" title="思维导图编辑器"><i style="color: black;"
                                     class="usb icon"></i></span>
-                            <span if.bind="blog.editor != 'Html' && blog.editor != 'Mind'" title="Markdown编辑器"><img
+                            <span if.bind="blog.editor == 'Excel'" title="电子表格编辑器"><i style="color: black;"
+                                    class="table icon"></i></span>
+                            <span if.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel'"
+                                title="Markdown编辑器"><img
                                     style="width: 14px;"
                                     src="img/markdown.png" alt=""></span>
                         </span>
