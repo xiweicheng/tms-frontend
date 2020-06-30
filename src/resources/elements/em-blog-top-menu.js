@@ -255,6 +255,12 @@ export class EmBlogTopMenu {
         return false;
     }
 
+    createExcelHandler() {
+        $('.em-blog-write-excel > iframe').attr('src', this.baseRes + 'excel.html' + '?_=' + new Date().getTime());
+        $('a[href="#modaal-blog-write-excel"]').click();
+        return false;
+    }
+
     selectTplHandler() {
         this.blogTplSelectMd.show();
     }

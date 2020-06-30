@@ -572,6 +572,7 @@ export class EmBlogContent {
             if (ev.data.action == 'created') {
                 (ev.data.editor == 'html') && $('a[href="#modaal-blog-write-html"]').modaal('close');
                 (ev.data.editor == 'mind') && $('a[href="#modaal-blog-write-mind"]').modaal('close');
+                (ev.data.editor == 'excel') && $('a[href="#modaal-blog-write-excel"]').modaal('close');
             }
 
             ev.data.from = 'html';
@@ -848,6 +849,9 @@ export class EmBlogContent {
         } else if (this.blog.editor == 'Mind') {
             $('.em-blog-write-mind > iframe').attr('src', utils.getResourceBase() + 'mind.html?id=' + this.blog.id + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-mind"]').click();
+        } else if (this.blog.editor == 'Excel') {
+            $('.em-blog-write-excel > iframe').attr('src', utils.getResourceBase() + 'excel.html?id=' + this.blog.id + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-excel"]').click();
         } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, {
                 action: 'edit',
@@ -989,6 +993,9 @@ export class EmBlogContent {
         } else if (this.blog.editor == 'Mind') {
             $('.em-blog-write-mind > iframe').attr('src', utils.getResourceBase() + 'mind.html?id=' + this.blog.id + '&copy' + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-mind"]').click();
+        } else if (this.blog.editor == 'Excel') {
+            $('.em-blog-write-excel > iframe').attr('src', utils.getResourceBase() + 'excel.html?id=' + this.blog.id + '&copy' + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-excel"]').click();
         } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, {
                 action: 'copy',

@@ -34,6 +34,12 @@
                             <div class="ui blue empty circular label"></div> HTML</a>
                         <a click.delegate="createHandler()" class="item">
                             <div class="ui blue empty circular label"></div> Markdown</a>
+                        <a class="item" click.delegate="createExcelHandler()">
+                            <div class="ui blue empty circular label"></div> 电子表格
+                        </a>
+                        <a modaal="blog-create-excel" href="#modaal-blog-write-excel" class="item" style="display: none;">
+                            <div class="ui blue empty circular label"></div> 电子表格
+                        </a>
                         <a class="item" click.delegate="createMindHandler()">
                             <div class="ui blue empty circular label"></div> 思维导图
                         </a>
@@ -55,6 +61,9 @@
         </div>
         <div id="modaal-blog-write-mind" style="display:none;">
             <em-blog-write-mind></em-blog-write-mind>
+        </div>
+        <div id="modaal-blog-write-excel" style="display:none;">
+            <em-blog-write-excel></em-blog-write-excel>
         </div>
         <div class="right menu">
             <a ref="newsRef" show.bind="totalNews > 0" class="item icon" click.delegate="newsRefreshHandler()">

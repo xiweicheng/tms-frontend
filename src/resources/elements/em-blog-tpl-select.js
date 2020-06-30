@@ -60,6 +60,9 @@ export class EmBlogTplSelect {
         } else if (item.editor == 'Mind') {
             $('.em-blog-write-mind > iframe').attr('src', utils.getResourceBase() + 'mind.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-mind"]').click();
+        } else if (item.editor == 'Excel') {
+            $('.em-blog-write-excel > iframe').attr('src', utils.getResourceBase() + 'excel.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-excel"]').click();
         } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, {
                 action: 'copy',

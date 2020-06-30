@@ -25,8 +25,10 @@
                             <td><a click.delegate="viewHistoryHandler(blog, histories.length + 1, true)">当前</a>
                                 <span show.bind="blog.editor == 'Html'"><i title="html"
                                         class="html5 icon"></i></span><span show.bind="blog.editor == 'Mind'"><i
-                                                title="mind" class="usb icon"></i></span><span
-                                            show.bind="blog.editor != 'Html' && blog.editor != 'Mind'"><img
+                                                title="mind" class="usb icon"></i></span>span show.bind="blog.editor ==
+                                                'Excel'"><i title="excel" class="table icon"></i></span><span
+                                            show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor !=
+                                            'Excel'"><img
                                         title="markdown" style="width: 16px;" src="img/markdown.png" alt=""></span></td>
                             <td title="${blog.updateDate | date}">${blog.updateDate | timeago}</td>
                             <td>${blog.updater.name}</td>
@@ -40,7 +42,10 @@
                                     - $index}</a> <span show.bind="item.editor == 'Html'"><i title="html"
                                         class="html5 icon"></i></span><span show.bind="item.editor == 'Mind'"><i
                                         title="mind" class="usb icon"></i></span><span
-                                    show.bind="item.editor != 'Html' && item.editor != 'Mind'"><img title="markdown"
+                                            show.bind="item.editor == 'Excel'"><i title="excel"
+                                                class="table icon"></i></span><span
+                                    show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor !=
+                                    'Excel'"><img title="markdown"
                                         style="width: 16px;"
                                         src="img/markdown.png" alt=""></span></td>
                             <td title="${item.blogUpdateDate | date}">${item.blogUpdateDate | timeago}</td>

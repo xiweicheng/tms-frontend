@@ -152,7 +152,11 @@
             <div show.bind="blog.editor == 'Mind'" data-id="${blog.id}">
                 <em-blog-mind blog.bind="blog"></em-blog-mind>
             </div>
-            <div show.bind="blog.editor != 'Mind'" data-id="${blog.id}" data-case="blog" fancybox ref="mkbodyRef"
+            <div show.bind="blog.editor == 'Excel'" data-id="${blog.id}">
+                <em-blog-excel blog.bind="blog"></em-blog-excel>
+            </div>
+            <div show.bind="blog.editor != 'Mind' && blog.editor != 'Excel' " data-id="${blog.id}" data-case="blog"
+                fancybox ref="mkbodyRef"
                 class="markdown-body fr-view"
                 innerhtml.bind="blog.content | parseMd:blog.space.channel:blog.editor | emoji:mkbodyRef"></div>
             <div class="footer">
