@@ -87,7 +87,7 @@
                                 <span class="description">alt + o</span>
                                 <i class="write icon"></i> ${blog.openEdit ? '关闭编辑' : '开放编辑'}
                             </div>
-                            <div if.bind="(blog.editor != 'Html' && blog.editor != 'Mind') && (isSuper || blog.creator.username == loginUser.username)"
+                            <div if.bind="(blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel') && (isSuper || blog.creator.username == loginUser.username)"
                                 click.delegate="changeEditorHandler()" class="item">
                                 <span class="description">alt + e</span>
                                 <i class="html5 icon"></i> 转HTML
