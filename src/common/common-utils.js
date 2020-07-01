@@ -193,11 +193,11 @@ export class CommonUtils {
     preParse(plainText, channel) {
 
         var txt = plainText;
-        $.each(this.parseUsers(plainText), function(index, user) {
+        $.each(this.parseUsers(plainText), function (index, user) {
             txt = txt.replace(new RegExp(`{~${user.username}}`, 'g'), `<span data-value="${user.username}" class="at-user">**\`@${user.name ? user.name : user.username}\`**</span>`);
         });
 
-        $.each(this.parseGroups(plainText, channel), function(index, grp) {
+        $.each(this.parseGroups(plainText, channel), function (index, grp) {
             var members = _.join(_.map(grp.members, (u) => {
                 return u.name ? u.name : u.username;
             }), ' | ');
@@ -217,8 +217,12 @@ export class CommonUtils {
         var atR = /\{~([^\}]*)\}/g;
         var rs = atR.exec(plainText);
         while (rs) {
-            let user = _.find([nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])], { username: rs[1] });
-            let isNotExists = !_.some(users, { username: rs[1] });
+            let user = _.find([nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])], {
+                username: rs[1]
+            });
+            let isNotExists = !_.some(users, {
+                username: rs[1]
+            });
             if (user && isNotExists) {
                 users.push(user);
             }
@@ -240,10 +244,16 @@ export class CommonUtils {
         var groups = [];
         var atR = /\{!~([^\}]*)\}/g;
         var rs = atR.exec(plainText);
-        let cGrps = _.reject(channel.channelGroups, { status: 'Deleted' });
+        let cGrps = _.reject(channel.channelGroups, {
+            status: 'Deleted'
+        });
         while (rs) {
-            let grp = _.find(cGrps, { name: rs[1] });
-            let isNotExists = !_.some(groups, { name: rs[1] });
+            let grp = _.find(cGrps, {
+                name: rs[1]
+            });
+            let isNotExists = !_.some(groups, {
+                name: rs[1]
+            });
             if (grp && isNotExists) {
                 groups.push(grp);
             }
@@ -254,7 +264,9 @@ export class CommonUtils {
     }
 
     getUser(username) {
-        return _.find(tmsUsers, { username: username });
+        return _.find(tmsUsers, {
+            username: username
+        });
     }
 
     /**
@@ -264,7 +276,9 @@ export class CommonUtils {
      */
     parseUsernames(plainText, members, channel = null) {
         let users = this.parseUsers(plainText);
-        let isExitsAll = _.some(users, { username: 'all' });
+        let isExitsAll = _.some(users, {
+            username: 'all'
+        });
 
         if (isExitsAll) {
             return _.without(_.map(members, 'username'), 'all');
@@ -273,7 +287,9 @@ export class CommonUtils {
         let groups = this.parseGroups(plainText, channel);
 
         let grpMembers = _.flatten(_.map(groups, (grp) => {
-            return _.map(_.reject(grp.members, { status: 'Deleted' }), 'username');
+            return _.map(_.reject(grp.members, {
+                status: 'Deleted'
+            }), 'username');
         }));
 
         return _.union(_.map(users, 'username'), grpMembers);
@@ -480,7 +496,7 @@ export class CommonUtils {
 
     unescape(html) {
         // explicitly match decimal, hex, and named HTML entities 
-        return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/g, function(_, n) {
+        return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/g, function (_, n) {
             n = n.toLowerCase();
             if (n === 'colon') return ':';
             if (n.charAt(0) === '#') {
@@ -788,6 +804,34 @@ export class CommonUtils {
         // document.title = document[state];
 
         return document[state] == 'visible';
+    }
+
+    // download excel file
+    downloadExcel(sdata, fileName) {
+
+        if (!window.XLSX) return;
+
+        var out = XLSX.utils.book_new();
+        sdata.forEach(function (xws) {
+            var aoa = [
+                []
+            ];
+            var rowobj = xws.rows;
+            for (var ri = 0; ri < rowobj.len; ++ri) {
+                var row = rowobj[ri];
+                if (!row) continue;
+                aoa[ri] = [];
+                Object.keys(row.cells).forEach(function (k) {
+                    var idx = +k;
+                    if (isNaN(idx)) return;
+                    aoa[ri][idx] = row.cells[k].text;
+                });
+            }
+            var ws = XLSX.utils.aoa_to_sheet(aoa);
+            XLSX.utils.book_append_sheet(out, ws, xws.name);
+        });
+
+        XLSX.writeFile(out, `${fileName}.xlsx`);
     }
 }
 

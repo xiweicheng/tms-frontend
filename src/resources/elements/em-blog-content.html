@@ -92,7 +92,7 @@
                                 <span class="description">alt + e</span>
                                 <i class="html5 icon"></i> 转HTML
                             </div>
-                            <div show.bind="blog.editor != 'Mind' && blog.editor != 'Excel'" class="divider"></div>
+                            <div show.bind="blog.editor != 'Mind'" class="divider"></div>
                             <a show.bind="blog.editor != 'Mind' && blog.editor != 'Excel'"
                                 href="/admin/blog/download/${blog.id}?type=pdf" class="item">
                                 <i class="file pdf outline icon"></i> 导出为PDF
@@ -111,6 +111,10 @@
                                 class="item">
                                 <i class="html5 icon"></i> 导出为HTML
                             </a>
+                            <div show.bind="blog.editor == 'Excel'"
+                                click.delegate="excelDownloadHandler()" class="item">
+                                <i class="file excel outline icon"></i> 导出为Excel
+                            </div>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username" class="divider"></div>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username"
                                 click.delegate="deleteHandler()" class="item" style="color: red;">

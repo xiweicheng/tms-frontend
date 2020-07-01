@@ -1157,4 +1157,9 @@ export class EmBlogContent {
         });
 
     }
+
+    excelDownloadHandler() {
+
+        utils.downloadExcel(JSON.parse(this.blog.content), this.blog.title);
+    }
 }
