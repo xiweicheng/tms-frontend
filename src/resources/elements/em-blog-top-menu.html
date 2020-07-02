@@ -46,6 +46,9 @@
                         <a modaal="blog-create-mind" href="#modaal-blog-write-mind" class="item" style="display: none;">
                             <div class="ui blue empty circular label"></div> 思维导图
                         </a>
+                        <a if.bind="!!sysConf.drawUrl" class="item" target="_blank" href="${sysConf.drawUrl}">
+                            <div class="ui blue empty circular label"></div> 图表工具
+                        </a>
                         <div class="ui divider"></div>
                         <a click.delegate="selectTplHandler()" class="item">
                             <div class="ui blue empty circular label"></div> 基于模板</a>

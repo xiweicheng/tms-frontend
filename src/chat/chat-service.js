@@ -15,6 +15,21 @@ class ChatService {
         return this.user;
     }
 
+    async sysConf(useCache) {
+
+        if (!useCache || !this._sysConf) {
+
+            // sys conf
+            await $.get('/admin/sys/conf', (data) => {
+                if (data.success) {
+                    this._sysConf = data.data;
+                }
+            });
+        }
+
+        return this._sysConf;
+    }
+
     async listUsers(useCache) {
 
         if (!useCache || !this.users) {

@@ -17,6 +17,8 @@ export class EmBlogTopMenu {
 
     baseRes = utils.getResourceBase();
 
+    sysConf = nsCtx.sysConf;
+
     recentSearchs = {
         blogs: [],
         comments: []

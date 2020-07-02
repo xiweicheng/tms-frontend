@@ -161,6 +161,9 @@ export class Blog {
             chatService.listUsers(true).then((users) => {
                 nsCtx.users = users;
                 window.tmsUsers = users;
+            }),
+            chatService.sysConf(true).then((sysConf) => {
+                nsCtx.sysConf = sysConf;
             })
         ]);
     }
