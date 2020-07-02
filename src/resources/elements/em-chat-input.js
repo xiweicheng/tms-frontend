@@ -17,6 +17,7 @@ export class EmChatInput {
     @bindable channel;
     members = [];
     isMobile = utils.isMobile();
+    sysConf = nsCtx.sysConf;
 
     channelChanged() {
 

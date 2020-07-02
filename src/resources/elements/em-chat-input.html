@@ -14,6 +14,12 @@
                         博文写作
                     </div>
                 </a>
+                <a if.bind="!!sysConf.drawUrl" target="_blank" href="${sysConf.drawUrl}" class="item">
+                    <i class="retweet icon"></i>
+                    <div class="content">
+                        图表工具
+                    </div>
+                </a>
                 <a show.bind="!tbarVisible" ref="btnItemUploadRef" class="item">
                     <i class="upload icon"></i>
                     <div class="content">

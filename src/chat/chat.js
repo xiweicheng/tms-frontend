@@ -1004,6 +1004,9 @@ export class Chat {
             chatService.listMyTags(true).then(tags => {
                 this.myTags = tags;
                 nsCtx.myTags = tags;
+            }),
+            chatService.sysConf(true).then((sysConf) => {
+                nsCtx.sysConf = sysConf;
             })
         ]);
 
