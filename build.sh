@@ -18,6 +18,8 @@ echo "rm page/scripts & page/index.html & page/blog.html & page/gantt"
 rm -rf $DEST/page/scripts
 rm -rf $DEST/page/index.html
 rm -rf $DEST/page/blog.html
+rm -rf $DEST/page/excel.html
+rm -rf $DEST/page/mind.html
 rm -rf $DEST/page/gantt
 rm -rf $DEST/page/cdn
 # rm -rf $DEST/page/alert.mp3
@@ -28,6 +30,8 @@ echo "cp tms-frontend to tms"
 cp -rf $SRC/scripts $DEST/page
 cp -rf $SRC/index.html $DEST/page
 cp -rf $SRC/blog.html $DEST/page
+cp -rf $SRC/excel.html $DEST/page
+cp -rf $SRC/mind.html $DEST/page
 cp -rf $SRC/gantt $DEST/page
 cp -rf $SRC/cdn $DEST/page
 # cp -rf alert.mp3 $DEST/page
