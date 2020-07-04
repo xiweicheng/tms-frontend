@@ -1,4 +1,7 @@
-import { bindable, inject } from 'aurelia-framework';
+import {
+    bindable,
+    inject
+} from 'aurelia-framework';
 import chatService from 'chat/chat-service';
 
 export class Blog {
@@ -30,6 +33,20 @@ export class Blog {
         this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR_PC, (payload) => {
             this.isHidePc = payload;
         });
+        this.subscribe4 = ea.subscribe(nsCons.EVENT_BLOG_IS_UPDATED_ACK, (payload) => {
+            if (payload.updated) {
+
+                this.emConfirmModal.show({
+                    title: '关闭确认',
+                    content: '页面存在未保存内容，确认要关闭吗?',
+                    onapprove: () => {
+                        $(`a[href="#modaal-blog-${payload.item.name}"]`).modaal('close');
+                    }
+                });
+            } else {
+                $(`a[href="#modaal-blog-${payload.item.name}"]`).modaal('close');
+            }
+        });
     }
 
     /**
@@ -38,7 +55,9 @@ export class Blog {
     unbind() {
         this.subscribe.dispose();
         this.subscribe1.dispose();
+        this.subscribe2.dispose();
         this.subscribe3.dispose();
+        this.subscribe4.dispose();
 
         clearInterval(this.timeagoTimer);
     }
@@ -87,21 +106,21 @@ export class Blog {
             });
         }, 5000);
 
-        $('.tms-blog .em-blog-content').on('click', 'a.avatar[data-value], a.author[data-value], .at-user[data-value]', (event) => {
+        this.avatarClickHander = (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_BLOG_COMMENT_MSG_INSERT, {
                 content: `{~${$(event.currentTarget).attr('data-value')}} `
             });
-        });
+        };
 
-        $('.tms-blog .em-blog-content').on('click', '.at-group[data-value]', (event) => {
+        this.atGroupClickHander = (event) => {
             event.preventDefault();
             ea.publish(nsCons.EVENT_BLOG_COMMENT_MSG_INSERT, {
                 content: `{!~${$(event.currentTarget).attr('data-value')}} `
             });
-        });
+        };
 
-        $('.tms-blog').on('click', '.tms-chat-msg-code-trigger', function(event) {
+        this.codeTriggerClickHandler = function (event) {
 
             let $pre = $(this).parent().children('pre');
             $pre.toggleClass('fold');
@@ -110,15 +129,96 @@ export class Blog {
             } else {
                 $(this).text('折叠');
             }
-        });
+        };
 
-        $('.tms-blog').on('mouseenter', 'pre.fold', function(event) {
+        this.preFoldMeHandler = function (event) {
 
             let $pre = $(event.currentTarget);
             if ($pre.height() < 100) {
                 $pre.parent().children('.tms-chat-msg-code-trigger').remove();
             }
-        });
+        };
+
+        this.modaalCloseClickHandler = function (event) {
+
+            event.stopPropagation();
+            // event.stopImmediatePropagation();
+
+            let modaalClasses = [{
+                id: 'create',
+                name: 'write'
+            }, {
+                id: 'create-html',
+                name: 'write-html'
+            }, {
+                id: 'create-mind',
+                name: 'write-mind'
+            }, {
+                id: 'create-excel',
+                name: 'write-excel'
+            }];
+
+            var $modaal = $(event.currentTarget).closest('.modaal-wrapper');
+
+            _.each(modaalClasses, item => {
+                if ($modaal.hasClass(`blog-${item.id}`)) {
+
+                    var ifrm = $modaal.find('iframe')[0];
+                    if (ifrm) {
+                        (ifrm.contentWindow.postMessage) && (ifrm.contentWindow
+                            .postMessage({
+                                action: 'isUpdated',
+                                source: 'blogClose',
+                                item: item
+                            }, window.location.origin));
+                    } else {
+                        ea.publish(nsCons.EVENT_BLOG_IS_UPDATED, {
+                            item: item
+                        });
+                    }
+
+                    // $(`a[href="#modaal-blog-${item.name}"]`).modaal('close');
+                }
+            });
+
+        };
+
+        this.messageHandler = (evt) => {
+
+            if (evt.origin != window.location.origin) return;
+
+            if (evt.data.source != 'blogCloseAck') return;
+
+            if (evt.data.action == 'isUpdated') {
+
+                if (evt.data.updated) {
+
+                    this.emConfirmModal.show({
+                        title: '关闭确认',
+                        content: '页面存在未保存内容，确认要关闭吗?',
+                        onapprove: () => {
+                            $(`a[href="#modaal-blog-${evt.data.item.name}"]`).modaal('close');
+                        }
+                    });
+                } else {
+                    $(`a[href="#modaal-blog-${evt.data.item.name}"]`).modaal('close');
+                }
+            }
+
+        };
+
+        $('.tms-blog .em-blog-content').on('click', 'a.avatar[data-value], a.author[data-value], .at-user[data-value]', this.avatarClickHander);
+
+        $('.tms-blog .em-blog-content').on('click', '.at-group[data-value]', this.atGroupClickHander);
+
+        $('.tms-blog').on('click', '.tms-chat-msg-code-trigger', this.codeTriggerClickHandler);
+
+        $('.tms-blog').on('mouseenter', 'pre.fold', this.preFoldMeHandler);
+
+        // modaal-close
+        $('body').on('click', '#modaal-close', this.modaalCloseClickHandler);
+
+        window.addEventListener && window.addEventListener('message', this.messageHandler, false);
 
         this._initSock();
 
@@ -134,6 +234,20 @@ export class Blog {
      */
     detached() {
 
+        window.__debug && console.log('Blog--detached');
+
+        $('.tms-blog .em-blog-content').off('click', 'a.avatar[data-value], a.author[data-value], .at-user[data-value]', this.avatarClickHander);
+
+        $('.tms-blog .em-blog-content').off('click', '.at-group[data-value]', this.atGroupClickHander);
+
+        $('.tms-blog').off('click', '.tms-chat-msg-code-trigger', this.codeTriggerClickHandler);
+
+        $('.tms-blog').off('mouseenter', 'pre.fold', this.preFoldMeHandler);
+
+        // modaal-close
+        $('body').off('click', '#modaal-close', this.modaalCloseClickHandler);
+
+        window.removeEventListener && window.removeEventListener('message', this.messageHandler, false);
     }
 
     /**

@@ -16,6 +16,7 @@ export class AttrModaalCustomAttribute {
                 fullscreen: true,
                 overlay_close: false,
                 animation: 'none',
+                custom_class: newValue,
                 // animation_speed: 100,
                 // after_callback_delay: 120,
                 // is_locked: true,

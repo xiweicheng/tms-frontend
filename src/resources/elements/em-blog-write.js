@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 import {
     default as SimpleMDE
 } from 'simplemde';
@@ -93,7 +96,9 @@ export class EmBlogWrite {
         });
         this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_ACTION, (payload) => {
             this.action = payload.action;
-            $.get('/admin/blog/get', { id: payload.id }, (data) => {
+            $.get('/admin/blog/get', {
+                id: payload.id
+            }, (data) => {
                 if (data.success) {
                     this.blog = data.data;
                     $('a[href="#modaal-blog-write"]').click();
@@ -108,6 +113,25 @@ export class EmBlogWrite {
                 $('#blog-save-btn span').text('更新');
                 $('#blog-save-btn').attr('title', 'ctrl+click更新后关闭窗口');
             }
+
+        });
+
+        this.subscribe5 = ea.subscribe(nsCons.EVENT_BLOG_IS_UPDATED, (payload) => {
+            let title = $('#blog-title-input').val();
+            let content = this.simplemde.value();
+
+            let updated = false;
+
+            if (this.blog) {
+                updated = (this.blog.title != $.trim(title)) || (this.blog.content != $.trim(content));
+            } else {
+                updated = !!$.trim(title) || (!!$.trim(content));
+            }
+
+            ea.publish(nsCons.EVENT_BLOG_IS_UPDATED_ACK, {
+                item: payload.item,
+                updated: updated
+            });
 
         });
 
@@ -141,6 +165,7 @@ export class EmBlogWrite {
         this.subscribe2.dispose();
         this.subscribe3.dispose();
         this.subscribe4.dispose();
+        this.subscribe5.dispose();
     }
 
     _reset() {
@@ -178,7 +203,9 @@ export class EmBlogWrite {
         }
 
         if (url) {
-            $.get(url, { id: +id }, (data) => {
+            $.get(url, {
+                id: +id
+            }, (data) => {
                 if (data.success) {
                     this.simplemde.value(data.data.content);
                     let val = $('#blog-title-input').val();
@@ -297,12 +324,12 @@ export class EmBlogWrite {
                     title: "插入水平分割线",
                 }, "|", {
                     name: "upload",
-                    action: function(editor) {},
+                    action: function (editor) {},
                     className: "fa fa-upload",
                     title: "上传文件",
                 }, {
                     name: "csv2md",
-                    action: function(editor) {},
+                    action: function (editor) {},
                     className: "fa fa-file-excel-o",
                     title: "上传Excel|CSV转Markdown表格",
                 }, "|", {
@@ -406,14 +433,14 @@ export class EmBlogWrite {
             dictCancelUpload: '取消上传',
             dictCancelUploadConfirmation: '确定要取消上传吗?',
             dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
-            init: function() {
-                this.on("sending", function(file, xhr, formData) {
+            init: function () {
+                this.on("sending", function (file, xhr, formData) {
 
                 });
-                this.on("success", function(file, data) {
+                this.on("success", function (file, data) {
                     if (data.success) {
 
-                        $.each(data.data, function(index, item) {
+                        $.each(data.data, function (index, item) {
                             _this.insertContent(`\n${item}`);
 
                         });
@@ -423,10 +450,10 @@ export class EmBlogWrite {
                     }
 
                 });
-                this.on("error", function(file, errorMessage, xhr) {
+                this.on("error", function (file, errorMessage, xhr) {
                     toastr.error(errorMessage, '上传失败!');
                 });
-                this.on("complete", function(file) {
+                this.on("complete", function (file) {
                     this.removeFile(file);
                 });
             }
@@ -503,7 +530,7 @@ export class EmBlogWrite {
             }
         }, { // emoji
             match: /(^|\s):([\+\-\w]*)$/,
-            search: function(term, callback) {
+            search: function (term, callback) {
                 callback($.map(emojis, (emoji) => {
                     return _.some(emoji.split('_'), (item) => {
                         return item.indexOf(term) === 0;
@@ -543,7 +570,9 @@ export class EmBlogWrite {
     tipsActionHandler(value) {
 
         if (value == 'search') {
-            _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
+            _.delay(() => {
+                utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL);
+            }, 200);
         } else {
             return true;
         }
@@ -602,18 +631,18 @@ export class EmBlogWrite {
             dictCancelUpload: '取消上传',
             dictCancelUploadConfirmation: '确定要取消上传吗?',
             dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
-            init: function() {
-                this.on("sending", function(file, xhr, formData) {
+            init: function () {
+                this.on("sending", function (file, xhr, formData) {
                     if (!getInputTargetCb()) {
                         this.removeAllFiles(true);
                     } else {
                         formData.append('toType', 'Blog');
                     }
                 });
-                this.on("success", function(file, data) {
+                this.on("success", function (file, data) {
                     if (data.success) {
 
-                        $.each(data.data, function(index, item) {
+                        $.each(data.data, function (index, item) {
                             if (item.type == 'Image') {
                                 _this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100) '
                                     .replace(/\{name\}/g, item.name)
@@ -634,10 +663,10 @@ export class EmBlogWrite {
                     }
 
                 });
-                this.on("error", function(file, errorMessage, xhr) {
+                this.on("error", function (file, errorMessage, xhr) {
                     toastr.error(errorMessage, '上传失败!');
                 });
-                this.on("complete", function(file) {
+                this.on("complete", function (file) {
                     this.removeFile(file);
                 });
             }
@@ -658,7 +687,9 @@ export class EmBlogWrite {
                 cm.replaceRange(content, cursor, cursor);
                 cm.focus();
             }
-        } catch (err) { console.log(err); }
+        } catch (err) {
+            console.log(err);
+        }
 
     }
 
