@@ -123,7 +123,7 @@ export class EmBlogWrite {
             let updated = false;
 
             if (this.blog) {
-                updated = (this.blog.title != $.trim(title)) || (this.blog.content != $.trim(content));
+                updated = (this.blog.title != title) || (this.blog.content != content);
             } else {
                 updated = !!$.trim(title) || (!!$.trim(content));
             }
