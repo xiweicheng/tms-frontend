@@ -38,11 +38,16 @@
                     <a if.bind="dir" class="ui basic mini button" title="博文目录 (d)" click.delegate="catalogHandler()">
                         <i class="unordered list icon"></i> 目录
                     </a>
-                    <a if.bind="blog.openEdit || isSuper || blog.creator.username == loginUser.username"
+                    <a if.bind="((blog.openEdit || isSuper || blog.creator.username == loginUser.username) && (!blog.locker || blog.locker.username == loginUser.username))"
                         title="博文编辑 (e | ctrl+shift+dblclick)" class="ui basic mini button"
                         click.delegate="editHandler()">
                         <i class="large icon edit"></i> 编辑
                     </a>
+                    <div show.bind="blog.locker && blog.locker.username != loginUser.username"
+                        class="ui basic mini blue button" style="cursor: wait;" data-tooltip="${blog.locker.name ? blog.locker.name : blog.locker.username} 开始编辑于${blog.lockDate |
+                        timeago},请等待..." data-position="left center">
+                        <i class="large edit loading icon"></i>编辑中
+                    </div>
                     <a title="${!blogFollower ? '关注' : '取消关注'}博文更新 (f)" class="ui basic mini button"
                         click.delegate="followerHandler()">
                         <i class="${!blogFollower ? 'unhide' : 'hide'} large icon"></i> ${!blogFollower ? '关注' : '取消'}
@@ -98,21 +103,19 @@
                                 <i class="file pdf outline icon"></i> 导出为PDF
                             </a>
                             <a show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor !='Excel'"
-                                href="/admin/blog/download/${blog.id}?type=md"
-                                class="item">
+                                href="/admin/blog/download/${blog.id}?type=md" class="item">
                                 <i class="file text outline icon"></i> 导出为Markdown
                             </a>
                             <div show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel'"
-                                click.delegate="md2HtmlDownloadHandler()"
-                                class="item">
+                                click.delegate="md2HtmlDownloadHandler()" class="item">
                                 <i class="html5 icon"></i> 导出为HTML
                             </div>
                             <a show.bind="blog.editor == 'Html'" href="/admin/blog/download/${blog.id}?type=html"
                                 class="item">
                                 <i class="html5 icon"></i> 导出为HTML
                             </a>
-                            <div show.bind="blog.editor == 'Excel'"
-                                click.delegate="excelDownloadHandler()" class="item">
+                            <div show.bind="blog.editor == 'Excel'" click.delegate="excelDownloadHandler()"
+                                class="item">
                                 <i class="file excel outline icon"></i> 导出为Excel
                             </div>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username" class="divider"></div>
@@ -149,9 +152,7 @@
                             <span if.bind="blog.editor == 'Excel'" title="电子表格编辑器"><i style="color: black;"
                                     class="table icon"></i></span>
                             <span if.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel'"
-                                title="Markdown编辑器"><img
-                                    style="width: 14px;"
-                                    src="img/markdown.png" alt=""></span>
+                                title="Markdown编辑器"><img style="width: 14px;" src="img/markdown.png" alt=""></span>
                         </span>
                     </div>
                 </h1>
@@ -163,8 +164,7 @@
                 <em-blog-excel blog.bind="blog"></em-blog-excel>
             </div>
             <div show.bind="blog.editor != 'Mind' && blog.editor != 'Excel' " data-id="${blog.id}" data-case="blog"
-                fancybox ref="mkbodyRef"
-                class="markdown-body fr-view"
+                fancybox ref="mkbodyRef" class="markdown-body fr-view"
                 innerhtml.bind="blog.content | parseMd:blog.space.channel:blog.editor | emoji:mkbodyRef"></div>
             <div class="footer">
                 <span click.delegate="rateHandler()" class="rate"><i

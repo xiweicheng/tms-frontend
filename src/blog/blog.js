@@ -87,6 +87,9 @@ export class Blog {
             stompClient.subscribe('/blog/comment/update', (msg) => {
                 ea.publish(nsCons.EVENT_WS_BLOG_COMMENT_UPDATE, JSON.parse(msg.body));
             });
+            stompClient.subscribe('/blog/lock', (msg) => {
+                ea.publish(nsCons.EVENT_WS_BLOG_LOCK, JSON.parse(msg.body));
+            });
         }, (err) => {
             utils.errorAutoTry(() => {
                 this._initSock();
@@ -198,10 +201,12 @@ export class Blog {
                         content: '页面存在未保存内容，确认要关闭吗?',
                         onapprove: () => {
                             $(`a[href="#modaal-blog-${evt.data.item.name}"]`).modaal('close');
+                            $(`.em-blog-${evt.data.item.name} > iframe`).attr('src', ``);
                         }
                     });
                 } else {
                     $(`a[href="#modaal-blog-${evt.data.item.name}"]`).modaal('close');
+                    $(`.em-blog-${evt.data.item.name} > iframe`).attr('src', ``);
                 }
             }
 

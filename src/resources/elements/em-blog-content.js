@@ -301,6 +301,34 @@ export class EmBlogContent {
 
         });
 
+        this.subscribe8 = ea.subscribe(nsCons.EVENT_WS_BLOG_LOCK, (payload) => {
+
+            if (payload.blogId != this.blog.id) return;
+
+            if (payload.cmd == 'LOCK') {
+                if (!this.blog.locker) {
+                    this.blog.locker = {
+                        username: payload.locker,
+                        name: payload.name
+                    };
+                    this.blog.lockDate = new Date();
+
+                    (payload.locker != this.loginUser.username) && toastr.info(`${payload.name ? payload.name : payload.locker} 开始编辑中,请等待...`);
+                }
+
+            } else if (payload.cmd == 'UNLOCK') {
+                if (this.blog.locker) {
+
+                    (payload.locker != this.loginUser.username) && toastr.info(`${this.blog.locker.name ? this.blog.locker.name : payload.locker} 完成了编辑,请知悉...`);
+
+                    this.blog.locker = null;
+                    this.blog.lockDate = null;
+
+                }
+            }
+
+        });
+
         this.throttleCreateHandler = _.throttle(() => {
             this.createHandler()
         }, 1000, {
@@ -340,6 +368,7 @@ export class EmBlogContent {
         this.subscribe5.dispose();
         this.subscribe6.dispose();
         this.subscribe7.dispose();
+        this.subscribe8.dispose();
     }
 
     detached() {

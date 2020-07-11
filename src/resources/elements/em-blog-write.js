@@ -90,8 +90,17 @@ export class EmBlogWrite {
         });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_MODAAL_BEFORE_CLOSE, (payload) => {
             if (payload.id == EmBlogWrite.NAME) {
-                this.destroy();
+
                 nsCtx.isModaalOpening = false;
+
+                if (this.stompClient) {
+                    this.stompClient.disconnect(() => {
+                        this.stompClient = null;
+                    });
+
+                }
+
+                this.destroy();
             }
         });
         this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_ACTION, (payload) => {
@@ -187,6 +196,18 @@ export class EmBlogWrite {
         this.simplemde.value(this.blog.content);
         $('#blog-save-btn span').text('更新');
         $('#blog-save-btn').attr('title', 'ctrl+click更新后关闭窗口');
+
+        this._initEditSock();
+
+    }
+
+    _initEditSock() {
+        this.stompClient = Stomp.over(new SockJS('/ws-lock?blogId=' + this.blog.id));
+        this.stompClient.debug = () => {};
+        // this.stompClient.debug = (msg) => { console.log(msg) };
+        this.stompClient.connect({}, (frame) => {}, (err) => {
+            console.error(err);
+        });
     }
 
     _writeInit() {

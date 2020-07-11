@@ -75,6 +75,7 @@ window.nsCons = {
     EVENT_WS_SCHEDULE_UPDATE: 'event_ws_schedule_update',
     EVENT_WS_BLOG_UPDATE: 'event_ws_blog_update',
     EVENT_WS_BLOG_COMMENT_UPDATE: 'event_ws_blog_comment_update',
+    EVENT_WS_BLOG_LOCK: 'event_ws_blog_lock',
     EVENT_WS_BLOG_NEWS_UPDATE: 'event_ws_blog_news_update',
     EVENT_AUDIO_ALERT: 'event_audio_alert',
     EVENT_CLOSE_CHANNEL_TASKS_MODAL: 'event_close_channel_tasks_modal',
