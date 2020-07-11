@@ -1191,4 +1191,22 @@ export class EmBlogContent {
 
         utils.downloadExcel(JSON.parse(this.blog.content), this.blog.title);
     }
+
+    mouseenterEditLockHandler() {
+
+        bs.signal('sg-blog-lockdate-refresh');
+
+        $.get('/admin/blog/check/lock', {
+            id: this.blog.id
+        }, (data) => {
+            if (data.success) {
+                if (!data.data) {
+                    this.refreshHandler();
+                }
+            } else {
+                toastr.error(data.data);
+            }
+        });
+
+    }
 }

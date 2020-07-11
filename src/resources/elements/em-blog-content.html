@@ -44,8 +44,9 @@
                         <i class="large icon edit"></i> 编辑
                     </a>
                     <div show.bind="blog.locker && blog.locker.username != loginUser.username"
-                        class="ui basic mini blue button" style="cursor: wait;" data-tooltip="${blog.locker.name ? blog.locker.name : blog.locker.username} 开始编辑于${blog.lockDate |
-                        timeago},请等待..." data-position="left center">
+                        mouseenter.trigger="mouseenterEditLockHandler(item)" class="ui basic mini blue button"
+                        style="cursor: wait;" data-tooltip="[${blog.locker.name ? blog.locker.name : blog.locker.username}]开始编辑于${blog.lockDate |
+                        timeago & signal:'sg-blog-lockdate-refresh'}，请等待..." data-position="left center">
                         <i class="large edit loading icon"></i>编辑中
                     </div>
                     <a title="${!blogFollower ? '关注' : '取消关注'}博文更新 (f)" class="ui basic mini button"
