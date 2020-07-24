@@ -44,6 +44,7 @@
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis; // max-width: 200px;
+                        width: 225px;
                         max-width: 225px;
                         min-width: 225px;
                     }
@@ -71,10 +72,12 @@
                         white-space: nowrap; 
                         // overflow: hidden;
                         text-overflow: ellipsis;
+                        width: 245px;;
                         max-width: 245px;
                         >span {
                             overflow: hidden;
-                            max-width: 245px;
+                            width: 100%;
+                            // max-width: 245px;
                             display: inline-block;
                             text-overflow: ellipsis;
                         }
@@ -89,7 +92,7 @@
                 .ui.bulleted.list {
                     padding-left: 16px;
                     >div.item {
-                        max-width: 220px;
+                        // max-width: 220px;
                         padding-top: 5px;
                         padding-bottom: 5px;
                         >a {
@@ -165,7 +168,7 @@
                     &.tms-search {
                         position: relative;
                         height: 40px;
-                        max-width: 207px;
+                        width: 207px;
                         &:before {
                             width: 0;
                         }
@@ -176,6 +179,18 @@
                         }
                     }
                 }
+            }
+        }
+        .tms-split {
+            width: 3px;
+            height: e("calc(100% - 40px)");
+            position: absolute;
+            top: 0;
+            right: 0;
+            // background-color: red;
+            cursor: ew-resize;
+            &:hover {
+                background-color: #e8e0e0;
             }
         }
     }
@@ -196,9 +211,9 @@
             display: block;
         }
     }
-    &.bar-fold {
-        left: -300px!important;
-    }
+    // &.bar-fold {
+    //     left: -300px!important;
+    // }
 }
 
 @media only screen and (max-width: 767px) {

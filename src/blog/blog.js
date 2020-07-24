@@ -21,17 +21,31 @@ export class Blog {
             if (payload.justRefresh) {
                 return;
             }
+
+            let rightSidebarShowOld = this.rightSidebarShow;
+
             if (payload && !_.isUndefined(payload.isHide)) {
                 this.rightSidebarShow = !payload.isHide;
             } else {
                 this.rightSidebarShow = !this.rightSidebarShow;
             }
+
+            if (this.rightSidebarShow == rightSidebarShowOld) return;
+            
+            this.rightSidebarShow ? $('.em-blog-content').width($('.em-blog-content').width() - nsCons.WIDTH_RIGHT_BAR) : $('.em-blog-content').width($('.em-blog-content').width() + nsCons.WIDTH_RIGHT_BAR);
         });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR, (payload) => {
             this.isHide = payload;
         });
         this.subscribe3 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR_PC, (payload) => {
             this.isHidePc = payload;
+
+            let hw = $('.em-blog-content-wrapper').width();
+
+            this.isHidePc && $('.em-blog-content').css({
+                'left': 0,
+                'width': this.rightSidebarShow ? hw - nsCons.WIDTH_RIGHT_BAR : hw
+            });
         });
         this.subscribe4 = ea.subscribe(nsCons.EVENT_BLOG_IS_UPDATED_ACK, (payload) => {
             if (payload.updated) {
@@ -232,6 +246,14 @@ export class Blog {
     foldHandler() {
         this.isHidePc = !this.isHidePc;
         ea.publish(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR_PC, this.isHidePc);
+
+        let lw = $('.em-blog-left-sidebar').width();
+        let hw = $('.em-blog-content-wrapper').width();
+
+        !this.isHidePc && $('.em-blog-content').css({
+            left: lw,
+            'width': this.rightSidebarShow ? hw - lw - nsCons.WIDTH_RIGHT_BAR : hw - lw
+        });
     }
 
     /**

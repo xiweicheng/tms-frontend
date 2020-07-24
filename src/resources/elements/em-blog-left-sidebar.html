@@ -1,6 +1,6 @@
 <template>
     <require from="./em-blog-left-sidebar.css"></require>
-    <div
+    <div ref="leftBarRef"
         class="ui left visible sidebar em-blog-left-sidebar ${isHide ? 'mobile-hide' : ''} ${folded ? 'bar-fold' : 'bar-unfold'}">
         <div class="tms-body">
             <div scrollbar="scrollbar-macosx">
@@ -215,6 +215,7 @@
         </div>
         <div click.delegate="foldHandler()" title="隐藏侧边栏" class="ui icon circular tiny button fold"><i
                 class="chevron left icon"></i></div>
+        <div ref="splitRef" class="tms-split"></div>
     </div>
     <em-confirm-modal em-confirm-modal.ref="confirmMd"></em-confirm-modal>
     <em-blog-space-edit view-model.ref="spaceEditVm"></em-blog-space-edit>

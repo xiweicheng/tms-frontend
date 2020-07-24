@@ -108,6 +108,7 @@ export class EmBlogLeftSidebar {
         });
         this.subscribe8 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR_PC, (payload) => {
             this.folded = payload;
+            !this.folded && $(this.leftBarRef).css('left', 0);
         });
 
         this._doFilerDebounce = _.debounce(() => this._doFiler(), 120, {
@@ -137,6 +138,61 @@ export class EmBlogLeftSidebar {
         this.refresh();
         // this._refreshSysLinks();
         this._refreshBlogStows();
+
+        this._initSplit();
+    }
+
+    /**
+     * 当视图从DOM中分离时被调用
+     */
+    detached() {
+
+        window.__debug && console.log('EmBlogLeftSidebar--detached');
+        
+        this.splitRef.onmousedown = null;
+    }
+
+    _initSplit() {
+
+        this.splitRef.onmousedown = (e) => {
+            // 记录下初始位置的值
+            let disX = e.clientX;
+            let lw = $('.em-blog-left-sidebar').width();
+            let hw = $('.em-blog-content-wrapper').width();
+            let isRightBarShow = $('.tms-blog').hasClass('right-sidebar-show');
+
+            document.onmousemove = function (e) {
+                let moveX = e.clientX - disX; // 鼠标拖动的偏移距离
+                let lwNew = lw + moveX;
+                let lrNew = hw - lwNew;
+
+                $('.em-blog-left-sidebar').width(lwNew);
+                $('.em-blog-content').css({
+                    'left': `${lwNew}px`,
+                    'width': `${isRightBarShow ? lrNew - nsCons.WIDTH_RIGHT_BAR : lrNew}px`
+                })
+
+                $('.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .content').css({
+                    'width': lwNew - 55,
+                    'max-width': lwNew - 55
+                });
+                $('.em-blog-left-sidebar.ui.left.sidebar .tms-body .ui.space.list > .item > .content > .dirs > .list.dir > .content').css({
+                    'width': lwNew - 75,
+                    'max-width': lwNew - 75
+                });
+                $('.em-blog-left-sidebar.ui.left.sidebar .tms-footer .ui.menu > .item.tms-search').css({
+                    'width': lwNew - 93
+                });
+
+                return false;
+            };
+
+            // 鼠标放开的时候取消操作
+            document.onmouseup = function () {
+                document.onmousemove = null;
+                document.onmouseup = null;
+            };
+        };
     }
 
     _initSortObjs() {
@@ -680,6 +736,7 @@ export class EmBlogLeftSidebar {
     foldHandler() {
         this.folded = !this.folded;
         ea.publish(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR_PC, this.folded);
+        this.folded && $(this.leftBarRef).css('left', -$(this.leftBarRef).width());
     }
 
     // sysLinkHandler(item) {
