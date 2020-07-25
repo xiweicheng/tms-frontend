@@ -178,6 +178,8 @@
     <script>
         $(function () {
 
+            var taskItemHtml = '<input class="tms-task-item" style="margin:0 5px 0 0;" type="checkbox" />';
+
             var blog = null;
 
             // toastr弹出消息提示插件全局配置设置
@@ -207,6 +209,45 @@
                 callback: function () {
                     $('#word2html-dropzone').click();
                 }
+            });
+            $.FroalaEditor.DefineIcon('task', {
+                NAME: 'check-square-o'
+            });
+            $.FroalaEditor.RegisterCommand('task', {
+                title: '任务列表',
+                focus: false,
+                undo: true,
+                refreshAfterCallback: false,
+                callback: function () {
+
+                    // this.undo.saveStep();
+
+                    var sbs = $('#edit').froalaEditor('selection.blocks');
+
+                    let _this = this;
+                    _.each(sbs, function (e, i) {
+                        $item = $(e).children('.tms-task-item');
+                        if ($item.size() === 1) {
+                            $item.remove();
+                        } else {
+                            if ($(e).text() || sbs.length > 1) {
+                                $(e).prepend(taskItemHtml);
+                            } else {
+                                _this.html.insert(taskItemHtml);
+                            }
+                        }
+                    });
+
+                    // console.log($('#edit').froalaEditor('selection.blocks'));
+                    // console.log($('#edit').froalaEditor('selection.element'));
+                    // console.log($('#edit').froalaEditor('selection.endElement'));
+                    // console.log($('#edit').froalaEditor('selection.get'));
+                }
+            });
+
+            $('#edit').on('click', 'input.tms-task-item', function (evt) {
+                // console.log(evt);
+                $(evt.currentTarget).attr("checked", $(evt.currentTarget).is(':checked'));
             });
 
             $('#word2html-dropzone').dropzone({
@@ -248,7 +289,8 @@
                     toolbarButtons: ['fullscreen', 'bold', 'italic', 'underline', 'strikeThrough',
                         'subscript', 'superscript', 'fontFamily', 'fontSize', '|', 'color',
                         'inlineStyle', 'paragraphStyle', '|', 'paragraphFormat', 'align', 'formatOL',
-                        'formatUL', 'outdent', 'indent', '-', 'save', '|', 'word2html', 'insertLink',
+                        'formatUL', 'outdent', 'indent', '-', 'save', '|', 'word2html', 'task',
+                        'insertLink',
                         'insertImage', 'insertVideo', 'insertFile', 'insertTable', 'emoticons',
                         'specialCharacters', '|', 'quote', 'insertHR', 'undo', 'redo',
                         'clearFormatting', 'selectAll', 'print', 'help', 'html'
@@ -330,6 +372,31 @@
                     if (keydownEvent.ctrlKey && keydownEvent.shiftKey && keydownEvent.keyCode ===
                         83) { // ctrl+shift+s
                         $('#save').click();
+                    } else if (keydownEvent.keyCode === 13) {
+
+                        var sbs = $('#edit').froalaEditor('selection.blocks');
+                        if (sbs && sbs.length > 0) {
+                            var $pre = $(sbs[0]).prev();
+                            var $item = $pre.children('input.tms-task-item');
+                            // console.log($pre, $pre.text());
+                            // console.log($item);
+
+                            if ($item.size() === 1) {
+                                if ($.trim($pre.text())) {
+                                    $('#edit').froalaEditor('html.insert', taskItemHtml);
+                                } else {
+                                    $('#edit').froalaEditor('cursor.backspace');
+                                    $('#edit').froalaEditor('cursor.backspace');
+                                    // $('#edit').froalaEditor('cursor.backspace');
+                                    // $('#edit').froalaEditor('cursor.backspace');
+                                }
+                            }
+                        }
+
+                        // console.log($('#edit').froalaEditor('selection.blocks'));
+                        // console.log($('#edit').froalaEditor('selection.element'));
+                        // console.log($('#edit').froalaEditor('selection.endElement'));
+                        // console.log($('#edit').froalaEditor('selection.get'));
                     }
                 });
 
