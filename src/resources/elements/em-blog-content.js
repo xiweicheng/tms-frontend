@@ -228,6 +228,13 @@ export class EmBlogContent {
             if (payload.case != 'blog') return;
 
             if (this.blog && (this.blog.creator.username == this.loginUser.username || this.blog.openEdit || this.isSuper)) {
+
+                if (this.blog.locker) {
+                    payload.event && payload.event.preventDefault();
+                    toastr.info(`当前博文处于编辑中，请稍后再试...`);
+                    return;
+                }
+
                 let lines = this.blog.content.split('\n');
                 // console.log(lines)
                 let index = -1;
@@ -381,6 +388,7 @@ export class EmBlogContent {
 
         $('.em-blog-content').off('click', 'code[data-code]', this.codeClHandler);
         $('.em-blog-content').off('click', '.pre-code-wrapper', this.preCodeClHandler);
+        $('.em-blog-content').off('click', '.markdown-body input.tms-task-item', this.taskItemClHandler);
         $('.em-blog-right-sidebar').off('click', '.panel-blog-dir .wiki-dir-item', this.wikiDirClHandler);
         $(this.mkbodyRef).off('dblclick', this.mkDblHandler);
         $('.em-blog-content').off('scroll', this.blogContentScrollHandler);
@@ -469,8 +477,13 @@ export class EmBlogContent {
             }
         };
 
+        this.taskItemClHandler = function (event) {
+            event.preventDefault();
+        }
+
         $('.em-blog-content').on('click', 'code[data-code]', this.codeClHandler);
         $('.em-blog-content').on('click', '.pre-code-wrapper', this.preCodeClHandler);
+        $('.em-blog-content').on('click', '.markdown-body input.tms-task-item', this.taskItemClHandler);
 
         this.wikiDirClHandler = (event) => {
             event.preventDefault();
