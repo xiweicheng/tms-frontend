@@ -148,7 +148,7 @@ export class EmBlogLeftSidebar {
     detached() {
 
         window.__debug && console.log('EmBlogLeftSidebar--detached');
-        
+
         this.splitRef.onmousedown = null;
     }
 
@@ -165,6 +165,9 @@ export class EmBlogLeftSidebar {
                 let moveX = e.clientX - disX; // 鼠标拖动的偏移距离
                 let lwNew = lw + moveX;
                 let lrNew = hw - lwNew;
+
+                if (lwNew < 200) return false;
+                if (lrNew < 500) return false;
 
                 $('.em-blog-left-sidebar').width(lwNew);
                 $('.em-blog-content').css({
