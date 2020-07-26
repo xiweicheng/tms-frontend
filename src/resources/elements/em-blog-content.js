@@ -258,6 +258,8 @@ export class EmBlogContent {
                     }
                 }
 
+                if (this.sending) return;
+
                 this.sending = true;
 
                 let content = lines.join('\n');
@@ -477,8 +479,53 @@ export class EmBlogContent {
             }
         };
 
-        this.taskItemClHandler = function (event) {
-            event.preventDefault();
+        this.taskItemClHandler = (event) => {
+
+            if (this.blog && (this.blog.creator.username == this.loginUser.username || this.blog.openEdit || this.isSuper)) {
+
+                if (this.blog.locker) {
+                    event.preventDefault();
+                    toastr.info(`当前博文处于编辑中，请稍后再试...`);
+                    return;
+                } else {
+
+                    let $input = $(event.currentTarget);
+
+                    let $blog = $(this.blog.content);
+                    let $inputR = $blog.find(`input[data-id="${$input.attr('data-id')}"]`);
+                    $inputR.attr('checked', $input.prop('checked'));
+
+                    if (this.sending) return;
+
+                    this.sending = true;
+
+                    let content = $blog.wrapAll('<div></div>').parent().html();
+
+                    $.post('/admin/blog/update', {
+                        url: utils.getBasePath(),
+                        id: this.blog.id,
+                        version: this.blog.version,
+                        title: this.blog.title,
+                        content: content
+                    }, (data, textStatus, xhr) => {
+                        if (data.success) {
+                            this.blog = data.data;
+                            toastr.success('博文更新成功!');
+                            ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                                action: 'updated',
+                                autoFollow: true,
+                                blog: this.blog
+                            });
+                        } else {
+                            toastr.error(data.data, '博文更新失败!');
+                        }
+                    }).always(() => {
+                        this.sending = false;
+                    });
+                }
+            } else {
+                event.preventDefault();
+            }
         }
 
         $('.em-blog-content').on('click', 'code[data-code]', this.codeClHandler);
