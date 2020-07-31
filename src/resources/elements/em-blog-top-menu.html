@@ -75,12 +75,16 @@
                 style="top: 554px; left: 1px; bottom: auto; right: auto; width: 761px;">
                 <em-chat-todo view-model.ref="todoVm"></em-chat-todo>
             </div>
-            <a ref="newsRef" show.bind="totalNews > 0" class="item icon" click.delegate="newsRefreshHandler()">
+            <a ref="newsRef" class="item icon" click.delegate="newsRefreshHandler()">
                 <i class="announcement large link icon"></i>
-                <div class="floating ui red circular label" style="top: 0;">${totalNews > 99 ? '99+' : totalNews }</div>
+                <div show.bind="totalNews > 0" class="floating ui red circular label" style="top: 0;">${totalNews > 99 ?
+                    '99+' : totalNews }</div>
             </a>
             <div class="ui fluid popup basic bottom left transition hidden">
-                <div class="ui selection divided list">
+                <div class="ui selection divided list tms-sys-msgs">
+                    <div class="item" show.bind="totalNews == 0">
+                        <div class="ui big yellow message">暂无系统消息!</div>
+                    </div>
                     <a class="item" repeat.for="item of news" click.delegate="newsHandler(item)" href="${basePath + '#/blog/' + item.bid + (item.cid ? '?cid=' + item.cid : '')}">
                         <!-- <i class="check circle big outline icon" title="点击可忽略删除" click.delegate="newsDelHandler(item, $event)"></i> -->
                         <i class="remove circle outline large red icon" style="padding-left: 3px;" title="点击可忽略删除" click.delegate="newsDelHandler(item, $event)"></i>

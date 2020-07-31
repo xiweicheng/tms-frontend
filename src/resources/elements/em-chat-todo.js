@@ -67,6 +67,12 @@ export class EmChatTodo {
 
     }
 
+    attached() {
+        $(this.tasksAccRef).accordion({
+            exclusive: false
+        });
+    }
+
     addTodoHandler(ctrlKey) {
 
         $(this.todoInputRef).focus();
@@ -108,6 +114,21 @@ export class EmChatTodo {
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 item.status = data.data.status;
+                item.updateDate = data.data.updateDate;
+            } else {
+                toastr.error(data.data, '更新待办事项失败！');
+            }
+        });
+    }
+
+    priorityUpdateHandler(item, priority) {
+        // Default, ZyJj, ZyBjj, BzyJi, BzyBjj;
+        $.post('/admin/todo/update', {
+            id: item.id,
+            priority: priority ? priority : 'Default'
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                item.priority = data.data.priority;
                 item.updateDate = data.data.updateDate;
             } else {
                 toastr.error(data.data, '更新待办事项失败！');

@@ -3,88 +3,257 @@
     <div class="em-chat-todo" show.bind="actived.show == 'todo'">
         <div class="ui basic segment">
             <div class="ui big fluid icon input">
-                <input ref="todoInputRef" value.bind="title" type="text" keyup.delegate="addTodoKeyupHandler($event)" placeholder="输入个人待办事项...">
-                <i title="enter提交(ctrl同时按下置顶)" class="${(ajax && ajax.readyState != 4) ? 'spinner loading' : 'plus'} link icon" click.delegate="addTodoHandler()"></i>
+                <input ref="todoInputRef" value.bind="title" type="text" keyup.delegate="addTodoKeyupHandler($event)"
+                    placeholder="输入个人待办事项...">
+                <i title="enter提交(ctrl同时按下置顶)"
+                    class="${(ajax && ajax.readyState != 4) ? 'spinner loading' : 'plus'} link icon"
+                    click.delegate="addTodoHandler()"></i>
             </div>
             <div class="filter-wrapper">
                 <div class="ui transparent left icon fluid input">
-                    <input ref="searchInputRef" value.bind="todoFilter" type="text" blur.trigger="searchBlurHandler()" focus.trigger="searchFocusHandler()" placeholder="过滤查找...">
+                    <input ref="searchInputRef" value.bind="todoFilter" type="text" blur.trigger="searchBlurHandler()"
+                        focus.trigger="searchFocusHandler()" placeholder="过滤查找...">
                     <i class="search icon"></i>
                     <i ref="searchRemoveRef" click.delegate="clearSearchHandler()" class="remove link icon"></i>
                 </div>
             </div>
             <h5 class="ui horizontal divider yellow header" style="margin-top: 10px;">
-              <!-- <i class="filter link icon"></i> -->
-              进行中（${todos | count:todoFilter:'title'}）
+                <!-- <i class="filter link icon"></i> -->
+                进行中（${todos | count:todoFilter:'title'}）
             </h5>
-            <div class="ui middle aligned divided selection relaxed list" style="overflow: hidden;">
-                <div repeat.for="item of todos | filter:todoFilter:'title' | sortTodo" class="item tms-task-item">
-                    <div class="actions" show.bind="!item.isEditing">
-                        <i click.delegate="statusDoneHandler(item)" class="large check circle link icon" title="标记已经完成"></i>
-                        <i class="tms-copy tms-clipboard copy link icon large" data-clipboard-text="${item.title}" title="复制到剪贴板"></i>
-                        <i show.bind="!item.sortIndex" click.delegate="topHandler(item)" class="arrow up link icon large" title="置顶待办事项"></i>
-                        <i show.bind="item.sortIndex" click.delegate="topHandler(item)" class="icons link large" title="取消置顶待办事项">
-                            <i class="arrow icon puzzle up"></i>
-                        <i class="corner red icon remove"></i>
-                        </i>
-                        <div ui-dropdown-action class="ui icon right center pointing dropdown" title="删除待办事项">
-                            <i class="red large trash outline icon" style="margin-right: 0;"></i>
-                            <div class="menu">
-                                <div style="color: red;" class="item" click.delegate="delHandler(item, 'todo')"><i class="trash outline icon"></i>确认删除</div>
+            <div ref="tasksAccRef" class="ui accordion">
+                <div class="active title">
+                    <i class="dropdown icon"></i>
+                    今天
+                </div>
+                <div class="active content">
+
+                    <div class="ui middle aligned divided selection relaxed list">
+                        <template repeat.for="item of todos | filter:todoFilter:'title' | sortTodo">
+                            <div class="item tms-task-item" if.bind="item.priority == 'ZyJj'">
+                                <div class="actions" show.bind="!item.isEditing">
+                                    <i click.delegate="priorityUpdateHandler(item, 'ZyBjj')"
+                                        class="large angle down circle link icon" title="明天"></i>
+                                    <i click.delegate="priorityUpdateHandler(item, 'Default')"
+                                        class="large angle double down circle link icon" title="待定"></i>
+                                    <i click.delegate="statusDoneHandler(item)" class="large check circle link icon"
+                                        title="标记已经完成"></i>
+                                    <i class="tms-copy tms-clipboard copy link icon large"
+                                        data-clipboard-text="${item.title}" title="复制到剪贴板"></i>
+                                    <i show.bind="!item.sortIndex" click.delegate="topHandler(item)"
+                                        class="arrow up link icon large" title="置顶待办事项"></i>
+                                    <i show.bind="item.sortIndex" click.delegate="topHandler(item)"
+                                        class="icons link large" title="取消置顶待办事项">
+                                        <i class="arrow icon puzzle up"></i>
+                                        <i class="corner red icon remove"></i>
+                                    </i>
+                                    <div ui-dropdown-action class="ui icon right center pointing dropdown"
+                                        title="删除待办事项">
+                                        <i class="red large trash outline icon" style="margin-right: 0;"></i>
+                                        <div class="menu">
+                                            <div style="color: red;" class="item"
+                                                click.delegate="delHandler(item, 'todo')">
+                                                <i class="trash outline icon"></i>确认删除</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span data-timeago="${item.updateDate}" class="timeago"
+                                    title="更新于 ${item.updateDate | date}">${item.updateDate | timeago}</span>
+                                <i show.bind="!item.isEditing" click.delegate="statusToggleHandler(item)"
+                                    class="${item.status == 'Doing' ? 'red checkmark box' : 'square outline'} large link icon"></i>
+                                <i show.bind="!item.isEditing"
+                                    class="angle ${item.isOpen ? 'down' : 'right'} ${item.content ? 'black' : ''} link icon"
+                                    click.delegate="editContentHandler(item, editTextAreaRef)"></i>
+                                <div show.bind="!item.isEditing" dblclick.delegate="editHandler(item, editInputRef)"
+                                    class="content ${item.status == 'Doing' ? 'red' : ''}" title="${item.title}">
+                                    ${item.title}
+                                </div>
+                                <div show.bind="item.isEditing" class="ui transparent icon fluid input">
+                                    <input ref="editInputRef" type="text" value.bind="item.title"
+                                        keyup.delegate="updateHandler(item) & key" blur.trigger="updateHandler(item)">
+                                    <i class="plus link icon" click.delegate="updateHandler(item)"></i>
+                                </div>
+                                <div class="ui form" show.bind="item.isOpen">
+                                    <div class="field">
+                                        <textarea ref="editTextAreaRef" value.bind="item.content" autosize rows="2"
+                                            keyup.delegate="updateDescHandler(item) & key:'enter':'ctrl'"
+                                            blur.trigger="updateDescHandler(item)" placeholder="待办事项备注..."></textarea>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        </template>
                     </div>
-                    <span data-timeago="${item.updateDate}" class="timeago" title="更新于 ${item.updateDate | date}">${item.updateDate | timeago}</span>
-                    <i show.bind="!item.isEditing" click.delegate="statusToggleHandler(item)" class="${item.status == 'Doing' ? 'red checkmark box' : 'square outline'} large link icon"></i>
-                    <i show.bind="!item.isEditing" class="angle ${item.isOpen ? 'down' : 'right'} ${item.content ? 'black' : ''} link icon" click.delegate="editContentHandler(item, editTextAreaRef)"></i>
-                    <div show.bind="!item.isEditing" dblclick.delegate="editHandler(item, editInputRef)" class="content ${item.status == 'Doing' ? 'red' : ''}" title="${item.title}">
-                        ${item.title}
+                </div>
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    明天
+                </div>
+                <div class="content">
+                    <div class="ui middle aligned divided selection relaxed list">
+                        <template repeat.for="item of todos | filter:todoFilter:'title' | sortTodo">
+                            <div class="item tms-task-item" if.bind="item.priority == 'ZyBjj'">
+                                <div class="actions" show.bind="!item.isEditing">
+                                    <i click.delegate="priorityUpdateHandler(item, 'ZyJj')"
+                                        class="large angle up circle link icon" title="今天"></i>
+                                    <i click.delegate="priorityUpdateHandler(item, 'Default')"
+                                        class="large angle down circle link icon" title="待定"></i>
+                                    <i click.delegate="statusDoneHandler(item)" class="large check circle link icon"
+                                        title="标记已经完成"></i>
+                                    <i class="tms-copy tms-clipboard copy link icon large"
+                                        data-clipboard-text="${item.title}" title="复制到剪贴板"></i>
+                                    <i show.bind="!item.sortIndex" click.delegate="topHandler(item)"
+                                        class="arrow up link icon large" title="置顶待办事项"></i>
+                                    <i show.bind="item.sortIndex" click.delegate="topHandler(item)"
+                                        class="icons link large" title="取消置顶待办事项">
+                                        <i class="arrow icon puzzle up"></i>
+                                        <i class="corner red icon remove"></i>
+                                    </i>
+                                    <div ui-dropdown-action class="ui icon right center pointing dropdown"
+                                        title="删除待办事项">
+                                        <i class="red large trash outline icon" style="margin-right: 0;"></i>
+                                        <div class="menu">
+                                            <div style="color: red;" class="item"
+                                                click.delegate="delHandler(item, 'todo')">
+                                                <i class="trash outline icon"></i>确认删除</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span data-timeago="${item.updateDate}" class="timeago"
+                                    title="更新于 ${item.updateDate | date}">${item.updateDate | timeago}</span>
+                                <i show.bind="!item.isEditing" click.delegate="statusToggleHandler(item)"
+                                    class="${item.status == 'Doing' ? 'red checkmark box' : 'square outline'} large link icon"></i>
+                                <i show.bind="!item.isEditing"
+                                    class="angle ${item.isOpen ? 'down' : 'right'} ${item.content ? 'black' : ''} link icon"
+                                    click.delegate="editContentHandler(item, editTextAreaRef)"></i>
+                                <div show.bind="!item.isEditing" dblclick.delegate="editHandler(item, editInputRef)"
+                                    class="content ${item.status == 'Doing' ? 'red' : ''}" title="${item.title}">
+                                    ${item.title}
+                                </div>
+                                <div show.bind="item.isEditing" class="ui transparent icon fluid input">
+                                    <input ref="editInputRef" type="text" value.bind="item.title"
+                                        keyup.delegate="updateHandler(item) & key" blur.trigger="updateHandler(item)">
+                                    <i class="plus link icon" click.delegate="updateHandler(item)"></i>
+                                </div>
+                                <div class="ui form" show.bind="item.isOpen">
+                                    <div class="field">
+                                        <textarea ref="editTextAreaRef" value.bind="item.content" autosize rows="2"
+                                            keyup.delegate="updateDescHandler(item) & key:'enter':'ctrl'"
+                                            blur.trigger="updateDescHandler(item)" placeholder="待办事项备注..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                     </div>
-                    <div show.bind="item.isEditing" class="ui transparent icon fluid input">
-                        <input ref="editInputRef" type="text" value.bind="item.title" keyup.delegate="updateHandler(item) & key" blur.trigger="updateHandler(item)">
-                        <i class="plus link icon" click.delegate="updateHandler(item)"></i>
-                    </div>
-                    <div class="ui form" show.bind="item.isOpen">
-                        <div class="field">
-                            <textarea ref="editTextAreaRef" value.bind="item.content" autosize rows="2" keyup.delegate="updateDescHandler(item) & key:'enter':'ctrl'" blur.trigger="updateDescHandler(item)" placeholder="待办事项备注..."></textarea>
-                        </div>
+                </div>
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    待定
+                </div>
+                <div class="content">
+                    <div class="ui middle aligned divided selection relaxed list">
+                        <template repeat.for="item of todos | filter:todoFilter:'title' | sortTodo">
+                            <div class="item tms-task-item" if.bind="item.priority == 'Default'">
+                                <div class="actions" show.bind="!item.isEditing">
+                                    <i click.delegate="priorityUpdateHandler(item, 'ZyJj')"
+                                        class="large double angle up circle link icon" title="今天"></i>
+                                    <i click.delegate="priorityUpdateHandler(item, 'ZyBjj')"
+                                        class="large angle up circle link icon" title="明天"></i>
+                                    <i click.delegate="statusDoneHandler(item)" class="large check circle link icon"
+                                        title="标记已经完成"></i>
+                                    <i class="tms-copy tms-clipboard copy link icon large"
+                                        data-clipboard-text="${item.title}" title="复制到剪贴板"></i>
+                                    <i show.bind="!item.sortIndex" click.delegate="topHandler(item)"
+                                        class="arrow up link icon large" title="置顶待办事项"></i>
+                                    <i show.bind="item.sortIndex" click.delegate="topHandler(item)"
+                                        class="icons link large" title="取消置顶待办事项">
+                                        <i class="arrow icon puzzle up"></i>
+                                        <i class="corner red icon remove"></i>
+                                    </i>
+                                    <div ui-dropdown-action class="ui icon right center pointing dropdown"
+                                        title="删除待办事项">
+                                        <i class="red large trash outline icon" style="margin-right: 0;"></i>
+                                        <div class="menu">
+                                            <div style="color: red;" class="item"
+                                                click.delegate="delHandler(item, 'todo')">
+                                                <i class="trash outline icon"></i>确认删除</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span data-timeago="${item.updateDate}" class="timeago"
+                                    title="更新于 ${item.updateDate | date}">${item.updateDate | timeago}</span>
+                                <i show.bind="!item.isEditing" click.delegate="statusToggleHandler(item)"
+                                    class="${item.status == 'Doing' ? 'red checkmark box' : 'square outline'} large link icon"></i>
+                                <i show.bind="!item.isEditing"
+                                    class="angle ${item.isOpen ? 'down' : 'right'} ${item.content ? 'black' : ''} link icon"
+                                    click.delegate="editContentHandler(item, editTextAreaRef)"></i>
+                                <div show.bind="!item.isEditing" dblclick.delegate="editHandler(item, editInputRef)"
+                                    class="content ${item.status == 'Doing' ? 'red' : ''}" title="${item.title}">
+                                    ${item.title}
+                                </div>
+                                <div show.bind="item.isEditing" class="ui transparent icon fluid input">
+                                    <input ref="editInputRef" type="text" value.bind="item.title"
+                                        keyup.delegate="updateHandler(item) & key" blur.trigger="updateHandler(item)">
+                                    <i class="plus link icon" click.delegate="updateHandler(item)"></i>
+                                </div>
+                                <div class="ui form" show.bind="item.isOpen">
+                                    <div class="field">
+                                        <textarea ref="editTextAreaRef" value.bind="item.content" autosize rows="2"
+                                            keyup.delegate="updateDescHandler(item) & key:'enter':'ctrl'"
+                                            blur.trigger="updateDescHandler(item)" placeholder="待办事项备注..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
             <h5 class="ui horizontal divider green header">
-              <!-- <i class="check circle icon"></i> -->
-              已完成（${dones | count:todoFilter:'title'}）
+                <!-- <i class="check circle icon"></i> -->
+                已完成（${dones | count:todoFilter:'title'}）
             </h5>
-            <div class="ui middle aligned divided selection relaxed list" style="overflow: hidden;">
+            <div class="ui middle aligned divided selection relaxed list">
                 <div repeat.for="item of dones | filter:todoFilter:'title' | sort:'updateDate':true"
                     class="item tms-task-item">
                     <div show.bind="!item.isEditing" class="actions">
-                        <i click.delegate="statusNewHandler(item)" class="large square outline link icon" title="标记未完成"></i>
-                        <i class="tms-copy tms-clipboard copy link icon large" data-clipboard-text="${item.title}" title="复制到剪贴板"></i>
+                        <i click.delegate="statusNewHandler(item)" class="large square outline link icon"
+                            title="标记未完成"></i>
+                        <i class="tms-copy tms-clipboard copy link icon large" data-clipboard-text="${item.title}"
+                            title="复制到剪贴板"></i>
                         <div ui-dropdown-action class="ui icon right center pointing dropdown" title="删除完成事项">
                             <i class="red large trash outline icon" style="margin-right: 0;"></i>
                             <div class="menu">
-                                <div style="color: red;" class="item" click.delegate="delHandler(item, 'done')"><i class="trash outline icon"></i>确认删除</div>
+                                <div style="color: red;" class="item" click.delegate="delHandler(item, 'done')"><i
+                                        class="trash outline icon"></i>确认删除</div>
                             </div>
                         </div>
                     </div>
-                    <span data-timeago="${item.updateDate}" class="timeago" title="更新于${item.updateDate | date}">${item.updateDate | timeago}</span>
+                    <span data-timeago="${item.updateDate}" class="timeago"
+                        title="更新于${item.updateDate | date}">${item.updateDate | timeago}</span>
                     <i show.bind="!item.isEditing" class="large check circle icon"></i>
-                    <i show.bind="!item.isEditing" class="angle ${item.isOpen ? 'down' : 'right'} ${item.content ? 'black' : ''} link icon" click.delegate="editContentHandler(item, editTextAreaRef)"></i>
-                    <div show.bind="!item.isEditing" dblclick.delegate="editHandler(item, editInputRef)" class="content" title="${item.title}">
+                    <i show.bind="!item.isEditing"
+                        class="angle ${item.isOpen ? 'down' : 'right'} ${item.content ? 'black' : ''} link icon"
+                        click.delegate="editContentHandler(item, editTextAreaRef)"></i>
+                    <div show.bind="!item.isEditing" dblclick.delegate="editHandler(item, editInputRef)" class="content"
+                        title="${item.title}">
                         ${item.title}
                     </div>
                     <div show.bind="item.isEditing" class="ui transparent icon fluid input">
-                        <input ref="editInputRef" type="text" value.bind="item.title" keyup.delegate="updateHandler(item) & key" blur.trigger="updateHandler(item)">
+                        <input ref="editInputRef" type="text" value.bind="item.title"
+                            keyup.delegate="updateHandler(item) & key" blur.trigger="updateHandler(item)">
                         <i class="plus link icon" click.delegate="updateHandler(item)"></i>
                     </div>
                     <div class="ui form" show.bind="item.isOpen">
                         <div class="field">
-                            <textarea ref="editTextAreaRef" value.bind="item.content" autosize rows="2" keyup.delegate="updateDescHandler(item) & key:'enter':'ctrl'" blur.trigger="updateDescHandler(item)" placeholder="待办事项备注..."></textarea>
+                            <textarea ref="editTextAreaRef" value.bind="item.content" autosize rows="2"
+                                keyup.delegate="updateDescHandler(item) & key:'enter':'ctrl'"
+                                blur.trigger="updateDescHandler(item)" placeholder="待办事项备注..."></textarea>
                         </div>
                     </div>
                 </div>
-                <div if.bind="!last" click.delegate="loadMoreHandler()" class="ui basic button tms-load-more ${searchMoreP && searchMoreP.readyState != 4 ? 'tms-disabled2' : ''}"><i show.bind="searchMoreP && searchMoreP.readyState != 4" class="spinner loading icon"></i> 加载更多(${moreCnt})</div>
+                <div if.bind="!last" click.delegate="loadMoreHandler()"
+                    class="ui basic button tms-load-more ${searchMoreP && searchMoreP.readyState != 4 ? 'tms-disabled2' : ''}">
+                    <i show.bind="searchMoreP && searchMoreP.readyState != 4" class="spinner loading icon"></i>
+                    加载更多(${moreCnt})</div>
             </div>
         </div>
     </div>
