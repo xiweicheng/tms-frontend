@@ -17,8 +17,8 @@
               <!-- <i class="filter link icon"></i> -->
               进行中（${todos | count:todoFilter:'title'}）
             </h5>
-            <div class="ui middle aligned divided selection relaxed list">
-                <div repeat.for="item of todos | filter:todoFilter:'title' | sortTodo" class="item">
+            <div class="ui middle aligned divided selection relaxed list" style="overflow: hidden;">
+                <div repeat.for="item of todos | filter:todoFilter:'title' | sortTodo" class="item tms-task-item">
                     <div class="actions" show.bind="!item.isEditing">
                         <i click.delegate="statusDoneHandler(item)" class="large check circle link icon" title="标记已经完成"></i>
                         <i class="tms-copy tms-clipboard copy link icon large" data-clipboard-text="${item.title}" title="复制到剪贴板"></i>
@@ -55,8 +55,9 @@
               <!-- <i class="check circle icon"></i> -->
               已完成（${dones | count:todoFilter:'title'}）
             </h5>
-            <div class="ui middle aligned divided selection relaxed list">
-                <div repeat.for="item of dones | filter:todoFilter:'title' | sort:'updateDate':true" class="item">
+            <div class="ui middle aligned divided selection relaxed list" style="overflow: hidden;">
+                <div repeat.for="item of dones | filter:todoFilter:'title' | sort:'updateDate':true"
+                    class="item tms-task-item">
                     <div show.bind="!item.isEditing" class="actions">
                         <i click.delegate="statusNewHandler(item)" class="large square outline link icon" title="标记未完成"></i>
                         <i class="tms-copy tms-clipboard copy link icon large" data-clipboard-text="${item.title}" title="复制到剪贴板"></i>

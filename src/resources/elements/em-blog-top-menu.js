@@ -154,6 +154,22 @@ export class EmBlogTopMenu {
             }
         });
 
+        $(this.tasksRef).popup({
+            // on: 'click',
+            // closable: false,
+            // setFluidWidth: false,
+            inline: true,
+            hoverable: true,
+            distanceAway: -10,
+            position: 'bottom left',
+            delay: {
+                show: 200,
+                hide: 300
+            }
+        }).on('mouseenter', () => {
+            this.todoVm.init();
+        });
+
         this._getNews();
     }
 
@@ -266,4 +282,9 @@ export class EmBlogTopMenu {
     selectTplHandler() {
         this.blogTplSelectMd.show();
     }
+
+    tasksRefreshHandler() {
+        this.todoVm.refresh();
+    }
+
 }
