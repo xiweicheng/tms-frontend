@@ -92,7 +92,8 @@ export class EmChatTodo {
                 this.todos = [data.data, ...this.todos];
 
                 if (topTodo) {
-                    this.topHandler(data.data);
+                    // this.topHandler(data.data);
+                    this.priorityUpdateHandler(data.data, 'ZyJj', () => this.topHandler(data.data));
                 }
             } else {
                 toastr.error(data.data, '创建待办事项失败！');
@@ -121,7 +122,7 @@ export class EmChatTodo {
         });
     }
 
-    priorityUpdateHandler(item, priority) {
+    priorityUpdateHandler(item, priority, callback) {
         // Default, ZyJj, ZyBjj, BzyJi, BzyBjj;
         $.post('/admin/todo/update', {
             id: item.id,
@@ -130,6 +131,7 @@ export class EmChatTodo {
             if (data.success) {
                 item.priority = data.data.priority;
                 item.updateDate = data.data.updateDate;
+                callback && callback();
             } else {
                 toastr.error(data.data, '更新待办事项失败！');
             }
