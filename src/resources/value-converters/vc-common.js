@@ -110,11 +110,11 @@ export class SortBlogValueConverter {
 }
 
 export class SortTodoValueConverter {
-    toView(value) {
+    toView(value, prop = "createDate") {
         if (_.isArray(value)) {
-            let sorts = _.reverse(_.sortBy(_.filter(value, { sortIndex: 1 }), 'updateDate'));
-            let unSorts = _.reverse(_.sortBy(_.reject(value, { sortIndex: 1 }), 'id'));
-            return [...sorts, ...unSorts];
+            return _.sortBy(value, ['sortIndex', function (o) {
+                return -o[prop];
+            }]);
         }
         return value;
     }

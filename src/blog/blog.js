@@ -3,6 +3,9 @@ import {
     inject
 } from 'aurelia-framework';
 import chatService from 'chat/chat-service';
+import {
+    default as Clipboard
+} from 'clipboard';
 
 export class Blog {
 
@@ -31,7 +34,7 @@ export class Blog {
             }
 
             if (this.rightSidebarShow == rightSidebarShowOld) return;
-            
+
             this.rightSidebarShow ? $('.em-blog-content').width($('.em-blog-content').width() - nsCons.WIDTH_RIGHT_BAR) : $('.em-blog-content').width($('.em-blog-content').width() + nsCons.WIDTH_RIGHT_BAR);
         });
         this.subscribe2 = ea.subscribe(nsCons.EVENT_BLOG_TOGGLE_SIDEBAR, (payload) => {
@@ -61,6 +64,13 @@ export class Blog {
                 $(`a[href="#modaal-blog-${payload.item.name}"]`).modaal('close');
             }
         });
+
+        this.tmsClipboard = new Clipboard('.tms-clipboard')
+            .on('success', function (e) {
+                toastr.success('复制到剪贴板成功!');
+            }).on('error', function (e) {
+                toastr.error('复制到剪贴板失败!');
+            });
     }
 
     /**
@@ -72,6 +82,8 @@ export class Blog {
         this.subscribe2.dispose();
         this.subscribe3.dispose();
         this.subscribe4.dispose();
+
+        this.tmsClipboard.destroy();
 
         clearInterval(this.timeagoTimer);
     }

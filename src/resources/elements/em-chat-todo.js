@@ -71,6 +71,70 @@ export class EmChatTodo {
         $(this.tasksAccRef).accordion({
             exclusive: false
         });
+        this._initSortObjs();
+    }
+
+    _initSortObjs() {
+        // tasks sort
+        $('.tms-sortable-elem-tasks').each((i, e) => {
+
+            let sortObj = Sortable.create(e, {
+                group: {
+                    name: 'task'
+                },
+                onEnd: (evt) => {
+
+                    if (evt.from === evt.to) {
+
+                        if (evt.newIndex === evt.oldIndex) return;
+
+                        this._sortTasks($(evt.from).children('.tms-task-item'));
+
+                    } else {
+
+                        let todoId = $(evt.item).attr('data-id');
+                        let priorityT = $(evt.to).attr('data-priority');
+
+                        this.priorityUpdateHandler(_.find(this.todos, {
+                            id: +todoId
+                        }), priorityT, () => this._sortTasks($(evt.to).children('.tms-task-item')));
+
+                    }
+                },
+            });
+
+        });
+    }
+
+    _sortTasks($all, callback) {
+        var items = [];
+        $all.each((i, e) => {
+            let tid = $(e).attr('data-id');
+            items.push({
+                id: tid,
+                sort: i
+            });
+
+            $(e).attr('data-sort', i);
+
+            // update todo sort value
+            let todo = _.find(this.todos, {
+                id: +tid
+            });
+            todo && (todo.sortIndex = i);
+
+        })
+
+        $.post("/admin/todo/sort", {
+            items: JSON.stringify(items)
+        }, (data) => {
+            if (!data.success) {
+                toastr.error(data.data);
+            } else {
+                this.todos = [...this.todos];
+                callback && callback();
+            }
+        });
     }
 
     addTodoHandler(ctrlKey) {
@@ -85,15 +149,15 @@ export class EmChatTodo {
         let topTodo = ctrlKey || (event && (event.ctrlKey || event.metaKey));
 
         this.ajax = $.post('/admin/todo/create', {
-            title: this.title
+            title: this.title,
+            sortIndex: 0
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 this.title = '';
                 this.todos = [data.data, ...this.todos];
 
                 if (topTodo) {
-                    // this.topHandler(data.data);
-                    this.priorityUpdateHandler(data.data, 'ZyJj', () => this.topHandler(data.data));
+                    this.priorityUpdateHandler(data.data, 'ZyJj');
                 }
             } else {
                 toastr.error(data.data, '创建待办事项失败！');
@@ -243,24 +307,6 @@ export class EmChatTodo {
             } else {
                 item.content = item.oldContent;
                 toastr.error(data.data, '更新待办事项失败！');
-            }
-        });
-    }
-
-    topHandler(item) {
-        $.post('/admin/todo/update', {
-            id: item.id,
-            sortIndex: item.sortIndex ? 0 : 1,
-            status: !item.sortIndex ? 'Doing' : 'New'
-        }, (data, textStatus, xhr) => {
-            if (data.success) {
-                item.updateDate = data.data.updateDate;
-                item.sortIndex = data.data.sortIndex;
-                item.status = data.data.status;
-                toastr.success(`${item.sortIndex ? '' : '取消'}置顶待办事项成功！`);
-                this.todos = [...this.todos];
-            } else {
-                toastr.error(data.data, `${!item.sortIndex ? '' : '取消'}置顶待办事项失败！`);
             }
         });
     }

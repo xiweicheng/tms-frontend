@@ -5,7 +5,7 @@
             <div class="ui big fluid icon input">
                 <input ref="todoInputRef" value.bind="title" type="text" keyup.delegate="addTodoKeyupHandler($event)"
                     placeholder="输入个人待办事项...">
-                <i title="enter提交(ctrl同时按下置顶)"
+                <i title="enter提交(ctrl同时按下置顶今天)"
                     class="${(ajax && ajax.readyState != 4) ? 'spinner loading' : 'plus'} link icon"
                     click.delegate="addTodoHandler()"></i>
             </div>
@@ -28,9 +28,11 @@
                 </div>
                 <div class="active content">
 
-                    <div class="ui middle aligned divided selection relaxed list">
+                    <div data-priority="ZyJj"
+                        class="ui middle aligned divided selection relaxed list tms-sortable-elem-tasks">
                         <template repeat.for="item of todos | filter:todoFilter:'title' | sortTodo">
-                            <div class="item tms-task-item" if.bind="item.priority == 'ZyJj'">
+                            <div data-id="${item.id}" data-sort="${item.sortIndex}" class="item tms-task-item"
+                                if.bind="item.priority == 'ZyJj'">
                                 <div class="actions" show.bind="!item.isEditing">
                                     <i click.delegate="priorityUpdateHandler(item, 'ZyBjj')"
                                         class="large angle down circle link icon" title="明天"></i>
@@ -40,13 +42,6 @@
                                         title="标记已经完成"></i>
                                     <i class="tms-copy tms-clipboard copy link icon large"
                                         data-clipboard-text="${item.title}" title="复制到剪贴板"></i>
-                                    <i show.bind="!item.sortIndex" click.delegate="topHandler(item)"
-                                        class="arrow up link icon large" title="置顶待办事项"></i>
-                                    <i show.bind="item.sortIndex" click.delegate="topHandler(item)"
-                                        class="icons link large" title="取消置顶待办事项">
-                                        <i class="arrow icon puzzle up"></i>
-                                        <i class="corner red icon remove"></i>
-                                    </i>
                                     <div ui-dropdown-action class="ui icon right center pointing dropdown"
                                         title="删除待办事项">
                                         <i class="red large trash outline icon" style="margin-right: 0;"></i>
@@ -89,9 +84,11 @@
                     明天
                 </div>
                 <div class="content">
-                    <div class="ui middle aligned divided selection relaxed list">
+                    <div data-priority="ZyBjj"
+                        class="ui middle aligned divided selection relaxed list tms-sortable-elem-tasks">
                         <template repeat.for="item of todos | filter:todoFilter:'title' | sortTodo">
-                            <div class="item tms-task-item" if.bind="item.priority == 'ZyBjj'">
+                            <div data-id="${item.id}" data-sort="${item.sortIndex}" class="item tms-task-item"
+                                if.bind="item.priority == 'ZyBjj'">
                                 <div class="actions" show.bind="!item.isEditing">
                                     <i click.delegate="priorityUpdateHandler(item, 'ZyJj')"
                                         class="large angle up circle link icon" title="今天"></i>
@@ -101,13 +98,6 @@
                                         title="标记已经完成"></i>
                                     <i class="tms-copy tms-clipboard copy link icon large"
                                         data-clipboard-text="${item.title}" title="复制到剪贴板"></i>
-                                    <i show.bind="!item.sortIndex" click.delegate="topHandler(item)"
-                                        class="arrow up link icon large" title="置顶待办事项"></i>
-                                    <i show.bind="item.sortIndex" click.delegate="topHandler(item)"
-                                        class="icons link large" title="取消置顶待办事项">
-                                        <i class="arrow icon puzzle up"></i>
-                                        <i class="corner red icon remove"></i>
-                                    </i>
                                     <div ui-dropdown-action class="ui icon right center pointing dropdown"
                                         title="删除待办事项">
                                         <i class="red large trash outline icon" style="margin-right: 0;"></i>
@@ -150,9 +140,11 @@
                     待定
                 </div>
                 <div class="content">
-                    <div class="ui middle aligned divided selection relaxed list">
+                    <div data-priority="Default"
+                        class="ui middle aligned divided selection relaxed list tms-sortable-elem-tasks">
                         <template repeat.for="item of todos | filter:todoFilter:'title' | sortTodo">
-                            <div class="item tms-task-item" if.bind="item.priority == 'Default'">
+                            <div data-id="${item.id}" data-sort="${item.sortIndex}" class="item tms-task-item"
+                                if.bind="item.priority == 'Default'">
                                 <div class="actions" show.bind="!item.isEditing">
                                     <i click.delegate="priorityUpdateHandler(item, 'ZyJj')"
                                         class="large double angle up circle link icon" title="今天"></i>
@@ -162,13 +154,6 @@
                                         title="标记已经完成"></i>
                                     <i class="tms-copy tms-clipboard copy link icon large"
                                         data-clipboard-text="${item.title}" title="复制到剪贴板"></i>
-                                    <i show.bind="!item.sortIndex" click.delegate="topHandler(item)"
-                                        class="arrow up link icon large" title="置顶待办事项"></i>
-                                    <i show.bind="item.sortIndex" click.delegate="topHandler(item)"
-                                        class="icons link large" title="取消置顶待办事项">
-                                        <i class="arrow icon puzzle up"></i>
-                                        <i class="corner red icon remove"></i>
-                                    </i>
                                     <div ui-dropdown-action class="ui icon right center pointing dropdown"
                                         title="删除待办事项">
                                         <i class="red large trash outline icon" style="margin-right: 0;"></i>
