@@ -65,7 +65,8 @@
                                 </div>
                                 <div show.bind="item.isEditing" class="ui transparent icon fluid input">
                                     <input ref="editInputRef" type="text" value.bind="item.title"
-                                        keyup.delegate="updateHandler(item) & key" blur.trigger="updateHandler(item)">
+                                        keyup.delegate="updateEnterHandler(item, $event) & key"
+                                        blur.trigger="updateHandler(item)">
                                     <i class="plus link icon" click.delegate="updateHandler(item)"></i>
                                 </div>
                                 <div class="ui form" show.bind="item.isOpen">

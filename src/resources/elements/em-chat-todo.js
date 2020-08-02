@@ -271,6 +271,11 @@ export class EmChatTodo {
         }
     }
 
+    updateEnterHandler(item, event) {
+        $(event.target).blur();
+        item.isEditing = false;
+    }
+
     updateHandler(item) {
         item.isEditing = false;
         if (!_.trim(item.title) || item.title == item.oldTitle) {
