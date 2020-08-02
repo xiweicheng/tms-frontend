@@ -12,6 +12,7 @@
     .ui.list {
         .item.tms-task-item {
             color: rgba(0, 0, 0, .4);
+            padding: 0.5em !important;
             .content {
                 text-overflow: ellipsis;
                 overflow: hidden;
@@ -73,10 +74,9 @@
                 }
             }
             .ui.transparent.input {
+                margin: 0;
                 input {
                     color:rgba(0, 0, 0, .87)!important;
-                    padding-top: .57142857em !important;
-                    padding-bottom: .57142857em !important;
                 }
             }
         }
@@ -84,5 +84,10 @@
     .ui.button.tms-load-more {
         display: block;
         margin: 0;
+    }
+    .ui.accordion {
+        > .content {
+            padding-bottom: .5em !important;
+        }
     }
 }
