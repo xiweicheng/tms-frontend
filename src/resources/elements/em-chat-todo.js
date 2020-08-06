@@ -12,6 +12,9 @@ export class EmChatTodo {
     todos = [];
     dones = [];
     todoFilter = '';
+    hidden = true;
+    
+    @bindable lock = false;
 
     last = true;
 
@@ -347,6 +350,10 @@ export class EmChatTodo {
                 toastr.error(data.data, '获取待办事项列表失败！');
             }
         });
+    }
+
+    ppLockHandler() {
+        this.hidden = !this.hidden;
     }
 
 }

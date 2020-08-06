@@ -1,7 +1,10 @@
 .em-chat-todo {
+    position: relative;
+
     .filter-wrapper {
         position: relative;
         top: 10px;
+
         .ui.input>i.remove.icon {
             display: none;
             position: absolute;
@@ -9,28 +12,34 @@
             left: auto;
         }
     }
+
     .ui.list {
         .item.tms-task-item {
             color: rgba(0, 0, 0, .4);
             padding: 0.5em !important;
+
             .content {
                 text-overflow: ellipsis;
                 overflow: hidden;
                 max-width: 300px;
                 min-width: 300px;
                 white-space: nowrap;
+
                 &.red {
                     color: red;
                 }
             }
+
             .actions {
                 display: none;
                 position: absolute;
                 right: 10px;
+
                 >i.icon {
                     margin-right: 0;
                 }
             }
+
             >.timeago {
                 font-style: italic;
                 position: absolute;
@@ -39,15 +48,19 @@
                 margin-top: 3px;
                 color: #eeeeee;
             }
+
             &:hover {
                 .actions {
                     display: inline-block;
                 }
+
                 .timeago {
                     display: none;
                 }
             }
+
             >.ui.form {
+
                 // transition: all 0.15s ease-out 0s;
                 textarea {
                     box-sizing: border-box;
@@ -55,39 +68,57 @@
                     margin-top: 6px;
                 }
             }
+
             i.icon {
                 &.square {
                     padding-right: 6px;
                 }
+
                 &.checkmark {
                     padding-right: 3px;
                 }
             }
+
             i.angle.icon {
                 // padding-left: .28571429em;
                 padding-left: 4px;
                 padding-right: 4px;
                 padding-top: 3px;
+
                 &.down {
                     padding-left: 2px;
                     padding-right: 2px;
                 }
             }
+
             .ui.transparent.input {
                 margin: 0;
+
                 input {
-                    color:rgba(0, 0, 0, .87)!important;
+                    color: rgba(0, 0, 0, .87) !important;
                 }
             }
         }
     }
+
     .ui.button.tms-load-more {
         display: block;
         margin: 0;
     }
+
     .ui.accordion {
-        > .content {
+        >.content {
             padding-bottom: .5em !important;
+        }
+    }
+
+    .tms-hidden-lock {
+        position: absolute;
+        top: -2px;
+        left: -2px;
+
+        >.icon {
+            margin: 0;
         }
     }
 }

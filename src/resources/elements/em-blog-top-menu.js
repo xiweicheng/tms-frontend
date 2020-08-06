@@ -165,6 +165,9 @@ export class EmBlogTopMenu {
             delay: {
                 show: 200,
                 hide: 300
+            },
+            onHide: ($m, $p) => {
+                return this.todoVm.hidden;
             }
         }).on('mouseenter', () => {
             this.todoVm.init();

@@ -73,7 +73,7 @@
                     class="list large link icon"></i></a>
             <div class="ui fluid popup bottom left transition hidden"
                 style="top: 554px; left: 1px; bottom: auto; right: auto; width: 761px;">
-                <em-chat-todo view-model.ref="todoVm"></em-chat-todo>
+                <em-chat-todo lock.bind="!0" view-model.ref="todoVm"></em-chat-todo>
             </div>
             <a ref="newsRef" class="item icon" click.delegate="newsRefreshHandler()">
                 <i class="announcement large link icon"></i>

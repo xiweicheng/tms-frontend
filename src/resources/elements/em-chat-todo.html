@@ -242,5 +242,9 @@
                     加载更多(${moreCnt})</div>
             </div>
         </div>
+        <span if.bind="lock" class="tms-hidden-lock" title="${hidden ? '锁定不自动隐藏' : '解锁自动隐藏'}"
+            click.delegate="ppLockHandler()">
+            <i class="${hidden ? 'unlock alternate' : 'lock'} link icon"></i>
+        </span>
     </div>
 </template>
