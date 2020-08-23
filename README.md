@@ -47,3 +47,5 @@ au run build --env prod
 - https://github.com/froala/wysiwyg-editor  
 - https://blog.csdn.net/kittyjie/article/details/80674367  
 - https://github.com/kpdecker/jsdiff  
+- https://github.com/myliang/x-spreadsheet  
+- https://github.com/ssshooter/mind-elixir-core  
