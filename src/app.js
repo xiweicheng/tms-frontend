@@ -29,7 +29,7 @@ export class App {
 
                 $table.wrap(`<div class="export-table-wrapper"></div>`);
 
-                $table.after($(`<i class="export-btn download link icon" title="下载为CSV表格文件"></i>`));
+                $table.after($(`<i class="export-btn download link icon" title="下载表格文件"></i>`));
             }
 
             $table.parent().children('.export-btn').show();
@@ -52,7 +52,13 @@ export class App {
         $('body').on('click', '.markdown-body .export-table-wrapper .export-btn', event => {
             event.preventDefault();
             let $item = $(event.currentTarget);
-            tableExport($item.parents('.export-table-wrapper').children('table').attr('id'), `tms-export-table_${$.format.date(new Date(), "yyyy-MM-dd_hhmmss") }`, 'csv');
+
+            let sheet = XLSX.utils.table_to_sheet($item.parents('.export-table-wrapper').children('table')[0]);
+            var out = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(out, sheet, `data`);
+            XLSX.writeFile(out, `tms-export-table_${$.format.date(new Date(), "yyyy-MM-dd_hhmmss")}.xlsx`);
+
+            // tableExport($item.parents('.export-table-wrapper').children('table').attr('id'), `tms-export-table_${$.format.date(new Date(), "yyyy-MM-dd_hhmmss") }`, 'csv');
         });
 
         $('body').on('click', '.markdown-body li.task-item input:checkbox', event => {
@@ -163,7 +169,7 @@ export class App {
             pm: '下午'
         };
 
-        $.fn.calendar.settings.formatter.date = function(date, settings) {
+        $.fn.calendar.settings.formatter.date = function (date, settings) {
             if (!date) return '';
             var day = date.getDate();
             var month = date.getMonth() + 1;
