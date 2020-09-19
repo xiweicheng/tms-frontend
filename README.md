@@ -49,3 +49,8 @@ au run build --env prod
 - https://github.com/kpdecker/jsdiff  
 - https://github.com/myliang/x-spreadsheet  
 - https://github.com/ssshooter/mind-elixir-core  
+
+## 优秀产品
+
+- 石墨文档：https://shimo.im/welcome
+- 语雀文档：https://www.yuque.com/dashboard

@@ -1249,7 +1249,42 @@ export class EmBlogContent {
 
     excelDownloadHandler() {
 
-        utils.downloadExcel(JSON.parse(this.blog.content), this.blog.title);
+        if (this.blog.editor == 'Excel') {
+            utils.downloadExcel(JSON.parse(this.blog.content), this.blog.title);
+        } else if (this.blog.editor == 'Mind') {
+            let mdata = JSON.parse(this.blog.content);
+
+            let table = [];
+            this.mind2table(mdata.nodeData, table, 0);
+
+            if (table.length == 0) return;
+
+            let sheet = XLSX.utils.aoa_to_sheet(table);
+            var out = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(out, sheet, mdata.nodeData.topic);
+            XLSX.writeFile(out, `${this.blog.title}.xlsx`);
+        }
+
+
+    }
+
+    mind2table(node, table, col) {
+
+        if (node && node.topic) {
+            let row = [];
+            for (let index = 0; index < col; index++) {
+                row.push('');
+            }
+            row.push(node.topic);
+            table.push(row);
+
+            if (node.children) {
+                col++;
+                _.each(node.children, c => {
+                    this.mind2table(c, table, col);
+                });
+            }
+        }
     }
 
     mouseenterEditLockHandler() {
