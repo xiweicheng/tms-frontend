@@ -1261,7 +1261,7 @@ export class EmBlogContent {
 
             let sheet = XLSX.utils.aoa_to_sheet(table);
             var out = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(out, sheet, mdata.nodeData.topic);
+            XLSX.utils.book_append_sheet(out, sheet, `data`);
             XLSX.writeFile(out, `${this.blog.title}.xlsx`);
         }
 
