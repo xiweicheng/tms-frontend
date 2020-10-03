@@ -1304,4 +1304,16 @@ export class EmBlogContent {
         });
 
     }
+
+    pngDownloadHandler() {
+        let ifrm = $('.em-blog-mind > iframe')[0];
+        if (ifrm) {
+            (ifrm.contentWindow.postMessage) && (ifrm.contentWindow
+                .postMessage({
+                    action: 'mindExport',
+                    source: 'blogMind',
+                    item: this.blog
+                }, window.location.origin));
+        }
+    }
 }

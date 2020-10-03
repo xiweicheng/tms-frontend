@@ -116,9 +116,12 @@
                                 <i class="html5 icon"></i> 导出为HTML
                             </a>
                             <div show.bind="blog.editor == 'Excel' || blog.editor == 'Mind'"
-                                click.delegate="excelDownloadHandler()"
-                                class="item">
+                                click.delegate="excelDownloadHandler()" class="item">
                                 <i class="file excel outline icon"></i> 导出为Excel
+                            </div>
+                            <div show.bind="blog.editor == 'Mind'" click.delegate="pngDownloadHandler()" class="item">
+                                <i style="width: 1.18em; vertical-align:inherit;" class="file image outline icon"></i>
+                                导出为PNG
                             </div>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username" class="divider"></div>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username"
