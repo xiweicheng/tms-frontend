@@ -2,48 +2,72 @@
     <require from="./em-blog-comment.css"></require>
     <div class="em-blog-comment">
         <div class="ui minimal comments" ref="blogCommentsRef">
-            <h3 title="快速评论 (r)" class="ui dividing header"><i class="blue comments outline icon"></i> ${comments.length > 0 ? comments.length + ' ' : ''}评论</h3>
+            <h3 title="快速评论 (r)" class="ui dividing header"><i class="blue comments outline icon"></i> ${comments.length
+                > 0 ? comments.length + ' ' : ''}评论</h3>
             <div repeat.for="item of comments" class="comment tms-blog-comment" data-id="${item.id}">
                 <em-user-avatar user.bind="item.creator"></em-user-avatar>
                 <div class="content">
                     <a class="author" data-value=${item.creator.username}>${item.creator.name}</a>
                     <div class="metadata">
-                        <span if.bind="item.createDate == item.updateDate" title="创建于${item.createDate | date}"><span class="date" data-timeago="${item.createDate}">${item.createDate | timeago}</span></span>
-                        <span if.bind="item.createDate != item.updateDate" title="创建于${item.createDate | date}，更新于${item.updateDate | date}"><span class="date" data-timeago="${item.updateDate}">${item.updateDate | timeago}</span><span>(更新)</span></span>
+                        <span if.bind="item.createDate == item.updateDate" title="创建于${item.createDate | date}"><span
+                                class="date" data-timeago="${item.createDate}">${item.createDate |
+                                timeago}</span></span>
+                        <span if.bind="item.createDate != item.updateDate"
+                            title="创建于${item.createDate | date}，更新于${item.updateDate | date}"><span class="date"
+                                data-timeago="${item.updateDate}">${item.updateDate |
+                                timeago}</span><span>(更新)</span></span>
                         <div class="rating">
-                            <i click.delegate="rateHandler(item)" style="cursor: pointer;" title="赞一下" class="cbutton cbutton--effect-novak thumbs ${item.voteZan && item.voteZan.split(',').includes(loginUser.username) ? '' : 'outline'} up icon"></i> <span title="${item.voteZan}">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>
+                            <i click.delegate="rateHandler(item)" style="cursor: pointer;" title="赞一下"
+                                class="cbutton cbutton--effect-novak thumbs ${item.voteZan && item.voteZan.split(',').includes(loginUser.username) ? '' : 'outline'} up icon"></i>
+                            <span title="${item.voteZan}">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>
                         </div>
                     </div>
-                    <div data-id="${item.id}" data-case="comment" fancybox show.bind="!item.isEditing" ref="mkbodyRef" class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:blog.space.channel | emoji:mkbodyRef"></div>
+                    <div data-id="${item.id}" data-case="comment" fancybox show.bind="!item.isEditing" ref="mkbodyRef"
+                        class="text markdown-body fr-view"
+                        innerhtml.bind="item.content | parseMd:blog.space.channel | emoji:mkbodyRef"></div>
                     <div class="textcomplete-container" show.bind="item.isEditing">
                         <div class="append-to"></div>
                     </div>
-                    <textarea ref="editTxtRef" data-id="${item.id}" textcomplete.bind="{users: users, channel: blog.space.channel}" pastable autosize dropzone keydown.trigger="eidtKeydownHandler($event, item, editTxtRef)" show.bind="item.isEditing" value.bind="item.content & oneWay" class="tms-blog-comment-edit-textarea" rows="1"></textarea>
+                    <textarea ref="editTxtRef" data-id="${item.id}"
+                        textcomplete.bind="{users: users, channel: blog.space.channel}" pastable autosize dropzone
+                        keydown.trigger="eidtKeydownHandler($event, item, editTxtRef)" show.bind="item.isEditing"
+                        value.bind="item.content & oneWay" class="tms-blog-comment-edit-textarea" rows="1"></textarea>
                     <div show.bind="item.isEditing" class="ui compact icon buttons tms-blog-comment-edit-actions">
-                        <button click.delegate="editOkHandler($event, item, editTxtRef)" title="保存 (ctrl+enter)" class="ui left attached compact icon button">
+                        <button click.delegate="editOkHandler($event, item, editTxtRef)" title="保存 (ctrl+enter)"
+                            class="ui left attached compact icon button">
                             <i class="checkmark icon"></i>
                         </button>
-                        <button click.delegate="editCancelHandler($event, item, editTxtRef)" title="取消 (esc)" class="ui attached compact icon button">
+                        <button click.delegate="editCancelHandler($event, item, editTxtRef)" title="取消 (esc)"
+                            class="ui attached compact icon button">
                             <i class="remove icon"></i>
                         </button>
-                        <button dropzone="type:Blog; clickable.bind: !0; target.bind: editTxtRef" title="上传 (ctrl+u)" class="ui right attached compact icon button">
+                        <button dropzone="type:Blog; clickable.bind: !0; target.bind: editTxtRef" title="上传 (ctrl+u)"
+                            class="ui right attached compact icon button">
                             <i class="upload icon"></i>
                         </button>
                     </div>
                     <div class="actions">
-                        <a if.bind="item.creator.username != loginUser.username" click.delegate="replyHandler(item)" class="reply" title="回复消息"><i class="large reply icon link"></i></a>
-                        <a if.bind="isSuper || item.creator.username == loginUser.username" click.delegate="editHandler(item, editTxtRef)" title="评论编辑(ctrl+shift+dblclick)" class="reply"><i class="large link edit icon"></i></a>
-                        <a class="item tms-clipboard" data-clipboard-text="${item.content}" title="复制评论内容"><i class="large link icon copy"></i></a>
-                        <em-blog-comment-share blog.bind="blog" comment.bind="item" login-user.bind="loginUser"></em-blog-comment-share>
-                        <div if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown" title="移除评论">
+                        <a if.bind="item.creator.username != loginUser.username" click.delegate="replyHandler(item)"
+                            class="reply" title="回复消息"><i class="large reply icon link"></i></a>
+                        <a if.bind="isSuper || item.creator.username == loginUser.username"
+                            click.delegate="editHandler(item, editTxtRef)" title="评论编辑(ctrl+shift+dblclick)"
+                            class="reply"><i class="large link edit icon"></i></a>
+                        <a class="item tms-clipboard" data-clipboard-text="${item.content}" title="复制评论内容"><i
+                                class="large link icon copy"></i></a>
+                        <em-blog-comment-share blog.bind="blog" comment.bind="item" login-user.bind="loginUser">
+                        </em-blog-comment-share>
+                        <div if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown-action
+                            style="margin-right: .75em;" class="ui icon top right pointing dropdown" title="移除评论">
                             <i class="red large trash outline icon"></i>
                             <div class="menu">
-                                <div style="color: red;" class="item" click.delegate="removeHandler(item)"><i class="trash outline icon"></i>确认移除</div>
+                                <div style="color: red;" class="item" click.delegate="removeHandler(item)"><i
+                                        class="trash outline icon"></i>确认移除</div>
                             </div>
                         </div>
                     </div>
                     <div class="tools">
-                        <button show.bind="!item.isEditing" click.delegate="refreshHandler(item)" title="刷新同步" class="mini circular ui icon button">
+                        <button show.bind="!item.isEditing" click.delegate="refreshHandler(item)" title="刷新同步"
+                            class="mini circular ui icon button">
                             <i class="refresh icon"></i>
                         </button>
                     </div>
@@ -59,10 +83,32 @@
                 <div ref="markdownRef" class="field markdown-body fr-view">
                     <textarea ref="commentRef"></textarea>
                 </div>
-                <div click.delegate="addHandler()" title="提交评论(ctrl+enter)" class="ui blue labeled submit icon button">
-                    <i class="icon edit"></i> 添加评论
+                <div class="ui blue buttons">
+                    <div click.delegate="addHandler()" title="提交评论(ctrl+enter)"
+                        class="ui blue labeled submit icon button">
+                        <i class="icon check"></i> 添加评论
+                    </div>
+                    <!-- <div click.delegate="addHandler()" title="提交评论(ctrl+enter)" class="ui blue submit button">
+                        添加评论
+                    </div> -->
+                    <div ui-dropdown class="ui floating dropdown icon button">
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <div class="header"><i class="info circle icon"></i> 切换编辑器</div>
+                            <div class="item" click.delegate="commentEditHandler('html')"><i class="html5 icon"></i>
+                                HTML</div>
+                            <div class="item" click.delegate="commentEditHandler('excel')"><i class="table icon"></i>
+                                电子表格</div>
+                            <div class="item" click.delegate="commentEditHandler('mind')"><i class="usb icon"></i> 思维导图
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <button style="float: right;" click.delegate="gotoTopHandler()" title="滚至顶部(t), 滚至底部(b)" class="circular ui icon button">
+                <!-- <div click.delegate="addHandler()" title="提交评论(ctrl+enter)" class="ui blue labeled submit icon button">
+                    <i class="icon edit"></i> 添加评论
+                </div> -->
+                <button style="float: right;" click.delegate="gotoTopHandler()" title="滚至顶部(t), 滚至底部(b)"
+                    class="circular ui icon button">
                     <i class="arrow up icon"></i>
                 </button>
             </form>

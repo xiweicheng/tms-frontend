@@ -652,11 +652,11 @@ export class EmBlogContent {
 
         this.initHotkeys();
 
-        this.messageHandler = function (ev) {
+        this.messageHandler = (ev) => {
             // console.info('message from parent:', ev.data);
             if (ev.origin != window.location.origin) return;
 
-            if (ev.data.source != 'blog') return;
+            if (ev.data.source != 'blog' && ev.data.source != 'comment') return;
 
             if (ev.data.action == 'created') {
                 (ev.data.editor == 'html') && $('a[href="#modaal-blog-write-html"]').modaal('close');
@@ -666,7 +666,10 @@ export class EmBlogContent {
 
             ev.data.from = 'html';
 
-            ea.publish(nsCons.EVENT_BLOG_CHANGED, ev.data);
+            (ev.data.source == 'blog') && ea.publish(nsCons.EVENT_BLOG_CHANGED, ev.data);
+            if (ev.data.source == 'comment') {
+                this.comments = this.comments.push(ev.data.comment);
+            }
         };
 
         window.addEventListener && window.addEventListener('message', this.messageHandler, false);

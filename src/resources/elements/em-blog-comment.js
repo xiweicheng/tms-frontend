@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 import {
     default as SimpleMDE
 } from 'simplemde';
@@ -111,7 +114,9 @@ export class EmBlogComment {
 
             if (payload.case != 'comment') return;
 
-            let comment = _.find(this.comments, { id: +payload.id });
+            let comment = _.find(this.comments, {
+                id: +payload.id
+            });
 
             if (comment && (comment.creator.username == this.loginUser.username)) {
                 let lines = comment.content.split('\n');
@@ -184,7 +189,9 @@ export class EmBlogComment {
 
             if (payload.username == this.loginUser.username) return;
 
-            let c = _.find(this.comments, { id: payload.id });
+            let c = _.find(this.comments, {
+                id: payload.id
+            });
             if (c) {
                 $.get('/admin/blog/comment/get', {
                     cid: payload.id
@@ -289,7 +296,9 @@ export class EmBlogComment {
             if (event.ctrlKey && event.shiftKey) {
                 let cid = $(event.currentTarget).attr('data-id');
                 let $t = $(event.currentTarget).find('.content > textarea');
-                let item = _.find(this.comments, { id: +cid });
+                let item = _.find(this.comments, {
+                    id: +cid
+                });
                 if (this.isSuper || item.creator.username == this.loginUser.username) {
                     this.editHandler(item, $t);
                 }
@@ -451,12 +460,12 @@ export class EmBlogComment {
                     title: "插入水平分割线",
                 }, "|", {
                     name: "upload",
-                    action: function(editor) {},
+                    action: function (editor) {},
                     className: "fa fa-upload",
                     title: "上传文件",
                 }, {
                     name: "csv2md",
-                    action: function(editor) {},
+                    action: function (editor) {},
                     className: "fa fa-file-excel-o",
                     title: "上传Excel|CSV转Markdown表格",
                 }, "|", {
@@ -543,14 +552,14 @@ export class EmBlogComment {
             dictCancelUpload: '取消上传',
             dictCancelUploadConfirmation: '确定要取消上传吗?',
             dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
-            init: function() {
-                this.on("sending", function(file, xhr, formData) {
+            init: function () {
+                this.on("sending", function (file, xhr, formData) {
 
                 });
-                this.on("success", function(file, data) {
+                this.on("success", function (file, data) {
                     if (data.success) {
 
-                        $.each(data.data, function(index, item) {
+                        $.each(data.data, function (index, item) {
                             _this.insertContent(`\n${item}`);
 
                         });
@@ -560,10 +569,10 @@ export class EmBlogComment {
                     }
 
                 });
-                this.on("error", function(file, errorMessage, xhr) {
+                this.on("error", function (file, errorMessage, xhr) {
                     toastr.error(errorMessage, '上传失败!');
                 });
-                this.on("complete", function(file) {
+                this.on("complete", function (file) {
                     this.removeFile(file);
                 });
             }
@@ -635,7 +644,7 @@ export class EmBlogComment {
             }
         }, { // emoji
             match: /(^|\s):([\+\-\w]*)$/,
-            search: function(term, callback) {
+            search: function (term, callback) {
                 callback($.map(emojis, (emoji) => {
                     return _.some(emoji.split('_'), (item) => {
                         return item.indexOf(term) === 0;
@@ -675,7 +684,9 @@ export class EmBlogComment {
     tipsActionHandler(value) {
 
         if (value == 'search') {
-            _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
+            _.delay(() => {
+                utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL);
+            }, 200);
         } else {
             return true;
         }
@@ -714,7 +725,9 @@ export class EmBlogComment {
                 cm.replaceRange(content, cursor, cursor);
                 cm.focus();
             }
-        } catch (err) { console.log(err); }
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     replyHandler(item) {
@@ -727,7 +740,9 @@ export class EmBlogComment {
             cid: item.id
         }, (data, textStatus, xhr) => {
             if (data.success) {
-                this.comments = _.reject(this.comments, { id: item.id });
+                this.comments = _.reject(this.comments, {
+                    id: item.id
+                });
                 toastr.success('博文评论移除成功!');
                 ea.publish(nsCons.EVENT_BLOG_COMMENT_CHANGED, {
                     action: 'removed',
@@ -836,18 +851,18 @@ export class EmBlogComment {
             dictCancelUpload: '取消上传',
             dictCancelUploadConfirmation: '确定要取消上传吗?',
             dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
-            init: function() {
-                this.on("sending", function(file, xhr, formData) {
+            init: function () {
+                this.on("sending", function (file, xhr, formData) {
                     if (!getInputTargetCb()) {
                         this.removeAllFiles(true);
                     } else {
                         formData.append('toType', 'Blog');
                     }
                 });
-                this.on("success", function(file, data) {
+                this.on("success", function (file, data) {
                     if (data.success) {
 
-                        $.each(data.data, function(index, item) {
+                        $.each(data.data, function (index, item) {
                             if (item.type == 'Image') {
                                 _this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100) '
                                     .replace(/\{name\}/g, item.name)
@@ -868,10 +883,10 @@ export class EmBlogComment {
                     }
 
                 });
-                this.on("error", function(file, errorMessage, xhr) {
+                this.on("error", function (file, errorMessage, xhr) {
                     toastr.error(errorMessage, '上传失败!');
                 });
-                this.on("complete", function(file) {
+                this.on("complete", function (file) {
                     this.removeFile(file);
                 });
             }
@@ -895,7 +910,9 @@ export class EmBlogComment {
         } else if (to == 't') {
             $('.em-blog-content').scrollTo(0);
         } else {
-            if (_.some(this.comments, { id: +to })) {
+            if (_.some(this.comments, {
+                    id: +to
+                })) {
                 $('.em-blog-content').scrollTo(`.tms-blog-comment.comment[data-id="${to}"]`, {
                     offset: this.offset
                 });
@@ -1037,6 +1054,19 @@ export class EmBlogComment {
 
     gotoTopHandler() {
         $('.em-blog-content').scrollTo(0, 120);
+    }
+
+    commentEditHandler(editor) {
+        if (editor == 'html') {
+            $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?comment&id=' + this.blog.id + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-html"]').click();
+        } else if (editor == 'excel') {
+            $('.em-blog-write-excel > iframe').attr('src', utils.getResourceBase() + 'excel.html?comment&id=' + this.blog.id + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-excel"]').click();
+        } else if (editor == 'mind') {
+            $('.em-blog-write-mind > iframe').attr('src', utils.getResourceBase() + 'mind.html?comment&id=' + this.blog.id + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-mind"]').click();
+        }
     }
 
 }
