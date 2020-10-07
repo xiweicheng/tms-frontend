@@ -557,6 +557,7 @@ export class EmBlogContent {
                     }, (data, textStatus, xhr) => {
                         if (data.success) {
                             toastr.success('博文评论更新成功!');
+                            cmmt.content = content;
                             cmmt.version = data.data.version;
                             cmmt.updateDate = data.data.updateDate;
                         } else {
