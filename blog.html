@@ -192,7 +192,7 @@
                 NAME: 'save'
             });
             $.FroalaEditor.RegisterCommand('save', {
-                title: '保存博文 (ctrl+shift+s)',
+                title: '保存 (ctrl+shift+s)',
                 focus: false,
                 undo: false,
                 refreshAfterCallback: false,
@@ -397,7 +397,6 @@
                             comment = data.data;
 
                             $('#edit').froalaEditor('html.set', data.data.content);
-                            // $('#preview').show();
                         } else {
                             toastr.error(data.data);
                         }
@@ -449,6 +448,13 @@
                             if (data.success) {
                                 comment = data.data;
                                 toastr && toastr.success('博文评论保存成功！');
+                                (window.parent && window.parent.postMessage) && (window.parent
+                                    .postMessage({
+                                        action: 'updated',
+                                        source: 'comment',
+                                        comment: data.data,
+                                        editor: 'html'
+                                    }, window.location.origin));
                             } else {
                                 toastr && toastr.error(data.data);
                             }

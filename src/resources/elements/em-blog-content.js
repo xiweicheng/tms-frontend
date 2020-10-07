@@ -481,50 +481,93 @@ export class EmBlogContent {
 
         this.taskItemClHandler = (event) => {
 
-            if (this.blog && (this.blog.creator.username == this.loginUser.username || this.blog.openEdit || this.isSuper)) {
+            let $input = $(event.currentTarget);
 
-                if (this.blog.locker) {
-                    event.preventDefault();
-                    toastr.info(`当前博文处于编辑中，请稍后再试...`);
-                    return;
+            let $bc = $input.closest('.comment.tms-blog-comment');
+
+            if ($bc.length === 0) { // blog
+
+                if (this.blog && (this.blog.creator.username == this.loginUser.username || this.blog.openEdit || this.isSuper)) {
+
+                    if (this.blog.locker) {
+                        event.preventDefault();
+                        toastr.info(`当前博文处于编辑中，请稍后再试...`);
+                        return;
+                    } else {
+
+                        let $blog = $(this.blog.content);
+                        let $inputR = $blog.find(`input[data-id="${$input.attr('data-id')}"]`);
+                        $inputR.attr('checked', $input.prop('checked'));
+
+                        if (this.sending) return;
+
+                        this.sending = true;
+
+                        let content = $blog.wrapAll('<div></div>').parent().html();
+
+                        $.post('/admin/blog/update', {
+                            url: utils.getBasePath(),
+                            id: this.blog.id,
+                            version: this.blog.version,
+                            title: this.blog.title,
+                            content: content
+                        }, (data, textStatus, xhr) => {
+                            if (data.success) {
+                                this.blog = data.data;
+                                toastr.success('博文更新成功!');
+                                ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                                    action: 'updated',
+                                    autoFollow: true,
+                                    blog: this.blog
+                                });
+                            } else {
+                                toastr.error(data.data, '博文更新失败!');
+                            }
+                        }).always(() => {
+                            this.sending = false;
+                        });
+                    }
                 } else {
+                    event.preventDefault();
+                }
+            } else { // comment
 
-                    let $input = $(event.currentTarget);
+                let cmmt = _.find(this.comments, {
+                    id: +$bc.attr('data-id')
+                });
 
-                    let $blog = $(this.blog.content);
-                    let $inputR = $blog.find(`input[data-id="${$input.attr('data-id')}"]`);
+                if (cmmt && (cmmt.creator.username == this.loginUser.username || this.isSuper)) {
+
+                    let $cmmt = $(cmmt.content);
+                    let $inputR = $cmmt.find(`input[data-id="${$input.attr('data-id')}"]`);
                     $inputR.attr('checked', $input.prop('checked'));
 
                     if (this.sending) return;
 
                     this.sending = true;
 
-                    let content = $blog.wrapAll('<div></div>').parent().html();
+                    let content = $cmmt.wrapAll('<div></div>').parent().html();
 
-                    $.post('/admin/blog/update', {
-                        url: utils.getBasePath(),
+                    $.post(`/admin/blog/comment/update`, {
+                        basePath: utils.getBasePath(),
                         id: this.blog.id,
-                        version: this.blog.version,
-                        title: this.blog.title,
+                        cid: cmmt.id,
+                        version: cmmt.version,
                         content: content
                     }, (data, textStatus, xhr) => {
                         if (data.success) {
-                            this.blog = data.data;
-                            toastr.success('博文更新成功!');
-                            ea.publish(nsCons.EVENT_BLOG_CHANGED, {
-                                action: 'updated',
-                                autoFollow: true,
-                                blog: this.blog
-                            });
+                            toastr.success('博文评论更新成功!');
+                            cmmt.version = data.data.version;
+                            cmmt.updateDate = data.data.updateDate;
                         } else {
-                            toastr.error(data.data, '博文更新失败!');
+                            toastr.error(data.data, '博文评论更新失败!');
                         }
                     }).always(() => {
                         this.sending = false;
                     });
+                } else {
+                    event.preventDefault();
                 }
-            } else {
-                event.preventDefault();
             }
         }
 
@@ -668,7 +711,11 @@ export class EmBlogContent {
 
             (ev.data.source == 'blog') && ea.publish(nsCons.EVENT_BLOG_CHANGED, ev.data);
             if (ev.data.source == 'comment') {
-                this.comments = this.comments.push(ev.data.comment);
+                if (ev.data.action == 'created') {
+                    this.blogCommentVm.addComment(ev.data.comment);
+                } else if (ev.data.action == 'updated') {
+                    this.blogCommentVm.updateComment(ev.data.comment);
+                }
             }
         };
 

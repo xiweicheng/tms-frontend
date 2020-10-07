@@ -782,20 +782,24 @@ export class EmBlogComment {
             contentHtml: html
         }, (data, textStatus, xhr) => {
             if (data.success) {
-                this.comments = [...this.comments, data.data];
+                this._addComment(data.data);
                 this.simplemde.value('');
-                toastr.success('博文评论提交成功!');
-                this.scrollToAfterImgLoaded('b');
-                ea.publish(nsCons.EVENT_BLOG_COMMENT_ADDED, {});
-                ea.publish(nsCons.EVENT_BLOG_COMMENT_CHANGED, {
-                    action: 'created',
-                    comments: this.comments
-                });
             } else {
                 toastr.error(data.data, '博文评论提交失败!');
             }
         }).always(() => {
             this.sending = false;
+        });
+    }
+
+    _addComment(comment) {
+        this.comments = [...this.comments, comment];
+        this.scrollToAfterImgLoaded('b');
+        toastr.success('博文评论提交成功!');
+        ea.publish(nsCons.EVENT_BLOG_COMMENT_ADDED, {});
+        ea.publish(nsCons.EVENT_BLOG_COMMENT_CHANGED, {
+            action: 'created',
+            comments: this.comments
         });
     }
 
@@ -926,24 +930,31 @@ export class EmBlogComment {
     }
 
     editHandler(item, editTxtRef) {
-        $.get(`/admin/blog/comment/get`, {
-            cid: item.id
-        }, (data) => {
-            if (data.success) {
-                if (item.version != data.data.version) {
-                    _.extend(item, data.data);
-                }
-                item.isEditing = true;
-                item.contentOld = item.content;
-                _.defer(() => {
-                    $(editTxtRef).focus().select();
-                    autosize.update(editTxtRef);
-                });
-            } else {
-                toastr.error(data.data);
-            }
 
-        });
+        if (item.editor == 'Html') {
+            $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?comment&cid=' + item.id + '&id=' + this.blog.id + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-html"]').click();
+        } else {
+
+            $.get(`/admin/blog/comment/get`, {
+                cid: item.id
+            }, (data) => {
+                if (data.success) {
+                    if (item.version != data.data.version) {
+                        _.extend(item, data.data);
+                    }
+                    item.isEditing = true;
+                    item.contentOld = item.content;
+                    _.defer(() => {
+                        $(editTxtRef).focus().select();
+                        autosize.update(editTxtRef);
+                    });
+                } else {
+                    toastr.error(data.data);
+                }
+
+            });
+        }
     }
 
     refreshHandler(item) {
@@ -1068,5 +1079,23 @@ export class EmBlogComment {
             $('a[href="#modaal-blog-write-mind"]').click();
         }
     }
+
+    addComment(comment) {
+        this._addComment(comment);
+    }
+
+    updateComment(comment) {
+
+        let cmmt = _.find(this.comments, {
+            id: comment.id
+        });
+
+        if (cmmt) {
+            cmmt.content = comment.content;
+            cmmt.version = comment.version;
+            cmmt.updateDate = comment.updateDate;
+        }
+    }
+
 
 }
