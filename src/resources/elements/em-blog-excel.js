@@ -46,7 +46,6 @@ export class EmBlogExcel {
     initComment(comment) {
         _.defer(() => {
             if (comment.editor == 'Excel') {
-                // $(`.em-blog-excel[data-cid="${comment.id}"] > iframe`).attr('src', `${this.baseRes}excel.html?comment&id=${comment.targetId}&cid=${comment.id}&readonly`);
                 $(`.em-blog-excel[data-cid="${comment.id}"] > iframe`).attr('src', `${this.baseRes}excel.html?comment&id=${comment.targetId}&cid=${comment.id}&readonly&_=${new Date().getTime()}`);
             }
         });

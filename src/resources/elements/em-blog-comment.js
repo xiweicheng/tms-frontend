@@ -1103,5 +1103,69 @@ export class EmBlogComment {
         }
     }
 
+    mind2table(node, table, col) {
+
+        if (node && node.topic) {
+            let row = [];
+            for (let index = 0; index < col; index++) {
+                row.push('');
+            }
+            row.push(node.topic);
+            table.push(row);
+
+            if (node.children) {
+                col++;
+                _.each(node.children, c => {
+                    this.mind2table(c, table, col);
+                });
+            }
+        }
+    }
+
+    excelDownloadHandler(item) {
+
+        if (item.editor == 'Excel') {
+            utils.downloadExcel(JSON.parse(item.content), `${this.blog.title}_评论_${item.id}`);
+        } else if (item.editor == 'Mind') {
+            let mdata = JSON.parse(item.content);
+
+            let table = [];
+            this.mind2table(mdata.nodeData, table, 0);
+
+            if (table.length == 0) return;
+
+            let sheet = XLSX.utils.aoa_to_sheet(table);
+            var out = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(out, sheet, `data`);
+            XLSX.writeFile(out, `${this.blog.title}_评论_${item.id}.xlsx`);
+        }
+
+    }
+
+    pngDownloadHandler(item) {
+        let ifrm = $(`.em-blog-mind[data-cid="${item.id}"] > iframe`)[0];
+        if (ifrm) {
+            (ifrm.contentWindow.postMessage) && (ifrm.contentWindow
+                .postMessage({
+                    action: 'mindExport',
+                    source: 'commentMind',
+                    item: item
+                }, window.location.origin));
+        }
+    }
+
+    md2HtmlDownloadHandler(item) {
+
+        $.post(`/admin/blog/comment/download/md2html/${item.id}`, {
+            content: utils.md2html(`> 版权声明：本文为TMS版权所有，转载请附上原文出处链接和本声明。\n> 本文链接: ${utils.getBasePath()}#/blog/${this.blog.id}?cid=${item.id}&tilte=${this.blog._encodeTitle}_评论_${item.id}\n\n` + item.content)
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                utils.openWin(`/admin/blog/comment/download/${item.id}?type=md2html`);
+            } else {
+                toastr.error(data.data);
+            }
+        });
+
+    }
 
 }

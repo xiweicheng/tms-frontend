@@ -1359,7 +1359,7 @@ export class EmBlogContent {
     }
 
     pngDownloadHandler() {
-        let ifrm = $('.em-blog-mind > iframe')[0];
+        let ifrm = $(`.em-blog-mind[data-id="${this.blog.id}"] > iframe`)[0];
         if (ifrm) {
             (ifrm.contentWindow.postMessage) && (ifrm.contentWindow
                 .postMessage({

@@ -71,6 +71,38 @@
                                         class="trash outline icon"></i>确认移除</div>
                             </div>
                         </div>
+                        <div ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown"
+                            title="更多操作">
+                            <i class="large ellipsis horizontal icon"></i>
+                            <div class="menu">
+                                <a show.bind="item.editor != 'Mind' && item.editor != 'Excel'"
+                                    href="/admin/blog/comment/download/${item.id}?type=pdf" class="item">
+                                    <i class="file pdf outline icon"></i> 导出为PDF
+                                </a>
+                                <a show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor !='Excel'"
+                                    href="/admin/blog/comment/download/${item.id}?type=md" class="item">
+                                    <i class="file text outline icon"></i> 导出为Markdown
+                                </a>
+                                <div show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor != 'Excel'"
+                                    click.delegate="md2HtmlDownloadHandler(item)" class="item">
+                                    <i class="html5 icon"></i> 导出为HTML
+                                </div>
+                                <a show.bind="item.editor == 'Html'"
+                                    href="/admin/blog/comment/download/${item.id}?type=html" class="item">
+                                    <i class="html5 icon"></i> 导出为HTML
+                                </a>
+                                <div show.bind="item.editor == 'Excel' || item.editor == 'Mind'"
+                                    click.delegate="excelDownloadHandler(item)" class="item">
+                                    <i class="file excel outline icon"></i> 导出为Excel
+                                </div>
+                                <div show.bind="item.editor == 'Mind'" click.delegate="pngDownloadHandler(item)"
+                                    class="item">
+                                    <i style="width: 1.18em; vertical-align:inherit;"
+                                        class="file image outline icon"></i>
+                                    导出为PNG
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="tools">
                         <button show.bind="!item.isEditing" click.delegate="refreshHandler(item)" title="刷新同步"
@@ -106,7 +138,8 @@
                                 HTML</div>
                             <div class="item" click.delegate="commentEditorHandler('excel')"><i class="table icon"></i>
                                 电子表格</div>
-                            <div class="item" click.delegate="commentEditorHandler('mind')"><i class="usb icon"></i> 思维导图
+                            <div class="item" click.delegate="commentEditorHandler('mind')"><i class="usb icon"></i>
+                                思维导图
                             </div>
                         </div>
                     </div>
