@@ -309,7 +309,24 @@
                         </template>
                         <template if.bind="item.target=='Comment'">
                             <template if.bind="item.action=='Create'">
-                                <div ref="mkbodyRef2" class="extra text markdown-body fr-view">
+                                <div show.bind="item.properties == 'Mind'" data-id="${item.id}" class="extra text">
+                                    <em-blog-mind comment.bind="{id: item.targetId, editor: item.properties}">
+                                    </em-blog-mind>
+                                    <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}"
+                                            class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                    </div>
+                                </div>
+                                <div show.bind="item.properties == 'Excel'" data-id="${item.id}" class="extra text">
+                                    <em-blog-excel comment.bind="{id: item.targetId, editor: item.properties}">
+                                    </em-blog-excel>
+                                    <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}"
+                                            class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                    </div>
+                                </div>
+                                <div show.bind="item.properties != 'Mind' && item.properties != 'Excel' "
+                                    ref="mkbodyRef2" class="extra text markdown-body fr-view">
                                     <div fancybox innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef2"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
                                         <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}"
