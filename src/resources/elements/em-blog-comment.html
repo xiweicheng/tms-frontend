@@ -22,7 +22,14 @@
                             <span title="${item.voteZan}">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>
                         </div>
                     </div>
-                    <div data-id="${item.id}" data-case="comment" fancybox show.bind="!item.isEditing" ref="mkbodyRef"
+                    <div show.bind="item.editor == 'Mind'" data-id="${item.id}" data-case="comment">
+                        <em-blog-mind comment.bind="item"></em-blog-mind>
+                    </div>
+                    <div show.bind="item.editor == 'Excel'" data-id="${item.id}" data-case="comment">
+                        <em-blog-excel comment.bind="item"></em-blog-excel>
+                    </div>
+                    <div show.bind="item.editor != 'Mind' && item.editor != 'Excel' " data-id="${item.id}"
+                        data-case="comment" fancybox show.bind="!item.isEditing" ref="mkbodyRef"
                         class="text markdown-body fr-view"
                         innerhtml.bind="item.content | parseMd:blog.space.channel | emoji:mkbodyRef"></div>
                     <div class="textcomplete-container" show.bind="item.isEditing">
@@ -97,8 +104,8 @@
                             <div class="header"><i class="info circle icon"></i> 切换编辑器</div>
                             <div class="item" click.delegate="commentEditHandler('html')"><i class="html5 icon"></i>
                                 HTML</div>
-                            <!-- <div class="item" click.delegate="commentEditHandler('excel')"><i class="table icon"></i>
-                                电子表格</div> -->
+                            <div class="item" click.delegate="commentEditHandler('excel')"><i class="table icon"></i>
+                                电子表格</div>
                             <!-- <div class="item" click.delegate="commentEditHandler('mind')"><i class="usb icon"></i> 思维导图
                             </div> -->
                         </div>

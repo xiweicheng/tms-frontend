@@ -710,13 +710,15 @@ export class EmBlogContent {
 
             ev.data.from = 'html';
 
-            (ev.data.source == 'blog') && ea.publish(nsCons.EVENT_BLOG_CHANGED, ev.data);
             if (ev.data.source == 'comment') {
                 if (ev.data.action == 'created') {
                     this.blogCommentVm.addComment(ev.data.comment);
                 } else if (ev.data.action == 'updated') {
                     this.blogCommentVm.updateComment(ev.data.comment);
                 }
+                ea.publish(nsCons.EVENT_COMMENT_CHANGED, ev.data);
+            } else if (ev.data.source == 'blog') {
+                ea.publish(nsCons.EVENT_BLOG_CHANGED, ev.data);
             }
         };
 

@@ -47,6 +47,7 @@ window.nsCons = {
     EVENT_BLOG_SWITCH: 'event_blog_switch',
     EVENT_BLOG_ACTION: 'event_blog_action',
     EVENT_BLOG_CHANGED: 'event_blog_changed',
+    EVENT_COMMENT_CHANGED: 'event_comment_changed',
     EVENT_SPACE_CHANGED: 'event_space_changed',
     EVENT_SPACE_DIR_CHANGED: 'event_space_dir_changed',
     EVENT_BLOG_CREATED: 'event_blog_created',

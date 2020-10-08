@@ -932,8 +932,11 @@ export class EmBlogComment {
     editHandler(item, editTxtRef) {
 
         if (item.editor == 'Html') {
-            $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?comment&cid=' + item.id + '&id=' + this.blog.id + '&_=' + new Date().getTime());
+            $(`.em-blog-write-html > iframe`).attr('src', utils.getResourceBase() + 'blog.html?comment&cid=' + item.id + '&id=' + this.blog.id + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-html"]').click();
+        } else if (item.editor == 'Excel') {
+            $(`.em-blog-write-excel > iframe`).attr('src', utils.getResourceBase() + 'excel.html?comment&cid=' + item.id + '&id=' + this.blog.id + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-excel"]').click();
         } else {
 
             $.get(`/admin/blog/comment/get`, {
