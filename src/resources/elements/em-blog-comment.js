@@ -937,6 +937,9 @@ export class EmBlogComment {
         } else if (item.editor == 'Excel') {
             $(`.em-blog-write-excel > iframe`).attr('src', utils.getResourceBase() + 'excel.html?comment&cid=' + item.id + '&id=' + this.blog.id + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-excel"]').click();
+        } else if (item.editor == 'Mind') {
+            $(`.em-blog-write-mind > iframe`).attr('src', utils.getResourceBase() + 'mind.html?comment&cid=' + item.id + '&id=' + this.blog.id + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-mind"]').click();
         } else {
 
             $.get(`/admin/blog/comment/get`, {
@@ -1070,7 +1073,7 @@ export class EmBlogComment {
         $('.em-blog-content').scrollTo(0, 120);
     }
 
-    commentEditHandler(editor) {
+    commentEditorHandler(editor) {
         if (editor == 'html') {
             $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?comment&id=' + this.blog.id + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-html"]').click();
