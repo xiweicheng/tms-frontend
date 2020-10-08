@@ -241,20 +241,33 @@
                 $('#title').hide();
 
                 if (cid) {
-                    $.get('/admin/blog/comment/get', {
-                        cid: cid
-                    }, function (data) {
-                        if (data.success) {
-                            comment = data.data;
-                            initExcel(JSON.parse(data.data.content))
-                        } else {
-                            toastr.error(data.data);
-                        }
-                    });
+
+                    var isFree = typeof url('?free') !== 'undefined';
+
+                    if (isFree) {
+                        $.get('/free/blog/comment/' + cid, {}, function (data) {
+                            if (data.success) {
+                                comment = data.data;
+                                initExcel(JSON.parse(data.data.content));
+                            } else {
+                                toastr.error(data.data);
+                            }
+                        });
+                    } else {
+                        $.get('/admin/blog/comment/get', {
+                            cid: cid
+                        }, function (data) {
+                            if (data.success) {
+                                comment = data.data;
+                                initExcel(JSON.parse(data.data.content))
+                            } else {
+                                toastr.error(data.data);
+                            }
+                        });
+                    }
                 } else {
                     initExcel();
                 }
-
 
                 $('#save').click(function (event) {
 
