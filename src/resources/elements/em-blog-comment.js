@@ -187,25 +187,46 @@ export class EmBlogComment {
 
             if (this.blog.id != payload.bid) return;
 
-            if (payload.username == this.loginUser.username) return;
+            if (payload.cmd == 'U') { // 博文评论后台更新了
 
-            let c = _.find(this.comments, {
-                id: payload.id
-            });
-            if (c) {
                 $.get('/admin/blog/comment/get', {
                     cid: payload.id
                 }, (data) => {
                     if (data.success) {
-                        c.labels = data.data.labels;
 
-                        let t = toastr.info(`当前博文评论标签有更新，点击可查看！`, null, _.extend(toastrOps, {
-                            onclick: () => {
-                                this._scrollTo(payload.id);
-                            }
-                        }));
+                        let c = _.find(this.comments, {
+                            id: payload.id
+                        });
+
+                        if (c) { // 存在，更新它
+                            _.extend(c, data.data);
+                        } else { // 不存在，添加
+                            this.comments.push(data.data);
+                        }
                     }
                 });
+            } else {
+
+                if (payload.username == this.loginUser.username) return;
+
+                let c = _.find(this.comments, {
+                    id: payload.id
+                });
+                if (c) {
+                    $.get('/admin/blog/comment/get', {
+                        cid: payload.id
+                    }, (data) => {
+                        if (data.success) {
+                            c.labels = data.data.labels;
+
+                            let t = toastr.info(`当前博文评论标签有更新，点击可查看！`, null, _.extend(toastrOps, {
+                                onclick: () => {
+                                    this._scrollTo(payload.id);
+                                }
+                            }));
+                        }
+                    });
+                }
             }
         });
     }

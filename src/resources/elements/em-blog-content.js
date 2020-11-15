@@ -128,6 +128,9 @@ export class EmBlogContent {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                             } else {
                                 this.refreshHandler();
+                                _.delay(() => {
+                                    this.blogCommentVm._scrollTo(payload.cid);
+                                }, 1000);
                             }
                         }
                     }));
@@ -143,6 +146,9 @@ export class EmBlogContent {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                             } else {
                                 this.refreshHandler();
+                                _.delay(() => {
+                                    this.blogCommentVm._scrollTo(payload.cid);
+                                }, 1000);
                             }
                         }
                     }));
@@ -158,6 +164,9 @@ export class EmBlogContent {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                             } else {
                                 this.refreshHandler();
+                                _.delay(() => {
+                                    this.blogCommentVm._scrollTo(payload.cid);
+                                }, 1000);
                             }
                         }
                     }));
@@ -173,6 +182,9 @@ export class EmBlogContent {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                             } else {
                                 this.refreshHandler();
+                                _.delay(() => {
+                                    this.blogCommentVm._scrollTo(payload.cid);
+                                }, 1000);
                             }
                         }
                     }));
@@ -188,6 +200,9 @@ export class EmBlogContent {
                                 utils.openUrl(utils.getBasePath() + '#/blog/' + payload.id + '?cid=' + payload.cid);
                             } else {
                                 this.refreshHandler();
+                                _.delay(() => {
+                                    this.blogCommentVm._scrollTo(payload.cid);
+                                }, 1000);
                             }
                         }
                     }));
