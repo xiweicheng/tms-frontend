@@ -28,8 +28,8 @@
                     <div show.bind="item.editor == 'Excel'" data-id="${item.id}" data-case="comment">
                         <em-blog-excel comment.bind="item"></em-blog-excel>
                     </div>
-                    <div show.bind="item.editor != 'Mind' && item.editor != 'Excel' " data-id="${item.id}"
-                        data-case="comment" fancybox show.bind="!item.isEditing" ref="mkbodyRef"
+                    <div show.bind="item.editor != 'Mind' && item.editor != 'Excel' && !item.isEditing"
+                        data-id="${item.id}" data-case="comment" fancybox ref="mkbodyRef"
                         class="text markdown-body fr-view"
                         innerhtml.bind="item.content | parseMd:blog.space.channel | emoji:mkbodyRef"></div>
                     <div class="textcomplete-container" show.bind="item.isEditing">
