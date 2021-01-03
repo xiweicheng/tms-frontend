@@ -123,6 +123,16 @@
                                 <i style="width: 1.18em; vertical-align:inherit;" class="file image outline icon"></i>
                                 导出为PNG
                             </div>
+                            <a show.bind="blog.editor == 'Mind'" href="/admin/blog/download/${blog.id}?type=mind"
+                                class="item">
+                                <i style="width: 1.18em; vertical-align:inherit;" class="usb icon"></i>
+                                导出为导图
+                            </a>
+                            <a show.bind="blog.editor == 'Excel'" href="/admin/blog/download/${blog.id}?type=table"
+                                class="item">
+                                <i style="width: 1.18em; vertical-align:inherit;" class="table icon"></i>
+                                导出为表格
+                            </a>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username" class="divider"></div>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username"
                                 click.delegate="deleteHandler()" class="item" style="color: red;">
