@@ -46,7 +46,7 @@ export class AttrDropzone {
                 paramName: 'file',
                 clickable: !!this.clickable,
                 dictDefaultMessage: '',
-                maxFilesize: 10,
+                maxFilesize: window.tmsSysConfig.uploadMaxFileSize || 10,
                 addRemoveLinks: true,
                 // previewsContainer: this.chatStatusBarRef,
                 // previewTemplate: this.previewTemplateRef.innerHTML,

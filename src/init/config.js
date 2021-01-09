@@ -342,6 +342,7 @@ export class Config {
         $.get('/free/config/sys', (data) => {
             if (data.success) {
                 window.tmsSysConfig = data.data;
+                localStorage && localStorage.setItem(`tms-upload-max-file-size`, data.data.uploadMaxFileSize);
             } else {
                 console.error(data.data);
             }
