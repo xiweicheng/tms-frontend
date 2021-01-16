@@ -125,11 +125,15 @@ export class EmChatTopicInput {
 
             this.pasteHandler = (ev, data) => {
 
+                // 给消息体增加uuid
+                nsCtx.cr_uuid = nsCtx.cr_uuid || utils.uuid();
+
                 $.post('/admin/file/base64', {
                     dataURL: data.dataURL,
                     type: data.blob.type,
                     toType: nsCtx.isAt ? 'User' : 'Channel',
-                    toId: nsCtx.chatTo
+                    toId: nsCtx.chatTo,
+                    atId: nsCtx.cr_uuid
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
                         this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100)'
@@ -239,6 +243,11 @@ export class EmChatTopicInput {
                     } else {
                         formData.append('toType', nsCtx.isAt ? 'User' : 'Channel');
                         formData.append('toId', nsCtx.chatTo);
+
+                         // 关联频道消息UUID
+                         nsCtx.cr_uuid = nsCtx.cr_uuid || utils.uuid();
+                         // console.log(nsCtx.cr_uuid);
+                         formData.append('atId', nsCtx.cr_uuid);
                     }
                 });
                 this.on("success", function(file, data) {
@@ -596,11 +605,15 @@ export class EmChatTopicInput {
 
         this.sending = true;
 
+        // 给消息体增加uuid
+        nsCtx.cr_uuid = nsCtx.cr_uuid || utils.uuid();
+
         $.post(`/admin/chat/channel/reply/add`, {
             url: utils.getUrl(),
             usernames: utils.parseUsernames(content, this.members, this.channel).join(','),
             content: content,
             ua: navigator.userAgent,
+            uuid: nsCtx.cr_uuid,
             contentHtml: utils.md2html(content, true),
             id: this.chat.id
         }, (data, textStatus, xhr) => {
@@ -616,6 +629,7 @@ export class EmChatTopicInput {
             }
         }).always(() => {
             this.sending = false;
+            nsCtx.cr_uuid = utils.uuid();
         });
     }
 

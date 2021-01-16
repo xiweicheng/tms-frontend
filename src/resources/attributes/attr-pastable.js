@@ -13,13 +13,16 @@ export class AttrPastable {
 
     valueChanged(newValue, oldValue) {
 
+        // console.log(`AttrPastable -- ${newValue} ${oldValue}`);
+
         this.pasteHandler = (ev, data) => {
 
             $.post('/admin/file/base64', {
                 dataURL: data.dataURL,
                 type: data.blob.type,
                 toType: nsCtx.isAt ? 'User' : 'Channel',
-                toId: nsCtx.chatTo
+                toId: nsCtx.chatTo,
+                atId: newValue
             }, (data, textStatus, xhr) => {
                 if (data.success) {
                     $(this.element).insertAtCaret('![{name}]({baseURL}{path}{uuidName}?width=100)'

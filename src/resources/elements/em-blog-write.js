@@ -613,10 +613,14 @@ export class EmBlogWrite {
 
             this.pasteHandler = (ev, data) => {
 
+                // 给消息体增加uuid
+                nsCtx.b_uuid = nsCtx.b_uuid || utils.uuid();
+
                 $.post('/admin/file/base64', {
                     dataURL: data.dataURL,
                     type: data.blob.type,
-                    toType: 'Blog'
+                    toType: 'Blog',
+                    atId: nsCtx.b_uuid
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
                         this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100)'
@@ -658,6 +662,9 @@ export class EmBlogWrite {
                         this.removeAllFiles(true);
                     } else {
                         formData.append('toType', 'Blog');
+
+                        nsCtx.b_uuid = nsCtx.b_uuid || utils.uuid();
+                        formData.append('atId', nsCtx.b_uuid);
                     }
                 });
                 this.on("success", function (file, data) {

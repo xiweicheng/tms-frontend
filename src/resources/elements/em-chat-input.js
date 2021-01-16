@@ -42,6 +42,7 @@ export class EmChatInput {
         this.subscribe2 = ea.subscribe(nsCons.EVENT_CHAT_MSG_INSERT, (payload) => {
             this.insertContent(payload.content);
         });
+
     }
 
     /**
@@ -136,11 +137,15 @@ export class EmChatInput {
 
             this.pasteHandler = (ev, data) => {
 
+                // 给消息体增加uuid
+                nsCtx.cc_uuid = nsCtx.cc_uuid || utils.uuid();
+
                 $.post('/admin/file/base64', {
                     dataURL: data.dataURL,
                     type: data.blob.type,
                     toType: nsCtx.isAt ? 'User' : 'Channel',
-                    toId: nsCtx.chatTo
+                    toId: nsCtx.chatTo,
+                    atId: nsCtx.cc_uuid
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
                         this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100)'
@@ -254,6 +259,11 @@ export class EmChatInput {
                     } else {
                         formData.append('toType', nsCtx.isAt ? 'User' : 'Channel');
                         formData.append('toId', nsCtx.chatTo);
+
+                        // 关联频道消息UUID
+                        nsCtx.cc_uuid = nsCtx.cc_uuid || utils.uuid();
+                        // console.log(nsCtx.cc_uuid);
+                        formData.append('atId', nsCtx.cc_uuid);
                     }
                 });
                 this.on("success", function(file, data) {
@@ -589,6 +599,11 @@ export class EmChatInput {
                 contentHtml: html
             };
         }
+
+        // 给消息体增加uuid
+        nsCtx.cc_uuid = nsCtx.cc_uuid || utils.uuid();
+        data.uuid = nsCtx.cc_uuid;
+
         $.post(url, data, (data, textStatus, xhr) => {
             if (data.success) {
                 this.simplemde.value('');
@@ -600,6 +615,7 @@ export class EmChatInput {
             }
         }).always(() => {
             this.sending = false;
+            nsCtx.cc_uuid = utils.uuid(); // 生成新的uuid
         });
     }
 

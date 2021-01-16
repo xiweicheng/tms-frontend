@@ -90,11 +90,15 @@ export class EmChannelTaskCreate {
 
         $paste && ($paste.on('pasteImage', (ev, data) => {
 
+            // 给消息体增加uuid
+            nsCtx.ct_uuid = nsCtx.ct_uuid || utils.uuid();
+
             $.post('/admin/file/base64', {
                 dataURL: data.dataURL,
                 type: data.blob.type,
                 toType: nsCtx.isAt ? 'User' : 'Channel',
-                toId: nsCtx.chatTo
+                toId: nsCtx.chatTo,
+                atId: nsCtx.ct_uuid
             }, (data, textStatus, xhr) => {
                 if (data.success) {
                     this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100)'
@@ -189,6 +193,11 @@ export class EmChannelTaskCreate {
                     } else {
                         formData.append('toType', nsCtx.isAt ? 'User' : 'Channel');
                         formData.append('toId', nsCtx.chatTo);
+
+                        // 关联频道消息UUID
+                        nsCtx.ct_uuid = nsCtx.ct_uuid || utils.uuid();
+                        //console.log(nsCtx.ct_uuid);
+                        formData.append('atId', nsCtx.ct_uuid);
                     }
                 });
                 this.on("success", function(file, data) {
@@ -460,12 +469,16 @@ export class EmChannelTaskCreate {
 
         this.sending = true;
 
+         // 给消息体增加uuid
+         nsCtx.ct_uuid = nsCtx.ct_uuid || utils.uuid();
+
         $.post(`/admin/chat/channel/create`, {
             url: utils.getUrl(),
             channelId: this.channel.id,
             usernames: utils.parseUsernames(content, this.members, this.channel).join(','),
             content: content,
             ua: navigator.userAgent,
+            uuid: nsCtx.ct_uuid,
             contentHtml: utils.md2html(content, true)
         }, (data, textStatus, xhr) => {
             if (data.success) {
@@ -497,6 +510,7 @@ export class EmChannelTaskCreate {
             }
         }).always(() => {
             this.sending = false;
+            nsCtx.ct_uuid = utils.uuid();
         });
 
     }

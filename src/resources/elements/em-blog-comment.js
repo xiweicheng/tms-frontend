@@ -795,12 +795,15 @@ export class EmBlogComment {
 
         let channel = this.blog.space ? this.blog.space.channel : null;
 
+        nsCtx.bc_uuid = nsCtx.bc_uuid || utils.uuid();
+
         $.post(`/admin/blog/comment/create`, {
             basePath: utils.getBasePath(),
             id: this.blog.id,
             users: utils.parseUsernames(content, users, channel).join(','),
             content: content,
-            contentHtml: html
+            contentHtml: html,
+            uuid: nsCtx.bc_uuid
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 this._addComment(data.data);
@@ -810,6 +813,7 @@ export class EmBlogComment {
             }
         }).always(() => {
             this.sending = false;
+            nsCtx.bc_uuid = utils.uuid();
         });
     }
 
@@ -836,10 +840,13 @@ export class EmBlogComment {
 
             this.pasteHandler = (ev, data) => {
 
+                nsCtx.bc_uuid = nsCtx.bc_uuid || utils.uuid();
+
                 $.post('/admin/file/base64', {
                     dataURL: data.dataURL,
                     type: data.blob.type,
-                    toType: 'Blog'
+                    toType: 'Blog',
+                    atId: nsCtx.bc_uuid
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
                         this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100)'
@@ -882,6 +889,9 @@ export class EmBlogComment {
                         this.removeAllFiles(true);
                     } else {
                         formData.append('toType', 'Blog');
+
+                        nsCtx.bc_uuid = nsCtx.bc_uuid || utils.uuid();
+                        formData.append('atId', nsCtx.bc_uuid);
                     }
                 });
                 this.on("success", function (file, data) {

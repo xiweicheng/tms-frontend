@@ -1,5 +1,10 @@
-import { bindable, inject } from 'aurelia-framework';
-import { customAttribute } from 'aurelia-templating';
+import {
+    bindable,
+    inject
+} from 'aurelia-framework';
+import {
+    customAttribute
+} from 'aurelia-templating';
 import {
     EventAggregator
 }
@@ -15,6 +20,7 @@ export class AttrDropzone {
     @bindable clickable;
     @bindable target;
     @bindable type;
+    @bindable atId;
 
     dropzones = [];
 
@@ -38,6 +44,9 @@ export class AttrDropzone {
 
         let elms = $(this.element).children().andSelf().toArray();
 
+        let atId = this.atId;
+
+        // console.log(`AttrDropzone -- ${this.atId} ${this.type} ${this.clickable} ${this.target}`);
 
         $.each(elms, (i, elm) => {
 
@@ -53,17 +62,19 @@ export class AttrDropzone {
                 dictCancelUpload: '取消上传',
                 dictCancelUploadConfirmation: '确定要取消上传吗?',
                 dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
-                init: function() {
-                    this.on("sending", function(file, xhr, formData) {
+                init: function () {
+                    this.on("sending", function (file, xhr, formData) {
                         formData.append('toType', toType);
+                        formData.append('atId', atId);
+                        console.log(`at -- ${atId}`);
                         if ('Blog' !== toType) {
                             formData.append('toId', nsCtx.chatTo);
                         }
                     });
-                    this.on("success", function(file, data) {
+                    this.on("success", function (file, data) {
                         if (data.success) {
 
-                            $.each(data.data, function(index, item) {
+                            $.each(data.data, function (index, item) {
                                 if (item.type == 'Image') {
                                     $(target).insertAtCaret('![{name}]({baseURL}{path}{uuidName}?width=100) '
                                         .replace(/\{name\}/g, item.name)
@@ -84,10 +95,10 @@ export class AttrDropzone {
                         }
 
                     });
-                    this.on("error", function(file, errorMessage, xhr) {
+                    this.on("error", function (file, errorMessage, xhr) {
                         toastr.error(errorMessage, '上传失败!');
                     });
-                    this.on("complete", function(file) {
+                    this.on("complete", function (file) {
                         this.removeFile(file);
                     });
                 }
