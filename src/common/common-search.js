@@ -8,12 +8,16 @@ class SearchItems {
 
     put(...items) {
         for (var item of items) {
-            this.items = _.reject(this.items, { id: item.id });
-            if (this.items.length < this.max) {
-                this.items.push(item);
-            } else {
-                this.items = _.tail(this.items);
-                this.items.push(item);
+            if (item.hasOwnProperty('id')) {
+                this.items = _.reject(this.items, {
+                    id: item.id
+                });
+                if (this.items.length < this.max) {
+                    this.items.push(item);
+                } else {
+                    this.items = _.tail(this.items);
+                    this.items.push(item);
+                }
             }
         }
     }
@@ -36,8 +40,8 @@ class Search {
         this.blogs = new SearchItems();
         this.comments = new SearchItems();
         let s = this._load();
-        this.blogs.put(...s.blogs);
-        this.comments.put(...s.comments);
+        this.blogs.put(..._.without(s.blogs, false));
+        this.comments.put(..._.without(s.comments, false));
     }
 
     add(item) {

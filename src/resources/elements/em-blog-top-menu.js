@@ -77,13 +77,15 @@ export class EmBlogTopMenu {
                 // showNoResults: true,
                 onSelect: (result, response) => {
                     $(this.searchRef).search('hide results');
-                    _.defer(() => {
-                        $(this.searchRef).find('input').blur();
-                        ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, {
-                            to: result.url
+                    if (result.url) {
+                        _.defer(() => {
+                            $(this.searchRef).find('input').blur();
+                            ea.publish(nsCons.EVENT_APP_ROUTER_NAVIGATE, {
+                                to: result.url
+                            });
                         });
-                    });
-                    search.add(result);
+                        search.add(result);
+                    }
                     return false;
                 },
                 apiSettings: {
