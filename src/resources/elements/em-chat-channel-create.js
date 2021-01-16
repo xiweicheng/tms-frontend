@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 
 @containerless
 export class EmChatChannelCreate {
@@ -60,13 +63,17 @@ export class EmChatChannelCreate {
 
     approveHandler(modal) {
 
+        nsCtx.c_uuid = nsCtx.c_uuid || utils.uuid();
+
         $.post('/admin/channel/create', {
             name: this.name,
             title: this.title,
             desc: this.desc,
+            uuid: nsCtx.c_uuid,
             privated: $(this.chk).checkbox('is checked')
         }, (data) => {
             if (data.success) {
+                nsCtx.c_uuid = utils.uuid();
                 modal.hide();
                 toastr.success('创建频道成功!');
                 ea.publish(nsCons.EVENT_CHAT_CHANNEL_CREATED, {

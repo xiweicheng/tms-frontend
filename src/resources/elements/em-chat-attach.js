@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 
 @containerless
 export class EmChatAttach {
@@ -75,9 +78,13 @@ export class EmChatAttach {
     }
 
     delHandler(item) {
-        $.post('/admin/file/delete', { id: item.id }, (data, textStatus, xhr) => {
+        $.post('/admin/file/delete', {
+            id: item.id
+        }, (data, textStatus, xhr) => {
             if (data.success) {
-                this.attachs = _.reject(this.attachs, { id: item.id });
+                this.attachs = _.reject(this.attachs, {
+                    id: item.id
+                });
                 this.page.totalElements--;
                 this.moreCnt--;
                 toastr.success('删除附件成功!');
@@ -87,4 +94,10 @@ export class EmChatAttach {
         });
     }
 
+    fixedHandler(item) {
+        if (!item.atId) return;
+        ea.publish(nsCons.EVENT_FILE_FIXED_TO_MSG_ID, {
+            file: item
+        });
+    }
 }

@@ -83,7 +83,7 @@ export class Chat {
             stompClient.subscribe('/channel/online', (msg) => {
                 let online = JSON.parse(msg.body);
                 ea.publish(nsCons.EVENT_WS_CHANNEL_ONLINE, online);
-                
+
                 _.each(this.users, user => {
                     if (user && (user.username == online.username)) {
                         if (online.cmd == 'ON') {
@@ -347,7 +347,7 @@ export class Chat {
             this.isRightSidebarShow = nsCtx.isRightSidebarShow = payload.isShow;
 
             this.isRightSidebarShow ? $('body').addClass('tms-right-sidebar-show') : $('body').removeClass('tms-right-sidebar-show')
-            
+
             this.doResize();
         });
 
@@ -650,6 +650,35 @@ export class Chat {
 
         });
 
+        this.subscribe19 = ea.subscribe(nsCons.EVENT_FILE_FIXED_TO_MSG_ID, (payload) => {
+
+            $.get('/admin/chat/channel/get/by/uuid', {
+                uuid: payload.file.atId
+            }, (data) => {
+                if (data.success) {
+                    if (data.data.type == 'chatChannel') {
+                        this.gotoChatItem(data.data.chatChannel);
+                    } else if (data.data.type == 'chatDirect') {
+                        this.gotoChatItem(data.data.chatDirect);
+                    } else if (data.data.type == 'chatReply') {
+                        let chat = data.data.chatReply;
+                        chat.chatAt = {
+                            chatReply: chat,
+                            chatChannel: data.data.chatChannel
+                        };
+
+                        this.gotoChatItem(chat);
+                    }
+
+                } else {
+                    toastr.error(data.data);
+                }
+            }).fail(() => {
+                this.emModal.hide();
+            });
+
+        });
+
     }
 
     _doClearFilter() {
@@ -720,7 +749,7 @@ export class Chat {
         item = JSON.parse(item);
 
         if (!this.loginUser) return;
-        
+
         let loginItem = item[this.loginUser.username];
         if (!loginItem) return;
 
@@ -865,6 +894,7 @@ export class Chat {
         this.subscribe16.dispose();
         this.subscribe17.dispose();
         this.subscribe18.dispose();
+        this.subscribe19.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();
