@@ -30,7 +30,8 @@
                 <img src="/${item.path + item.uuidName}" alt="${item.name}"
                     title="${item.username | userName}上传于${item.createDate | timeago}">
                 <div class="actions">
-                    <i if.bind="item.atId" click.delegate="fixedHandler(item)" class="large crosshairs icon" title="定位到消息" style="cursor:pointer;"></i>
+                    <i if.bind="item.atId" click.delegate="fixedHandler(item)" class="large crosshairs icon"
+                        title="定位到消息" style="cursor:pointer;"></i>
                     <div if.bind="isSuper || item.username == loginUser.username" ui-dropdown-action
                         class="ui icon top right pointing dropdown" title="删除附件">
                         <i class="red large trash outline icon" style="margin-right: 0;"></i>
@@ -51,7 +52,8 @@
         <div if.bind="type == 'Attachment'" class="divided list selection ui">
             <div repeat.for="item of attachs" if.bind="item.type == 'Attachment'" class="item">
                 <div class="right floated content">
-                    <!-- <i class="large crosshairs icon" title="定位到消息" style="position: absolute; right: 20px;"></i> -->
+                    <i if.bind="item.atId" class="large crosshairs icon" click.delegate="fixedHandler(item)"
+                        title="定位到消息" style="cursor:pointer; position: absolute; right: 35px;"></i>
                     <div if.bind="isSuper || item.username == loginUser.username" ui-dropdown-action
                         style="position: absolute; right: 10px;" class="ui icon top right pointing dropdown"
                         title="删除附件">
