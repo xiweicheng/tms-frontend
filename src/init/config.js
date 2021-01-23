@@ -129,7 +129,8 @@ export class Config {
             let out;
             let isChatLink = /\/chat\/.+\?id=.+/g.test(wurl('hash', href));
             let isCommentLink = /\/blog\/.+\?cid=.+/g.test(wurl('hash', href));
-            if (isChatLink || isCommentLink || (utils.isAbsUrl(href) && ((wurl('hostname', href) + wurl('port', href)) != (wurl('hostname') + wurl('port'))))) {
+            let isFileDownloadLink = /\/file\/download\/.+/g.test(wurl('path', href));
+            if (isChatLink || isCommentLink || isFileDownloadLink || (utils.isAbsUrl(href) && ((wurl('hostname', href) + wurl('port', href)) != (wurl('hostname') + wurl('port'))))) {
                 out = '<a target="_blank" href="' + href + '"';
             } else {
                 out = '<a href="' + href + '"';

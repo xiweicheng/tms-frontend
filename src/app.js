@@ -87,7 +87,7 @@ export class App {
         // file online preview
         $('body').on('mouseenter', '.markdown-body a[href*="admin/file/download/"],a.tms-file-download-item', (event) => {
             event.preventDefault();
-
+            
             if (!window.tmsSysConfig || !window.tmsSysConfig.fileViewUrl) return;
 
             let $a = $(event.currentTarget);
@@ -109,7 +109,7 @@ export class App {
 
             if ($a.length === 0) return;
 
-            let url = `${$a.attr('href')}?fullfilename=${$a.text()}`;
+            let url = `${$a.attr('href')}?onlinepreview=1&fullfilename=${$a.text()}`;
 
             window.open(`${window.tmsSysConfig.fileViewUrl}/onlinePreview?url=` + encodeURIComponent(url));
         });

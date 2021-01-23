@@ -620,7 +620,7 @@ export class EmBlogWrite {
                     dataURL: data.dataURL,
                     type: data.blob.type,
                     toType: 'Blog',
-                    atId: nsCtx.b_uuid
+                    atId: this.blog ? this.blog.uuid : nsCtx.b_uuid
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
                         this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100)'
@@ -664,7 +664,7 @@ export class EmBlogWrite {
                         formData.append('toType', 'Blog');
 
                         nsCtx.b_uuid = nsCtx.b_uuid || utils.uuid();
-                        formData.append('atId', nsCtx.b_uuid);
+                        formData.append('atId', _this.blog ? _this.blog.uuid : nsCtx.b_uuid);
                     }
                 });
                 this.on("success", function (file, data) {
@@ -761,6 +761,8 @@ export class EmBlogWrite {
 
         if (!this.blog) {
             if (event.ctrlKey) {
+                // 给消息体增加uuid
+                nsCtx.b_uuid = nsCtx.b_uuid || utils.uuid();
                 $.post(`/admin/blog/create`, {
                     url: utils.getBasePath(),
                     usernames: utils.parseUsernames(content, [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])]).join(','),
@@ -768,9 +770,11 @@ export class EmBlogWrite {
                     content: content,
                     spaceId: '',
                     privated: false,
+                    uuid: nsCtx.b_uuid,
                     contentHtml: utils.md2html(content, true)
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
+                        nsCtx.b_uuid = utils.uuid();
                         this.blog = data.data;
                         toastr.success('博文保存成功!');
                         ea.publish(nsCons.EVENT_BLOG_CHANGED, {

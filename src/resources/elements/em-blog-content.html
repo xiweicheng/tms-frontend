@@ -179,7 +179,7 @@
                 <em-blog-excel blog.bind="blog"></em-blog-excel>
             </div>
             <div show.bind="blog.editor != 'Mind' && blog.editor != 'Excel' " data-id="${blog.id}" data-case="blog"
-                fancybox ref="mkbodyRef" class="markdown-body fr-view"
+                fancybox ref="mkbodyRef" class="tms-blog-content markdown-body fr-view"
                 innerhtml.bind="blog.content | parseMd:blog.space.channel:blog.editor | emoji:mkbodyRef"></div>
             <div class="footer">
                 <span click.delegate="rateHandler()" class="rate"><i
@@ -257,6 +257,10 @@
                                 <template if.bind="item.action=='Update' && item.properties=='space'">
                                     <span>更新了博文 <a href="#/blog/${item.targetId}?anchor">${item.oldValue}</a>
                                         的空间分类</span>
+                                </template>
+                                <template if.bind="item.action=='Update' && item.properties=='fileReadonly'">
+                                    <span>更新了博文 <a href="#/blog/${item.targetId}?anchor">${item.oldValue}</a>
+                                        的附件文件下载权限</span>
                                 </template>
                                 <template if.bind="item.action=='Update' && item.properties=='openEdit'">
                                     <span>${item.newValue == 'true' ? '开放' : '关闭'}了博文 <a

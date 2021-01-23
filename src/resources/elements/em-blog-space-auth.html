@@ -1,6 +1,7 @@
 <template>
     <require from="./em-blog-space-auth.css"></require>
-    <em-modal classes="small tms-md450" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
+    <em-modal classes="small tms-md450" em-modal.ref="emModal" onshow.call="showHandler($event)"
+        onapprove.call="approveHandler($event)">
         <div slot="header">${type == 'blog' ? '博文' : '空间'}可见性限制</div>
         <div slot="content" class="em-blog-space-auth">
             <div show.bind="!authO.privated" class="ui warning message">
@@ -52,6 +53,17 @@
                     </div>
                 </div>
             </div>
+            <div show.bind="type == 'blog'" class="ui divider"></div>
+            <form show.bind="type == 'blog'" class="ui form">
+                <div class="one fields">
+                    <div class="field">
+                        <div ref="chk3" class="ui checkbox">
+                            <input type="checkbox" tabindex="0" class="hidden">
+                            <label><i class="download icon"></i>附件文件不允许下载</label>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </em-modal>
 </template>

@@ -70,6 +70,9 @@ export class EmBlogSave {
 
         let space = _.find(this.spaces, { id: +spaceId });
 
+        // 给消息体增加uuid
+        nsCtx.b_uuid = nsCtx.b_uuid || utils.uuid();
+
         $.post(`/admin/blog/create`, {
             url: utils.getBasePath(),
             usernames: utils.parseUsernames(this.blogInfo.content, users, space ? space.channel : null).join(','),
@@ -78,9 +81,11 @@ export class EmBlogSave {
             spaceId: spaceId,
             dirId: dirId,
             privated: $(this.chk).checkbox('is checked'),
+            uuid: nsCtx.b_uuid,
             contentHtml: html
         }, (data, textStatus, xhr) => {
             if (data.success) {
+                nsCtx.b_uuid = utils.uuid();
                 this.blog = data.data;
                 toastr.success('博文保存成功!');
                 ea.publish(nsCons.EVENT_BLOG_CHANGED, {

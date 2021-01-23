@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 import 'textcomplete';
 import tips from 'common/common-tips';
 import emojis from 'common/common-emoji';
@@ -98,7 +101,7 @@ export class EmChannelTaskCreate {
                 type: data.blob.type,
                 toType: nsCtx.isAt ? 'User' : 'Channel',
                 toId: nsCtx.chatTo,
-                atId: nsCtx.ct_uuid
+                atId: this.taskItem ? this.taskItem.uuid : nsCtx.ct_uuid
             }, (data, textStatus, xhr) => {
                 if (data.success) {
                     this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100)'
@@ -143,14 +146,14 @@ export class EmChannelTaskCreate {
             dictCancelUpload: '取消上传',
             dictCancelUploadConfirmation: '确定要取消上传吗?',
             dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
-            init: function() {
-                this.on("sending", function(file, xhr, formData) {
+            init: function () {
+                this.on("sending", function (file, xhr, formData) {
 
                 });
-                this.on("success", function(file, data) {
+                this.on("success", function (file, data) {
                     if (data.success) {
 
-                        $.each(data.data, function(index, item) {
+                        $.each(data.data, function (index, item) {
                             _this.insertContent(`\n${item}`);
 
                         });
@@ -160,10 +163,10 @@ export class EmChannelTaskCreate {
                     }
 
                 });
-                this.on("error", function(file, errorMessage, xhr) {
+                this.on("error", function (file, errorMessage, xhr) {
                     toastr.error(errorMessage, '上传失败!');
                 });
-                this.on("complete", function(file) {
+                this.on("complete", function (file) {
                     this.removeFile(file);
                 });
             }
@@ -186,8 +189,8 @@ export class EmChannelTaskCreate {
             dictCancelUpload: '取消上传',
             dictCancelUploadConfirmation: '确定要取消上传吗?',
             dictFileTooBig: '文件过大({{filesize}}M),最大限制:{{maxFilesize}}M',
-            init: function() {
-                this.on("sending", function(file, xhr, formData) {
+            init: function () {
+                this.on("sending", function (file, xhr, formData) {
                     if (!getInputTargetCb()) {
                         this.removeAllFiles(true);
                     } else {
@@ -197,13 +200,13 @@ export class EmChannelTaskCreate {
                         // 关联频道消息UUID
                         nsCtx.ct_uuid = nsCtx.ct_uuid || utils.uuid();
                         //console.log(nsCtx.ct_uuid);
-                        formData.append('atId', nsCtx.ct_uuid);
+                        formData.append('atId', _this.taskItem ? _this.taskItem.uuid : nsCtx.ct_uuid);
                     }
                 });
-                this.on("success", function(file, data) {
+                this.on("success", function (file, data) {
                     if (data.success) {
 
-                        $.each(data.data, function(index, item) {
+                        $.each(data.data, function (index, item) {
                             if (item.type == 'Image') {
                                 _this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100) '
                                     .replace(/\{name\}/g, item.name)
@@ -224,10 +227,10 @@ export class EmChannelTaskCreate {
                     }
 
                 });
-                this.on("error", function(file, errorMessage, xhr) {
+                this.on("error", function (file, errorMessage, xhr) {
                     toastr.error(errorMessage, '上传失败!');
                 });
-                this.on("complete", function(file) {
+                this.on("complete", function (file) {
                     this.removeFile(file);
                 });
             }
@@ -319,12 +322,12 @@ export class EmChannelTaskCreate {
                     title: "插入水平分割线",
                 }, "|", {
                     name: "upload",
-                    action: function(editor) {},
+                    action: function (editor) {},
                     className: "fa fa-upload",
                     title: "上传文件",
                 }, {
                     name: "csv2md",
-                    action: function(editor) {},
+                    action: function (editor) {},
                     className: "fa fa-file-excel-o",
                     title: "上传Excel|CSV转Markdown表格",
                 }, "|", {
@@ -403,7 +406,7 @@ export class EmChannelTaskCreate {
             }
         }, { // emoji
             match: /(^|\s):([\+\-\w]*)$/,
-            search: function(term, callback) {
+            search: function (term, callback) {
                 callback($.map(emojis, (emoji) => {
                     return _.some(emoji.split('_'), (item) => {
                         return item.indexOf(term) === 0;
@@ -469,8 +472,8 @@ export class EmChannelTaskCreate {
 
         this.sending = true;
 
-         // 给消息体增加uuid
-         nsCtx.ct_uuid = nsCtx.ct_uuid || utils.uuid();
+        // 给消息体增加uuid
+        nsCtx.ct_uuid = nsCtx.ct_uuid || utils.uuid();
 
         $.post(`/admin/chat/channel/create`, {
             url: utils.getUrl(),
@@ -495,7 +498,9 @@ export class EmChannelTaskCreate {
                     id: data.data.id,
                 }, (data2, textStatus, xhr) => {
                     if (data2.success) {
-                        ea.publish(nsCons.EVENT_CHANNEL_TASK_COL_REFRESH, { name: this.col.name });
+                        ea.publish(nsCons.EVENT_CHANNEL_TASK_COL_REFRESH, {
+                            name: this.col.name
+                        });
                         this.emModal.hide();
                     } else {
                         toastr.error(data.data);
@@ -571,7 +576,9 @@ export class EmChannelTaskCreate {
                 cm.replaceRange(content, cursor, cursor);
                 cm.focus();
             }
-        } catch (err) { console.log(err); }
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     tipsActionHandler(value) {
@@ -580,7 +587,9 @@ export class EmChannelTaskCreate {
         } else if (value == '/shortcuts') {
             // this.emHotkeysModal.show();
         } else if (value == 'search') {
-            _.delay(() => { utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL); }, 200);
+            _.delay(() => {
+                utils.openNewWin(nsCons.STR_EMOJI_SEARCH_URL);
+            }, 200);
         } else {
             return true;
         }

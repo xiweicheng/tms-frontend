@@ -414,6 +414,8 @@ export class EmBlogContent {
         $('.tms-blog').off('mouseenter', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', this.userInfoMeHandler);
         $('.tms-blog').off('mouseleave', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', this.userInfoMlHandler);
 
+        $('.tms-blog').off('click', '.tms-blog-content.markdown-body a[href*="admin/file/download/"],a.tms-file-download-item', this.fileDownloadLinkClickHandler);
+
         window.removeEventListener && window.removeEventListener('message', this.messageHandler, false);
 
         this.codeClHandler = null;
@@ -705,9 +707,21 @@ export class EmBlogContent {
                 }
             }
         };
+
+        this.fileDownloadLinkClickHandler = (event) => {
+
+            if (this.blog.fileReadonly) {
+                toastr.error('附件文件下载权限不足！');
+                event.preventDefault();
+            }
+        };
+
         // 用户信息popup
         $('.tms-blog').on('mouseenter', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', this.userInfoMeHandler);
         $('.tms-blog').on('mouseleave', 'span[data-value].at-user:not(.pp-not),span[data-value].at-group:not(.pp-not),a[data-value].author:not(.pp-not)', this.userInfoMlHandler);
+        // file online preview
+        $('.tms-blog').on('click', '.tms-blog-content.markdown-body a[href*="admin/file/download/"],a.tms-file-download-item', this.fileDownloadLinkClickHandler);
+
 
         this.initHotkeys();
 
