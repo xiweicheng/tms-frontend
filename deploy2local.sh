@@ -18,15 +18,24 @@ mkdir -p $DEST/backup/tms-frontend/$DT
 cp -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page $DEST/backup/tms-frontend/$DT
 echo "backup path: $DEST/backup/tms/tms-frontend/$DT"
 
-echo "rm static/scripts & static/index.html"
+echo "rm cdn & scripts & index.html & blog.html & mind.html & excel.html"
 
+rm -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page/cdn
 rm -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page/scripts
 rm -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page/index.html
+rm -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page/blog.html
+rm -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page/mind.html
+rm -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page/excel.html
 
 echo "cp tms-frontend to local tomcat"
 
+cp -rf $SRC/cdn $DEST/webapps/ROOT/WEB-INF/classes/static/page
 cp -rf $SRC/scripts $DEST/webapps/ROOT/WEB-INF/classes/static/page
 cp -rf $SRC/index.html $DEST/webapps/ROOT/WEB-INF/classes/static/page
+cp -rf $SRC/blog.html $DEST/webapps/ROOT/WEB-INF/classes/static/page
+cp -rf $SRC/mind.html $DEST/webapps/ROOT/WEB-INF/classes/static/page
+cp -rf $SRC/excel.html $DEST/webapps/ROOT/WEB-INF/classes/static/page
+
 
 sh $DEST/bin/shutdown.sh
 sleep 5
