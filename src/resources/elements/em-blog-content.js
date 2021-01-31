@@ -609,6 +609,10 @@ export class EmBlogContent {
 
         this.mkDblHandler = (event) => {
             if (event.ctrlKey && event.shiftKey) {
+                if (this.blog.locker) {
+                    toastr.info(`当前博文处于编辑中，请稍后再试...`);
+                    return;
+                }
                 if (this.blog.openEdit || this.isSuper || this.blog.creator.username == this.loginUser.username) {
                     this.editHandler();
                 }
@@ -786,9 +790,12 @@ export class EmBlogContent {
 
     initHotkeys() {
 
-
         this.docKuEHandler = (evt) => { // edit
             evt.preventDefault();
+            if (this.blog.locker) {
+                toastr.info(`当前博文处于编辑中，请稍后再试...`);
+                return;
+            }
             if (this.blog.openEdit || this.isSuper || this.blog.creator.username == this.loginUser.username) {
                 this.throttleEditHandler();
             }
