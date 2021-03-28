@@ -25,8 +25,8 @@ export class AttrPastable {
                 atId: newValue
             }, (data, textStatus, xhr) => {
                 if (data.success) {
-                    $(this.element).insertAtCaret('![{name}]({baseURL}{path}{uuidName}?width=100)'
-                        .replace(/\{name\}/g, data.data.name)
+                    $(this.element).insertAtCaret('![{name}]({baseURL}{path}{uuidName}?width=100)\r\n'
+                        .replace(/\{name\}/g, utils.replaceMdChar(data.data.name))
                         .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
                         .replace(/\{path\}/g, data.data.path)
                         .replace(/\{uuidName\}/g, data.data.uuidName));

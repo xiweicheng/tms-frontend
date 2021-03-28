@@ -76,14 +76,14 @@ export class AttrDropzone {
 
                             $.each(data.data, function (index, item) {
                                 if (item.type == 'Image') {
-                                    $(target).insertAtCaret('![{name}]({baseURL}{path}{uuidName}?width=100) '
-                                        .replace(/\{name\}/g, item.name)
+                                    $(target).insertAtCaret('![{name}]({baseURL}{path}{uuidName}?width=100)\r\n'
+                                        .replace(/\{name\}/g, utils.replaceMdChar(item.name))
                                         .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
                                         .replace(/\{path\}/g, item.path)
                                         .replace(/\{uuidName\}/g, item.uuidName));
                                 } else {
-                                    $(target).insertAtCaret('[{name}]({baseURL}{path}{uuidName}) '
-                                        .replace(/\{name\}/g, item.name)
+                                    $(target).insertAtCaret('[{name}]({baseURL}{path}{uuidName})\r\n'
+                                        .replace(/\{name\}/g, utils.replaceMdChar(item.name))
                                         .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
                                         .replace(/\{path\}/g, "admin/file/download/")
                                         .replace(/\{uuidName\}/g, item.uuid));

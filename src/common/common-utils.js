@@ -843,7 +843,21 @@ export class CommonUtils {
             return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
         return uuid;
-    };
+    }
+
+    // 替换mardown特殊字符(){}[]
+    replaceMdChar(s) {
+
+        var _s = s;
+        _s = _.replace(_s, /\(/g, '\\(');
+        _s = _.replace(_s, /\)/g, '\\)');
+        _s = _.replace(_s, /\[/g, '\\[');
+        _s = _.replace(_s, /\]/g, '\\]');
+        _s = _.replace(_s, /\{/g, '\\{');
+        _s = _.replace(_s, /\}/g, '\\}');
+
+        return _s;
+    }
 
 }
 
