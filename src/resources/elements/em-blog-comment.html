@@ -31,7 +31,7 @@
                     <div show.bind="item.editor != 'Mind' && item.editor != 'Excel' && !item.isEditing"
                         data-id="${item.id}" data-case="comment" fancybox ref="mkbodyRef"
                         class="text markdown-body fr-view"
-                        innerhtml.bind="item.content | parseMd:blog.space.channel | emoji:mkbodyRef"></div>
+                        innerhtml.bind="item.content | parseMd:blog.space.channel:item.editor | emoji:mkbodyRef"></div>
                     <div class="textcomplete-container" show.bind="item.isEditing">
                         <div class="append-to"></div>
                     </div>
