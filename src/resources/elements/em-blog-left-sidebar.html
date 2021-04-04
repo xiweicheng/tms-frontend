@@ -132,7 +132,35 @@
                                                 <div if.bind="isSuper || space.creator.username == loginUser.username"
                                                     ui-dropdown class="ui right pointing dropdown">
                                                     <i class="large ellipsis horizontal icon"></i>
-                                                    <div class="menu">
+                                                    <div class="left menu">
+                                                        <div class="item">
+                                                            <i class="dropdown icon"></i>
+                                                            <span class="text"
+                                                                click.delegate="createHandler(space, dir)">创建博文</span>
+                                                            <div class="menu">
+                                                                <div class="header">选择编辑器</div>
+                                                                <a class="item"
+                                                                    click.delegate="createHtmlHandler(space, dir)">
+                                                                    HTML
+                                                                </a>
+                                                                <a class="item"
+                                                                    click.delegate="createHandler(space, dir)">
+                                                                    Markdown
+                                                                </a>
+                                                                <a class="item"
+                                                                    click.delegate="createExcelHandler(space, dir)">
+                                                                    电子表格
+                                                                </a>
+                                                                <a class="item"
+                                                                    click.delegate="createMindHandler(space, dir)">
+                                                                    思维导图
+                                                                </a>
+                                                                <div class="ui divider"></div>
+                                                                <a click.delegate="selectTplHandler(space, dir)" class="item">
+                                                                    基于模板
+                                                                </a>
+                                                            </div>
+                                                        </div>
                                                         <div class="item" click.delegate="editDirHandler(dir, space)"><i
                                                                 class="icon edit"></i>编辑</div>
                                                         <!-- <div class="item" click.delegate="authSpaceHandler(space)"><i class="lock icon"></i>限制</div> -->
@@ -165,7 +193,30 @@
                                 <div if.bind="isSuper || space.creator.username == loginUser.username" ui-dropdown
                                     class="ui right pointing dropdown">
                                     <i class="large ellipsis horizontal icon"></i>
-                                    <div class="menu">
+                                    <div class="left menu">
+                                        <div class="item">
+                                            <i class="dropdown icon"></i>
+                                            <span class="text" click.delegate="createHandler(space)">创建博文</span>
+                                            <div class="menu">
+                                                <div class="header">选择编辑器</div>
+                                                <a class="item" click.delegate="createHtmlHandler(space)">
+                                                    HTML
+                                                </a>
+                                                <a class="item" click.delegate="createHandler(space)">
+                                                    Markdown
+                                                </a>
+                                                <a class="item" click.delegate="createExcelHandler(space)">
+                                                    电子表格
+                                                </a>
+                                                <a class="item" click.delegate="createMindHandler(space)">
+                                                    思维导图
+                                                </a>
+                                                <div class="ui divider"></div>
+                                                <a click.delegate="selectTplHandler(space)" class="item">
+                                                    基于模板
+                                                </a>
+                                            </div>
+                                        </div>
                                         <div class="item" click.delegate="createDirHandler(space)"><i
                                                 class="icon folder outline"></i>创建分类</div>
                                         <div class="item" click.delegate="updateChannelHandler(space)"><i
@@ -223,4 +274,5 @@
     <em-blog-space-dir-create view-model.ref="spaceDirCreateVm"></em-blog-space-dir-create>
     <em-blog-space-dir-edit view-model.ref="spaceDirEditVm"></em-blog-space-dir-edit>
     <em-blog-space-channel-edit view-model.ref="spaceChannelEditVm"></em-blog-space-channel-edit>
+    <em-blog-tpl-select view-model.ref="blogTplSelectMd"></em-blog-tpl-select>
 </template>

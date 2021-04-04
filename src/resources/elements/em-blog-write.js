@@ -84,6 +84,9 @@ export class EmBlogWrite {
 
         this.subscribe = ea.subscribe(nsCons.EVENT_MODAAL_AFTER_OPEN, (payload) => {
             if (payload.id == EmBlogWrite.NAME) {
+
+                // console.log(payload);
+
                 nsCtx.isModaalOpening = true;
                 this.init();
             }
@@ -91,7 +94,11 @@ export class EmBlogWrite {
         this.subscribe2 = ea.subscribe(nsCons.EVENT_MODAAL_BEFORE_CLOSE, (payload) => {
             if (payload.id == EmBlogWrite.NAME) {
 
+                // console.log(payload);
+
                 nsCtx.isModaalOpening = false;
+                nsCtx.newBlogSpace = null;
+                nsCtx.newBlogDir = null;
 
                 if (this.stompClient) {
                     this.stompClient.disconnect(() => {
@@ -760,7 +767,7 @@ export class EmBlogWrite {
         }
 
         if (!this.blog) {
-            if (event.ctrlKey) {
+            if (event.ctrlKey || nsCtx.newBlogSpace) {
                 // 给消息体增加uuid
                 nsCtx.b_uuid = nsCtx.b_uuid || utils.uuid();
                 $.post(`/admin/blog/create`, {
@@ -768,7 +775,8 @@ export class EmBlogWrite {
                     usernames: utils.parseUsernames(content, [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])]).join(','),
                     title: title,
                     content: content,
-                    spaceId: '',
+                    spaceId: nsCtx.newBlogSpace ? nsCtx.newBlogSpace.id : '',
+                    dirId: nsCtx.newBlogDir ? nsCtx.newBlogDir.id : '',
                     privated: false,
                     uuid: nsCtx.b_uuid,
                     contentHtml: utils.md2html(content, true)

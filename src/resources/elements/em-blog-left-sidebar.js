@@ -17,6 +17,8 @@ export class EmBlogLeftSidebar {
     filter = ''; // 过滤查找条件
     folded = false;
 
+    baseRes = utils.getResourceBase();
+
     spaceStow = {
         name: '我的收藏',
         open: false
@@ -742,8 +744,34 @@ export class EmBlogLeftSidebar {
         this.folded && $(this.leftBarRef).css('left', -$(this.leftBarRef).width());
     }
 
-    // sysLinkHandler(item) {
-    //     $.post('/admin/link/count/inc', { id: item.id });
-    //     return true;
-    // }
+    createHandler(space, dir) {
+        if (!nsCtx.isModaalOpening) {
+            nsCtx.newBlogSpace = space;
+            nsCtx.newBlogDir = dir;
+            // console.log(nsCtx.newBlogSpace);
+            $('a[href="#modaal-blog-write"]').click();
+        }
+    }
+
+    createHtmlHandler(space, dir) {
+        $('.em-blog-write-html > iframe').attr('src', this.baseRes + 'blog.html' + '?_=' + new Date().getTime() + '&spaceId=' + (space ? space.id : '') + '&dirId=' + (dir ? dir.id : ''));
+        $('a[href="#modaal-blog-write-html"]').click();
+        return false;
+    }
+
+    createMindHandler(space, dir) {
+        $('.em-blog-write-mind > iframe').attr('src', this.baseRes + 'mind.html' + '?_=' + new Date().getTime() + '&spaceId=' + (space ? space.id : '') + '&dirId=' + (dir ? dir.id : ''));
+        $('a[href="#modaal-blog-write-mind"]').click();
+        return false;
+    }
+
+    createExcelHandler(space, dir) {
+        $('.em-blog-write-excel > iframe').attr('src', this.baseRes + 'excel.html' + '?_=' + new Date().getTime() + '&spaceId=' + (space ? space.id : '') + '&dirId=' + (dir ? dir.id : ''));
+        $('a[href="#modaal-blog-write-excel"]').click();
+        return false;
+    }
+
+    selectTplHandler(space, dir) {
+        this.blogTplSelectMd.show(space, dir);
+    }
 }
