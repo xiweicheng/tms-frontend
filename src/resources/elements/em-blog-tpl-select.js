@@ -40,16 +40,18 @@ export class EmBlogTplSelect {
     unbind() {
         this.space = null;
         this.dir = null;
+        this.blog = null;
     }
 
     approveHandler(modal) {
 
     }
 
-    show(space, dir) {
+    show(space, dir, blog) {
 
         this.space = space;
         this.dir = dir;
+        this.blog = blog;
 
         this.emModal.show({
             hideOnApprove: true,
@@ -59,17 +61,18 @@ export class EmBlogTplSelect {
 
     createHandler(item) {
         if (item.editor == 'Html') {
-            $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.dir ? this.dir.id : ''));
+            $('.em-blog-write-html > iframe').attr('src', utils.getResourceBase() + 'blog.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.dir ? this.dir.id : '') + '&pid=' + (this.blog ? this.blog.id : ''));
             $('a[href="#modaal-blog-write-html"]').click();
         } else if (item.editor == 'Mind') {
-            $('.em-blog-write-mind > iframe').attr('src', utils.getResourceBase() + 'mind.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.dir ? this.dir.id : ''));
+            $('.em-blog-write-mind > iframe').attr('src', utils.getResourceBase() + 'mind.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.dir ? this.dir.id : '') + (this.blog ? this.blog.id : ''));
             $('a[href="#modaal-blog-write-mind"]').click();
         } else if (item.editor == 'Excel') {
-            $('.em-blog-write-excel > iframe').attr('src', utils.getResourceBase() + 'excel.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.this.dir ? this.dir.id : ''));
+            $('.em-blog-write-excel > iframe').attr('src', utils.getResourceBase() + 'excel.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.this.dir ? this.dir.id : '') + (this.blog ? this.blog.id : ''));
             $('a[href="#modaal-blog-write-excel"]').click();
         } else if (!nsCtx.isModaalOpening) {
             nsCtx.newBlogSpace = this.space;
             nsCtx.newBlogDir = this.dir;
+            nsCtx.newBlogBlog = this.blog;
             ea.publish(nsCons.EVENT_BLOG_ACTION, {
                 action: 'copy',
                 id: item.id

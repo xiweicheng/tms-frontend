@@ -1,79 +1,449 @@
 .em-blog-left-sidebar {
     &.ui.left.sidebar {
         transition: left 0.15s ease-out 0s;
+
         @media only screen and (max-width: 767px) {
             z-index: 104;
+
             &.mobile-hide {
                 // width: 0;
                 left: -300px;
             }
         }
+
         width: 300px;
         top: 55px;
         left: 0;
-        height: e("calc(100% - 55px)")!important;
+        height: e("calc(100% - 55px)") !important;
         background-color: #f5f5f5;
-        box-shadow: none!important;
+        box-shadow: none !important;
         overflow-x: hidden;
+
         .tms-body {
             .ui.space.list {
                 padding: 16px;
                 padding-left: 15px;
                 margin-bottom: 0px;
                 padding-bottom: 8px;
+
                 >.item>.content>.dirs>.list.dir {
                     margin-top: 3px; // padding-top: .25em;
                     padding-top: 5px; // padding-bottom: 0;
                     position: relative;
-                    padding-left: 5px;
-                    left: -5px; // height: 21px;
+                    padding-left: 3px;
+                    //left: -5px; // height: 21px;
+
                     &:hover {
                         box-shadow: 0px 0px 2px -1px #5791cb;
+
                         >.actions {
                             display: inline-block;
                         }
                     }
+
                     >.icon {
                         display: table-cell;
                         padding-right: 0;
                         position: relative;
                         left: -6px; // top: -4px;
                     }
+
                     >.content {
                         display: table-cell; // display: inline-block;
                         white-space: nowrap;
-                        overflow: hidden;
+                        // overflow: hidden;
                         text-overflow: ellipsis; // max-width: 200px;
                         width: 225px;
                         max-width: 225px;
+
                         // min-width: 225px;
+                        >span {
+                            display: block;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
                     }
+
                     >.actions {
                         display: none;
                         position: absolute;
                         right: 0;
-                        top: -2px;
+                        top: 3px;
+                    }
+
+                    .item.top {
+                        &:hover {
+                            >.actions {
+                                display: inline-block;
+                            }
+                        }
+
+                        .actions {
+                            display: none;
+                            position: absolute;
+                            top: 3px;
+                            right: 0;
+                        }
+
+                        >.list {
+                            >.item.child {
+                                padding-top: 5px;
+                                padding-bottom: 5px;
+                                font-weight: normal;
+
+                                >a {
+                                    display: block;
+                                    white-space: nowrap;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                }
+
+                                &.active {
+                                    font-weight: bold;
+
+                                    >a {
+                                        color: black;
+                                    }
+                                }
+
+                                &:hover {
+                                    .actions {
+                                        display: inline-block;
+                                    }
+                                }
+
+                                .actions {
+                                    display: none;
+                                    position: absolute;
+                                    top: 3px;
+                                    right: 0;
+                                }
+
+                                >.list {
+                                    >.item.child2 {
+                                        padding-top: 5px;
+                                        padding-bottom: 5px;
+                                        font-weight: normal;
+
+                                        >a {
+                                            display: block;
+                                            white-space: nowrap;
+                                            overflow: hidden;
+                                            text-overflow: ellipsis;
+                                        }
+
+                                        &.active {
+                                            font-weight: bold;
+
+                                            >a {
+                                                color: black;
+                                            }
+                                        }
+
+                                        &:hover {
+                                            .actions {
+                                                display: inline-block;
+                                            }
+                                        }
+
+                                        .actions {
+                                            display: none;
+                                            position: absolute;
+                                            top: 3px;
+                                            right: 0;
+                                        }
+
+                                        >.list {
+                                            >.item.child3 {
+                                                padding-top: 5px;
+                                                padding-bottom: 5px;
+                                                font-weight: normal;
+
+                                                >a {
+                                                    display: block;
+                                                    white-space: nowrap;
+                                                    overflow: hidden;
+                                                    text-overflow: ellipsis;
+                                                }
+
+                                                &.active {
+                                                    font-weight: bold;
+
+                                                    >a {
+                                                        color: black;
+                                                    }
+                                                }
+
+                                                &:hover {
+                                                    .actions {
+                                                        display: inline-block;
+                                                    }
+                                                }
+
+                                                .actions {
+                                                    display: none;
+                                                    position: absolute;
+                                                    top: 3px;
+                                                    right: 0;
+                                                }
+
+                                                >.list {
+                                                    >.item.child4 {
+                                                        padding-top: 5px;
+                                                        padding-bottom: 5px;
+                                                        font-weight: normal;
+
+                                                        >a {
+                                                            display: block;
+                                                            white-space: nowrap;
+                                                            overflow: hidden;
+                                                            text-overflow: ellipsis;
+                                                        }
+
+                                                        &.active {
+                                                            font-weight: bold;
+
+                                                            >a {
+                                                                color: black;
+                                                            }
+                                                        }
+
+                                                        &:hover {
+                                                            .actions {
+                                                                display: inline-block;
+                                                            }
+                                                        }
+
+                                                        .actions {
+                                                            display: none;
+                                                            position: absolute;
+                                                            top: 3px;
+                                                            right: 0;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+
+                >.item {
+                    &.space-item {
+                        .item.top {
+                            position: relative;
+
+                            &:hover {
+                                .actions {
+                                    display: inline-block;
+                                }
+                            }
+
+                            >.icon {
+                                padding-right: 0;
+                                position: relative;
+                                top: -1px;
+                            }
+
+                            >.content {
+                                white-space: nowrap;
+                                // overflow: hidden;
+                                text-overflow: ellipsis;
+                                width: 245px;
+                                max-width: 245px;
+
+                                >span {
+                                    overflow: hidden;
+                                    width: 100%;
+                                    // max-width: 245px;
+                                    display: inline-block;
+                                    text-overflow: ellipsis;
+                                }
+                            }
+
+                            .actions {
+                                display: none;
+                                position: absolute;
+                                right: 0;
+                                top: 3px;
+                            }
+
+                            >.list {
+                                >.item.child {
+                                    padding-top: 5px;
+                                    padding-bottom: 5px;
+                                    font-weight: normal;
+
+                                    >a {
+                                        display: block;
+                                        white-space: nowrap;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                    }
+
+                                    &.active {
+                                        font-weight: bold;
+
+                                        >a {
+                                            color: black;
+                                        }
+                                    }
+
+                                    &:hover {
+                                        .actions {
+                                            display: inline-block;
+                                        }
+                                    }
+
+                                    .actions {
+                                        display: none;
+                                        position: absolute;
+                                        top: 3px;
+                                        right: 0;
+                                    }
+
+                                    >.list {
+                                        >.item.child2 {
+                                            padding-top: 5px;
+                                            padding-bottom: 5px;
+                                            font-weight: normal;
+
+                                            >a {
+                                                display: block;
+                                                white-space: nowrap;
+                                                overflow: hidden;
+                                                text-overflow: ellipsis;
+                                            }
+
+                                            &.active {
+                                                font-weight: bold;
+
+                                                >a {
+                                                    color: black;
+                                                }
+                                            }
+
+                                            &:hover {
+                                                .actions {
+                                                    display: inline-block;
+                                                }
+                                            }
+
+                                            .actions {
+                                                display: none;
+                                                position: absolute;
+                                                top: 3px;
+                                                right: 0;
+                                            }
+
+                                            >.list {
+                                                >.item.child3 {
+                                                    padding-top: 5px;
+                                                    padding-bottom: 5px;
+                                                    font-weight: normal;
+
+                                                    >a {
+                                                        display: block;
+                                                        white-space: nowrap;
+                                                        overflow: hidden;
+                                                        text-overflow: ellipsis;
+                                                    }
+
+                                                    &.active {
+                                                        font-weight: bold;
+
+                                                        >a {
+                                                            color: black;
+                                                        }
+                                                    }
+
+                                                    &:hover {
+                                                        .actions {
+                                                            display: inline-block;
+                                                        }
+                                                    }
+
+                                                    .actions {
+                                                        display: none;
+                                                        position: absolute;
+                                                        top: 3px;
+                                                        right: 0;
+                                                    }
+
+                                                    >.list {
+                                                        >.item.child4 {
+                                                            padding-top: 5px;
+                                                            padding-bottom: 5px;
+                                                            font-weight: normal;
+
+                                                            >a {
+                                                                display: block;
+                                                                white-space: nowrap;
+                                                                overflow: hidden;
+                                                                text-overflow: ellipsis;
+                                                            }
+
+                                                            &.active {
+                                                                font-weight: bold;
+
+                                                                >a {
+                                                                    color: black;
+                                                                }
+                                                            }
+
+                                                            &:hover {
+                                                                .actions {
+                                                                    display: inline-block;
+                                                                }
+                                                            }
+
+                                                            .actions {
+                                                                display: none;
+                                                                position: absolute;
+                                                                top: 3px;
+                                                                right: 0;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 >.item {
                     position: relative;
+
                     &:hover {
                         box-shadow: 0px 0px 2px -1px #5791cb;
-                        >.actions {
+
+                        .actions {
                             display: inline-block;
                         }
                     }
+
                     >.icon {
                         padding-right: 0;
                         position: relative;
                         top: -1px;
                     }
+
                     >.content {
-                        white-space: nowrap; 
+                        white-space: nowrap;
                         // overflow: hidden;
                         text-overflow: ellipsis;
-                        width: 245px;;
+                        width: 245px;
+                        ;
                         max-width: 245px;
+
                         >span {
                             overflow: hidden;
                             width: 100%;
@@ -82,77 +452,277 @@
                             text-overflow: ellipsis;
                         }
                     }
-                    >.actions {
+
+                    .actions {
                         display: none;
                         position: absolute;
                         right: 0;
-                        top: -2px;
+                        top: 3px;
                     }
                 }
+
                 .ui.bulleted.list {
                     padding-left: 16px;
+
                     >div.item {
                         // max-width: 220px;
                         padding-top: 5px;
                         padding-bottom: 5px;
+
                         >a {
                             display: block;
                             white-space: nowrap;
                             overflow: hidden;
                             text-overflow: ellipsis;
-                            // min-width: 210px;
+
+                            &:hover {
+                                box-shadow: 0px 0px 2px -1px #5791cb;
+                                background-color: #e8e1e0;
+                            }
                         }
+
                         &:before {
                             color: #999;
                         }
+
                         &.active {
                             font-weight: bold;
+
                             >a {
                                 color: black;
                             }
                         }
+
                         &:hover {
-                            // box-shadow: 0px 0px 2px -1px #5791cb;
-                            background-color: rgba(232, 224, 224, 0.5);
+                            box-shadow: -1px 0px 1px -1px #838080;
                         }
+
                         &.aurelia-hide {
-                            display: none!important;
+                            display: none !important;
                         }
                     }
                 }
             }
+
             .ui.bulleted.list.no-space {
                 padding: 20px;
                 margin-top: 0px;
                 padding-top: 0px;
-                >div.item {
+
+                div.item {
+                    >a {
+                        &:hover {
+                            box-shadow: 0px 0px 2px -1px #5791cb;
+                            background-color: #e8e1e0;
+                        }
+                    }
+                    &:hover {
+                        box-shadow: -1px 0px 1px -1px #838080;
+                    }
+                }
+
+                >div.item.top {
                     padding-top: 5px;
                     padding-bottom: 5px;
+
                     >a {
                         display: block;
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
-                        // min-width: 242px;
                     }
+
                     &:before {
                         color: #999;
                     }
+
                     &.active {
-                        font-weight: bold;
                         >a {
+                            font-weight: bold;
                             color: black;
                         }
                     }
+
                     &:hover {
-                        // box-shadow: 0px 0px 2px -1px #5791cb;
-                        background-color: rgba(232, 224, 224, 0.5);
+                        .actions {
+                            display: inline-block;
+                        }
+                    }
+
+                    .actions {
+                        display: none;
+                        position: absolute;
+                        top: 3px;
+                        right: 0;
+                    }
+
+                    >.list {
+                        >.item.child {
+                            padding-top: 5px;
+                            padding-bottom: 5px;
+
+                            >a {
+                                display: block;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                            }
+
+                            &.active {
+                                font-weight: bold;
+
+                                >a {
+                                    color: black;
+                                }
+                            }
+
+                            &:hover {
+                                .actions {
+                                    display: inline-block;
+                                }
+                            }
+
+                            .actions {
+                                display: none;
+                                position: absolute;
+                                top: 3px;
+                                right: 0;
+                            }
+
+                            >.list {
+                                >.item.child2 {
+                                    padding-top: 5px;
+                                    padding-bottom: 5px;
+                                    font-weight: normal;
+
+                                    >a {
+                                        display: block;
+                                        white-space: nowrap;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                    }
+
+                                    &.active {
+                                        font-weight: bold;
+
+                                        >a {
+                                            color: black;
+                                        }
+                                    }
+
+                                    &:hover {
+                                        .actions {
+                                            display: inline-block;
+                                        }
+                                    }
+
+                                    .actions {
+                                        display: none;
+                                        position: absolute;
+                                        top: 3px;
+                                        right: 0;
+                                    }
+
+                                    >.list {
+                                        >.item.child3 {
+                                            padding-top: 5px;
+                                            padding-bottom: 5px;
+                                            font-weight: normal;
+
+                                            >a {
+                                                display: block;
+                                                white-space: nowrap;
+                                                overflow: hidden;
+                                                text-overflow: ellipsis;
+                                            }
+
+                                            &.active {
+                                                font-weight: bold;
+
+                                                >a {
+                                                    color: black;
+                                                }
+                                            }
+
+                                            &:hover {
+                                                .actions {
+                                                    display: inline-block;
+                                                }
+                                            }
+
+                                            .actions {
+                                                display: none;
+                                                position: absolute;
+                                                top: 3px;
+                                                right: 0;
+                                            }
+
+                                            >.list {
+                                                >.item.child4 {
+                                                    padding-top: 5px;
+                                                    padding-bottom: 5px;
+                                                    font-weight: normal;
+
+                                                    >a {
+                                                        display: block;
+                                                        white-space: nowrap;
+                                                        overflow: hidden;
+                                                        text-overflow: ellipsis;
+                                                    }
+
+                                                    &.active {
+                                                        font-weight: bold;
+
+                                                        >a {
+                                                            color: black;
+                                                        }
+                                                    }
+
+                                                    &:hover {
+                                                        .actions {
+                                                            display: inline-block;
+                                                        }
+                                                    }
+
+                                                    .actions {
+                                                        display: none;
+                                                        position: absolute;
+                                                        top: 3px;
+                                                        right: 0;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .ui.bulleted.list {
+
+                    >div.item {
+
+                        &.active {
+                            font-weight: bold;
+
+                            >a {
+                                color: black;
+                            }
+                        }
+
+                        &.aurelia-hide {
+                            display: none !important;
+                        }
                     }
                 }
             }
-            height: e("calc(100% - 40px)")!important;
+
+            height: e("calc(100% - 40px)") !important;
             overflow-y: auto; // fix firefix scrollbar issue
         }
+
         .tms-footer {
             position: absolute;
             width: 100%;
@@ -160,18 +730,22 @@
             left: 0;
             bottom: 0;
             background-color: #efe4e4;
+
             .ui.menu {
                 border: none;
                 border-radius: 0;
                 background-color: #e8e0e0;
+
                 >.item {
                     &.tms-search {
                         position: relative;
                         height: 40px;
                         width: 207px;
+
                         &:before {
                             width: 0;
                         }
+
                         >.remove.icon {
                             position: absolute;
                             right: 5px;
@@ -181,17 +755,27 @@
                 }
             }
         }
+
         .tms-split {
             width: 3px;
             height: e("calc(100% - 40px)");
             position: absolute;
             top: 0;
             right: 0;
-            // background-color: red;
             cursor: ew-resize;
+
             &:hover {
                 background-color: #e8e0e0;
             }
+        }
+
+        .ui.dropdown .menu>.header {
+            margin-top: 1rem !important;
+            margin-bottom: 0.75rem !important;
+        }
+
+        .ui.list .list .item.aurelia-hide {
+            display: none !important;
         }
     }
 
@@ -202,18 +786,17 @@
         right: 8px;
         margin: 0;
         opacity: 0.6;
+
         &:hover {
             opacity: 1;
         }
     }
+
     &:hover {
         .ui.button.fold {
             display: block;
         }
     }
-    // &.bar-fold {
-    //     left: -300px!important;
-    // }
 }
 
 @media only screen and (max-width: 767px) {

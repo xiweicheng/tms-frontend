@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 
 @containerless
 export class EmBlogSpaceUpdate {
@@ -17,7 +20,10 @@ export class EmBlogSpaceUpdate {
 
     show(blog) {
         this.blog = blog;
-        this.emModal.show({ hideOnApprove: false, autoDimmer: true });
+        this.emModal.show({
+            hideOnApprove: false,
+            autoDimmer: true
+        });
     }
 
     showHandler() {
@@ -44,6 +50,7 @@ export class EmBlogSpaceUpdate {
                 }
                 ea.publish(nsCons.EVENT_BLOG_CHANGED, {
                     action: 'updated',
+                    pid: this.blog.pid,
                     blog: data.data
                 });
                 modal.hide();
@@ -59,7 +66,9 @@ export class EmBlogSpaceUpdate {
                 $(this.spacesRef).dropdown('clear').dropdown({
                     onChange: (value, text, $choice) => {
                         if (!!value) {
-                            this.space = _.find(this.spaces, { id: +value });
+                            this.space = _.find(this.spaces, {
+                                id: +value
+                            });
                         } else {
                             this.space = null;
                         }

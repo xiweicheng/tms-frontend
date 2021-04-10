@@ -99,6 +99,7 @@ export class EmBlogWrite {
                 nsCtx.isModaalOpening = false;
                 nsCtx.newBlogSpace = null;
                 nsCtx.newBlogDir = null;
+                nsCtx.newBlogBlog = null;
 
                 if (this.stompClient) {
                     this.stompClient.disconnect(() => {
@@ -767,7 +768,7 @@ export class EmBlogWrite {
         }
 
         if (!this.blog) {
-            if (event.ctrlKey || nsCtx.newBlogSpace) {
+            if (event.ctrlKey || nsCtx.newBlogSpace || nsCtx.newBlogBlog) {
                 // 给消息体增加uuid
                 nsCtx.b_uuid = nsCtx.b_uuid || utils.uuid();
                 $.post(`/admin/blog/create`, {
@@ -777,6 +778,7 @@ export class EmBlogWrite {
                     content: content,
                     spaceId: nsCtx.newBlogSpace ? nsCtx.newBlogSpace.id : '',
                     dirId: nsCtx.newBlogDir ? nsCtx.newBlogDir.id : '',
+                    pid: nsCtx.newBlogBlog ? nsCtx.newBlogBlog.id : '',
                     privated: false,
                     uuid: nsCtx.b_uuid,
                     contentHtml: utils.md2html(content, true)

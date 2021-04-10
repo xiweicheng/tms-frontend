@@ -16,7 +16,8 @@
                             <div show.bind="spaceStow.open" class="ui bulleted list">
                                 <template repeat.for="item of blogStows | sort:'blog.title'">
                                     <div if.bind="item.blog.status != 'Deleted'" show.bind="!item._hidden"
-                                        data-id="${item.blog.id}"
+                                        data-id="${item.blog.id}" data-pid="${item.blog.pid}"
+                                        data-has-child="${item.blog.hasChild}"
                                         class="item blog-item ${item.blog.id == $parent.blog.id ? 'active' : ''}">
                                         <a title="${item.blog.title}" href="#/blog/${item.blog.id}">
                                             <i class="icons">
@@ -41,7 +42,7 @@
                                 <template repeat.for="blog of blogs | hasProp:'_openTime' | sort:'_openTime':true | take:15 &
                                     signal:'sg-recent-open-refresh'">
                                     <div if.bind="blog.status != 'Deleted'" show.bind="!blog._hidden"
-                                        data-id="${blog.id}"
+                                        data-id="${blog.id}" data-pid="${blog.pid}" data-has-child="${blog.hasChild}"
                                         class="item blog-item ${blog.id == $parent.blog.id ? 'active' : ''}">
                                         <a title="${blog.title}" href="#/blog/${blog.id}">
                                             <i class="icons">
@@ -63,9 +64,10 @@
                                 ${spaceRecent.name}
                             </span>
                             <div show.bind="spaceRecent.open" class="ui bulleted list">
-                                <template repeat.for="blog of blogs | sort:'updateDate':true | take:20">
+                                <template repeat.for="blog of blogs | sort:'updateDate':true | take:20 &
+                                signal:'sg-recent-update-refresh'">
                                     <div if.bind="blog.status != 'Deleted'" show.bind="!blog._hidden"
-                                        data-id="${blog.id}"
+                                        data-id="${blog.id}" data-pid="${blog.pid}" data-has-child="${blog.hasChild}"
                                         class="item blog-item ${blog.id == $parent.blog.id ? 'active' : ''}">
                                         <a title="${blog.title}" href="#/blog/${blog.id}">
                                             <i class="icons">
@@ -112,19 +114,309 @@
                                                 </span>
                                                 <div show.bind="dir.open"
                                                     class="ui bulleted list tms-sortable-elem-blogs"
-                                                    data-id="${space.id}" data-dir-id=${dir.id}
+                                                    data-id="${space.id}" data-dir-id="${dir.id}"
                                                     style="padding-left: 0;">
                                                     <div repeat.for="item of dir.blogs | sortBlog" data-id="${item.id}"
+                                                        data-pid="${item.pid}" data-has-child="${item.hasChild}"
                                                         data-space-id="${space.id}" data-dir-id="${dir.id}"
                                                         data-sort="${item.sort}" show.bind="!item._hidden"
-                                                        class="item blog-item ${item.id == blog.id ? 'active' : ''}">
+                                                        class="item top blog-item ${item.id == blog.id ? 'active' : ''}">
                                                         <a title="${item.title}" href="#/blog/${item.id}">
-                                                            <i class="icons">
-                                                                <i class="file outline icon"></i>
+                                                            <i class="icons" click.delegate="loadChildBlogs(item)">
+                                                                <i if.bind="!item.hasChild"
+                                                                    class="file outline icon"></i>
+                                                                <i if.bind="item.hasChild"
+                                                                    class="${item._open ? 'minus' : 'plus'} square outline icon"></i>
                                                                 <i show.bind="item.privated"
                                                                     class="corner lock icon"></i>
                                                             </i>
                                                             ${item.title}</a>
+                                                        <div class="actions">
+                                                            <div if.bind="isSuper || item.creator.username == loginUser.username"
+                                                                ui-dropdown class="ui right pointing dropdown">
+                                                                <i class="large ellipsis horizontal icon"></i>
+                                                                <div class="left menu">
+                                                                    <div class="item">
+                                                                        <i class="dropdown icon"></i>
+                                                                        <span class="text"
+                                                                            click.delegate="createHandler(space, dir, item)">创建博文</span>
+                                                                        <div class="menu">
+                                                                            <div class="header">选择编辑器</div>
+                                                                            <a class="item"
+                                                                                click.delegate="createHtmlHandler(space, dir, item)">
+                                                                                HTML
+                                                                            </a>
+                                                                            <a class="item"
+                                                                                click.delegate="createHandler(space, dir, item)">
+                                                                                Markdown
+                                                                            </a>
+                                                                            <a class="item"
+                                                                                click.delegate="createExcelHandler(space, dir, item)">
+                                                                                电子表格
+                                                                            </a>
+                                                                            <a class="item"
+                                                                                click.delegate="createMindHandler(space, dir, item)">
+                                                                                思维导图
+                                                                            </a>
+                                                                            <div class="ui divider"></div>
+                                                                            <a click.delegate="selectTplHandler(space, dir, item)"
+                                                                                class="item">
+                                                                                基于模板
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="item" style="color: red;"
+                                                                        click.delegate="delBlogHandler(item)"><i
+                                                                            class="trash outline icon"></i>删除博文</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div show.bind="item.hasChild && item._open"
+                                                            class="ui bulleted list tms-sortable-elem-blogs"
+                                                            style="padding-left: 3px; padding-bottom: 0; padding-right: 0;"
+                                                            data-id="${space.id}" data-dir-id="${dir.id}">
+                                                            <div repeat.for="child of item._childs | sortBlog"
+                                                                data-id="${child.id}" data-sort="${child.sort}"
+                                                                data-pid="${child.pid}"
+                                                                data-has-child="${child.hasChild}"
+                                                                show.bind="!child._hidden"
+                                                                class="item child blog-item ${child.id == blog.id ? 'active' : ''}">
+                                                                <a title="${child.title}" href="#/blog/${child.id}">
+                                                                    <i class="icons"
+                                                                        click.delegate="loadChildBlogs(child)">
+                                                                        <i if.bind="!child.hasChild"
+                                                                            class="file outline icon"></i>
+                                                                        <i if.bind="child.hasChild"
+                                                                            class="${child._open ? 'minus' : 'plus'} square outline icon"></i>
+                                                                        <i show.bind="child.privated"
+                                                                            class="corner lock icon"></i>
+                                                                    </i>${child.title}</a>
+                                                                <div class="actions">
+                                                                    <div if.bind="isSuper || child.creator.username == loginUser.username"
+                                                                        ui-dropdown class="ui right pointing dropdown">
+                                                                        <i class="large ellipsis horizontal icon"></i>
+                                                                        <div class="left menu">
+                                                                            <div class="item">
+                                                                                <i class="dropdown icon"></i>
+                                                                                <span class="text"
+                                                                                    click.delegate="createHandler(space, dir, child)">创建博文</span>
+                                                                                <div class="menu">
+                                                                                    <div class="header">选择编辑器</div>
+                                                                                    <a class="item"
+                                                                                        click.delegate="createHtmlHandler(space, dir, child)">
+                                                                                        HTML
+                                                                                    </a>
+                                                                                    <a class="item"
+                                                                                        click.delegate="createHandler(space, dir, child)">
+                                                                                        Markdown
+                                                                                    </a>
+                                                                                    <a class="item"
+                                                                                        click.delegate="createExcelHandler(space, dir, child)">
+                                                                                        电子表格
+                                                                                    </a>
+                                                                                    <a class="item"
+                                                                                        click.delegate="createMindHandler(space, dir, child)">
+                                                                                        思维导图
+                                                                                    </a>
+                                                                                    <div class="ui divider"></div>
+                                                                                    <a click.delegate="selectTplHandler(space, dir, child)"
+                                                                                        class="item">
+                                                                                        基于模板
+                                                                                    </a>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="item" style="color: red;"
+                                                                                click.delegate="delBlogHandler(child)">
+                                                                                <i class="trash outline icon"></i>删除博文
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div show.bind="child.hasChild && child._open"
+                                                                    class="ui bulleted list tms-sortable-elem-blogs"
+                                                                    style="padding-left: 3px; padding-bottom: 0; padding-right: 0;"
+                                                                    data-id="${space.id}" data-dir-id="${dir.id}">
+                                                                    <div repeat.for="child2 of child._childs | sortBlog"
+                                                                        data-id="${child2.id}" data-pid="${child2.pid}"
+                                                                        data-has-child="${child2.hasChild}"
+                                                                        data-sort="${child2.sort}"
+                                                                        show.bind="!child2._hidden"
+                                                                        class="item child2 blog-item ${child2.id == blog.id ? 'active' : ''}">
+                                                                        <a title="${child2.title}"
+                                                                            href="#/blog/${child2.id}">
+                                                                            <i class="icons"
+                                                                                click.delegate="loadChildBlogs(child2)">
+                                                                                <i if.bind="!child2.hasChild"
+                                                                                    class="file outline icon"></i>
+                                                                                <i if.bind="child2.hasChild"
+                                                                                    class="${child2._open ? 'minus' : 'plus'} square outline icon"></i>
+                                                                                <i show.bind="child2.privated"
+                                                                                    class="corner lock icon"></i>
+                                                                            </i>${child2.title}</a>
+                                                                        <div class="actions">
+                                                                            <div if.bind="isSuper || child2.creator.username == loginUser.username"
+                                                                                ui-dropdown
+                                                                                class="ui right pointing dropdown">
+                                                                                <i
+                                                                                    class="large ellipsis horizontal icon"></i>
+                                                                                <div class="left menu">
+                                                                                    <div class="item">
+                                                                                        <i class="dropdown icon"></i>
+                                                                                        <span class="text"
+                                                                                            click.delegate="createHandler(space, dir, child2)">创建博文</span>
+                                                                                        <div class="menu">
+                                                                                            <div class="header">选择编辑器
+                                                                                            </div>
+                                                                                            <a class="item"
+                                                                                                click.delegate="createHtmlHandler(space, dir, child2)">
+                                                                                                HTML
+                                                                                            </a>
+                                                                                            <a class="item"
+                                                                                                click.delegate="createHandler(space, dir, child2)">
+                                                                                                Markdown
+                                                                                            </a>
+                                                                                            <a class="item"
+                                                                                                click.delegate="createExcelHandler(space, dir, child2)">
+                                                                                                电子表格
+                                                                                            </a>
+                                                                                            <a class="item"
+                                                                                                click.delegate="createMindHandler(space, dir, child2)">
+                                                                                                思维导图
+                                                                                            </a>
+                                                                                            <div class="ui divider">
+                                                                                            </div>
+                                                                                            <a click.delegate="selectTplHandler(space, dir, child2)"
+                                                                                                class="item">
+                                                                                                基于模板
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="item"
+                                                                                        style="color: red;"
+                                                                                        click.delegate="delBlogHandler(child2)">
+                                                                                        <i
+                                                                                            class="trash outline icon"></i>删除博文
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div show.bind="child2.hasChild && child2._open"
+                                                                            class="ui bulleted list tms-sortable-elem-blogs"
+                                                                            style="padding-left: 3px; padding-bottom: 0; padding-right: 0;"
+                                                                            data-id="${space.id}"
+                                                                            data-dir-id="${dir.id}">
+                                                                            <div repeat.for="child3 of child2._childs | sortBlog"
+                                                                                data-id="${child3.id}"
+                                                                                data-pid="${child3.pid}"
+                                                                                data-has-child="${child3.hasChild}"
+                                                                                data-sort="${child3.sort}"
+                                                                                show.bind="!child3._hidden"
+                                                                                class="item child3 blog-item ${child3.id == blog.id ? 'active' : ''}">
+                                                                                <a title="${child3.title}"
+                                                                                    href="#/blog/${child3.id}">
+                                                                                    <i class="icons"
+                                                                                        click.delegate="loadChildBlogs(child3)">
+                                                                                        <i if.bind="!child3.hasChild"
+                                                                                            class="file outline icon"></i>
+                                                                                        <i if.bind="child3.hasChild"
+                                                                                            class="${child3._open ? 'minus' : 'plus'} square outline icon"></i>
+                                                                                        <i show.bind="child3.privated"
+                                                                                            class="corner lock icon"></i>
+                                                                                    </i>${child3.title}</a>
+                                                                                <div class="actions">
+                                                                                    <div if.bind="isSuper || child3.creator.username == loginUser.username"
+                                                                                        ui-dropdown
+                                                                                        class="ui right pointing dropdown">
+                                                                                        <i
+                                                                                            class="large ellipsis horizontal icon"></i>
+                                                                                        <div class="left menu">
+                                                                                            <div class="item">
+                                                                                                <i
+                                                                                                    class="dropdown icon"></i>
+                                                                                                <span class="text"
+                                                                                                    click.delegate="createHandler(space, dir, child3)">创建博文</span>
+                                                                                                <div class="menu">
+                                                                                                    <div class="header">
+                                                                                                        选择编辑器
+                                                                                                    </div>
+                                                                                                    <a class="item"
+                                                                                                        click.delegate="createHtmlHandler(space, dir, child3)">
+                                                                                                        HTML
+                                                                                                    </a>
+                                                                                                    <a class="item"
+                                                                                                        click.delegate="createHandler(space, dir, child3)">
+                                                                                                        Markdown
+                                                                                                    </a>
+                                                                                                    <a class="item"
+                                                                                                        click.delegate="createExcelHandler(space, dir, child3)">
+                                                                                                        电子表格
+                                                                                                    </a>
+                                                                                                    <a class="item"
+                                                                                                        click.delegate="createMindHandler(space, dir, child3)">
+                                                                                                        思维导图
+                                                                                                    </a>
+                                                                                                    <div
+                                                                                                        class="ui divider">
+                                                                                                    </div>
+                                                                                                    <a click.delegate="selectTplHandler(space, dir, child3)"
+                                                                                                        class="item">
+                                                                                                        基于模板
+                                                                                                    </a>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="item"
+                                                                                                style="color: red;"
+                                                                                                click.delegate="delBlogHandler(child3)">
+                                                                                                <i
+                                                                                                    class="trash outline icon"></i>删除博文
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div show.bind="child3.hasChild && child3._open"
+                                                                                    class="ui bulleted list tms-sortable-elem-blogs"
+                                                                                    style="padding-left: 3px; padding-bottom: 0; padding-right: 0;"
+                                                                                    data-id="${space.id}"
+                                                                                    data-dir-id="${dir.id}">
+                                                                                    <div repeat.for="child4 of child3._childs | sortBlog"
+                                                                                        data-id="${child4.id}"
+                                                                                        data-pid="${child4.pid}"
+                                                                                        data-has-child="${child4.hasChild}"
+                                                                                        data-sort="${child4.sort}"
+                                                                                        show.bind="!child4._hidden"
+                                                                                        class="item child4 blog-item ${child4.id == blog.id ? 'active' : ''}">
+                                                                                        <a title="${child4.title}"
+                                                                                            href="#/blog/${child4.id}">
+                                                                                            <i class="icons">
+                                                                                                <i
+                                                                                                    class="file outline icon"></i>
+                                                                                                <i show.bind="child4.privated"
+                                                                                                    class="corner lock icon"></i>
+                                                                                            </i>${child4.title}</a>
+                                                                                        <div class="actions">
+                                                                                            <div if.bind="isSuper || child4.creator.username == loginUser.username"
+                                                                                                ui-dropdown
+                                                                                                class="ui right pointing dropdown">
+                                                                                                <i
+                                                                                                    class="large ellipsis horizontal icon"></i>
+                                                                                                <div class="left menu">
+                                                                                                    <div class="item"
+                                                                                                        style="color: red;"
+                                                                                                        click.delegate="delBlogHandler(child4)">
+                                                                                                        <i
+                                                                                                            class="trash outline icon"></i>删除博文
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -156,7 +448,8 @@
                                                                     思维导图
                                                                 </a>
                                                                 <div class="ui divider"></div>
-                                                                <a click.delegate="selectTplHandler(space, dir)" class="item">
+                                                                <a click.delegate="selectTplHandler(space, dir)"
+                                                                    class="item">
                                                                     基于模板
                                                                 </a>
                                                             </div>
@@ -177,15 +470,278 @@
                                 <div show.bind="space.open" class="ui bulleted list tms-sortable-elem-blogs"
                                     data-id="${space.id}">
                                     <div repeat.for="item of space.blogs | sortBlog" data-id="${item.id}"
-                                        data-space-id="" data-dir-id="" data-sort="${item.sort}"
-                                        show.bind="!item._hidden"
-                                        class="item blog-item ${item.id == blog.id ? 'active' : ''}">
+                                        data-pid="${item.pid}" data-has-child="${item.hasChild}" data-space-id=""
+                                        data-dir-id="" data-sort="${item.sort}" show.bind="!item._hidden"
+                                        class="item top blog-item ${item.id == blog.id ? 'active' : ''}">
                                         <a title="${item.title}" href="#/blog/${item.id}">
-                                            <i class="icons">
-                                                <i class="file outline icon"></i>
+                                            <i class="icons" click.delegate="loadChildBlogs(item)">
+                                                <i if.bind="!item.hasChild" class="file outline icon"></i>
+                                                <i if.bind="item.hasChild"
+                                                    class="${item._open ? 'minus' : 'plus'} square outline icon"></i>
                                                 <i show.bind="item.privated" class="corner lock icon"></i>
                                             </i>
                                             ${item.title}</a>
+                                        <div class="actions">
+                                            <div if.bind="isSuper || item.creator.username == loginUser.username"
+                                                ui-dropdown class="ui right pointing dropdown">
+                                                <i class="large ellipsis horizontal icon"></i>
+                                                <div class="left menu">
+                                                    <div class="item">
+                                                        <i class="dropdown icon"></i>
+                                                        <span class="text"
+                                                            click.delegate="createHandler(space, dir, item)">创建博文</span>
+                                                        <div class="menu">
+                                                            <div class="header">选择编辑器</div>
+                                                            <a class="item"
+                                                                click.delegate="createHtmlHandler(space, dir, item)">
+                                                                HTML
+                                                            </a>
+                                                            <a class="item"
+                                                                click.delegate="createHandler(space, dir, item)">
+                                                                Markdown
+                                                            </a>
+                                                            <a class="item"
+                                                                click.delegate="createExcelHandler(space, dir, item)">
+                                                                电子表格
+                                                            </a>
+                                                            <a class="item"
+                                                                click.delegate="createMindHandler(space, dir, item)">
+                                                                思维导图
+                                                            </a>
+                                                            <div class="ui divider"></div>
+                                                            <a click.delegate="selectTplHandler(space, dir, item)"
+                                                                class="item">
+                                                                基于模板
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item" style="color: red;"
+                                                        click.delegate="delBlogHandler(item)"><i
+                                                            class="trash outline icon"></i>删除博文</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div show.bind="item.hasChild && item._open"
+                                            class="ui bulleted list tms-sortable-elem-blogs"
+                                            style="padding-left: 3px; padding-bottom: 0; padding-right: 0;"
+                                            data-id="${space.id}">
+                                            <div repeat.for="child of item._childs | sortBlog" data-id="${child.id}"
+                                                data-pid="${child.pid}" data-has-child="${child.hasChild}"
+                                                data-sort="${child.sort}" show.bind="!child._hidden"
+                                                class="item child blog-item ${child.id == blog.id ? 'active' : ''}">
+                                                <a title="${child.title}" href="#/blog/${child.id}">
+                                                    <i class="icons" click.delegate="loadChildBlogs(child)">
+                                                        <i if.bind="!child.hasChild" class="file outline icon"></i>
+                                                        <i if.bind="child.hasChild"
+                                                            class="${child._open ? 'minus' : 'plus'} square outline icon"></i>
+                                                        <i show.bind="child.privated" class="corner lock icon"></i>
+                                                    </i>${child.title}</a>
+                                                <div class="actions">
+                                                    <div if.bind="isSuper || child.creator.username == loginUser.username"
+                                                        ui-dropdown class="ui right pointing dropdown">
+                                                        <i class="large ellipsis horizontal icon"></i>
+                                                        <div class="left menu">
+                                                            <div class="item">
+                                                                <i class="dropdown icon"></i>
+                                                                <span class="text"
+                                                                    click.delegate="createHandler(space, dir, child)">创建博文</span>
+                                                                <div class="menu">
+                                                                    <div class="header">选择编辑器</div>
+                                                                    <a class="item"
+                                                                        click.delegate="createHtmlHandler(space, dir, child)">
+                                                                        HTML
+                                                                    </a>
+                                                                    <a class="item"
+                                                                        click.delegate="createHandler(space, dir, child)">
+                                                                        Markdown
+                                                                    </a>
+                                                                    <a class="item"
+                                                                        click.delegate="createExcelHandler(space, dir, child)">
+                                                                        电子表格
+                                                                    </a>
+                                                                    <a class="item"
+                                                                        click.delegate="createMindHandler(space, dir, child)">
+                                                                        思维导图
+                                                                    </a>
+                                                                    <div class="ui divider"></div>
+                                                                    <a click.delegate="selectTplHandler(space, dir, child)"
+                                                                        class="item">
+                                                                        基于模板
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="item" style="color: red;"
+                                                                click.delegate="delBlogHandler(child)">
+                                                                <i class="trash outline icon"></i>删除博文
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div show.bind="child.hasChild && child._open"
+                                                    class="ui bulleted list tms-sortable-elem-blogs"
+                                                    style="padding-left: 3px; padding-bottom: 0; padding-right: 0;"
+                                                    data-id="${space.id}">
+                                                    <div repeat.for="child2 of child._childs | sortBlog"
+                                                        data-id="${child2.id}" data-sort="${child2.sort}"
+                                                        data-pid="${child2.pid}" data-has-child="${child2.hasChild}"
+                                                        show.bind="!child2._hidden"
+                                                        class="item child2 blog-item ${child2.id == blog.id ? 'active' : ''}">
+                                                        <a title="${child2.title}" href="#/blog/${child2.id}">
+                                                            <i class="icons" click.delegate="loadChildBlogs(child2)">
+                                                                <i if.bind="!child2.hasChild"
+                                                                    class="file outline icon"></i>
+                                                                <i if.bind="child2.hasChild"
+                                                                    class="${child2._open ? 'minus' : 'plus'} square outline icon"></i>
+                                                                <i show.bind="child2.privated"
+                                                                    class="corner lock icon"></i>
+                                                            </i>${child2.title}</a>
+                                                        <div class="actions">
+                                                            <div if.bind="isSuper || child2.creator.username == loginUser.username"
+                                                                ui-dropdown class="ui right pointing dropdown">
+                                                                <i class="large ellipsis horizontal icon"></i>
+                                                                <div class="left menu">
+                                                                    <div class="item">
+                                                                        <i class="dropdown icon"></i>
+                                                                        <span class="text"
+                                                                            click.delegate="createHandler(space, dir, child2)">创建博文</span>
+                                                                        <div class="menu">
+                                                                            <div class="header">选择编辑器
+                                                                            </div>
+                                                                            <a class="item"
+                                                                                click.delegate="createHtmlHandler(space, dir, child2)">
+                                                                                HTML
+                                                                            </a>
+                                                                            <a class="item"
+                                                                                click.delegate="createHandler(space, dir, child2)">
+                                                                                Markdown
+                                                                            </a>
+                                                                            <a class="item"
+                                                                                click.delegate="createExcelHandler(space, dir, child2)">
+                                                                                电子表格
+                                                                            </a>
+                                                                            <a class="item"
+                                                                                click.delegate="createMindHandler(space, dir, child2)">
+                                                                                思维导图
+                                                                            </a>
+                                                                            <div class="ui divider">
+                                                                            </div>
+                                                                            <a click.delegate="selectTplHandler(space, dir, child2)"
+                                                                                class="item">
+                                                                                基于模板
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="item" style="color: red;"
+                                                                        click.delegate="delBlogHandler(child2)">
+                                                                        <i class="trash outline icon"></i>删除博文
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div show.bind="child2.hasChild && child2._open"
+                                                            class="ui bulleted list tms-sortable-elem-blogs"
+                                                            style="padding-left: 3px; padding-bottom: 0; padding-right: 0;"
+                                                            data-id="${space.id}" data-dir-id="${dir.id}">
+                                                            <div repeat.for="child3 of child2._childs | sortBlog"
+                                                                data-id="${child3.id}" data-pid="${child3.pid}"
+                                                                data-has-child="${child3.hasChild}"
+                                                                data-sort="${child3.sort}" show.bind="!child3._hidden"
+                                                                class="item child3 blog-item ${child3.id == blog.id ? 'active' : ''}">
+                                                                <a title="${child3.title}" href="#/blog/${child3.id}">
+                                                                    <i class="icons"
+                                                                        click.delegate="loadChildBlogs(child3)">
+                                                                        <i if.bind="!child3.hasChild"
+                                                                            class="file outline icon"></i>
+                                                                        <i if.bind="child3.hasChild"
+                                                                            class="${child3._open ? 'minus' : 'plus'} square outline icon"></i>
+                                                                        <i show.bind="child3.privated"
+                                                                            class="corner lock icon"></i>
+                                                                    </i>${child3.title}</a>
+                                                                <div class="actions">
+                                                                    <div if.bind="isSuper || child3.creator.username == loginUser.username"
+                                                                        ui-dropdown class="ui right pointing dropdown">
+                                                                        <i class="large ellipsis horizontal icon"></i>
+                                                                        <div class="left menu">
+                                                                            <div class="item">
+                                                                                <i class="dropdown icon"></i>
+                                                                                <span class="text"
+                                                                                    click.delegate="createHandler(space, dir, child3)">创建博文</span>
+                                                                                <div class="menu">
+                                                                                    <div class="header">
+                                                                                        选择编辑器
+                                                                                    </div>
+                                                                                    <a class="item"
+                                                                                        click.delegate="createHtmlHandler(space, dir, child3)">
+                                                                                        HTML
+                                                                                    </a>
+                                                                                    <a class="item"
+                                                                                        click.delegate="createHandler(space, dir, child3)">
+                                                                                        Markdown
+                                                                                    </a>
+                                                                                    <a class="item"
+                                                                                        click.delegate="createExcelHandler(space, dir, child3)">
+                                                                                        电子表格
+                                                                                    </a>
+                                                                                    <a class="item"
+                                                                                        click.delegate="createMindHandler(space, dir, child3)">
+                                                                                        思维导图
+                                                                                    </a>
+                                                                                    <div class="ui divider">
+                                                                                    </div>
+                                                                                    <a click.delegate="selectTplHandler(space, dir, child3)"
+                                                                                        class="item">
+                                                                                        基于模板
+                                                                                    </a>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="item" style="color: red;"
+                                                                                click.delegate="delBlogHandler(child3)">
+                                                                                <i class="trash outline icon"></i>删除博文
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div show.bind="child3.hasChild && child3._open"
+                                                                    class="ui bulleted list tms-sortable-elem-blogs"
+                                                                    style="padding-left: 3px; padding-bottom: 0; padding-right: 0;"
+                                                                    data-id="${space.id}" data-dir-id="${dir.id}">
+                                                                    <div repeat.for="child4 of child3._childs | sortBlog"
+                                                                        data-id="${child4.id}" data-pid="${child4.pid}"
+                                                                        data-has-child="${child4.hasChild}"
+                                                                        data-sort="${child4.sort}"
+                                                                        show.bind="!child4._hidden"
+                                                                        class="item child4 blog-item ${child4.id == blog.id ? 'active' : ''}">
+                                                                        <a title="${child4.title}"
+                                                                            href="#/blog/${child4.id}">
+                                                                            <i class="icons">
+                                                                                <i class="file outline icon"></i>
+                                                                                <i show.bind="child4.privated"
+                                                                                    class="corner lock icon"></i>
+                                                                            </i>${child4.title}</a>
+                                                                        <div class="actions">
+                                                                            <div if.bind="isSuper || child4.creator.username == loginUser.username"
+                                                                                ui-dropdown
+                                                                                class="ui right pointing dropdown">
+                                                                                <i
+                                                                                    class="large ellipsis horizontal icon"></i>
+                                                                                <div class="left menu">
+                                                                                    <div class="item"
+                                                                                        style="color: red;"
+                                                                                        click.delegate="delBlogHandler(child4)">
+                                                                                        <i
+                                                                                            class="trash outline icon"></i>删除博文
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -236,13 +792,251 @@
                 </div>
                 <div class="ui bulleted list no-space tms-sortable-elem-blogs" data-id="">
                     <div repeat.for="item of noSpaceBlogs | sortBlog" data-id="${item.id}" data-sort="${item.sort}"
-                        show.bind="!item._hidden" class="item blog-item ${item.id == blog.id ? 'active' : ''}">
+                        data-pid="${item.pid}" data-has-child="${item.hasChild}" show.bind="!item._hidden && !item.pid"
+                        class="item top blog-item ${item.id == blog.id ? 'active' : ''}">
                         <a title="${item.title}" href="#/blog/${item.id}">
-                            <i class="icons">
-                                <i class="file outline icon"></i>
+                            <i class="icons" click.delegate="loadChildBlogs(item)">
+                                <i if.bind="!item.hasChild" class="file outline icon"></i>
+                                <i if.bind="item.hasChild"
+                                    class="${item._open ? 'minus' : 'plus'} square outline icon"></i>
                                 <i show.bind="item.privated" class="corner lock icon"></i>
-                            </i>
                             </i>${item.title}</a>
+                        <div class="actions">
+                            <div if.bind="isSuper || item.creator.username == loginUser.username" ui-dropdown
+                                class="ui right pointing dropdown">
+                                <i class="large ellipsis horizontal icon"></i>
+                                <div class="left menu">
+                                    <div class="item">
+                                        <i class="dropdown icon"></i>
+                                        <span class="text" click.delegate="createHandler(space, dir, item)">创建博文</span>
+                                        <div class="menu">
+                                            <div class="header">选择编辑器</div>
+                                            <a class="item" click.delegate="createHtmlHandler(space, dir, item)">
+                                                HTML
+                                            </a>
+                                            <a class="item" click.delegate="createHandler(space, dir, item)">
+                                                Markdown
+                                            </a>
+                                            <a class="item" click.delegate="createExcelHandler(space, dir, item)">
+                                                电子表格
+                                            </a>
+                                            <a class="item" click.delegate="createMindHandler(space, dir, item)">
+                                                思维导图
+                                            </a>
+                                            <div class="ui divider"></div>
+                                            <a click.delegate="selectTplHandler(space, dir, item)" class="item">
+                                                基于模板
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="item" style="color: red;" click.delegate="delBlogHandler(item)"><i
+                                            class="trash outline icon"></i>删除博文</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div show.bind="item.hasChild && item._open" class="ui bulleted list tms-sortable-elem-blogs"
+                            style="padding-left: 3px; padding-bottom: 0; padding-right: 0;" data-id="">
+                            <div repeat.for="child of item._childs | sortBlog" data-id="${child.id}"
+                                data-pid="${child.pid}" data-has-child="${child.hasChild}" data-sort="${child.sort}"
+                                show.bind="!child._hidden"
+                                class="item child blog-item ${child.id == blog.id ? 'active' : ''}">
+                                <a title="${child.title}" href="#/blog/${child.id}">
+                                    <i class="icons" click.delegate="loadChildBlogs(child)">
+                                        <i if.bind="!child.hasChild" class="file outline icon"></i>
+                                        <i if.bind="child.hasChild"
+                                            class="${child._open ? 'minus' : 'plus'} square outline icon"></i>
+                                        <i show.bind="child.privated" class="corner lock icon"></i>
+                                    </i>${child.title}</a>
+                                <div class="actions">
+                                    <div if.bind="isSuper || child.creator.username == loginUser.username" ui-dropdown
+                                        class="ui right pointing dropdown">
+                                        <i class="large ellipsis horizontal icon"></i>
+                                        <div class="left menu">
+                                            <div class="item">
+                                                <i class="dropdown icon"></i>
+                                                <span class="text"
+                                                    click.delegate="createHandler(space, dir, child)">创建博文</span>
+                                                <div class="menu">
+                                                    <div class="header">选择编辑器</div>
+                                                    <a class="item"
+                                                        click.delegate="createHtmlHandler(space, dir, child)">
+                                                        HTML
+                                                    </a>
+                                                    <a class="item" click.delegate="createHandler(space, dir, child)">
+                                                        Markdown
+                                                    </a>
+                                                    <a class="item"
+                                                        click.delegate="createExcelHandler(space, dir, child)">
+                                                        电子表格
+                                                    </a>
+                                                    <a class="item"
+                                                        click.delegate="createMindHandler(space, dir, child)">
+                                                        思维导图
+                                                    </a>
+                                                    <div class="ui divider"></div>
+                                                    <a click.delegate="selectTplHandler(space, dir, child)"
+                                                        class="item">
+                                                        基于模板
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="item" style="color: red;"
+                                                click.delegate="delBlogHandler(child)">
+                                                <i class="trash outline icon"></i>删除博文</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div show.bind="child.hasChild && child._open"
+                                    class="ui bulleted list tms-sortable-elem-blogs"
+                                    style="padding-left: 3px; padding-bottom: 0; padding-right: 0;" data-id="">
+                                    <div repeat.for="child2 of child._childs | sortBlog" data-id="${child2.id}"
+                                        data-pid="${child2.pid}" data-has-child="${child2.hasChild}"
+                                        data-sort="${child2.sort}" show.bind="!child2._hidden"
+                                        class="item child2 blog-item ${child2.id == blog.id ? 'active' : ''}">
+                                        <a title="${child2.title}" href="#/blog/${child2.id}">
+                                            <i class="icons" click.delegate="loadChildBlogs(child2)">
+                                                <i if.bind="!child2.hasChild" class="file outline icon"></i>
+                                                <i if.bind="child2.hasChild"
+                                                    class="${child2._open ? 'minus' : 'plus'} square outline icon"></i>
+                                                <i show.bind="child2.privated" class="corner lock icon"></i>
+                                            </i>${child2.title}</a>
+                                        <div class="actions">
+                                            <div if.bind="isSuper || child2.creator.username == loginUser.username"
+                                                ui-dropdown class="ui right pointing dropdown">
+                                                <i class="large ellipsis horizontal icon"></i>
+                                                <div class="left menu">
+                                                    <div class="item">
+                                                        <i class="dropdown icon"></i>
+                                                        <span class="text"
+                                                            click.delegate="createHandler(space, dir, child2)">创建博文</span>
+                                                        <div class="menu">
+                                                            <div class="header">选择编辑器
+                                                            </div>
+                                                            <a class="item"
+                                                                click.delegate="createHtmlHandler(space, dir, child2)">
+                                                                HTML
+                                                            </a>
+                                                            <a class="item"
+                                                                click.delegate="createHandler(space, dir, child2)">
+                                                                Markdown
+                                                            </a>
+                                                            <a class="item"
+                                                                click.delegate="createExcelHandler(space, dir, child2)">
+                                                                电子表格
+                                                            </a>
+                                                            <a class="item"
+                                                                click.delegate="createMindHandler(space, dir, child2)">
+                                                                思维导图
+                                                            </a>
+                                                            <div class="ui divider">
+                                                            </div>
+                                                            <a click.delegate="selectTplHandler(space, dir, child2)"
+                                                                class="item">
+                                                                基于模板
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item" style="color: red;"
+                                                        click.delegate="delBlogHandler(child2)">
+                                                        <i class="trash outline icon"></i>删除博文
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div show.bind="child2.hasChild && child2._open"
+                                            class="ui bulleted list tms-sortable-elem-blogs"
+                                            style="padding-left: 3px; padding-bottom: 0; padding-right: 0;"
+                                            data-id="${space.id}" data-dir-id="${dir.id}">
+                                            <div repeat.for="child3 of child2._childs | sortBlog" data-id="${child3.id}"
+                                                data-pid="${child3.pid}" data-has-child="${child3.hasChild}"
+                                                data-sort="${child3.sort}" show.bind="!child3._hidden"
+                                                class="item child3 blog-item ${child3.id == blog.id ? 'active' : ''}">
+                                                <a title="${child3.title}" href="#/blog/${child3.id}">
+                                                    <i class="icons" click.delegate="loadChildBlogs(child3)">
+                                                        <i if.bind="!child3.hasChild" class="file outline icon"></i>
+                                                        <i if.bind="child3.hasChild"
+                                                            class="${child3._open ? 'minus' : 'plus'} square outline icon"></i>
+                                                        <i show.bind="child3.privated" class="corner lock icon"></i>
+                                                    </i>${child3.title}</a>
+                                                <div class="actions">
+                                                    <div if.bind="isSuper || child3.creator.username == loginUser.username"
+                                                        ui-dropdown class="ui right pointing dropdown">
+                                                        <i class="large ellipsis horizontal icon"></i>
+                                                        <div class="left menu">
+                                                            <div class="item">
+                                                                <i class="dropdown icon"></i>
+                                                                <span class="text"
+                                                                    click.delegate="createHandler(space, dir, child3)">创建博文</span>
+                                                                <div class="menu">
+                                                                    <div class="header">
+                                                                        选择编辑器
+                                                                    </div>
+                                                                    <a class="item"
+                                                                        click.delegate="createHtmlHandler(space, dir, child3)">
+                                                                        HTML
+                                                                    </a>
+                                                                    <a class="item"
+                                                                        click.delegate="createHandler(space, dir, child3)">
+                                                                        Markdown
+                                                                    </a>
+                                                                    <a class="item"
+                                                                        click.delegate="createExcelHandler(space, dir, child3)">
+                                                                        电子表格
+                                                                    </a>
+                                                                    <a class="item"
+                                                                        click.delegate="createMindHandler(space, dir, child3)">
+                                                                        思维导图
+                                                                    </a>
+                                                                    <div class="ui divider">
+                                                                    </div>
+                                                                    <a click.delegate="selectTplHandler(space, dir, child3)"
+                                                                        class="item">
+                                                                        基于模板
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="item" style="color: red;"
+                                                                click.delegate="delBlogHandler(child3)">
+                                                                <i class="trash outline icon"></i>删除博文
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div show.bind="child3.hasChild && child3._open"
+                                                    class="ui bulleted list tms-sortable-elem-blogs"
+                                                    style="padding-left: 3px; padding-bottom: 0; padding-right: 0;"
+                                                    data-id="${space.id}" data-dir-id="${dir.id}">
+                                                    <div repeat.for="child4 of child3._childs | sortBlog"
+                                                        data-id="${child4.id}" data-pid="${child4.pid}"
+                                                        data-has-child="${child4.hasChild}" data-sort="${child4.sort}"
+                                                        show.bind="!child4._hidden"
+                                                        class="item child4 blog-item ${child4.id == blog.id ? 'active' : ''}">
+                                                        <a title="${child4.title}" href="#/blog/${child4.id}">
+                                                            <i class="icons">
+                                                                <i class="file outline icon"></i>
+                                                                <i show.bind="child4.privated"
+                                                                    class="corner lock icon"></i>
+                                                            </i>${child4.title}</a>
+                                                        <div class="actions">
+                                                            <div if.bind="isSuper || child4.creator.username == loginUser.username"
+                                                                ui-dropdown class="ui right pointing dropdown">
+                                                                <i class="large ellipsis horizontal icon"></i>
+                                                                <div class="left menu">
+                                                                    <div class="item" style="color: red;"
+                                                                        click.delegate="delBlogHandler(child4)">
+                                                                        <i class="trash outline icon"></i>删除博文
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

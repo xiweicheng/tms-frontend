@@ -49,6 +49,7 @@ au run build --env prod
 - https://github.com/kpdecker/jsdiff  
 - https://github.com/myliang/x-spreadsheet  
 - https://github.com/ssshooter/mind-elixir-core  
+- http://www.sortablejs.com/index.html  
 
 ## 优秀产品
 
