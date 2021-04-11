@@ -17,7 +17,10 @@
                 <div if.bind="!sysLinks || sysLinks.length == 0" class="item">暂无系统外链</div>
                 <a repeat.for="item of sysLinks | sort:'title'" click.delegate="sysLinkHandler(item)" target="_blank"
                     href="${item.href}" data-value="${item.href}" title="${item.title}" data-id="${item.id}"
-                    class="item">${item.title}</a>
+                    class="item">
+                    <div class="ui green empty circular label"></div>
+                    ${item.title}
+                </a>
                 <div class="header">
                     <i class="hashtag icon"></i> 频道外链 (${channelLinks.length})
                 </div>
@@ -25,7 +28,10 @@
                 <div if.bind="!channelLinks || channelLinks.length == 0" class="item">暂无频道外链</div>
                 <a repeat.for="item of channelLinks | sort:'title'" click.delegate="sysLinkHandler(item)"
                     target="_blank" href="${item.href}" data-value="${item.href}" title="${item.title}"
-                    data-id="${item.id}" class="item">${item.title}</a>
+                    data-id="${item.id}" class="item">
+                    <!-- <i class="linkify icon"></i> -->
+                    <div class="ui olive empty circular label"></div>
+                    ${item.title}</a>
             </div>
         </div>
     </div>

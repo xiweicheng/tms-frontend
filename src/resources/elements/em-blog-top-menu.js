@@ -9,6 +9,8 @@ import search from 'common/common-search';
 @containerless
 export class EmBlogTopMenu {
 
+    isSuper = nsCtx.isSuper;
+
     isHide = true;
 
     loginUser = nsCtx.loginUser;
@@ -290,6 +292,10 @@ export class EmBlogTopMenu {
 
     tasksRefreshHandler() {
         this.todoVm.refresh();
+    }
+
+    addChannelLinkHandler(event) {
+        this.sysLinkMgrVm.show();
     }
 
 }

@@ -68,6 +68,23 @@
                 overflow: auto;
             }
         }
+        .menu {
+            .header {
+                position: relative;
+    
+                .plus.icon {
+                    position: absolute;
+                    right: 5px;
+                    top: -7px;
+                }
+            }
+    
+            a.item {
+                max-width: 300px;
+                text-overflow: ellipsis;
+                overflow-x: hidden;
+            }
+        }
         @media only screen and (max-width: 767px) {
             .item {
                 &.tms-links {

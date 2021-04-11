@@ -40,7 +40,10 @@
                             <a repeat.for="item of channelLinks | sort:'title'"
                                 task.bind="initChannelLinksHandler($last)"
                                 click.trigger="channelLinkHandler($event, item)" target="_blank" href="${item.href}"
-                                data-value="${item.href}" data-id="${item.id}" class="item">${item.title}</a>
+                                data-value="${item.href}" data-id="${item.id}" class="item">
+                                <div class="ui olive empty circular label"></div>
+                                ${item.title}
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -63,7 +66,9 @@
                             <div if.bind="!channelGantts || channelGantts.length == 0"
                                 click.trigger="stopImmediatePropagationHandler($event)" class="item">暂无频道甘特图</div>
                             <div repeat.for="item of channelGantts" click.trigger="channelGanttHandler(item)"
-                                data-id="${item.id}" class="item">${item.title}
+                                data-id="${item.id}" class="item">
+                                <div class="ui green empty circular label"></div>
+                                ${item.title}
                                 <div class="action"
                                     show.bind="item.creator.username == loginUser.username || channel.creator.username == loginUser.username">
                                     <i class="copy icon" title="复制甘特图" style="margin-right: 3px;"
