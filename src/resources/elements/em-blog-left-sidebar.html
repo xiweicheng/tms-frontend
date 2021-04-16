@@ -792,7 +792,7 @@
                 </div>
                 <div class="ui bulleted list no-space tms-sortable-elem-blogs" data-id="">
                     <div repeat.for="item of noSpaceBlogs | sortBlog" data-id="${item.id}" data-sort="${item.sort}"
-                        data-pid="${item.pid}" data-has-child="${item.hasChild}" show.bind="!item._hidden && !item.pid"
+                        data-pid="${item.pid}" data-has-child="${item.hasChild}" show.bind="!item._hidden"
                         class="item top blog-item ${item.id == blog.id ? 'active' : ''}">
                         <a title="${item.title}" href="#/blog/${item.id}">
                             <i class="icons" click.delegate="loadChildBlogs(item)">

@@ -330,14 +330,14 @@ export class EmBlogLeftSidebar {
                                             blog: data.data,
                                             unCalcDir: true
                                         });
+
+                                        // sort blogs
+                                        this._sortBlogs($(evt.to).children('.blog-item'));
+
                                     } else {
                                         toastr.error(data.data);
                                     }
                                 });
-
-                                // sort blogs
-                                this._sortBlogs($(evt.to).children('.blog-item'));
-
                             }
                         },
                     });

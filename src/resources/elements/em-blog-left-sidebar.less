@@ -516,8 +516,23 @@
                             background-color: #e8e1e0;
                         }
                     }
+
+                    &.active {
+                        >a {
+                            font-weight: bold;
+                            color: black;
+                        }
+                    }
+
                     &:hover {
                         box-shadow: -1px 0px 1px -1px #838080;
+                    }
+
+                    .actions {
+                        display: none;
+                        position: absolute;
+                        top: 3px;
+                        right: 0;
                     }
                 }
 
