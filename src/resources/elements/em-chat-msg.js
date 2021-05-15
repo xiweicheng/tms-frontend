@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 
 @containerless
 export class EmChatMsg {
@@ -37,7 +40,9 @@ export class EmChatMsg {
 
         this.openKeydownHandler = (event) => {
             event.preventDefault();
-            let item = _.find(this.chats, { isHover: true });
+            let item = _.find(this.chats, {
+                isHover: true
+            });
             item && (item.isOpen = !item.isOpen);
         };
 
@@ -75,9 +80,15 @@ export class EmChatMsg {
                     chat.chatStow = item;
                     return chat;
                 }
-                let chatChannel = item.chatChannel;
-                chatChannel.chatStow = item;
-                return chatChannel;
+
+                if (item.chatChannel) {
+                    item.chatChannel.chatStow = item;
+                    return item.chatChannel;
+                } else if (item.chatDirect) {
+                    item.chatDirect.chatStow = item;
+                    return item.chatDirect;
+                }
+
             });
             this.last = result.last;
             this.moreCnt = result.totalElements - (result.number + 1) * result.size;
@@ -109,7 +120,9 @@ export class EmChatMsg {
     }
 
     gotoChatHandler(item, event) {
-        ea.publish(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, { chatItem: item });
+        ea.publish(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, {
+            chatItem: item
+        });
 
         if ((this.actived.payload.action == nsCons.ACTION_TYPE_AT) && (event.shiftKey)) {
             event.stopImmediatePropagation();
@@ -119,7 +132,9 @@ export class EmChatMsg {
     }
 
     gotoChatReplyParentHandler(item) {
-        ea.publish(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, { chatItem: item.chatAt.chatChannel });
+        ea.publish(nsCons.EVENT_CHAT_SEARCH_GOTO_CHAT_ITEM, {
+            chatItem: item.chatAt.chatChannel
+        });
     }
 
     openSearchItemHandler(item) {
@@ -173,9 +188,14 @@ export class EmChatMsg {
                             chat.chatStow = item;
                             return chat;
                         }
-                        let chatChannel = item.chatChannel;
-                        chatChannel.chatStow = item;
-                        return chatChannel;
+                        if (item.chatChannel) {
+                            item.chatChannel.chatStow = item;
+                            return item.chatChannel;
+                        } else if (item.chatDirect) {
+                            item.chatDirect.chatStow = item;
+                            return item.chatDirect;
+                        }
+
                     }));
 
                     this.page = data.data;
@@ -255,17 +275,25 @@ export class EmChatMsg {
         let offsetD = parseInt(offset / 24);
 
         if (offsetD > 1) {
-            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:${offsetD - 1}d ${offsetD + 1}d` });
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, {
+                search: `date:${offsetD - 1}d ${offsetD + 1}d`
+            });
             return;
         } else if (offsetD > 0) {
-            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:2d` });
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, {
+                search: `date:2d`
+            });
             return;
         }
 
         if (offset < 2) {
-            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:2h` });
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, {
+                search: `date:2h`
+            });
         } else {
-            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:${offset - 1}h ${offset + 1}h` });
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, {
+                search: `date:${offset - 1}h ${offset + 1}h`
+            });
         }
     }
 }

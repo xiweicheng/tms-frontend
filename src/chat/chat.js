@@ -1185,6 +1185,7 @@ export class Chat {
         }
         $.get('/admin/chat/direct/list', data, (data) => {
             this.processChats(data);
+            this._getStowsAndPins();
         });
     }
 
@@ -1368,22 +1369,30 @@ export class Chat {
     }
 
     _getStowsAndPins() {
-        if (this.isAt) return;
+        // if (this.isAt) return;
         if (_.isEmpty(this.chats)) return;
 
-        $.when(
-            $.get(`/admin/chat/channel/stow/list`, {}, (data) => {
-                this.stows = data.data;
-            }),
-            $.get(`/admin/channel/pin/listBy`, {
-                id: this.channel.id
-            }, (data) => {
-                this.pins = data.data;
-            })).done(() => this._stowAndPin(this.chats));
+        if (this.isAt) {
+            $.when(
+                $.get(`/admin/chat/direct/stow/list`, {}, (data) => {
+                    this.stows = data.data;
+                })).done(() => this._stowAndPin(this.chats));
+        } else {
+            $.when(
+                $.get(`/admin/chat/channel/stow/list`, {}, (data) => {
+                    this.stows = data.data;
+                }),
+                $.get(`/admin/channel/pin/listBy`, {
+                    id: this.channel.id
+                }, (data) => {
+                    this.pins = data.data;
+                })).done(() => this._stowAndPin(this.chats));
+        }
+
     }
 
     _stowAndPin(chats) {
-        if (this.isAt) return;
+        // if (this.isAt) return;
         if (_.isEmpty(chats)) return;
 
         _.each(this.stows, item => {
@@ -1396,15 +1405,18 @@ export class Chat {
             }
         });
 
-        _.each(this.pins, item => {
-            let chat = _.find(chats, {
-                id: item[1]
+        if (!this.isAt) {
+            _.each(this.pins, item => {
+                let chat = _.find(chats, {
+                    id: item[1]
+                });
+                if (chat != null) {
+                    chat._pined = true;
+                    chat.pinId = item[0];
+                }
             });
-            if (chat != null) {
-                chat._pined = true;
-                chat.pinId = item[0];
-            }
-        });
+        }
+
     }
 
     _checkNeedNotify(data) {
@@ -1811,10 +1823,18 @@ export class Chat {
             return;
         }
 
+        let isRigthCase = false; // 是否定位chat对象正好在channel或者@场景中
+
+        if (this.isAt) {
+            isRigthCase = !!item.chatTo;
+        } else {
+            isRigthCase = !!item.channel;
+        }
+
         let chat = _.find(this.chats, {
             id: item.id
         });
-        if (chat) {
+        if (chat && isRigthCase) {
             this.scrollToAfterImgLoaded(item.id);
         } else {
 

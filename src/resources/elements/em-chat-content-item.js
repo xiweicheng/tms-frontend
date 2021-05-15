@@ -502,7 +502,7 @@ export class EmChatContentItem {
             return;
         }
 
-        $.post('/admin/chat/channel/stow', {
+        $.post(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/stow`, {
             id: item.id
         }, (data, textStatus, xhr) => {
             item._stowed = true;
@@ -520,7 +520,7 @@ export class EmChatContentItem {
         if (!item.stowId) {
             return;
         }
-        $.post('/admin/chat/channel/removeStow', {
+        $.post(`/admin/chat/channel/removeStow`, {
             id: item.stowId
         }, (data, textStatus, xhr) => {
             item.stowId = '';
@@ -724,7 +724,7 @@ export class EmChatContentItem {
     }
 
     md2HtmlDownloadHandler(chat) {
-        
+
         $.post(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/download/md2html/${chat.id}`, {
             content: utils.md2html(`> 版权声明：本文为TMS版权所有，转载请附上原文出处链接和本声明。\n> 本文链接: ${utils.getBasePath()}#/chat/${this.isAt ? ('@' + this.loginUser.username) : this.channel.name}?id=${chat.id}\n\n` + chat.content)
         }, (data, textStatus, xhr) => {

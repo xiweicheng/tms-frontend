@@ -18,9 +18,9 @@
                 <div class="tms-clipboard" style="cursor: pointer;"
                     data-clipboard-text="${basePath + '#/chat/' + (isAt ? ('@' + loginUser.username) : channel.name) + '?id=' + item.id}"
                     title="复制沟通消息分享链接">#${item.id}</div>
-                <a if.bind="!isAt && !item._stowed" click.delegate="stowHandler(item)" class="tms-stow" title="收藏该消息"><i
+                <a if.bind="!item._stowed" click.delegate="stowHandler(item)" class="tms-stow" title="收藏该消息"><i
                         class="empty star link icon"></i></a>
-                <a if.bind="!isAt && item._stowed" click.delegate="stowHandler(item)" class="tms-unstow"
+                <a if.bind="item._stowed" click.delegate="stowHandler(item)" class="tms-unstow"
                     title="取消收藏该消息"><i class="star link icon"></i></a>
                 <a if.bind="!isAt && item._pined" click.delegate="pinHandler(item)" class="tms-pin" title="解除固定频道消息"><i
                         class="pin link icon"></i></a>
