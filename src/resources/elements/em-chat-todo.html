@@ -11,7 +11,8 @@
             </div>
             <div class="filter-wrapper">
                 <div class="ui transparent left icon fluid input">
-                    <input ref="searchInputRef" value.bind="todoFilter" type="text" blur.trigger="searchBlurHandler()"
+                    <input ref="searchInputRef" value.bind="todoFilter" type="text"
+                        keyup.trigger="searchKeyupHandler($event)" blur.trigger="searchBlurHandler()"
                         focus.trigger="searchFocusHandler()" placeholder="过滤查找...">
                     <i class="search icon"></i>
                     <i ref="searchRemoveRef" click.delegate="clearSearchHandler()" class="remove link icon"></i>
@@ -195,11 +196,11 @@
             </div>
             <h5 class="ui horizontal divider green header">
                 <!-- <i class="check circle icon"></i> -->
-                已完成（${dones | count:todoFilter:'title'}）
+                <!-- 已完成（${dones.length}） -->
+                已完成（${totalCnt}）
             </h5>
             <div class="ui middle aligned divided selection relaxed list">
-                <div repeat.for="item of dones | filter:todoFilter:'title' | sort:'updateDate':true"
-                    class="item tms-task-item">
+                <div repeat.for="item of dones | sort:'updateDate':true" class="item tms-task-item">
                     <div show.bind="!item.isEditing" class="actions">
                         <i click.delegate="statusNewHandler(item)" class="large square outline link icon"
                             title="标记未完成"></i>

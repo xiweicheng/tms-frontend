@@ -13,7 +13,7 @@ export class EmChatTodo {
     dones = [];
     todoFilter = '';
     hidden = true;
-    
+
     @bindable lock = false;
 
     last = true;
@@ -52,9 +52,16 @@ export class EmChatTodo {
             }
         });
 
+        this._listMyDone();
+
+    }
+
+    _listMyDone() {
+
         this.ajaxDone = $.get('/admin/todo/listMy/done', {
             size: 20,
             page: 0,
+            search: this.todoFilter
         }, (data) => {
             if (data.success) {
 
@@ -62,12 +69,12 @@ export class EmChatTodo {
 
                 this.page = data.data;
                 this.last = data.data.last;
+                this.totalCnt = data.data.totalElements;
                 this.moreCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
             } else {
                 toastr.error(data.data, '获取待办事项列表失败！');
             }
         });
-
     }
 
     attached() {
@@ -75,6 +82,10 @@ export class EmChatTodo {
             exclusive: false
         });
         this._initSortObjs();
+
+        this._listMyDoneDebounce = _.debounce(() => this._listMyDone(), 200, {
+            leading: false
+        });
     }
 
     _initSortObjs() {
@@ -329,15 +340,21 @@ export class EmChatTodo {
         }
     }
 
+    searchKeyupHandler() {
+        this._listMyDoneDebounce();
+    }
+
     clearSearchHandler() {
         this.todoFilter = '';
         $(this.searchInputRef).focus();
+        this._listMyDoneDebounce();
     }
 
     loadMoreHandler() {
         this.searchMoreP = $.get('/admin/todo/listMy/done', {
             size: this.page.size,
-            page: this.page.number + 1
+            page: this.page.number + 1,
+            search: this.todoFilter
         }, (data) => {
             if (data.success) {
 
@@ -345,6 +362,7 @@ export class EmChatTodo {
 
                 this.page = data.data;
                 this.last = data.data.last;
+                this.totalCnt = data.data.totalElements;
                 this.moreCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
             } else {
                 toastr.error(data.data, '获取待办事项列表失败！');
