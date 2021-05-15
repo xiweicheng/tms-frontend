@@ -1212,7 +1212,7 @@ export class Chat {
         }
     }
 
-    _scrollTo(to) {
+    _scrollTo(to, retry) {
         if (to === '' || to === null || _.isUndefined(to)) {
             return;
         }
@@ -1230,8 +1230,13 @@ export class Chat {
                 $(this.commentsRef).find(`.comment[data-id]`).removeClass('active');
                 $(this.commentsRef).find(`.comment[data-id=${to}]`).addClass('active');
             } else {
-                $(this.commentsRef).parent().scrollTo('max');
-                toastr.warning(`消息[${to}]不存在,可能已经被删除!`);
+                if (retry) {
+                    $(this.commentsRef).parent().scrollTo('max');
+                    toastr.warning(`消息[${to}]不存在,可能已经被删除!`);
+                } else {
+                    console.log(`scrollTo retry...`);
+                    _.delay(() => this._scrollTo(to, true), 1000);
+                }
             }
         }
     }
@@ -1831,10 +1836,9 @@ export class Chat {
             isRigthCase = !!item.channel;
         }
 
-        let chat = _.find(this.chats, {
-            id: item.id
-        });
-        if (chat && isRigthCase) {
+        if (isRigthCase && _.find(this.chats, {
+                id: item.id
+            })) {
             this.scrollToAfterImgLoaded(item.id);
         } else {
 

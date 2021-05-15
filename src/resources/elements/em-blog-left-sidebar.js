@@ -2,7 +2,6 @@ import {
     bindable,
     containerless
 } from 'aurelia-framework';
-import _ from 'lodash';
 @containerless
 export class EmBlogLeftSidebar {
 

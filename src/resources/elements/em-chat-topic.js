@@ -1,4 +1,7 @@
-import { bindable, containerless } from 'aurelia-framework';
+import {
+    bindable,
+    containerless
+} from 'aurelia-framework';
 import poll from "common/common-poll2";
 
 @containerless
@@ -23,7 +26,9 @@ export class EmChatTopic {
 
             if (payload.from != this.name) return;
 
-            if (!_.some(this.chat ? this.chat.chatReplies : [], { id: payload.data.id })) {
+            if (!_.some(this.chat ? this.chat.chatReplies : [], {
+                    id: payload.data.id
+                })) {
                 this.chat && this.chat.chatReplies.push(payload.data);
                 this.scrollToBottom();
             }
@@ -41,7 +46,9 @@ export class EmChatTopic {
 
             if (payload.case != 'topic' || !this.chat || payload.from != this.name) return;
 
-            let topic = _.find(this.chat.chatReplies, { id: +payload.id });
+            let topic = _.find(this.chat.chatReplies, {
+                id: +payload.id
+            });
 
             if (topic && (topic.creator.username == this.loginUser.username)) {
                 let lines = topic.content.split('\n');
@@ -180,26 +187,37 @@ export class EmChatTopic {
         _.defer(() => ea.publish(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_SCROLL_TO, to));
     }
 
-    _scrollTo(to) {
+    _scrollTo(to, retry) {
         if (_.isNil(to)) {
             return;
         }
         if (to == 'b') {
             // $(this.commentsRef).closest('.scroll-content').scrollTo('max');
-            $(this.commentsRef).closest('.scroll-content').scrollTo("100%", { axis: 'y' });
+            $(this.commentsRef).closest('.scroll-content').scrollTo("100%", {
+                axis: 'y'
+            });
         } else if (to == 't') {
             $(this.commentsRef).closest('.scroll-content').scrollTo(0);
         } else {
-            if (_.some(this.chat.chatReplies, { id: +to })) {
+            if (_.some(this.chat.chatReplies, {
+                    id: +to
+                })) {
                 $(this.commentsRef).closest('.scroll-content').scrollTo(`.tms-reply.comment[data-id="${to}"]`, {
                     offset: this.offset
                 });
                 $(this.commentsRef).find(`.comment[data-id]`).removeClass('active');
                 $(this.commentsRef).find(`.comment[data-id=${to}]`).addClass('active');
             } else {
-                // $(this.commentsRef).closest('.scroll-content').scrollTo('max');
-                $(this.commentsRef).closest('.scroll-content').scrollTo("100%", { axis: 'y' });
-                toastr.warning(`消息[${to}]不存在,可能已经被删除!`);
+                if (retry) {
+                    // $(this.commentsRef).closest('.scroll-content').scrollTo('max');
+                    $(this.commentsRef).closest('.scroll-content').scrollTo("100%", {
+                        axis: 'y'
+                    });
+                    toastr.warning(`消息[${to}]不存在,可能已经被删除!`);
+                } else {
+                    console.log(`scrollTo retry...`);
+                    _.delay(() => this._scrollTo(to, true), 1000);
+                }
             }
         }
     }
@@ -241,7 +259,9 @@ export class EmChatTopic {
             if (event.ctrlKey && event.shiftKey) {
                 let chatId = $(event.currentTarget).attr('data-id');
                 let $t = $(event.currentTarget).find('.content > textarea');
-                let item = _.find(this.chat.chatReplies, { id: Number.parseInt(chatId) });
+                let item = _.find(this.chat.chatReplies, {
+                    id: Number.parseInt(chatId)
+                });
 
                 if (!this.isSuper && (item.creator.username != this.loginUser.username)) {
                     return;
@@ -396,9 +416,13 @@ export class EmChatTopic {
     }
 
     removeHandler(item) {
-        $.post('/admin/chat/channel/reply/remove', { rid: item.id }, (data, textStatus, xhr) => {
+        $.post('/admin/chat/channel/reply/remove', {
+            rid: item.id
+        }, (data, textStatus, xhr) => {
             if (data.success) {
-                this.chat.chatReplies = _.reject(this.chat.chatReplies, { id: data.data });
+                this.chat.chatReplies = _.reject(this.chat.chatReplies, {
+                    id: data.data
+                });
                 this.chat.version = data.msgs[0];
             } else {
                 toastr.error(data.data);
@@ -566,22 +590,32 @@ export class EmChatTopic {
         let offsetD = parseInt(offset / 24);
 
         if (offsetD > 1) {
-            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:${offsetD - 1}d ${offsetD + 1}d` });
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, {
+                search: `date:${offsetD - 1}d ${offsetD + 1}d`
+            });
             return;
         } else if (offsetD > 0) {
-            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:2d` });
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, {
+                search: `date:2d`
+            });
             return;
         }
 
         if (offset < 2) {
-            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:2h` });
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, {
+                search: `date:2h`
+            });
         } else {
-            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, { search: `date:${offset - 1}h ${offset + 1}h` });
+            ea.publish(nsCons.EVENT_CHAT_DO_MSG_SEARCH, {
+                search: `date:${offset - 1}h ${offset + 1}h`
+            });
         }
     }
 
     scroll2ChatHandler() {
-        ea.publish(nsCons.EVENT_CHAT_TOPIC_SCROLL_TO, { chat: this.chat });
+        ea.publish(nsCons.EVENT_CHAT_TOPIC_SCROLL_TO, {
+            chat: this.chat
+        });
         return false;
     }
 

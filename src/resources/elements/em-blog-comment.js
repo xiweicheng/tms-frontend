@@ -939,7 +939,7 @@ export class EmBlogComment {
 
     }
 
-    _scrollTo(to) {
+    _scrollTo(to, retry) {
         if (to == 'b') {
             $('.em-blog-content').scrollTo('max');
         } else if (to == 't') {
@@ -954,8 +954,13 @@ export class EmBlogComment {
                 $('.em-blog-content').find(`.comment[data-id]`).removeClass('active');
                 $('.em-blog-content').find(`.comment[data-id=${to}]`).addClass('active');
             } else {
-                $('.em-blog-content').scrollTo('max');
-                toastr.warning(`博文评论[${to}]不存在,可能已经被删除!`);
+                if (retry) {
+                    $('.em-blog-content').scrollTo('max');
+                    toastr.warning(`博文评论[${to}]不存在,可能已经被删除!`);
+                } else {
+                    console.log(`scrollTo retry...`);
+                    _.delay(() => this._scrollTo(to, true), 1000);
+                }
             }
         }
     }
