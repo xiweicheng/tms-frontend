@@ -88,6 +88,8 @@
                 </div>
                 <a if.bind="!isAt" class="item" click.trigger="channelTasksHandler($event)" title="频道任务看板"><i
                         class="tasks icon"></i></a>
+                <a if.bind="isAt" class="item" click.trigger="userTasksHandler($event)" title="用户任务看板"><i
+                        class="tasks icon"></i></a>
                 <a if.bind="!isAt" class="item" click.trigger="viewOrMgrUsersHandler($event)"
                     title="频道用户(${channel.members.length})"><i class="users icon"></i></a>
                 <a if.bind="!isAt" class="item ${isRightSidebarShow && (activeType == ACTION_TYPE_PIN) ? 'active' : ''}"
@@ -252,6 +254,6 @@
     <!-- <em-chat-channel-create login-user.bind="loginUser" trigger.bind="createChannelRef"></em-chat-channel-create> -->
     <em-chat-channel-link-mgr login-user.bind="loginUser" view-model.ref="channelLinkMgrVm" channel.bind="channel">
     </em-chat-channel-link-mgr>
-    <em-channel-tasks-modal view-model.ref="channelTasksVm" login-user.bind="loginUser" channel.bind="channel">
+    <em-channel-tasks-modal view-model.ref="channelTasksVm" is-at.bind="isAt" login-user.bind="loginUser" channel.bind="channel">
     </em-channel-tasks-modal>
 </template>

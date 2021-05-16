@@ -7,6 +7,7 @@ export class EmChannelTaskItemFooter {
 
     @bindable channel;
     @bindable loginUser;
+    @bindable isAt;
     @bindable col;
 
     delLabelHandler(item, event) {
@@ -15,8 +16,8 @@ export class EmChannelTaskItemFooter {
             return;
         }
 
-        $.post('/admin/channel/task/label/remove', {
-            cid: this.channel.id,
+        $.post(`/admin/${this.isAt ? 'user' : 'channel'}/task/label/remove`, {
+            cid: this.channel ? this.channel.id : null,
             id: item.id
         }, (data, textStatus, xhr) => {
             if (data.success) {
@@ -52,7 +53,7 @@ export class EmChannelTaskItemFooter {
         let tag = _.trim(window.prompt(`输入标签内容（不能超过15个字符）：`));
         if (!tag) return;
 
-        $.post(`/admin/chat/channel/label/toggle`, {
+        $.post(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/label/toggle`, {
             url: nsCtx.isAt ? utils.getBasePath() : utils.getUrl(),
             meta: tag,
             type: 'Tag',

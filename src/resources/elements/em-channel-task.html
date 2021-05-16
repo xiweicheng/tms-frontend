@@ -25,7 +25,7 @@
                 <div class="column" repeat.for="col of cols">
                     <h4 class="ui top attached center aligned header">
                         ${col.name}（${col.page.totalElements ? col.page.totalElements : 0}）
-                        <div ref="filterRef" class="ui inline dropdown tms-task-filter" title="按任务关联人过滤"
+                        <div if.bind="!isAt" ref="filterRef" class="ui inline dropdown tms-task-filter" title="按任务关联人过滤"
                             data-col-name="${col.name}" task.bind="initFilterHandler(filterRef, col)">
                             <i class="filter icon"></i>
                             <div class="text"></div>
@@ -65,15 +65,20 @@
                         <div repeat.for="item of col.page.content" show.bind="!item._hidden"
                             class="ui green segment tms-dd-task-item" data-id="${item.id}"
                             mouseenter.trigger="mouseenterHandler(item)">
-                            <em-channel-task-item-header task-item.bind="item" channel.bind="channel">
+                            <em-channel-task-item-header is-at.bind="isAt" task-item.bind="item" channel.bind="channel">
                             </em-channel-task-item-header>
                             <div data-id="${item.id}" data-case="task" data-from="${col.name}" ref="mkbodyRef" fancybox
                                 class="text markdown-body fr-view"
                                 innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef"></div>
                             <em-channel-task-item-footer task-item.bind="item" channel.bind="channel"
-                                login-user.bind="loginUser" col.bind="col"></em-channel-task-item-footer>
+                                login-user.bind="loginUser" is-at.bind="isAt" col.bind="col">
+                            </em-channel-task-item-footer>
                             <i style="position: absolute; right: 0; bottom: 5px;"
-                                if.bind="channel.creator.username == loginUser.username" title="从看板移除该任务"
+                                if.bind="!isAt && (channel.creator.username == loginUser.username)" title="从看板移除该任务"
+                                click.delegate="removeHandler(item, col)"
+                                class="remove circle outline big red link icon"></i>
+                            <i style="position: absolute; right: 0; bottom: 5px;"
+                                if.bind="isAt && (item.creator.username == loginUser.username)" title="从看板移除该任务"
                                 click.delegate="removeHandler(item, col)"
                                 class="remove circle outline big red link icon"></i>
                         </div>
@@ -88,5 +93,5 @@
         </div>
     </div>
     <em-channel-chat-task-talk-modal channel.bind="channel" view-model.ref="talkVm"></em-channel-chat-task-talk-modal>
-    <em-channel-task-create channel.bind="channel" view-model.ref="addVm"></em-channel-task-create>
+    <em-channel-task-create is-at.bind="isAt" channel.bind="channel" view-model.ref="addVm"></em-channel-task-create>
 </template>

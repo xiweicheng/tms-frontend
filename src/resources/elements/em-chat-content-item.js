@@ -3,6 +3,7 @@ import {
     containerless,
     bindingMode
 } from 'aurelia-framework';
+import _ from 'lodash';
 
 @containerless
 export class EmChatContentItem {
@@ -210,6 +211,12 @@ export class EmChatContentItem {
         this.msgPpMiHandler = (event) => {
             event.preventDefault();
             let target = event.currentTarget;
+
+            let _href = $(target).attr('href');
+            let hash = wurl('hash', _href);
+            if (_.includes(hash, '/@')) { // 私聊@消息不处理
+                return;
+            }
 
             if (this.hoverMsgTimeoutRef) {
                 if (this.hoverMsgTarget === target) {

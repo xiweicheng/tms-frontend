@@ -810,6 +810,10 @@ export class EmChatTopMenu {
         this.channelTasksVm.show();
     }
 
+    userTasksHandler() {
+        this.channelTasksVm.show('user');
+    }
+
     gotoChatHandler() {
         if (!this.notice) return;
 

@@ -13,6 +13,7 @@ import {
 export class EmChannelTaskCreate {
 
     @bindable channel;
+    @bindable isAt;
     members = [];
     isMobile = utils.isMobile();
     col;
@@ -475,20 +476,36 @@ export class EmChannelTaskCreate {
         // 给消息体增加uuid
         nsCtx.ct_uuid = nsCtx.ct_uuid || utils.uuid();
 
-        $.post(`/admin/chat/channel/create`, {
-            url: utils.getUrl(),
-            channelId: this.channel.id,
-            usernames: utils.parseUsernames(content, this.members, this.channel).join(','),
-            content: content,
-            ua: navigator.userAgent,
-            uuid: nsCtx.ct_uuid,
-            contentHtml: utils.md2html(content, true)
-        }, (data, textStatus, xhr) => {
+        let body;
+
+        if (this.isAt) {
+            body = {
+                baseUrl: utils.getUrl(),
+                path: wurl('path'),
+                chatTo: nsCtx.chatTo,
+                content: content,
+                ua: navigator.userAgent,
+                uuid: nsCtx.ct_uuid,
+                contentHtml: utils.md2html(content, true)
+            };
+        } else {
+            body = {
+                url: utils.getUrl(),
+                channelId: this.channel.id,
+                usernames: utils.parseUsernames(content, this.members, this.channel).join(','),
+                content: content,
+                ua: navigator.userAgent,
+                uuid: nsCtx.ct_uuid,
+                contentHtml: utils.md2html(content, true)
+            };
+        }
+
+        $.post(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/create`, body, (data, textStatus, xhr) => {
             if (data.success) {
                 this.simplemde.value('');
 
                 // 打任务状态标签
-                $.post(`/admin/chat/channel/label/toggle`, {
+                $.post(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/label/toggle`, {
                     url: utils.getUrl(),
                     meta: this.col.name,
                     type: 'Tag',
@@ -538,14 +555,28 @@ export class EmChannelTaskCreate {
         this.taskItem.contentOld = this.taskItem.content;
         this.taskItem.content = content;
 
-        $.post(`/admin/chat/channel/update`, {
-            url: utils.getUrl(),
-            id: this.taskItem.id,
-            version: this.taskItem.version,
-            usernames: utils.parseUsernames(this.taskItem.content, this.members, this.channel).join(','),
-            content: this.taskItem.content,
-            diff: utils.diffS(this.taskItem.contentOld, this.taskItem.content)
-        }, (data, textStatus, xhr) => {
+        let body;
+
+        if (this.isAt) {
+            body = {
+                baseUrl: utils.getUrl(),
+                path: wurl('path'),
+                id: this.taskItem.id,
+                content: this.taskItem.content,
+                diff: utils.diffS(this.taskItem.contentOld, this.taskItem.content)
+            };
+        } else {
+            body = {
+                url: utils.getUrl(),
+                id: this.taskItem.id,
+                version: this.taskItem.version,
+                usernames: utils.parseUsernames(this.taskItem.content, this.members, this.channel).join(','),
+                content: this.taskItem.content,
+                diff: utils.diffS(this.taskItem.contentOld, this.taskItem.content)
+            };
+        }
+
+        $.post(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/update`, body, (data, textStatus, xhr) => {
             if (data.success) {
                 toastr.success('更新任务成功!');
                 this.taskItem.version = data.data.version;

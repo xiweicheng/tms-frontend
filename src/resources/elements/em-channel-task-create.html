@@ -1,7 +1,7 @@
 <template>
     <require from="./em-channel-task-create.css"></require>
     <em-modal em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)" confirm-label="确定">
-        <div slot="header">${title}频道任务</div>
+        <div slot="header">${title}${isAt ? '用户' : '频道'}任务</div>
         <div slot="content" class="em-channel-task-create">
             <div class="ui dropzone">
                 <div ref="chatStatusBarRef" class="tms-status-bar dropzone-previews"></div>

@@ -4,6 +4,7 @@ import { bindable, containerless } from 'aurelia-framework';
 export class EmChannelTaskItemHeader {
 
     @bindable taskItem;
+    @bindable isAt;
     @bindable channel;
     basePath = utils.getBasePath();
     loginUser = nsCtx.loginUser;
@@ -25,7 +26,7 @@ export class EmChannelTaskItemHeader {
     stowHandler() {
 
         if (!this.taskItem._stowed) {
-            $.post('/admin/chat/channel/stow', {
+            $.post(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/stow`, {
                 id: this.taskItem.id
             }, (data, textStatus, xhr) => {
                 this.taskItem._stowed = true;
@@ -44,7 +45,7 @@ export class EmChannelTaskItemHeader {
     unstowHandler() {
 
         if (this.taskItem._stowed) {
-            $.post('/admin/chat/channel/removeStow', {
+            $.post(`/admin/chat/channel/removeStow`, {
                 id: this.taskItem.stowId
             }, (data, textStatus, xhr) => {
                 this.taskItem.stowId = '';

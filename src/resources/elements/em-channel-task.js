@@ -8,6 +8,7 @@ export class EmChannelTask {
 
     @bindable channel;
     @bindable loginUser;
+    @bindable isAt;
 
     channelChanged() {
         // _.each(this.mapping, (v, k) => {
@@ -216,10 +217,10 @@ export class EmChannelTask {
 
     async _getTasks(label, page) {
         let pageTask = {};
-        await $.get('/admin/channel/task/listBy', {
+        await $.get(`/admin/${this.isAt ? 'user' : 'channel'}/task/listBy`, {
             page: page,
             size: this.size,
-            cid: this.channel.id,
+            cid: this.channel ? this.channel.id : null,
             label: label
         }, (data) => {
             if (data.success) {
@@ -304,10 +305,10 @@ export class EmChannelTask {
 
     moreHandler(col) {
 
-        col.ajax = $.get('/admin/channel/task/listBy', {
+        col.ajax = $.get(`/admin/${this.isAt ? 'user' : 'channel'}/task/listBy`, {
             page: col.page.number + 1,
             size: this.size,
-            cid: this.channel.id,
+            cid: this.channel ? this.channel.id : null,
             label: col.name
         }, (data) => {
             if (data.success) {
@@ -345,6 +346,7 @@ export class EmChannelTask {
         this.taskClickHandler = null;
         this.channel = null;
         this.loginUser = null;
+        this.isAt = null;
         this.filterLbls = [];
     }
 
@@ -383,7 +385,7 @@ export class EmChannelTask {
 
             if (t == s) return;
 
-            $.post('/admin/channel/task/status/update', {
+            $.post(`/admin/${this.isAt ? 'user' : 'channel'}/task/status/update`, {
                 id: id,
                 from: s,
                 to: t,
@@ -436,7 +438,7 @@ export class EmChannelTask {
     }
 
     removeHandler(item, col) {
-        if (this.channel.creator.username != this.loginUser.username) {
+        if (this.channel && (this.channel.creator.username != this.loginUser.username)) {
             toastr.error('删除权限不足！');
             return;
         }
@@ -450,7 +452,7 @@ export class EmChannelTask {
 
         if (!label) return;
 
-        $.post('/admin/channel/task/remove', {
+        $.post(`/admin/${this.isAt ? 'user' : 'channel'}/task/remove`, {
             id: item.id,
             label: col.name
         }, (data, textStatus, xhr) => {
@@ -504,7 +506,7 @@ export class EmChannelTask {
 
     mouseenterHandler(item) {
         if (!item.hasOwnProperty('_stowed') || _.isUndefined(item._stowed)) {
-            $.get('/admin/chat/channel/isMyStow', {
+            $.get(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/isMyStow`, {
                 id: item.id
             }, (data, textStatus, xhr) => {
                 if (data.data) {

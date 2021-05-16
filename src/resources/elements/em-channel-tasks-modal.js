@@ -5,6 +5,7 @@ export class EmChannelTasksModal {
 
     @bindable channel;
     @bindable loginUser;
+    @bindable isAt;
 
     showHandler() {
         this.channelTaskVm.init();
@@ -23,6 +24,7 @@ export class EmChannelTasksModal {
     detached() {
         this.channel = null;
         this.loginUser = null;
+        this.isAt = null;
     }
 
     /**
