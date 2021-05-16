@@ -88,8 +88,7 @@
                 </div>
                 <a if.bind="!isAt" class="item" click.trigger="channelTasksHandler($event)" title="频道任务看板"><i
                         class="tasks icon"></i></a>
-                <a if.bind="isAt" class="item" click.trigger="userTasksHandler($event)" title="用户任务看板"><i
-                        class="tasks icon"></i></a>
+
                 <a if.bind="!isAt" class="item" click.trigger="viewOrMgrUsersHandler($event)"
                     title="频道用户(${channel.members.length})"><i class="users icon"></i></a>
                 <a if.bind="!isAt" class="item ${isRightSidebarShow && (activeType == ACTION_TYPE_PIN) ? 'active' : ''}"
@@ -105,6 +104,8 @@
                         class="empty heart icon"></i></a>
                 <a if.bind="isAt" class="item" click.trigger="mailToHandler($event)" title="${chatUser.mails}"><i
                         class="mail icon"></i></a>
+                <a if.bind="isAt" class="item" click.trigger="userTasksHandler($event)" title="用户任务看板"><i
+                        class="tasks icon"></i></a>
                 <a if.bind="isAt && chatUser.lastLoginDate" class="item tms-user-info"
                     click.trigger="userInfoHandler($event)"
                     title="从IP[${chatUser.loginRemoteAddress}]登录(${chatUser.lastLoginDate | timeago}) ${chatUser.level ? '\n职位: ' + chatUser.level : ''} ${chatUser.phone ? '\n座机: ' + chatUser.phone : ''} ${chatUser.mobile ? '\n手机: ' + chatUser.mobile : ''} ${chatUser.mobile ? '\n位置: ' + chatUser.place : ''} ${chatUser.hobby ? '\n爱好: ' + chatUser.hobby : ''}"><i
@@ -254,6 +255,7 @@
     <!-- <em-chat-channel-create login-user.bind="loginUser" trigger.bind="createChannelRef"></em-chat-channel-create> -->
     <em-chat-channel-link-mgr login-user.bind="loginUser" view-model.ref="channelLinkMgrVm" channel.bind="channel">
     </em-chat-channel-link-mgr>
-    <em-channel-tasks-modal view-model.ref="channelTasksVm" is-at.bind="isAt" login-user.bind="loginUser" channel.bind="channel">
+    <em-channel-tasks-modal view-model.ref="channelTasksVm" is-at.bind="isAt" login-user.bind="loginUser"
+        channel.bind="channel">
     </em-channel-tasks-modal>
 </template>

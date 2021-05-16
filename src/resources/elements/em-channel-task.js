@@ -130,17 +130,28 @@ export class EmChannelTask {
                 // var html = utils.md2html(chat.content, true);
                 // var htmlOld = utils.md2html(chat.contentOld, true);
 
-                let url = `/admin/chat/channel/update`;
-                let data = {
-                    url: utils.getUrl(),
-                    id: task.id,
-                    version: task.version,
-                    usernames: utils.parseUsernames(task.content, [nsCtx.memberAll, ...this.channel.members], this.channel).join(','),
-                    content: task.content,
-                    diff: utils.diffS(task.contentOld, task.content)
-                };
+                let body;
+                if (this.isAt) {
+                    body = {
+                        baseUrl: utils.getUrl(),
+                        path: wurl('path'),
+                        id: task.id,
+                        content: task.content,
+                        diff: utils.diffS(task.contentOld, task.content)
+                    };
+                } else {
+                    body = {
+                        url: utils.getUrl(),
+                        id: task.id,
+                        version: task.version,
+                        usernames: utils.parseUsernames(task.content, [nsCtx.memberAll, ...this.channel.members], this.channel).join(','),
+                        content: task.content,
+                        diff: utils.diffS(task.contentOld, task.content)
+                    };
 
-                $.post(url, data, (data, textStatus, xhr) => {
+                }
+
+                $.post(`/admin/chat/${this.isAt ? 'direct' : 'channel'}/update`, body, (data, textStatus, xhr) => {
                     if (data.success) {
                         toastr.success('更新消息成功!');
                         // chat.isEditing = false;
@@ -579,6 +590,6 @@ export class EmChannelTask {
                 }
             })
         });
-        
+
     }
 }
