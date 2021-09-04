@@ -8,11 +8,15 @@
         <div ui-dropdown-action class="ui dropdown item tms-links">
             <i class="large content icon"></i>
             <div class="menu">
+                <div class="ui icon search input">
+                    <i class="search icon"></i>
+                    <input type="text" placeholder="过滤查找...">
+                </div>
                 <div class="header"><i class="linkify icon"></i> 系统外链 (${sysLinks.length}) <i if.bind="isSuper"
                         click.trigger="addChannelLinkHandler($event)" title="添加系统外链"
                         class="circular icon link plus"></i></div>
                 <div class="scrolling menu">
-                    <a repeat.for="item of sysLinks" href="${item.href}" target="_blank" class="item">
+                    <a repeat.for="item of sysLinks" href="${item.href}" data-value="${item.href}" target="_blank" class="item">
                         <div class="ui green empty circular label"></div>
                         ${item.title}
                     </a>

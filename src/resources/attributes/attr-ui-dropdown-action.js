@@ -15,6 +15,7 @@ export class AttrUiDropdownActionCustomAttribute {
     _init(context) {
         _.defer(() => {
             $(this.element).dropdown({
+                fullTextSearch: true,
                 action: 'hide',
                 context: context
             });
