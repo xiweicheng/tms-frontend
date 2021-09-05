@@ -849,7 +849,7 @@ export class EmBlogComment {
                     atId: nsCtx.bc_uuid
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
-                        this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100)\r\n'
+                        this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=auto)\r\n'
                             .replace(/\{name\}/g, utils.replaceMdChar(data.data.name))
                             .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
                             .replace(/\{path\}/g, data.data.path)
@@ -899,7 +899,7 @@ export class EmBlogComment {
 
                         $.each(data.data, function (index, item) {
                             if (item.type == 'Image') {
-                                _this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=100)\r\n'
+                                _this.insertContent('![{name}]({baseURL}{path}{uuidName}?width=auto)\r\n'
                                     .replace(/\{name\}/g, utils.replaceMdChar(item.name))
                                     .replace(/\{baseURL\}/g, utils.getBaseUrl() + '/')
                                     .replace(/\{path\}/g, item.path)
