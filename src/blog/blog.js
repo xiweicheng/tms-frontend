@@ -185,6 +185,9 @@ export class Blog {
             }, {
                 id: 'create-excel',
                 name: 'write-excel'
+            }, {
+                id: 'create-sheet',
+                name: 'write-sheet'
             }];
 
             var $modaal = $(event.currentTarget).closest('.modaal-wrapper');

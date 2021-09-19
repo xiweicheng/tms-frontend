@@ -286,6 +286,12 @@ export class EmBlogTopMenu {
         return false;
     }
 
+    createSheetHandler() {
+        $('.em-blog-write-sheet > iframe').attr('src', this.baseRes + 'sheet.html' + '?_=' + new Date().getTime());
+        $('a[href="#modaal-blog-write-sheet"]').click();
+        return false;
+    }
+
     selectTplHandler() {
         this.blogTplSelectMd.show();
     }

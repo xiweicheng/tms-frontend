@@ -93,21 +93,21 @@
                                 <span class="description">alt + o</span>
                                 <i class="write icon"></i> ${blog.openEdit ? '关闭编辑' : '开放编辑'}
                             </div>
-                            <div if.bind="(blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel') && (isSuper || blog.creator.username == loginUser.username)"
+                            <div if.bind="(blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet') && (isSuper || blog.creator.username == loginUser.username)"
                                 click.delegate="changeEditorHandler()" class="item">
                                 <span class="description">alt + e</span>
                                 <i class="html5 icon"></i> 转HTML
                             </div>
                             <div class="divider"></div>
-                            <a show.bind="blog.editor != 'Mind' && blog.editor != 'Excel'"
+                            <a show.bind="blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet'"
                                 href="/admin/blog/download/${blog.id}?type=pdf" class="item">
                                 <i class="file pdf outline icon"></i> 导出为PDF
                             </a>
-                            <a show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor !='Excel'"
+                            <a show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor !='Excel' && blog.editor !='Sheet'"
                                 href="/admin/blog/download/${blog.id}?type=md" class="item">
                                 <i class="file text outline icon"></i> 导出为Markdown
                             </a>
-                            <div show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel'"
+                            <div show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet'"
                                 click.delegate="md2HtmlDownloadHandler()" class="item">
                                 <i class="html5 icon"></i> 导出为HTML
                             </div>
@@ -115,7 +115,7 @@
                                 class="item">
                                 <i class="html5 icon"></i> 导出为HTML
                             </a>
-                            <div show.bind="blog.editor == 'Excel' || blog.editor == 'Mind'"
+                            <div show.bind="blog.editor == 'Excel' || blog.editor == 'Sheet' || blog.editor == 'Mind'"
                                 click.delegate="excelDownloadHandler()" class="item">
                                 <i class="file excel outline icon"></i> 导出为Excel
                             </div>
@@ -166,7 +166,7 @@
                                     class="usb icon"></i></span>
                             <span if.bind="blog.editor == 'Excel'" title="电子表格编辑器"><i style="color: black;"
                                     class="table icon"></i></span>
-                            <span if.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel'"
+                            <span if.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet'"
                                 title="Markdown编辑器"><img style="width: 14px;" src="img/markdown.png" alt=""></span>
                         </span>
                     </div>
@@ -178,7 +178,10 @@
             <div show.bind="blog.editor == 'Excel'" data-id="${blog.id}">
                 <em-blog-excel blog.bind="blog"></em-blog-excel>
             </div>
-            <div show.bind="blog.editor != 'Mind' && blog.editor != 'Excel' " data-id="${blog.id}" data-case="blog"
+            <div show.bind="blog.editor == 'Sheet'" data-id="${blog.id}">
+                <em-blog-sheet blog.bind="blog"></em-blog-sheet>
+            </div>
+            <div show.bind="blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet'" data-id="${blog.id}" data-case="blog"
                 fancybox ref="mkbodyRef" class="tms-blog-content markdown-body fr-view"
                 innerhtml.bind="blog.content | parseMd:blog.space.channel:blog.editor | emoji:mkbodyRef"></div>
             <div class="footer">

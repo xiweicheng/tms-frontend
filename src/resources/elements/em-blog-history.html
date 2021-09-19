@@ -1,10 +1,12 @@
 <template>
     <require from="./em-blog-history.css"></require>
-    <em-modal classes="small" em-modal.ref="emModal" onshow.call="showHandler($event)" onapprove.call="approveHandler($event)">
+    <em-modal classes="small" em-modal.ref="emModal" onshow.call="showHandler($event)"
+        onapprove.call="approveHandler($event)">
         <div slot="header">博文历史记录</div>
         <div slot="content" class="em-blog-history">
             <div class="topbar">
-                <div click.delegate="diffHandler()" class="ui mini basic button"><i class="resize horizontal icon"></i>比较选择的版本</div>
+                <div click.delegate="diffHandler()" class="ui mini basic button"><i
+                        class="resize horizontal icon"></i>比较选择的版本</div>
             </div>
             <div class="content">
                 <table class="ui very basic table">
@@ -25,11 +27,12 @@
                             <td><a click.delegate="viewHistoryHandler(blog, histories.length + 1, true)">当前</a>
                                 <span show.bind="blog.editor == 'Html'"><i title="html"
                                         class="html5 icon"></i></span><span show.bind="blog.editor == 'Mind'"><i
-                                                title="mind" class="usb icon"></i></span><span show.bind="blog.editor ==
+                                        title="mind" class="usb icon"></i></span><span show.bind="blog.editor ==
                                                 'Excel'"><i title="excel" class="table icon"></i></span><span
-                                            show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor !=
-                                            'Excel'"><img
-                                        title="markdown" style="width: 16px;" src="img/markdown.png" alt=""></span></td>
+                                    show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor !=
+                                            'Excel' && blog.editor !=
+                                            'Sheet'"><img title="markdown" style="width: 16px;" src="img/markdown.png"
+                                        alt=""></span></td>
                             <td title="${blog.updateDate | date}">${blog.updateDate | timeago}</td>
                             <td>${blog.updater.name}</td>
                             <td class="right aligned"></td>
@@ -42,21 +45,25 @@
                                     - $index}</a> <span show.bind="item.editor == 'Html'"><i title="html"
                                         class="html5 icon"></i></span><span show.bind="item.editor == 'Mind'"><i
                                         title="mind" class="usb icon"></i></span><span
-                                            show.bind="item.editor == 'Excel'"><i title="excel"
-                                                class="table icon"></i></span><span
-                                    show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor !=
-                                    'Excel'"><img title="markdown"
-                                        style="width: 16px;"
-                                        src="img/markdown.png" alt=""></span></td>
+                                    show.bind="item.editor == 'Excel'"><i title="excel"
+                                        class="table icon"></i></span><span show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor !=
+                                    'Excel'"><img title="markdown" style="width: 16px;" src="img/markdown.png"
+                                        alt=""></span></td>
                             <td title="${item.blogUpdateDate | date}">${item.blogUpdateDate | timeago}</td>
                             <td>${item.blogUpdater.name}</td>
                             <td class="right aligned">
-                                <a if.bind="isSuper || blog.creator.username == loginUser.username || blog.openEdit" class="${!$parent.ajax1 || $parent.ajax1.readyState == 4 ? '' : 'tms-disabled'}" click.delegate="restoreHandler(item)">还原此版本</a>
+                                <a if.bind="isSuper || blog.creator.username == loginUser.username || blog.openEdit"
+                                    class="${!$parent.ajax1 || $parent.ajax1.readyState == 4 ? '' : 'tms-disabled'}"
+                                    click.delegate="restoreHandler(item)">还原此版本</a>
                                 <span if.bind="isSuper || blog.creator.username == loginUser.username"> · </span>
-                                <a if.bind="isSuper || blog.creator.username == loginUser.username" ui-dropdown-action style="margin-right: .75em;" class="ui icon top right pointing dropdown ${!$parent.ajax2 || $parent.ajax2.readyState == 4 ? '' : 'disabled'}" title="删除博文历史记录">
+                                <a if.bind="isSuper || blog.creator.username == loginUser.username" ui-dropdown-action
+                                    style="margin-right: .75em;"
+                                    class="ui icon top right pointing dropdown ${!$parent.ajax2 || $parent.ajax2.readyState == 4 ? '' : 'disabled'}"
+                                    title="删除博文历史记录">
                                     <span style="color: red;">删除</span>
                                     <div class="menu">
-                                        <div style="color: red;" class="item" click.delegate="removeHandler(item)"><i class="trash outline icon"></i>确认删除</div>
+                                        <div style="color: red;" class="item" click.delegate="removeHandler(item)"><i
+                                                class="trash outline icon"></i>确认删除</div>
                                     </div>
                                 </a>
                             </td>

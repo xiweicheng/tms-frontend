@@ -739,6 +739,7 @@ export class EmBlogContent {
                 (ev.data.editor == 'html') && $('a[href="#modaal-blog-write-html"]').modaal('close');
                 (ev.data.editor == 'mind') && $('a[href="#modaal-blog-write-mind"]').modaal('close');
                 (ev.data.editor == 'excel') && $('a[href="#modaal-blog-write-excel"]').modaal('close');
+                (ev.data.editor == 'sheet') && $('a[href="#modaal-blog-write-sheet"]').modaal('close');
             }
 
             ev.data.from = 'html';
@@ -1030,6 +1031,9 @@ export class EmBlogContent {
         } else if (this.blog.editor == 'Excel') {
             $('.em-blog-write-excel > iframe').attr('src', utils.getResourceBase() + 'excel.html?id=' + this.blog.id + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-excel"]').click();
+        } else if (this.blog.editor == 'Sheet') {
+            $('.em-blog-write-sheet > iframe').attr('src', utils.getResourceBase() + 'sheet.html?id=' + this.blog.id + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-sheet"]').click();
         } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, {
                 action: 'edit',

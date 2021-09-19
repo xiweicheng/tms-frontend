@@ -1142,6 +1142,12 @@ export class EmBlogLeftSidebar {
         return false;
     }
 
+    createSheetHandler(space, dir, blog) {
+        $('.em-blog-write-sheet > iframe').attr('src', this.baseRes + 'sheet.html' + '?_=' + new Date().getTime() + '&spaceId=' + (space ? space.id : '') + '&dirId=' + (dir ? dir.id : '') + '&pid=' + (blog ? blog.id : ''));
+        $('a[href="#modaal-blog-write-sheet"]').click();
+        return false;
+    }
+
     selectTplHandler(space, dir, blog) {
         this.blogTplSelectMd.show(space, dir, blog);
     }

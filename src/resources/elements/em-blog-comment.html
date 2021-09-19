@@ -28,7 +28,10 @@
                     <div show.bind="item.editor == 'Excel'" data-id="${item.id}" data-case="comment">
                         <em-blog-excel comment.bind="item"></em-blog-excel>
                     </div>
-                    <div show.bind="item.editor != 'Mind' && item.editor != 'Excel' && !item.isEditing"
+                    <div show.bind="item.editor == 'Sheet'" data-id="${item.id}" data-case="comment">
+                        <em-blog-sheet comment.bind="item"></em-blog-sheet>
+                    </div>
+                    <div show.bind="item.editor != 'Mind' && item.editor != 'Excel' && item.editor != 'Sheet' && !item.isEditing"
                         data-id="${item.id}" data-case="comment" fancybox ref="mkbodyRef"
                         class="text markdown-body fr-view"
                         innerhtml.bind="item.content | parseMd:blog.space.channel:item.editor | emoji:mkbodyRef"></div>
@@ -92,7 +95,7 @@
                                     href="/admin/blog/comment/download/${item.id}?type=html" class="item">
                                     <i class="html5 icon"></i> 导出为HTML
                                 </a>
-                                <div show.bind="item.editor == 'Excel' || item.editor == 'Mind'"
+                                <div show.bind="item.editor == 'Excel' || item.editor == 'Sheet' || item.editor == 'Mind'"
                                     click.delegate="excelDownloadHandler(item)" class="item">
                                     <i class="file excel outline icon"></i> 导出为Excel
                                 </div>
@@ -149,6 +152,8 @@
                                 HTML</div>
                             <div class="item" click.delegate="commentEditorHandler('excel')"><i class="table icon"></i>
                                 电子表格</div>
+                                <div class="item" click.delegate="commentEditorHandler('sheet')"><i class="table icon"></i>
+                                电子表格（新）</div>
                             <div class="item" click.delegate="commentEditorHandler('mind')"><i class="usb icon"></i>
                                 思维导图
                             </div>

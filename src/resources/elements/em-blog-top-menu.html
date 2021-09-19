@@ -53,6 +53,13 @@
                             style="display: none;">
                             <div class="ui blue empty circular label"></div> 电子表格
                         </a>
+                        <a class="item" click.delegate="createSheetHandler()">
+                            <div class="ui blue empty circular label"></div> 电子表格（新）
+                        </a>
+                        <a modaal="blog-create-sheet" href="#modaal-blog-write-sheet" class="item"
+                            style="display: none;">
+                            <div class="ui blue empty circular label"></div> 电子表格（新）
+                        </a>
                         <a class="item" click.delegate="createMindHandler()">
                             <div class="ui blue empty circular label"></div> 思维导图
                         </a>
@@ -81,6 +88,9 @@
         </div>
         <div id="modaal-blog-write-excel" style="display:none;">
             <em-blog-write-excel></em-blog-write-excel>
+        </div>
+        <div id="modaal-blog-write-sheet" style="display:none;">
+            <em-blog-write-sheet></em-blog-write-sheet>
         </div>
         <div class="right menu">
             <a ref="tasksRef" class="item icon tms-task" click.delegate="tasksRefreshHandler()"><i
