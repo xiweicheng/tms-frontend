@@ -67,10 +67,10 @@ export class EmBlogTplSelect {
             $('.em-blog-write-mind > iframe').attr('src', utils.getResourceBase() + 'mind.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.dir ? this.dir.id : '') + (this.blog ? this.blog.id : ''));
             $('a[href="#modaal-blog-write-mind"]').click();
         } else if (item.editor == 'Excel') {
-            $('.em-blog-write-excel > iframe').attr('src', utils.getResourceBase() + 'excel.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.this.dir ? this.dir.id : '') + (this.blog ? this.blog.id : ''));
+            $('.em-blog-write-excel > iframe').attr('src', utils.getResourceBase() + 'excel.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.dir ? this.dir.id : '') + (this.blog ? this.blog.id : ''));
             $('a[href="#modaal-blog-write-excel"]').click();
         } else if (item.editor == 'Sheet') {
-            $('.em-blog-write-sheet > iframe').attr('src', utils.getResourceBase() + 'sheet.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.this.dir ? this.dir.id : '') + (this.blog ? this.blog.id : ''));
+            $('.em-blog-write-sheet > iframe').attr('src', utils.getResourceBase() + 'sheet.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.dir ? this.dir.id : '') + (this.blog ? this.blog.id : ''));
             $('a[href="#modaal-blog-write-sheet"]').click();
         } else if (!nsCtx.isModaalOpening) {
             nsCtx.newBlogSpace = this.space;

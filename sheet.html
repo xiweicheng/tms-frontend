@@ -17,10 +17,10 @@
     <link href="cdn/toastr.min.css" rel="stylesheet" type="text/css" />
     <!-- jQuery Modal -->
     <link href="cdn/jquery.modal.min.css" rel="stylesheet" type="text/css" />
-    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/luckysheet/dist/plugins/css/pluginsCss.css' />
-    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/luckysheet/dist/plugins/plugins.css' />
-    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/luckysheet/dist/css/luckysheet.css' />
-    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/luckysheet/dist/assets/iconfont/iconfont.css' />
+    <link rel='stylesheet' href='cdn/luckysheet/plugins/css/pluginsCss.css' />
+    <link rel='stylesheet' href='cdn/luckysheet/plugins/plugins.css' />
+    <link rel='stylesheet' href='cdn/luckysheet/css/luckysheet.css' />
+    <link rel='stylesheet' href='cdn/luckysheet/assets/iconfont/iconfont.css' />
 
 
     <style>
@@ -187,13 +187,13 @@
     <script type="text/javascript" src="cdn/lodash.core.min.js"></script>
     <script type="text/javascript" src="cdn/sockjs.min.js"></script>
     <script type="text/javascript" src="cdn/stomp.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/luckysheet/dist/plugins/js/plugin.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/luckysheet/dist/luckysheet.umd.js"></script>
+    <script src="cdn/luckysheet/plugins/js/plugin.js"></script>
+    <script src="cdn/luckysheet/luckysheet.umd.js"></script>
     <script type="text/javascript" src="cdn/jquery.modal.min.js"></script>
     <script>
         function initSheet(data) {
 
-            console.log(data);
+            // console.log(data);
 
             var readonly = typeof url('?readonly') !== 'undefined';
 
@@ -302,7 +302,7 @@
 
                     var content = JSON.stringify(luckysheet.getAllSheets());
 
-                    console.log(content);
+                    // console.log(content);
 
                     if (!content || !$.trim(content)) {
                         toastr && toastr.error('博文评论内容不能为空！');
@@ -374,7 +374,7 @@
                         var title = $('#title').val();
                         var content = JSON.stringify(luckysheet.getAllSheets());
 
-                        console.log(content);
+                        // console.log(content);
 
                         if (comment) {
                             updated = (comment.content != content);
@@ -548,7 +548,7 @@
                     var title = $('#title').val();
                     var content = JSON.stringify(luckysheet.getAllSheets());
 
-                    console.log(content);
+                    // console.log(content);
 
                     if (!title || !$.trim(title)) {
                         toastr && toastr.error('博文标题不能为空！');
