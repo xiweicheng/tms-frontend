@@ -95,12 +95,17 @@
                                     href="/admin/blog/comment/download/${item.id}?type=html" class="item">
                                     <i class="html5 icon"></i> 导出为HTML
                                 </a>
-                                <div show.bind="item.editor == 'Excel' || item.editor == 'Sheet' || item.editor == 'Mind'"
+                                <div show.bind="item.editor == 'Excel' || item.editor == 'Mind'"
                                     click.delegate="excelDownloadHandler(item)" class="item">
                                     <i class="file excel outline icon"></i> 导出为Excel
                                 </div>
                                 <a show.bind="item.editor == 'Excel'"
                                     href="/admin/blog/comment/download/${item.id}?type=table" class="item">
+                                    <i style="width: 1.18em; vertical-align:inherit;" class="table icon"></i>
+                                    导出为表格
+                                </a>
+                                <a show.bind="item.editor == 'Sheet'"
+                                    href="/admin/blog/comment/download/${item.id}?type=sheet" class="item">
                                     <i style="width: 1.18em; vertical-align:inherit;" class="table icon"></i>
                                     导出为表格
                                 </a>

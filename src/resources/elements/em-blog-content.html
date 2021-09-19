@@ -115,7 +115,7 @@
                                 class="item">
                                 <i class="html5 icon"></i> 导出为HTML
                             </a>
-                            <div show.bind="blog.editor == 'Excel' || blog.editor == 'Sheet' || blog.editor == 'Mind'"
+                            <div show.bind="blog.editor == 'Excel' || blog.editor == 'Mind'"
                                 click.delegate="excelDownloadHandler()" class="item">
                                 <i class="file excel outline icon"></i> 导出为Excel
                             </div>
@@ -129,6 +129,11 @@
                                 导出为导图
                             </a>
                             <a show.bind="blog.editor == 'Excel'" href="/admin/blog/download/${blog.id}?type=table"
+                                class="item">
+                                <i style="width: 1.18em; vertical-align:inherit;" class="table icon"></i>
+                                导出为表格
+                            </a>
+                            <a show.bind="blog.editor == 'Sheet'" href="/admin/blog/download/${blog.id}?type=sheet"
                                 class="item">
                                 <i style="width: 1.18em; vertical-align:inherit;" class="table icon"></i>
                                 导出为表格
@@ -164,7 +169,7 @@
                                     class="html5 icon"></i></span>
                             <span if.bind="blog.editor == 'Mind'" title="思维导图编辑器"><i style="color: black;"
                                     class="usb icon"></i></span>
-                            <span if.bind="blog.editor == 'Excel'" title="电子表格编辑器"><i style="color: black;"
+                            <span if.bind="blog.editor == 'Excel' || blog.editor == 'Sheet'" title="电子表格编辑器"><i style="color: black;"
                                     class="table icon"></i></span>
                             <span if.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet'"
                                 title="Markdown编辑器"><img style="width: 14px;" src="img/markdown.png" alt=""></span>
@@ -342,7 +347,15 @@
                                             class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>
                                 </div>
-                                <div show.bind="item.properties != 'Mind' && item.properties != 'Excel' "
+                                <div show.bind="item.properties == 'Sheet'" data-id="${item.id}" class="extra text">
+                                    <em-blog-sheet comment.bind="{id: item.targetId, editor: item.properties}">
+                                    </em-blog-sheet>
+                                    <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}"
+                                            class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                    </div>
+                                </div>
+                                <div show.bind="item.properties != 'Mind' && item.properties != 'Excel' && item.properties != 'Sheet'"
                                     ref="mkbodyRef2" class="extra text markdown-body fr-view">
                                     <div fancybox innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef2"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">

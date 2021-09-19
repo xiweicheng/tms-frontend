@@ -28,7 +28,8 @@
                                 <span show.bind="blog.editor == 'Html'"><i title="html"
                                         class="html5 icon"></i></span><span show.bind="blog.editor == 'Mind'"><i
                                         title="mind" class="usb icon"></i></span><span show.bind="blog.editor ==
-                                                'Excel'"><i title="excel" class="table icon"></i></span><span
+                                                'Excel' || blog.editor ==
+                                                'Sheet'"><i title="excel" class="table icon"></i></span><span
                                     show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor !=
                                             'Excel' && blog.editor !=
                                             'Sheet'"><img title="markdown" style="width: 16px;" src="img/markdown.png"
@@ -45,9 +46,10 @@
                                     - $index}</a> <span show.bind="item.editor == 'Html'"><i title="html"
                                         class="html5 icon"></i></span><span show.bind="item.editor == 'Mind'"><i
                                         title="mind" class="usb icon"></i></span><span
-                                    show.bind="item.editor == 'Excel'"><i title="excel"
+                                    show.bind="item.editor == 'Excel' || item.editor == 'Sheet'"><i title="excel"
                                         class="table icon"></i></span><span show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor !=
-                                    'Excel'"><img title="markdown" style="width: 16px;" src="img/markdown.png"
+                                    'Excel' && item.editor !=
+                                    'Sheet'"><img title="markdown" style="width: 16px;" src="img/markdown.png"
                                         alt=""></span></td>
                             <td title="${item.blogUpdateDate | date}">${item.blogUpdateDate | timeago}</td>
                             <td>${item.blogUpdater.name}</td>

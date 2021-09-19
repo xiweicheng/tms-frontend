@@ -53,9 +53,16 @@ export class Blog {
         this.subscribe4 = ea.subscribe(nsCons.EVENT_BLOG_IS_UPDATED_ACK, (payload) => {
             if (payload.updated) {
 
+                // console.log('ss', payload)
+
+                var content = '页面存在未保存内容，确认要关闭吗?';
+                    if(payload.item.name == 'write-sheet') {
+                        content = '页面可能存在未保存内容，确认要关闭吗?';
+                    }
+
                 this.emConfirmModal.show({
                     title: '关闭确认',
-                    content: '页面存在未保存内容，确认要关闭吗?',
+                    content: content,
                     onapprove: () => {
                         $(`a[href="#modaal-blog-${payload.item.name}"]`).modaal('close');
                     }
@@ -225,9 +232,16 @@ export class Blog {
 
                 if (evt.data.updated) {
 
+                    // console.log('s', evt.data)
+
+                    var content = '页面存在未保存内容，确认要关闭吗?';
+                    if(evt.data.item.name == 'write-sheet') {
+                        content = '页面可能存在未保存内容，确认要关闭吗?';
+                    }
+
                     this.emConfirmModal.show({
                         title: '关闭确认',
-                        content: '页面存在未保存内容，确认要关闭吗?',
+                        content: content,
                         onapprove: () => {
                             $(`a[href="#modaal-blog-${evt.data.item.name}"]`).modaal('close');
                             $(`.em-blog-${evt.data.item.name} > iframe`).attr('src', ``);
