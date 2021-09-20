@@ -119,6 +119,11 @@
                                 click.delegate="excelDownloadHandler()" class="item">
                                 <i class="file excel outline icon"></i> 导出为Excel
                             </div>
+                            <a show.bind="blog.editor == 'Sheet'" href="/admin/blog/download/${blog.id}?type=xlsx"
+                                class="item">
+                                <i style="width: 1.18em; vertical-align:inherit;" class="file excel outline icon"></i>
+                                导出为Excel
+                            </a>
                             <div show.bind="blog.editor == 'Mind'" click.delegate="pngDownloadHandler()" class="item">
                                 <i style="width: 1.18em; vertical-align:inherit;" class="file image outline icon"></i>
                                 导出为PNG

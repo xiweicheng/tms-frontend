@@ -99,6 +99,12 @@
                                     click.delegate="excelDownloadHandler(item)" class="item">
                                     <i class="file excel outline icon"></i> 导出为Excel
                                 </div>
+                                <a show.bind="item.editor == 'Sheet'" href="/admin/blog/comment/download/${item.id}?type=xlsx"
+                                    class="item">
+                                    <i style="width: 1.18em; vertical-align:inherit;"
+                                        class="file excel outline icon"></i>
+                                    导出为Excel
+                                </a>
                                 <a show.bind="item.editor == 'Excel'"
                                     href="/admin/blog/comment/download/${item.id}?type=table" class="item">
                                     <i style="width: 1.18em; vertical-align:inherit;" class="table icon"></i>
@@ -157,7 +163,7 @@
                                 HTML</div>
                             <div class="item" click.delegate="commentEditorHandler('excel')"><i class="table icon"></i>
                                 电子表格</div>
-                                <div class="item" click.delegate="commentEditorHandler('sheet')"><i class="table icon"></i>
+                            <div class="item" click.delegate="commentEditorHandler('sheet')"><i class="table icon"></i>
                                 电子表格（新）</div>
                             <div class="item" click.delegate="commentEditorHandler('mind')"><i class="usb icon"></i>
                                 思维导图
