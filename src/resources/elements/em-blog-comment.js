@@ -1199,7 +1199,7 @@ export class EmBlogComment {
     md2HtmlDownloadHandler(item) {
 
         $.post(`/admin/blog/comment/download/md2html/${item.id}`, {
-            content: utils.md2html(`> 版权声明：本文为TMS版权所有，转载请附上原文出处链接和本声明。\n> 本文链接: ${utils.getBasePath()}#/blog/${this.blog.id}?cid=${item.id}&tilte=${this.blog._encodeTitle}_评论_${item.id}\n\n` + item.content)
+            content: utils.htmlWrap(utils.md2html(`> 版权声明：本文为TMS版权所有，转载请附上原文出处链接和本声明。\n> 本文链接: ${utils.getBasePath()}#/blog/${this.blog.id}?cid=${item.id}&tilte=${this.blog._encodeTitle}_评论_${item.id}\n\n` + item.content))
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 utils.openWin(`/admin/blog/comment/download/${item.id}?type=md2html`);
