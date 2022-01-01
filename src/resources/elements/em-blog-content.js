@@ -250,34 +250,11 @@ export class EmBlogContent {
                     return;
                 }
 
-                let lines = this.blog.content.split('\n');
-                // console.log(lines)
-                let index = -1;
-                for (var i = 0; i < lines.length; i++) {
-
-                    // console.log(lines[i])
-
-                    if (/^\- \s*\[[x ]\]\s*/.test(lines[i])) {
-                        if (++index == payload.index) {
-                            if (/^\- \s*\[[x]\]\s*/.test(lines[i])) {
-                                lines[i] = lines[i].replace(/^\- \s*\[[x]\]/, `- [ ]`);
-                                // console.log('==' + lines[i])
-                            } else if (/^\- \s*\[[ ]\]\s*/.test(lines[i])) {
-                                lines[i] = lines[i].replace(/^\- \s*\[[ ]\]/, `- [x]`);
-                                // console.log('==' + lines[i])
-                            }
-
-                            break;
-
-                        }
-                    }
-                }
-
                 if (this.sending) return;
 
                 this.sending = true;
 
-                let content = lines.join('\n');
+                let content = utils.taskItemToggle(this.blog.content, payload.index);
 
                 // var html = utils.md2html(content, true);
                 let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];

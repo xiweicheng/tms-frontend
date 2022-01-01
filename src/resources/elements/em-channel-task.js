@@ -99,33 +99,11 @@ export class EmChannelTask {
             });
 
             if (task && (task.creator.username == this.loginUser.username || task.openEdit)) {
-                let lines = task.content.split('\n');
-                // console.log(lines)
-                let index = -1;
-                for (var i = 0; i < lines.length; i++) {
-
-                    // console.log(lines[i])
-
-                    if (/^\- \s*\[[x ]\]\s*/.test(lines[i])) {
-                        if (++index == payload.index) {
-                            if (/^\- \s*\[[x]\]\s*/.test(lines[i])) {
-                                lines[i] = lines[i].replace(/^\- \s*\[[x]\]/, `- [ ]`);
-                                // console.log('==' + lines[i])
-                            } else if (/^\- \s*\[[ ]\]\s*/.test(lines[i])) {
-                                lines[i] = lines[i].replace(/^\- \s*\[[ ]\]/, `- [x]`);
-                                // console.log('==' + lines[i])
-                            }
-
-                            break;
-
-                        }
-                    }
-                }
 
                 this.sending = true;
 
                 task.contentOld = task.content;
-                task.content = lines.join('\n');
+                task.content = utils.taskItemToggle(task.content, payload.index);
 
                 // var html = utils.md2html(chat.content, true);
                 // var htmlOld = utils.md2html(chat.contentOld, true);

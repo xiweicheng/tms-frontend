@@ -316,7 +316,7 @@ export class CommonUtils {
      * @param  {[type]} content [description]
      * @return {[type]}         [description]
      */
-     htmlWrap(content) {
+    htmlWrap(content) {
         return `<!DOCTYPE html><html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" /><meta content='tms,chat,wiki,translation,blog,markdown,group,team,teamwork,聊天,沟通,知识库,博文,国际化翻译,团队协作' name='Keywords'><meta content='TMS是免费开源的团队协作(团队沟通,博文知识库,国际化翻译i18n)web系统(响应式界面设计,移动端适配).' name='Description'></head><body>${content}</body></html>`;
     }
 
@@ -866,6 +866,35 @@ export class CommonUtils {
         _s = _.replace(_s, /\}/g, '\\}');
 
         return _s;
+    }
+
+    // markdown task item check status toggle
+    taskItemToggle(content, toggleIndex) {
+
+        let lines = content.split('\n');
+
+        let index = -1;
+        for (var i = 0; i < lines.length; i++) {
+
+            // console.log(lines[i])
+
+            if (/^(\-|\+|\*) \s*\[[x ]\]\s*/.test(lines[i])) {
+                if (++index == toggleIndex) {
+                    if (/^(\-|\+|\*) \s*\[[x]\]\s*/.test(lines[i])) {
+                        lines[i] = lines[i].replace(/^(\-|\+|\*) \s*\[[x]\]/, `$1 [ ]`);
+                        // console.log('==' + lines[i])
+                    } else if (/^(\-|\+|\*) \s*\[[ ]\]\s*/.test(lines[i])) {
+                        lines[i] = lines[i].replace(/^(\-|\+|\*) \s*\[[ ]\]/, `$1 [x]`);
+                        // console.log('==' + lines[i])
+                    }
+
+                    break;
+
+                }
+            }
+        }
+
+        return lines.join('\n');
     }
 
 }

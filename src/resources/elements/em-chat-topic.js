@@ -51,33 +51,11 @@ export class EmChatTopic {
             });
 
             if (topic && (topic.creator.username == this.loginUser.username)) {
-                let lines = topic.content.split('\n');
-                // console.log(lines)
-                let index = -1;
-                for (var i = 0; i < lines.length; i++) {
-
-                    // console.log(lines[i])
-
-                    if (/^\- \s*\[[x ]\]\s*/.test(lines[i])) {
-                        if (++index == payload.index) {
-                            if (/^\- \s*\[[x]\]\s*/.test(lines[i])) {
-                                lines[i] = lines[i].replace(/^\- \s*\[[x]\]/, `- [ ]`);
-                                // console.log('==' + lines[i])
-                            } else if (/^\- \s*\[[ ]\]\s*/.test(lines[i])) {
-                                lines[i] = lines[i].replace(/^\- \s*\[[ ]\]/, `- [x]`);
-                                // console.log('==' + lines[i])
-                            }
-
-                            break;
-
-                        }
-                    }
-                }
 
                 this.sending = true;
 
                 topic.contentOld = topic.content;
-                topic.content = lines.join('\n');;
+                topic.content = utils.taskItemToggle(topic.content, payload.index);
 
                 var html = utils.md2html(topic.content, true);
                 // var htmlOld = utils.md2html(topic.contentOld, true);
@@ -115,33 +93,11 @@ export class EmChatTopic {
             if (payload.case != 'subject' || !this.chat || payload.from != this.name) return;
 
             if (this.chat && (this.chat.creator.username == this.loginUser.username || this.chat.openEdit)) {
-                let lines = this.chat.content.split('\n');
-                // console.log(lines)
-                let index = -1;
-                for (var i = 0; i < lines.length; i++) {
-
-                    // console.log(lines[i])
-
-                    if (/^\- \s*\[[x ]\]\s*/.test(lines[i])) {
-                        if (++index == payload.index) {
-                            if (/^\- \s*\[[x]\]\s*/.test(lines[i])) {
-                                lines[i] = lines[i].replace(/^\- \s*\[[x]\]/, `- [ ]`);
-                                // console.log('==' + lines[i])
-                            } else if (/^\- \s*\[[ ]\]\s*/.test(lines[i])) {
-                                lines[i] = lines[i].replace(/^\- \s*\[[ ]\]/, `- [x]`);
-                                // console.log('==' + lines[i])
-                            }
-
-                            break;
-
-                        }
-                    }
-                }
 
                 this.sending = true;
 
                 this.chat.contentOld = this.chat.content;
-                this.chat.content = lines.join('\n');
+                this.chat.content = utils.taskItemToggle(this.chat.content, payload.index);
 
                 // var html = utils.md2html(chat.content, true);
                 // var htmlOld = utils.md2html(chat.contentOld, true);
