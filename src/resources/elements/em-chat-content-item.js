@@ -3,7 +3,6 @@ import {
     containerless,
     bindingMode
 } from 'aurelia-framework';
-import _ from 'lodash';
 
 @containerless
 export class EmChatContentItem {

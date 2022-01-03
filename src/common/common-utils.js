@@ -878,13 +878,13 @@ export class CommonUtils {
 
             // console.log(lines[i])
 
-            if (/^(\-|\+|\*) \s*\[[x ]\]\s*/.test(lines[i])) {
+            if (/^\s*(\-|\+|\*) \s*\[[x ]\]\s*/.test(lines[i])) {
                 if (++index == toggleIndex) {
-                    if (/^(\-|\+|\*) \s*\[[x]\]\s*/.test(lines[i])) {
-                        lines[i] = lines[i].replace(/^(\-|\+|\*) \s*\[[x]\]/, `$1 [ ]`);
+                    if (/^\s*(\-|\+|\*) \s*\[[x]\]\s*/.test(lines[i])) {
+                        lines[i] = lines[i].replace(/^(\s*\-|\+|\*) \s*\[[x]\]/, `$1 [ ]`);
                         // console.log('==' + lines[i])
-                    } else if (/^(\-|\+|\*) \s*\[[ ]\]\s*/.test(lines[i])) {
-                        lines[i] = lines[i].replace(/^(\-|\+|\*) \s*\[[ ]\]/, `$1 [x]`);
+                    } else if (/^\s*(\-|\+|\*) \s*\[[ ]\]\s*/.test(lines[i])) {
+                        lines[i] = lines[i].replace(/^(\s*\-|\+|\*) \s*\[[ ]\]/, `$1 [x]`);
                         // console.log('==' + lines[i])
                     }
 
