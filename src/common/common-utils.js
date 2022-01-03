@@ -881,10 +881,10 @@ export class CommonUtils {
             if (/^\s*(\-|\+|\*) \s*\[[x ]\]\s*/.test(lines[i])) {
                 if (++index == toggleIndex) {
                     if (/^\s*(\-|\+|\*) \s*\[[x]\]\s*/.test(lines[i])) {
-                        lines[i] = lines[i].replace(/^(\s*\-|\+|\*) \s*\[[x]\]/, `$1 [ ]`);
+                        lines[i] = lines[i].replace(/^(\s*(\-|\+|\*)) \s*\[[x]\]/, `$1 [ ]`);
                         // console.log('==' + lines[i])
                     } else if (/^\s*(\-|\+|\*) \s*\[[ ]\]\s*/.test(lines[i])) {
-                        lines[i] = lines[i].replace(/^(\s*\-|\+|\*) \s*\[[ ]\]/, `$1 [x]`);
+                        lines[i] = lines[i].replace(/^(\s*(\-|\+|\*)) \s*\[[ ]\]/, `$1 [x]`);
                         // console.log('==' + lines[i])
                     }
 
