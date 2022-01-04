@@ -8,12 +8,22 @@ code.nx {
 }
 
 .markdown-body {
-     > ul, ol {
-         margin-left: -30px!important;
+     >ul,
+     ol {
+        padding-left: 20px!important;
+         >li {
+             &.task-item {
+                 margin-left: -20px !important;
+             }
+         }
      }
 
-     .task-item > ul, ol {
-         margin-top: 0;
+     .task-item {
+
+         >ul,
+         ol {
+             margin-top: 0;
+         }
      }
     .pre-code-wrapper {
         position: relative;
