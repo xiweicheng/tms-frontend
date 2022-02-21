@@ -1155,6 +1155,9 @@ export class EmBlogContent {
         } else if (this.blog.editor == 'Excel') {
             $('.em-blog-write-excel > iframe').attr('src', utils.getResourceBase() + 'excel.html?id=' + this.blog.id + '&copy' + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-excel"]').click();
+        } else if (this.blog.editor == 'Sheet') {
+            $('.em-blog-write-sheet > iframe').attr('src', utils.getResourceBase() + 'sheet.html?id=' + this.blog.id + '&copy' + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-sheet"]').click();
         } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, {
                 action: 'copy',
