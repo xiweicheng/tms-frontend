@@ -897,6 +897,13 @@ export class CommonUtils {
         return lines.join('\n');
     }
 
+    blink(selector, delay = 5000) {
+        $(selector).addClass('tms-blink');
+        setTimeout(() => {
+            $(selector).removeClass('tms-blink');
+        }, delay);
+    }
+
 }
 
 export default new CommonUtils();

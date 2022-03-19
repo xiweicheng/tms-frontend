@@ -580,6 +580,9 @@ export class EmBlogContent {
             $('.em-blog-content').scrollTo(`#${$(event.currentTarget).attr('data-id')}`, 200, {
                 offset: 0
             });
+
+            utils.blink(`#${$(event.currentTarget).attr('data-id')}`, 2000);
+            
         };
 
         $('.em-blog-right-sidebar').on('click', '.panel-blog-dir .wiki-dir-item', this.wikiDirClHandler);

@@ -262,3 +262,36 @@ a.btn-delete {
     filter: alpha(opacity=20)
 }
 
+@keyframes tms-fade {
+    from {
+        opacity: 1.0;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+
+    to {
+        opacity: 1.0;
+    }
+}
+
+@-webkit-keyframes tms-fade {
+    from {
+        opacity: 1.0;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+
+    to {
+        opacity: 1.0;
+    }
+}
+
+.tms-blink {
+    background-color: yellow;
+    animation: tms-fade 600ms infinite;
+    -webkit-animation: tms-fade 600ms infinite;
+}

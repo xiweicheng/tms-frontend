@@ -1229,6 +1229,9 @@ export class Chat {
                 });
                 $(this.commentsRef).find(`.comment[data-id]`).removeClass('active');
                 $(this.commentsRef).find(`.comment[data-id=${to}]`).addClass('active');
+
+                utils.blink(`.em-chat-content-item.comment[data-id="${to}"]`, 1000);
+
             } else {
                 if (retry) {
                     $(this.commentsRef).parent().scrollTo('max');
@@ -1239,6 +1242,7 @@ export class Chat {
                 }
             }
         }
+
     }
 
     scrollToAfterImgLoaded(to) {
