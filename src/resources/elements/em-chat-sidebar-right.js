@@ -40,6 +40,8 @@ export class EmChatSidebarRight {
 
         this.subscribe1 = ea.subscribe(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_SCROLL_TO, (payload) => {
             $('.em-chat-sidebar-right div[ref="scrollbarRef"]').scrollTo(payload, { axis: 'y' }, 120);
+            
+            utils.blink(payload, 1000);
         });
 
         // 沟通对象切换时处理

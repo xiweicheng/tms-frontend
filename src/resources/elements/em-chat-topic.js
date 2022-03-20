@@ -163,6 +163,8 @@ export class EmChatTopic {
                 });
                 $(this.commentsRef).find(`.comment[data-id]`).removeClass('active');
                 $(this.commentsRef).find(`.comment[data-id=${to}]`).addClass('active');
+
+                utils.blink(`.tms-reply.comment[data-id="${to}"]`, 1000);
             } else {
                 if (retry) {
                     // $(this.commentsRef).closest('.scroll-content').scrollTo('max');

@@ -628,6 +628,8 @@ export class EmBlogLeftSidebar {
                     offset: 0
                 });
             }
+
+            utils.blink(`.blog-item[data-id="${to}"]`, 1000);
         }
     }
 

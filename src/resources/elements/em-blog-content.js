@@ -581,7 +581,7 @@ export class EmBlogContent {
                 offset: 0
             });
 
-            utils.blink(`#${$(event.currentTarget).attr('data-id')}`, 2000);
+            utils.blink(`#${$(event.currentTarget).attr('data-id')}`, 1000);
             
         };
 
@@ -925,11 +925,24 @@ export class EmBlogContent {
                 ea.publish(nsCons.EVENT_BLOG_VIEW_CHANGED, this.blog);
                 _.defer(() => this.catalogHandler(true));
                 this.getMyTags();
+                this.fixAnchor();
 
             } else {
                 toastr.error(data.data, "获取博文失败!");
             }
         });
+    }
+
+    fixAnchor() {
+        let anchor = utils.urlQuery('h');
+        if (!anchor) { return; }
+
+        _.delay(() => {
+            $('.em-blog-content').scrollTo(`#tms-blog-dir-item-${anchor}`, 200, {
+                offset: 0
+            });
+            utils.blink(`#tms-blog-dir-item-${anchor}`, 1000);
+        }, 1000);
     }
 
     getMyTags() {

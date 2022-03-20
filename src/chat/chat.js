@@ -1731,6 +1731,8 @@ export class Chat {
             offset: this.offset,
             onAfter: onAfter
         });
+
+        utils.blink(target, 1000);
     }
 
     initHotkeys() {

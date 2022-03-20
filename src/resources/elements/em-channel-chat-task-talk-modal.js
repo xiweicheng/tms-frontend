@@ -29,6 +29,8 @@ export class EmChannelChatTaskTalkModal {
     attached() {
         this.subscribe = ea.subscribe(nsCons.EVENT_CHAT_RIGHT_SIDEBAR_SCROLL_TO, (payload) => {
             $('.em-channel-chat-task-talk-modal').scrollTo(payload, { axis: 'y' }, 120);
+
+            utils.blink(payload, 1000);
         });
     }
 

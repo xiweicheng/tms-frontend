@@ -931,6 +931,8 @@ export class EmBlogComment {
                 });
                 $('.em-blog-content').find(`.comment[data-id]`).removeClass('active');
                 $('.em-blog-content').find(`.comment[data-id=${to}]`).addClass('active');
+
+                utils.blink(`.tms-blog-comment.comment[data-id="${to}"]`, 1000);
             } else {
                 if (retry) {
                     $('.em-blog-content').scrollTo('max');
