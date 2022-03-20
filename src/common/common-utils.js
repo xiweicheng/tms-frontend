@@ -425,15 +425,17 @@ export class CommonUtils {
         return cl ? this.generateDir(cl, uid) : '';
     }
 
-    prodDir($list, link, uid) {
+    prodDir($list, link, uid, level = 0) {
         $.each(link.arr, (index, item) => {
             if (item.hasOwnProperty('arr')) {
                 var $l = $(`<div class="list" data-name="${item.name}"></div>`);
                 $list.append($l);
-                this.prodDir($l, item, uid);
+                this.prodDir($l, item, uid, level + 1);
             } else {
-                var id = uid ? _.uniqueId(uid) : _.uniqueId('tms-wiki-dir-item-');
-                var $item = $('<a class="item wiki-dir-item" style="word-break: keep-all; white-space: nowrap;"></a>').text($(item).attr('id', id).text()).attr('data-id', id);
+                var pre = uid ? uid : 'tms-wiki-dir-item-';
+                var id = pre + level + '-' + index;
+                // var id = uid ? _.uniqueId(uid) : _.uniqueId('tms-wiki-dir-item-');
+                var $item = $('<a class="item wiki-dir-item" style="word-break: keep-all; white-space: nowrap;"></a>').text($(item).attr('id', id).addClass(uid).text()).attr('data-id', id);
                 $list.append($item);
             }
         });

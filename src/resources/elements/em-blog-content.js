@@ -395,6 +395,12 @@ export class EmBlogContent {
 
         window.removeEventListener && window.removeEventListener('message', this.messageHandler, false);
 
+        $('.em-blog-content').off('click', '.tms-blog-dir-item-', this.blogAnchorClHandler);
+
+        // 博文标题锚点
+        $('.em-blog-content').off('mouseenter', '.tms-blog-dir-item-', this.blogAnchorMeHandler);
+        $('.em-blog-content').off('mouseleave', '.tms-blog-dir-item-', this.blogAnchorMlHandler);
+
         this.codeClHandler = null;
         this.preCodeClHandler = null;
         this.wikiDirClHandler = null;
@@ -405,6 +411,10 @@ export class EmBlogContent {
         this.userInfoMeHandler = null;
         this.userInfoMlHandler = null;
         this.messageHandler = null;
+
+        this.blogAnchorClHandler = null;
+        this.blogAnchorMeHandler = null;
+        this.blogAnchorMlHandler = null;
 
         try {
             $(document).unbind('keyup', this.docKuEHandler)
@@ -737,6 +747,39 @@ export class EmBlogContent {
         };
 
         window.addEventListener && window.addEventListener('message', this.messageHandler, false);
+
+        this.blogAnchorMeHandler = (event) => {
+            $(event.currentTarget).addClass('active');
+        };
+        this.blogAnchorMlHandler = (event) => {
+            $(event.currentTarget).removeClass('active');
+        };
+
+        this.blogAnchorClHandler = (event) => {
+
+            if (event.ctrlKey || event.metaKey) {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+
+                let id = $(event.currentTarget).attr('id').replace('tms-blog-dir-item-', '');
+                let content = utils.getBasePath() + '#/blog/' + this.blog.id + '?h=' + id;
+                clipboard.copy(content).then(
+                    () => {
+                        toastr.success('复制锚点链接到剪贴板成功!');
+                    },
+                    (err) => {
+                        toastr.error('复制锚点链接到剪贴板失败!');
+                    }
+                );
+            }
+        };
+
+        // 博文标题锚点
+        $('.em-blog-content').on('mouseenter', '.tms-blog-dir-item-', this.blogAnchorMeHandler);
+        $('.em-blog-content').on('mouseleave', '.tms-blog-dir-item-', this.blogAnchorMlHandler);
+
+        $('.em-blog-content').on('click', '.tms-blog-dir-item-', this.blogAnchorClHandler);
+        
     }
 
     fixDirItem() {

@@ -204,18 +204,33 @@
             cursor: pointer;
         }
     }
-    // .tms-blog-content.markdown-body {
+    .tms-blog-content.markdown-body {
 
-    //     h1:before,
-    //     h2:before,
-    //     h3:before,
-    //     h4:before,
-    //     h5:before,
-    //     h6:before {
-    //         content: "#";
-    //         color: red;
-    //     }
-    // }
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+
+            &:before {
+                content: "#";
+                color: red;
+                display: none;
+                cursor: pointer;
+                position: absolute;
+                left: -15px;
+            }
+
+            &.active {
+                &:before {
+                    display: inline-block;
+                }
+                
+            }
+        }
+
+    }
 }
 
 .tms-blog-progress {
