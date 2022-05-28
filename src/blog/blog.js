@@ -93,6 +93,7 @@ export class Blog {
         this.tmsClipboard.destroy();
 
         clearInterval(this.timeagoTimer);
+        clearInterval(this.heartbeatTimer);
     }
 
     _initSock() {
@@ -306,6 +307,18 @@ export class Blog {
         window.removeEventListener && window.removeEventListener('message', this.messageHandler, false);
     }
 
+    heartbeat() {
+        this.heartbeatTimer = setInterval(() => {
+            try {
+                $.get('/admin/health', {}, (data) => {
+                    console.log('heartbeat hold -> ', data);
+                });
+            } catch (err) {
+                console.log(err);
+            }
+        }, 1000 * 30);
+    }
+
     /**
      * 在视图模型(ViewModel)展示前执行一些自定义代码逻辑
      * @param  {[object]} params                参数
@@ -314,6 +327,8 @@ export class Blog {
      * @return {[promise]}                      你可以可选的返回一个延迟许诺(promise), 告诉路由等待执行bind和attach视图(view), 直到你完成你的处理工作.
      */
     activate(params, routeConfig, navigationInstruction) {
+
+        this.heartbeat();
 
         this.routeConfig = routeConfig;
         nsCtx.blogId = params.id;
