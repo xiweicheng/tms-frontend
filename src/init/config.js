@@ -261,6 +261,7 @@ export class Config {
             '/chat/direct/latest',
             '/chat/channel/poll',
             '/chat/channel/reply/poll',
+            '/health',
         ];
 
         $(document).ajaxSend(function(event, jqxhr, settings) {
