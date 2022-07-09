@@ -430,7 +430,7 @@ export class CommonUtils {
             if (item.hasOwnProperty('arr')) {
                 var $l = $(`<div class="list" data-name="${item.name}"></div>`);
                 $list.append($l);
-                this.prodDir($l, item, uid, level + 1);
+                this.prodDir($l, item, uid, level + '-' + index);
             } else {
                 var pre = uid ? uid : 'tms-wiki-dir-item-';
                 var id = pre + level + '-' + index;
