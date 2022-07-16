@@ -265,6 +265,9 @@ export class EmChatContentItem {
             ea.publish(nsCons.EVENT_CHAT_CONTENT_SCROLL_TO, {
                 target: $('#' + $(event.currentTarget).attr('data-id'))
             });
+
+            $(event.currentTarget).closest('.panel-wiki-dir').find('.wiki-dir-item').removeClass('active');
+            $(event.currentTarget).addClass('active');
         };
 
         $('.tms-chat').on('click', '.panel-wiki-dir .wiki-dir-item', this.wikiDirItemClickHandler);
