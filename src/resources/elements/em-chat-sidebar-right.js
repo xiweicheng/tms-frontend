@@ -78,7 +78,11 @@ export class EmChatSidebarRight {
     }
 
     dirHandler(payload) {
+        var $active = $(this.dirRef).find('.wiki-dir-item.active');
         $(this.dirRef).empty().append(payload.result);
+        if ($active.length) {
+            $(this.dirRef).find(`.wiki-dir-item[data-id=${$active.attr('data-id')}]`).addClass('active');
+        }
     }
 
     scheduleHandler(payload) {
