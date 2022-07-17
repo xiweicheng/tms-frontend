@@ -68,7 +68,7 @@ export class Chat {
         // var socket = new SockJS('http://localhost:8080/ws');
         let socket = new SockJS('/ws');
         window.stompClient = Stomp.over(socket);
-        window.stompClient.debug = () => {};
+        window.stompClient.debug = () => { };
         window.stompClient.debug = (msg) => { console.log(msg) };
         window.stompClient.connect({}, (frame) => {
             // 同步在线用户
@@ -276,7 +276,7 @@ export class Chat {
         $.post('/admin/chat/channel/news/delete', {
             id: id
         }, (data) => {
-            if (data.success) {}
+            if (data.success) { }
         });
     }
 
@@ -287,7 +287,7 @@ export class Chat {
         $.post('/admin/blog/news/delete', {
             id: id
         }, (data, textStatus, xhr) => {
-            if (data.success) {}
+            if (data.success) { }
         });
     }
 
@@ -578,8 +578,8 @@ export class Chat {
                         onclick: () => {
 
                             if (this.channel && this.channel.id == payload.cid && _.some(this.chats, {
-                                    id: ccid
-                                })) {
+                                id: ccid
+                            })) {
 
                                 this.scrollToAfterImgLoaded(ccid);
                                 if (payload.cmd == 'RC' || payload.cmd == 'RU') {
@@ -679,6 +679,22 @@ export class Chat {
 
         });
 
+        this.subscribe20 = ea.subscribe(nsCons.EVENT_CHAT_MSG_WIKI_DIR, (payload) => {
+            this._dir(payload.dir);
+            // console.log(this.dir);
+            // console.log(this.dirItemIds);
+        });
+
+    }
+
+    _dir(dir) {
+        this.dir = dir;
+        this.dirItemIds = [];
+        if (this.dir) {
+            $(this.dir).find('a.item.wiki-dir-item').each((index, el) => {
+                this.dirItemIds.push($(el).attr('data-id'));
+            });
+        }
     }
 
     _doClearFilter() {
@@ -895,6 +911,7 @@ export class Chat {
         this.subscribe17.dispose();
         this.subscribe18.dispose();
         this.subscribe19.dispose();
+        this.subscribe20.dispose();
 
         clearInterval(this.timeagoTimer);
         poll.stop();
@@ -947,97 +964,97 @@ export class Chat {
         });
 
         return Promise.all([chatService.loginUser(true).then((user) => {
-                this.loginUser = user;
-                nsCtx.loginUser = user;
-                nsCtx.isSuper = utils.isSuperUser(this.loginUser);
-                nsCtx.isAdmin = utils.isAdminUser(this.loginUser);
-            }),
-            chatService.listUsers(true).then((users) => {
-                this.users = users;
-                nsCtx.users = users;
-                window.tmsUsers = users;
+            this.loginUser = user;
+            nsCtx.loginUser = user;
+            nsCtx.isSuper = utils.isSuperUser(this.loginUser);
+            nsCtx.isAdmin = utils.isAdminUser(this.loginUser);
+        }),
+        chatService.listUsers(true).then((users) => {
+            this.users = users;
+            nsCtx.users = users;
+            window.tmsUsers = users;
 
-                let newMsgCntItem = this.getNewMsgCnt();
-                _.each(this.users, u => {
-                    if (newMsgCntItem[`@${u.username}`]) {
-                        u.newMsgCnt = newMsgCntItem[`@${u.username}`];
-                    }
-                });
-
-                if (this.isAt) {
-                    this.channel = null;
-                    this.user = _.find(this.users, {
-                        username: this.chatTo
-                    });
-
-                    if (this.user) {
-                        let name = this.user ? (this.user.name ? this.user.name : this.user.username) : this.chatTo;
-                        routeConfig.navModel.setTitle(`${(this.loginUser && (this.loginUser.username == this.user.username)) ? '我' : name} | 私聊 | TMS`);
-
-                        this.user.newMsgCnt = 0;
-                        this.clearNewMsgCnt(`@${this.user.username}`);
-
-                        this.listChatDirect(true);
-                    } else {
-                        toastr.error(`聊天用户[${this.chatTo}]不存在或者没有权限访问!`);
-                        if (this.preChatId) {
-                            window.location = wurl('path') + `#/chat/${this.preChatId}`;
-                        } else {
-                            if (this.loginUser) {
-                                window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
-                            } else {
-                                window.location = wurl('path') + `#/chat/all`;
-                            }
-                        }
-                    }
-
+            let newMsgCntItem = this.getNewMsgCnt();
+            _.each(this.users, u => {
+                if (newMsgCntItem[`@${u.username}`]) {
+                    u.newMsgCnt = newMsgCntItem[`@${u.username}`];
                 }
-            }),
-            chatService.listChannels(true).then((channels) => {
-                this.channels = channels;
-                nsCtx.channels = channels;
+            });
 
-                let newMsgCntItem = this.getNewMsgCnt();
-                _.each(this.channels, c => {
-                    if (newMsgCntItem[`${c.name}`]) {
-                        c.newMsgCnt = newMsgCntItem[`${c.name}`];
-                    }
+            if (this.isAt) {
+                this.channel = null;
+                this.user = _.find(this.users, {
+                    username: this.chatTo
                 });
 
-                if (!this.isAt) {
-                    this.user = null;
-                    this.channel = _.find(this.channels, {
-                        name: this.chatTo
-                    });
+                if (this.user) {
+                    let name = this.user ? (this.user.name ? this.user.name : this.user.username) : this.chatTo;
+                    routeConfig.navModel.setTitle(`${(this.loginUser && (this.loginUser.username == this.user.username)) ? '我' : name} | 私聊 | TMS`);
 
-                    if (this.channel) {
-                        routeConfig.navModel.setTitle(`${this.channel.title} | 频道 | TMS`);
+                    this.user.newMsgCnt = 0;
+                    this.clearNewMsgCnt(`@${this.user.username}`);
 
-                        this.channel.newMsgCnt = 0;
-                        this.clearNewMsgCnt(this.channel.name);
-
-                        this.listChatChannel(true);
+                    this.listChatDirect(true);
+                } else {
+                    toastr.error(`聊天用户[${this.chatTo}]不存在或者没有权限访问!`);
+                    if (this.preChatId) {
+                        window.location = wurl('path') + `#/chat/${this.preChatId}`;
                     } else {
-                        toastr.error(`聊天频道[${this.chatTo}]不存在或者没有权限访问!`);
-                        if (this.preChatId) {
-                            window.location = wurl('path') + `#/chat/${this.preChatId}`;
+                        if (this.loginUser) {
+                            window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
                         } else {
-                            if (this.loginUser) {
-                                window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
-                            } else {
-                                window.location = wurl('path') + `#/chat/all`;
-                            }
+                            window.location = wurl('path') + `#/chat/all`;
                         }
                     }
                 }
-            }),
-            chatService.listMyTags(true).then(tags => {
-                this.myTags = tags;
-                nsCtx.myTags = tags;
-            }),
-            chatService.sysConf(true).then((sysConf) => {
-                nsCtx.sysConf = sysConf;
-            })
+
+            }
+        }),
+        chatService.listChannels(true).then((channels) => {
+            this.channels = channels;
+            nsCtx.channels = channels;
+
+            let newMsgCntItem = this.getNewMsgCnt();
+            _.each(this.channels, c => {
+                if (newMsgCntItem[`${c.name}`]) {
+                    c.newMsgCnt = newMsgCntItem[`${c.name}`];
+                }
+            });
+
+            if (!this.isAt) {
+                this.user = null;
+                this.channel = _.find(this.channels, {
+                    name: this.chatTo
+                });
+
+                if (this.channel) {
+                    routeConfig.navModel.setTitle(`${this.channel.title} | 频道 | TMS`);
+
+                    this.channel.newMsgCnt = 0;
+                    this.clearNewMsgCnt(this.channel.name);
+
+                    this.listChatChannel(true);
+                } else {
+                    toastr.error(`聊天频道[${this.chatTo}]不存在或者没有权限访问!`);
+                    if (this.preChatId) {
+                        window.location = wurl('path') + `#/chat/${this.preChatId}`;
+                    } else {
+                        if (this.loginUser) {
+                            window.location = wurl('path') + `#/chat/@${this.loginUser.username}`;
+                        } else {
+                            window.location = wurl('path') + `#/chat/all`;
+                        }
+                    }
+                }
+            }
+        }),
+        chatService.listMyTags(true).then(tags => {
+            this.myTags = tags;
+            nsCtx.myTags = tags;
+        }),
+        chatService.sysConf(true).then((sysConf) => {
+            nsCtx.sysConf = sysConf;
+        })
         ]);
 
     }
@@ -1222,8 +1239,8 @@ export class Chat {
             $(this.commentsRef).parent().scrollTo(0);
         } else {
             if (_.some(this.chats, {
-                    id: +to
-                })) {
+                id: +to
+            })) {
                 $(this.commentsRef).parent().scrollTo(`.em-chat-content-item.comment[data-id="${to}"]`, {
                     offset: this.offset
                 });
@@ -1592,6 +1609,13 @@ export class Chat {
 
                 let scale = sTop * 1.0 / (sHeight - $(event.currentTarget).outerHeight());
                 this.progressWidth = $(event.currentTarget).outerWidth() * scale;
+
+                if (this.isRightSidebarShow) {
+                    this.fixDirItem();
+                } else {
+                    // console.log('right sidebar not show.');
+                }
+
             } catch (err) {
                 this.progressWidth = 0;
             }
@@ -1599,6 +1623,28 @@ export class Chat {
         }, 10);
         $('.tms-comments-container[ref="scrollbarRef"]').scroll(this.commentsContainerScrollHandler);
 
+    }
+
+    fixDirItem() {
+        let fixId = null;
+        _.each(this.dirItemIds, (id) => {
+            if (utils.isElementInViewport($(`#${id}`))) {
+                fixId = id;
+                return false;
+            }
+        });
+
+        if (fixId) {
+            let fixDirItem = $('.em-chat-sidebar-right .panel-wiki-dir').find(`.wiki-dir-item[data-id="${fixId}"]`);
+            if (fixDirItem) {
+                $('.em-chat-sidebar-right .panel-wiki-dir').find(`.wiki-dir-item[data-id]`).removeClass('active');
+                fixDirItem.addClass('active');
+
+                $('.em-chat-sidebar-right .scrollbar-macosx.scroll-content.scroll-scrolly_visible').scrollTo(fixDirItem, 10, {
+                    offset: -120
+                });
+            }
+        }
     }
 
     detached() {
@@ -1843,8 +1889,8 @@ export class Chat {
         }
 
         if (isRigthCase && _.find(this.chats, {
-                id: item.id
-            })) {
+            id: item.id
+        })) {
             this.scrollToAfterImgLoaded(item.id);
         } else {
 

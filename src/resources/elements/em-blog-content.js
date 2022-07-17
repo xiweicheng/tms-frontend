@@ -784,18 +784,10 @@ export class EmBlogContent {
 
     fixDirItem() {
         let fixId = null;
-        let preId = null;
         _.each(this.dirItemIds, (id) => {
-            if (!preId) {
-                if (utils.isElementInViewport($(`#${id}`))) {
-                    fixId = id;
-                    return false;
-                }
-            } else {
-                if (utils.isElementInViewport($(`#${id}`)) && !utils.isElementInViewport($(`#${preId}`))) {
-                    fixId = id;
-                    return false;
-                }
+            if (utils.isElementInViewport($(`#${id}`))) {
+                fixId = id;
+                return false;
             }
         });
 
