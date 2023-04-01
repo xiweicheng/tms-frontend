@@ -46,19 +46,19 @@
                         <a click.delegate="createHandler()" class="item">
                             <div class="ui blue empty circular label"></div> Markdown
                         </a>
-                        <a class="item" click.delegate="createExcelHandler()">
+                        <!-- <a class="item" click.delegate="createExcelHandler()">
                             <div class="ui blue empty circular label"></div> 电子表格
-                        </a>
+                        </a> -->
                         <a modaal="blog-create-excel" href="#modaal-blog-write-excel" class="item"
                             style="display: none;">
                             <div class="ui blue empty circular label"></div> 电子表格
                         </a>
                         <a class="item" click.delegate="createSheetHandler()">
-                            <div class="ui blue empty circular label"></div> 电子表格（新）
+                            <div class="ui blue empty circular label"></div> 电子表格
                         </a>
                         <a modaal="blog-create-sheet" href="#modaal-blog-write-sheet" class="item"
                             style="display: none;">
-                            <div class="ui blue empty circular label"></div> 电子表格（新）
+                            <div class="ui blue empty circular label"></div> 电子表格
                         </a>
                         <a class="item" click.delegate="createMindHandler()">
                             <div class="ui blue empty circular label"></div> 思维导图
@@ -68,6 +68,9 @@
                         </a>
                         <a if.bind="!!sysConf.drawUrl" class="item" target="_blank" href="${sysConf.drawUrl}">
                             <div class="ui blue empty circular label"></div> 图表工具
+                        </a>
+                        <a if.bind="!!sysConf.excalidrawUrl" class="item" target="_blank" href="${sysConf.excalidrawUrl}">
+                            <div class="ui blue empty circular label"></div> 手绘白板
                         </a>
                         <div class="ui divider"></div>
                         <a click.delegate="selectTplHandler()" class="item">
