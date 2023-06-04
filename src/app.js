@@ -1,7 +1,6 @@
 import 'tms-semantic-ui';
 import 'semantic-ui-calendar';
 import 'jquery-format';
-import 'js-base64';
 import { Base64 } from 'js-base64';
 
 export class App {
@@ -114,7 +113,7 @@ export class App {
             let url = `${$a.attr('href')}?onlinepreview=1&fullfilename=${$a.text()}`;
 
             console.log('window.tmsSysConfig:', window.tmsSysConfig);
-            
+
             // 3.x.x 及以上版本x需要对预览文件url进行base64编码
             // http://kkfileview.keking.cn/zh-cn/docs/production.html
             if (window.tmsSysConfig && window.tmsSysConfig.fileViewEncodePreviewUrl) {
