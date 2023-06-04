@@ -104,6 +104,11 @@
             "main": "push.min"
           },
           {
+            "name": "js-base64",
+            "path": "../node_modules/js-base64",
+            "main": "base64"
+          },
+          {
             "name": "clipboard",
             "path": "../node_modules/clipboard",
             "main": "dist/clipboard.min"
