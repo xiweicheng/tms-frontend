@@ -5,7 +5,7 @@
             <div class="ui big fluid icon input">
                 <input ref="todoInputRef" value.bind="title" type="text" keyup.delegate="addTodoKeyupHandler($event)"
                     placeholder="输入个人待办事项...">
-                <i title="enter提交(ctrl同时按下置顶今天)"
+                <i title="enter提交(ctrl同时按下置顶优先)"
                     class="${(ajax && ajax.readyState != 4) ? 'spinner loading' : 'plus'} link icon"
                     click.delegate="addTodoHandler()"></i>
             </div>
@@ -20,12 +20,12 @@
             </div>
             <h5 class="ui horizontal divider yellow header" style="margin-top: 10px;">
                 <!-- <i class="filter link icon"></i> -->
-                进行中（${todos | count:todoFilter:'title'}）
+                未完成（${todos | count:todoFilter:'title'}）
             </h5>
             <div ref="tasksAccRef" class="ui accordion">
                 <div class="active title">
                     <i class="dropdown icon"></i>
-                    今天
+                    优先
                 </div>
                 <div class="active content">
 
@@ -36,7 +36,7 @@
                                 if.bind="item.priority == 'ZyJj'">
                                 <div class="actions" show.bind="!item.isEditing">
                                     <i click.delegate="priorityUpdateHandler(item, 'ZyBjj')"
-                                        class="large angle down circle link icon" title="明天"></i>
+                                        class="large angle down circle link icon" title="暂缓"></i>
                                     <i click.delegate="priorityUpdateHandler(item, 'Default')"
                                         class="large angle double down circle link icon" title="待定"></i>
                                     <i click.delegate="statusDoneHandler(item)" class="large check circle link icon"
@@ -83,7 +83,7 @@
                 </div>
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    明天
+                    暂缓
                 </div>
                 <div class="content">
                     <div data-priority="ZyBjj"
@@ -93,7 +93,7 @@
                                 if.bind="item.priority == 'ZyBjj'">
                                 <div class="actions" show.bind="!item.isEditing">
                                     <i click.delegate="priorityUpdateHandler(item, 'ZyJj')"
-                                        class="large angle up circle link icon" title="今天"></i>
+                                        class="large angle up circle link icon" title="优先"></i>
                                     <i click.delegate="priorityUpdateHandler(item, 'Default')"
                                         class="large angle down circle link icon" title="待定"></i>
                                     <i click.delegate="statusDoneHandler(item)" class="large check circle link icon"
@@ -149,9 +149,9 @@
                                 if.bind="item.priority == 'Default'">
                                 <div class="actions" show.bind="!item.isEditing">
                                     <i click.delegate="priorityUpdateHandler(item, 'ZyJj')"
-                                        class="large double angle up circle link icon" title="今天"></i>
+                                        class="large double angle up circle link icon" title="优先"></i>
                                     <i click.delegate="priorityUpdateHandler(item, 'ZyBjj')"
-                                        class="large angle up circle link icon" title="明天"></i>
+                                        class="large angle up circle link icon" title="暂缓"></i>
                                     <i click.delegate="statusDoneHandler(item)" class="large check circle link icon"
                                         title="标记已经完成"></i>
                                     <i class="tms-copy tms-clipboard copy link icon large"
