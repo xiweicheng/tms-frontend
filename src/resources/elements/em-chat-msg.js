@@ -7,6 +7,7 @@ import {
 export class EmChatMsg {
 
     last = true;
+    searchCM = '';
     @bindable loginUser;
     @bindable isAt;
     @bindable channel;
@@ -141,6 +142,91 @@ export class EmChatMsg {
         item.isOpen = !item.isOpen;
     }
 
+    keyupHandler(event) {
+        if (event.keyCode == 13) {
+            this.searchChatStows();
+        } else if (event.keyCode == 27) {
+            this.searchCM = '';
+            this.searchChatStows();
+        }
+        return true;
+    }
+
+    searchChatStows() {
+
+        if (this.actived.payload.action == nsCons.ACTION_TYPE_STOW) {
+            this.searchMoreP = $.get('/admin/chat/channel/getStows', {
+                search: this.searchCM,
+                size: this.page.size,
+                page: 0
+            }, (data) => {
+                if (data.success) {
+                    this.chats = _.map(data.data.content, (item) => {
+                        if (item.chatReply) {
+                            let chat = item.chatReply;
+                            chat.chatStow = item;
+                            return chat;
+                        }
+                        if (item.chatChannel) {
+                            item.chatChannel.chatStow = item;
+                            return item.chatChannel;
+                        } else if (item.chatDirect) {
+                            item.chatDirect.chatStow = item;
+                            return item.chatDirect;
+                        }
+
+                    });
+
+                    this.page = data.data;
+                    this.last = data.data.last;
+                    this.moreCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
+                }
+            });
+        } else if (this.actived.payload.action == nsCons.ACTION_TYPE_PIN) {
+            this.searchMoreP = $.get(`/admin/chat/channel/pin/list`, {
+                cid: !nsCtx.isAt ? this.channel.id : null,
+                search: this.searchCM,
+                size: this.page.size,
+                page: 0
+            }, (data) => {
+                if (data.success) {
+                    this.chats = _.map(data.data.content, (item) => {
+                        let chatChannel = item.chatChannel;
+                        chatChannel.chatPin = item;
+                        return chatChannel;
+                    });
+
+                    this.page = data.data;
+                    this.last = data.data.last;
+                    this.moreCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
+                }
+            });
+        } else if (this.actived.payload.action == nsCons.ACTION_TYPE_AT) {
+            this.searchMoreP = $.get('/admin/chat/channel/getAts', {
+                search: this.searchCM,
+                size: this.page.size,
+                page: 0
+            }, (data) => {
+                if (data.success) {
+                    this.chats = _.map(data.data.content, (item) => {
+                        if (item.chatReply) {
+                            let chat = item.chatReply;
+                            chat.chatAt = item;
+                            return chat;
+                        }
+                        let chatChannel = item.chatChannel;
+                        chatChannel.chatAt = item;
+                        return chatChannel;
+                    });
+
+                    this.page = data.data;
+                    this.last = data.data.last;
+                    this.moreCnt = data.data.totalElements - (data.data.number + 1) * data.data.size;
+                }
+            });
+        }
+    }
+
     searchMoreHandler() {
 
         if (this.actived.payload.action == nsCons.ACTION_TYPE_SEARCH) {
@@ -161,6 +247,7 @@ export class EmChatMsg {
         } else if (this.actived.payload.action == nsCons.ACTION_TYPE_PIN) {
             this.searchMoreP = $.get(`/admin/chat/channel/pin/list`, {
                 cid: !nsCtx.isAt ? this.channel.id : null,
+                search: this.searchCM,
                 size: this.page.size,
                 page: this.page.number + 1
             }, (data) => {
@@ -178,6 +265,7 @@ export class EmChatMsg {
             });
         } else if (this.actived.payload.action == nsCons.ACTION_TYPE_STOW) {
             this.searchMoreP = $.get('/admin/chat/channel/getStows', {
+                search: this.searchCM,
                 size: this.page.size,
                 page: this.page.number + 1
             }, (data) => {
@@ -205,11 +293,17 @@ export class EmChatMsg {
             });
         } else {
             this.searchMoreP = $.get('/admin/chat/channel/getAts', {
+                search: this.searchCM,
                 size: this.page.size,
                 page: this.page.number + 1
             }, (data) => {
                 if (data.success) {
                     this.chats = _.concat(this.chats, _.map(data.data.content, (item) => {
+                        if (item.chatReply) {
+                            let chat = item.chatReply;
+                            chat.chatAt = item;
+                            return chat;
+                        }
                         let chatChannel = item.chatChannel;
                         chatChannel.chatAt = item;
                         return chatChannel;

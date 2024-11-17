@@ -1,6 +1,11 @@
 <template>
     <require from="./em-chat-msg.css"></require>
     <div class="em-chat-msg" show.bind="actived.show == 'msg'">
+        <div show.bind="actived.payload.action == 'action_type_stow' || actived.payload.action == 'action_type_pin' || actived.payload.action == 'action_type_at'" class="ui transparent fluid left icon input" style="margin: 8px 8px 0px 8px">
+            <input id="chatSearchCM" type="text" value.bind="searchCM" placeholder="搜索..." keyup.trigger="keyupHandler($event)">
+            <i show.bind="!searchMoreP || searchMoreP.readyState == 4" class="search icon"></i>
+            <i show.bind="searchMoreP && searchMoreP.readyState != 4" class="spinner loading icon"></i>
+        </div>
         <div class="ui basic segment minimal selection list segment comments">
             <h1 show.bind="!chats.length" class="ui center aligned header">${actived.nodata}</h1>
             <div repeat.for="item of chats" mouseleave.trigger="searchItemMouseleaveHandler(item)" mouseenter.trigger="searchItemMouseenterHandler(item)" fancybox class="comment item ${item.id == markId ? 'active' : ''}" data-id="${item.id}">

@@ -512,6 +512,7 @@ export class EmChatTopMenu {
 
         this.activeType = nsCons.ACTION_TYPE_STOW;
         this.ajaxStow = $.get('/admin/chat/channel/getStows', {
+            search: $('#chatSearchCM').val(),
             page: 0,
             size: 20
         }, (data) => {
@@ -539,6 +540,7 @@ export class EmChatTopMenu {
         this.activeType = nsCons.ACTION_TYPE_AT;
         this.newAtCnt = 0;
         this.ajaxAt = $.get('/admin/chat/channel/getAts', {
+            search: $('#chatSearchCM').val(),
             page: 0,
             size: 20
         }, (data) => {
@@ -709,6 +711,7 @@ export class EmChatTopMenu {
 
         this.activeType = nsCons.ACTION_TYPE_PIN;
         this.ajaxPin = $.get('/admin/chat/channel/pin/list', {
+            search: $('#chatSearchCM').val(),
             cid: this.channel.id,
             page: 0,
             size: 20
