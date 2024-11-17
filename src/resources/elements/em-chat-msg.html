@@ -1,8 +1,8 @@
 <template>
     <require from="./em-chat-msg.css"></require>
     <div class="em-chat-msg" show.bind="actived.show == 'msg'">
-        <div show.bind="actived.payload.action == 'action_type_stow' || actived.payload.action == 'action_type_pin' || actived.payload.action == 'action_type_at'" class="ui transparent fluid left icon input" style="margin: 8px 8px 0px 8px">
-            <input id="chatSearchCM" type="text" value.bind="searchCM" placeholder="搜索..." keyup.trigger="keyupHandler($event)">
+        <div show.bind="actived.payload.action == 'action_type_stow' || actived.payload.action == 'action_type_pin' || actived.payload.action == 'action_type_at'" class="ui transparent fluid left icon input" style="margin: 8px 8px 0px 8px;border-bottom: 1px #e8e8e8 solid;">
+            <input id="chatSearchCM" type="text" value.bind="searchCM" placeholder="搜索(Enter确认, Esc取消)..." keyup.trigger="keyupHandler($event)">
             <i show.bind="!searchMoreP || searchMoreP.readyState == 4" class="search icon"></i>
             <i show.bind="searchMoreP && searchMoreP.readyState != 4" class="spinner loading icon"></i>
         </div>
