@@ -471,7 +471,8 @@
                                     } else {
                                         $('#title').val(data.data.title + ' (副本)');
                                     }
-                                    window.loadExcalidrawData(JSON.parse(data.data.content))
+                                    // window.loadExcalidrawData(JSON.parse(data.data.content))
+                                    window.initExcalidraw(JSON.parse(data.data.content), readonly);
                                 } else {
                                     toastr.error(data.data);
                                 }
@@ -488,7 +489,8 @@
                                     } else {
                                         $('#title').val(data.data.blog.title + ' (副本)');
                                     }
-                                    window.loadExcalidrawData(JSON.parse(data.data.blog.content))
+                                    // window.loadExcalidrawData(JSON.parse(data.data.blog.content))
+                                    window.initExcalidraw(JSON.parse(data.data.blog.content), readonly);
                                 } else {
                                     toastr.error(data.data);
                                 }
