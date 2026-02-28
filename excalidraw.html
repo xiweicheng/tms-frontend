@@ -232,7 +232,7 @@
                         isCollaborating: readonly,
                         viewModeEnabled: readonly,
                         onChange: (elements, appState) => {
-                            debugger;
+                            // debugger;
                             window.changeCount++;
                             currentElements = elements;
                             currentAppState = appState;
@@ -667,7 +667,7 @@
                         }, function (data, textStatus, xhr) {
                             if (data.success) {
                                 blog = data.data;
-                                window.changeCount = 1;
+                                window.changeCount = 0;
                                 toastr && toastr.success('博文更新成功！');
                                 (window.parent && window.parent.postMessage) && (window.parent.postMessage({
                                     action: 'updated',
