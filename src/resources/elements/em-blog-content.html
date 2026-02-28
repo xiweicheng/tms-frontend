@@ -93,21 +93,21 @@
                                 <span class="description">alt + o</span>
                                 <i class="write icon"></i> ${blog.openEdit ? '关闭编辑' : '开放编辑'}
                             </div>
-                            <div if.bind="(blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet') && (isSuper || blog.creator.username == loginUser.username)"
+                            <div if.bind="(blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw') && (isSuper || blog.creator.username == loginUser.username)"
                                 click.delegate="changeEditorHandler()" class="item">
                                 <span class="description">alt + e</span>
                                 <i class="html5 icon"></i> 转HTML
                             </div>
                             <div class="divider"></div>
-                            <a show.bind="blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet'"
+                            <a show.bind="blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw'"
                                 href="/admin/blog/download/${blog.id}?type=pdf" class="item">
                                 <i class="file pdf outline icon"></i> 导出为PDF
                             </a>
-                            <a show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor !='Excel' && blog.editor !='Sheet'"
+                            <a show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor !='Excel' && blog.editor !='Sheet' && blog.editor != 'Excalidraw'"
                                 href="/admin/blog/download/${blog.id}?type=md" class="item">
                                 <i class="file text outline icon"></i> 导出为Markdown
                             </a>
-                            <div show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet'"
+                            <div show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw'"
                                 click.delegate="md2HtmlDownloadHandler()" class="item">
                                 <i class="html5 icon"></i> 导出为HTML
                             </div>
@@ -176,7 +176,9 @@
                                     class="usb icon"></i></span>
                             <span if.bind="blog.editor == 'Excel' || blog.editor == 'Sheet'" title="电子表格编辑器"><i style="color: black;"
                                     class="table icon"></i></span>
-                            <span if.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet'"
+                            <span if.bind="blog.editor == 'Excalidraw'" title="手绘白板编辑器"><i style="color: black;"
+                                    class="paint brush icon"></i></span>
+                            <span if.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw'"
                                 title="Markdown编辑器"><img style="width: 14px;" src="img/markdown.png" alt=""></span>
                         </span>
                     </div>
@@ -190,6 +192,9 @@
             </div>
             <div show.bind="blog.editor == 'Sheet'" data-id="${blog.id}">
                 <em-blog-sheet blog.bind="blog"></em-blog-sheet>
+            </div>
+            <div show.bind="blog.editor == 'Excalidraw'" data-id="${blog.id}">
+                <em-blog-excalidraw blog.bind="blog"></em-blog-excalidraw>
             </div>
             <div show.bind="blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet'" data-id="${blog.id}" data-case="blog"
                 fancybox ref="mkbodyRef" class="tms-blog-content markdown-body fr-view"
