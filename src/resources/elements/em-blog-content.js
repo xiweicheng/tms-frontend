@@ -730,6 +730,7 @@ export class EmBlogContent {
                 (ev.data.editor == 'mind') && $('a[href="#modaal-blog-write-mind"]').modaal('close');
                 (ev.data.editor == 'excel') && $('a[href="#modaal-blog-write-excel"]').modaal('close');
                 (ev.data.editor == 'sheet') && $('a[href="#modaal-blog-write-sheet"]').modaal('close');
+                (ev.data.editor == 'excalidraw') && $('a[href="#modaal-blog-write-excalidraw"]').modaal('close');
             }
 
             ev.data.from = 'html';
@@ -1062,6 +1063,9 @@ export class EmBlogContent {
         } else if (this.blog.editor == 'Sheet') {
             $('.em-blog-write-sheet > iframe').attr('src', utils.getResourceBase() + 'sheet.html?id=' + this.blog.id + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-sheet"]').click();
+        } else if (this.blog.editor == 'Excalidraw') {
+            $('.em-blog-write-excalidraw > iframe').attr('src', utils.getResourceBase() + 'excalidraw.html?id=' + this.blog.id + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-excalidraw"]').click();
         } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, {
                 action: 'edit',
@@ -1209,6 +1213,9 @@ export class EmBlogContent {
         } else if (this.blog.editor == 'Sheet') {
             $('.em-blog-write-sheet > iframe').attr('src', utils.getResourceBase() + 'sheet.html?id=' + this.blog.id + '&copy' + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-sheet"]').click();
+        } else if (this.blog.editor == 'Excalidraw') {
+            $('.em-blog-write-excalidraw > iframe').attr('src', utils.getResourceBase() + 'excalidraw.html?id=' + this.blog.id + '&copy' + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-excalidraw"]').click();
         } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, {
                 action: 'copy',

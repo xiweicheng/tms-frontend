@@ -18,13 +18,14 @@ mkdir -p $DEST/backup/tms-frontend/$DT
 cp -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page $DEST/backup/tms-frontend/$DT
 echo "backup path: $DEST/backup/tms/tms-frontend/$DT"
 
-echo "rm cdn & scripts & index.html & blog.html & mind.html & excel.html & sheet.html"
+echo "rm cdn & scripts & index.html & blog.html & mind.html & excel.html & sheet.html & excalidraw.html"
 
 rm -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page/cdn
 rm -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page/blog.html
 rm -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page/mind.html
 rm -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page/excel.html
 rm -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page/sheet.html
+rm -rf $DEST/webapps/ROOT/WEB-INF/classes/static/page/excalidraw.html
 
 echo "cp tms-frontend to local tomcat"
 
@@ -33,6 +34,7 @@ cp -rf $SRC/blog.html $DEST/webapps/ROOT/WEB-INF/classes/static/page
 cp -rf $SRC/mind.html $DEST/webapps/ROOT/WEB-INF/classes/static/page
 cp -rf $SRC/excel.html $DEST/webapps/ROOT/WEB-INF/classes/static/page
 cp -rf $SRC/sheet.html $DEST/webapps/ROOT/WEB-INF/classes/static/page
+cp -rf $SRC/excalidraw.html $DEST/webapps/ROOT/WEB-INF/classes/static/page
 
 
 sh $DEST/bin/shutdown.sh

@@ -23,6 +23,7 @@ rm -rf $DEST/page/blog.html
 rm -rf $DEST/page/excel.html
 rm -rf $DEST/page/sheet.html
 rm -rf $DEST/page/mind.html
+rm -rf $DEST/page/excalidraw.html
 rm -rf $DEST/page/gantt
 rm -rf $DEST/page/cdn
 # rm -rf $DEST/page/alert.mp3
@@ -36,6 +37,7 @@ cp -rf $SRC/blog.html $DEST/page
 cp -rf $SRC/excel.html $DEST/page
 cp -rf $SRC/sheet.html $DEST/page
 cp -rf $SRC/mind.html $DEST/page
+cp -rf $SRC/excalidraw.html $DEST/page
 cp -rf $SRC/gantt $DEST/page
 cp -rf $SRC/cdn $DEST/page
 # cp -rf alert.mp3 $DEST/page
@@ -47,12 +49,14 @@ rm -rf $DEST2/page/blog.html
 rm -rf $DEST2/page/excel.html
 rm -rf $DEST2/page/sheet.html
 rm -rf $DEST2/page/mind.html
+rm -rf $DEST2/page/excalidraw.html
 rm -rf $DEST2/page/cdn
 
 cp -rf $SRC/blog.html $DEST2/page
 cp -rf $SRC/excel.html $DEST2/page
 cp -rf $SRC/sheet.html $DEST2/page
 cp -rf $SRC/mind.html $DEST2/page
+cp -rf $SRC/excalidraw.html $DEST2/page
 cp -rf $SRC/cdn $DEST2/page
 
 echo "build end"

@@ -1,0 +1,9 @@
+<template>
+    <require from="./em-blog-excalidraw.css"></require>
+    <div class="em-blog-excalidraw" if.bind="blog && blog.editor == 'Excalidraw'" data-id.bind="blog.id">
+        <iframe frameborder="0"></iframe>
+    </div>
+    <div class="em-blog-excalidraw" if.bind="comment && comment.editor == 'Excalidraw'" data-cid.bind="comment.id">
+        <iframe frameborder="0"></iframe>
+    </div>
+</template>

@@ -72,6 +72,9 @@ export class EmBlogTplSelect {
         } else if (item.editor == 'Sheet') {
             $('.em-blog-write-sheet > iframe').attr('src', utils.getResourceBase() + 'sheet.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.dir ? this.dir.id : '') + (this.blog ? this.blog.id : ''));
             $('a[href="#modaal-blog-write-sheet"]').click();
+        } else if (item.editor == 'Excalidraw') {
+            $('.em-blog-write-excalidraw > iframe').attr('src', utils.getResourceBase() + 'excalidraw.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.dir ? this.dir.id : '') + (this.blog ? this.blog.id : ''));
+            $('a[href="#modaal-blog-write-excalidraw"]').click();
         } else if (!nsCtx.isModaalOpening) {
             nsCtx.newBlogSpace = this.space;
             nsCtx.newBlogDir = this.dir;

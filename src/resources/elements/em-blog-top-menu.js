@@ -292,6 +292,12 @@ export class EmBlogTopMenu {
         return false;
     }
 
+    createExcaldrawHandler() {
+        $('.em-blog-write-excalidraw > iframe').attr('src', this.baseRes + 'excalidraw.html' + '?_=' + new Date().getTime());
+        $('a[href="#modaal-blog-write-excalidraw"]').click();
+        return false;
+    }
+
     selectTplHandler() {
         this.blogTplSelectMd.show();
     }

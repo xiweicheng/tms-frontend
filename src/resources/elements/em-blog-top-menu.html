@@ -69,7 +69,11 @@
                         <a if.bind="!!sysConf.drawUrl" class="item" target="_blank" href="${sysConf.drawUrl}">
                             <div class="ui blue empty circular label"></div> 图表工具
                         </a>
-                        <a if.bind="!!sysConf.excalidrawUrl" class="item" target="_blank" href="${sysConf.excalidrawUrl}">
+                        <a modaal="blog-create-excalidraw" href="#modaal-blog-write-excalidraw" class="item"
+                            style="display: none;">
+                            <div class="ui blue empty circular label"></div> 手绘白板
+                        </a>
+                        <a class="item" click.delegate="createExcalidrawHandler()">
                             <div class="ui blue empty circular label"></div> 手绘白板
                         </a>
                         <div class="ui divider"></div>
