@@ -198,7 +198,7 @@
 
             window.initExcalidraw = function (initialData, readonly = false) {
 
-                debugger;
+                // debugger;
 
                 // 确保 initialData 和 appState 结构完整
                 if (initialData) {
@@ -215,7 +215,7 @@
                 root.render(
                     React.createElement(ExcalidrawLib.Excalidraw, {
                         excalidrawAPI: (ref) => {
-                            debugger;
+                            // debugger;
                             excalidrawRef = ref;
                         },
                         initialData: initialData || {
@@ -256,7 +256,7 @@
             };
 
             window.loadExcalidrawData = (data) => {
-                debugger;
+                // debugger;
                 if (excalidrawRef && data) {
                     // 确保 collaborators 是数组类型
                     if (!data.appState) {
@@ -526,6 +526,8 @@
                 });
 
                 window.addEventListener && window.addEventListener('message', (evt) => {
+
+                    // debugger;
                     if (evt.origin != window.location.origin) return;
                     if (evt.data.source != 'blogClose') return;
 
