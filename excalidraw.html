@@ -249,10 +249,24 @@
 
             // 暴露获取数据的方法
             window.getExcalidrawData = () => {
-                return {
-                    elements: currentElements,
-                    appState: currentAppState
+                // 确保返回完整的数据结构
+                const data = {
+                    elements: currentElements || [],
+                    appState: currentAppState || {}
                 };
+                
+                // 确保appState包含所有必要属性
+                if (!data.appState.viewBackgroundColor) {
+                    data.appState.viewBackgroundColor = "#ffffff";
+                }
+                if (data.appState.gridSize === undefined) {
+                    data.appState.gridSize = null;
+                }
+                if (!Array.isArray(data.appState.collaborators)) {
+                    data.appState.collaborators = [];
+                }
+                
+                return data;
             };
 
             window.loadExcalidrawData = (data) => {
@@ -267,6 +281,38 @@
                     }
                     excalidrawRef.updateScene(data);
                 }
+            };
+
+            // 定义默认初始状态常量
+            const DEFAULT_INITIAL_DATA = {
+                elements: [],
+                appState: {
+                    viewBackgroundColor: "#ffffff",
+                    gridSize: null,
+                    collaborators: []
+                }
+            };
+
+            // 深度比较函数
+            const deepCompare = (obj1, obj2) => {
+                if (obj1 === obj2) return true;
+                
+                if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
+                    return false;
+                }
+                
+                const keys1 = Object.keys(obj1);
+                const keys2 = Object.keys(obj2);
+                
+                if (keys1.length !== keys2.length) return false;
+                
+                for (const key of keys1) {
+                    if (!keys2.includes(key) || !deepCompare(obj1[key], obj2[key])) {
+                        return false;
+                    }
+                }
+                
+                return true;
             };
 
             // 暴露 Excalidraw 实例引用，以便调用更多 API 方法
@@ -289,6 +335,14 @@
                 }
                 return null;
             };
+
+            // 检查数据是否为默认初始状态
+            window.isExcalidrawDataDefault = (data) => {
+                return deepCompare(data, DEFAULT_INITIAL_DATA);
+            };
+            
+            // 暴露深度比较函数，供外部脚本使用
+            window.deepCompare = deepCompare;
 
         } catch (error) {
             console.error('Excalidraw 初始化失败:', error);
@@ -420,12 +474,15 @@
 
                     if (evt.data.action == 'isUpdated') {
                         var updated = false;
-                        var content = JSON.stringify(window.getExcalidrawData());
+                        var currentData = window.getExcalidrawData();
 
                         if (comment) {
-                            updated = (comment.content != content);
+                            // 使用深度比较替代字符串比较
+                            var originalData = JSON.parse(comment.content);
+                            updated = !window.deepCompare(currentData, originalData);
                         } else {
-                            updated = (!!$.trim(content) && content != `{"elements":[],"appState":{"viewBackgroundColor":"#ffffff","gridSize":null}}`);
+                            // 检查是否为非默认状态
+                            updated = !window.isExcalidrawDataDefault(currentData);
                         }
 
                         (window.parent && window.parent.postMessage) && (window.parent.postMessage({
@@ -536,12 +593,18 @@
                     if (evt.data.action == 'isUpdated') {
                         var updated = false;
                         var title = $('#title').val();
-                        var content = JSON.stringify(window.getExcalidrawData());
+                        var currentData = window.getExcalidrawData();
 
                         if (blog) {
-                            updated = (blog.title != title) || (blog.content != content);
+                            // 检查标题是否变化
+                            var titleChanged = (blog.title != title);
+                            // 使用深度比较检查内容是否变化
+                            var originalData = JSON.parse(blog.content);
+                            var contentChanged = !window.deepCompare(currentData, originalData);
+                            updated = titleChanged || contentChanged;
                         } else {
-                            updated = !!$.trim(title) || (!!$.trim(content) && content != `{"elements":[],"appState":{"viewBackgroundColor":"#ffffff","gridSize":null}}`);
+                            // 检查标题是否非空或内容是否为非默认状态
+                            updated = !!$.trim(title) || !window.isExcalidrawDataDefault(currentData);
                         }
 
                         (window.parent && window.parent.postMessage) && (window.parent.postMessage({
