@@ -199,7 +199,8 @@
             // 渲染Excalidraw组件
             root.render(
                 React.createElement(ExcalidrawLib.Excalidraw, {
-                    ref: (ref) => {
+                    excalidrawAPI: (ref) => {
+                        debugger;
                         excalidrawRef = ref;
                     },
                     initialData: {
@@ -235,9 +236,31 @@
             };
 
             window.loadExcalidrawData = (data) => {
+                debugger;
                 if (excalidrawRef) {
                     excalidrawRef.updateScene(data);
                 }
+            };
+
+            // 暴露 Excalidraw 实例引用，以便调用更多 API 方法
+            window.getExcalidrawInstance = () => {
+                return excalidrawRef;
+            };
+
+            // 直接暴露常用 API 方法作为便捷函数
+            window.clearExcalidrawCanvas = () => {
+                if (excalidrawRef) {
+                    excalidrawRef.updateScene({
+                        elements: []
+                    });
+                }
+            };
+
+            window.exportExcalidrawToSVG = () => {
+                if (excalidrawRef) {
+                    return excalidrawRef.exportToSvg();
+                }
+                return null;
             };
 
         } catch (error) {

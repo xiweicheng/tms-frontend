@@ -196,7 +196,7 @@
             <div show.bind="blog.editor == 'Excalidraw'" data-id="${blog.id}">
                 <em-blog-excalidraw blog.bind="blog"></em-blog-excalidraw>
             </div>
-            <div show.bind="blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet'" data-id="${blog.id}" data-case="blog"
+            <div show.bind="blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw'" data-id="${blog.id}" data-case="blog"
                 fancybox ref="mkbodyRef" class="tms-blog-content markdown-body fr-view"
                 innerhtml.bind="blog.content | parseMd:blog.space.channel:blog.editor | emoji:mkbodyRef"></div>
             <div class="footer">
