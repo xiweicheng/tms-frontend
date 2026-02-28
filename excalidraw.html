@@ -196,34 +196,40 @@
             // 使用React 18+推荐的createRoot方法
             const root = ReactDOMClient.createRoot(container);
 
-            // 渲染Excalidraw组件
-            root.render(
-                React.createElement(ExcalidrawLib.Excalidraw, {
-                    excalidrawAPI: (ref) => {
-                        debugger;
-                        excalidrawRef = ref;
-                    },
-                    initialData: {
-                        elements: [],
-                        appState: {
-                            viewBackgroundColor: "#ffffff",
-                            gridSize: null
+            window.initExcalidraw = function (initialData) {
+
+                debugger;
+
+                // 渲染Excalidraw组件
+                root.render(
+                    React.createElement(ExcalidrawLib.Excalidraw, {
+                        excalidrawAPI: (ref) => {
+                            debugger;
+                            excalidrawRef = ref;
+                        },
+                        initialData: initialData || {
+                            elements: [],
+                            appState: {
+                                viewBackgroundColor: "#ffffff",
+                                gridSize: null
+                            }
+                        },
+                        langCode: "zh-CN",
+                        onChange: (elements, appState) => {
+                            currentElements = elements;
+                            currentAppState = appState;
+                            console.log('画布更新:', {
+                                elementsCount: elements.length,
+                                appState: appState
+                            });
+                        },
+                        onCollabButtonClick: () => {
+                            console.log('协作按钮点击');
                         }
-                    },
-                    langCode: "zh-CN",
-                    onChange: (elements, appState) => {
-                        currentElements = elements;
-                        currentAppState = appState;
-                        console.log('画布更新:', {
-                            elementsCount: elements.length,
-                            appState: appState
-                        });
-                    },
-                    onCollabButtonClick: () => {
-                        console.log('协作按钮点击');
-                    }
-                })
-            );
+                    })
+                );
+
+            }
 
             console.log('Excalidraw v0.18.0 初始化成功！');
 
@@ -425,7 +431,8 @@
                                 } else {
                                     $('#title').val(data.data.title + ' (副本)');
                                 }
-                                window.loadExcalidrawData(JSON.parse(data.data.content))
+                                window.initExcalidraw(JSON.parse(data.data.content));
+                                // window.loadExcalidrawData(JSON.parse(data.data.content))
                             } else {
                                 toastr.error(data.data);
                             }
