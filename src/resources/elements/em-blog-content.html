@@ -365,7 +365,15 @@
                                             class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>
                                 </div>
-                                <div show.bind="item.properties != 'Mind' && item.properties != 'Excel' && item.properties != 'Sheet'"
+                                <div show.bind="item.properties == 'Excalidraw'" data-id="${item.id}" class="extra text">
+                                    <em-blog-excalidraw comment.bind="{id: item.targetId, editor: item.properties}">
+                                    </em-blog-excalidraw>
+                                    <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}"
+                                            class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                    </div>
+                                </div>
+                                <div show.bind="item.properties != 'Mind' && item.properties != 'Excel' && item.properties != 'Sheet' && item.properties != 'Excalidraw'"
                                     ref="mkbodyRef2" class="extra text markdown-body fr-view">
                                     <div fancybox innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef2"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
