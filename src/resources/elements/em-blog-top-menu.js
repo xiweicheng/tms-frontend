@@ -269,31 +269,31 @@ export class EmBlogTopMenu {
     }
 
     createHtmlHandler() {
-        $('.em-blog-write-html > iframe').attr('src', this.baseRes + 'blog.html' + '?_=' + new Date().getTime());
+        $('#modaal-blog-write-html > iframe').attr('src', this.baseRes + 'blog.html' + '?_=' + new Date().getTime());
         $('a[href="#modaal-blog-write-html"]').click();
         return false;
     }
 
     createMindHandler() {
-        $('.em-blog-write-mind > iframe').attr('src', this.baseRes + 'mind.html' + '?_=' + new Date().getTime());
+        $('#modaal-blog-write-mind > iframe').attr('src', this.baseRes + 'mind.html' + '?_=' + new Date().getTime());
         $('a[href="#modaal-blog-write-mind"]').click();
         return false;
     }
 
     createExcelHandler() {
-        $('.em-blog-write-excel > iframe').attr('src', this.baseRes + 'excel.html' + '?_=' + new Date().getTime());
+        $('#modaal-blog-write-excel > iframe').attr('src', this.baseRes + 'excel.html' + '?_=' + new Date().getTime());
         $('a[href="#modaal-blog-write-excel"]').click();
         return false;
     }
 
     createSheetHandler() {
-        $('.em-blog-write-sheet > iframe').attr('src', this.baseRes + 'sheet.html' + '?_=' + new Date().getTime());
+        $('#modaal-blog-write-sheet > iframe').attr('src', this.baseRes + 'sheet.html' + '?_=' + new Date().getTime());
         $('a[href="#modaal-blog-write-sheet"]').click();
         return false;
     }
 
-    createExcaldrawHandler() {
-        $('.em-blog-write-excalidraw > iframe').attr('src', this.baseRes + 'excalidraw.html' + '?_=' + new Date().getTime());
+    createExcalidrawHandler() {
+        $('#modaal-blog-write-excalidraw > iframe').attr('src', this.baseRes + 'excalidraw.html' + '?_=' + new Date().getTime());
         $('a[href="#modaal-blog-write-excalidraw"]').click();
         return false;
     }
