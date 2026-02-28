@@ -200,6 +200,17 @@
 
                 debugger;
 
+                // 确保 initialData 和 appState 结构完整
+                if (initialData) {
+                    if (!initialData.appState) {
+                        initialData.appState = {};
+                    }
+                    // 确保 collaborators 始终是数组类型
+                    if (!Array.isArray(initialData.appState.collaborators)) {
+                        initialData.appState.collaborators = [];
+                    }
+                }
+
                 // 渲染Excalidraw组件
                 root.render(
                     React.createElement(ExcalidrawLib.Excalidraw, {
@@ -211,7 +222,8 @@
                             elements: [],
                             appState: {
                                 viewBackgroundColor: "#ffffff",
-                                gridSize: null
+                                gridSize: null,
+                                collaborators: []  // 确保 collaborators 是数组类型
                             }
                         },
                         langCode: "zh-CN",
@@ -243,7 +255,14 @@
 
             window.loadExcalidrawData = (data) => {
                 debugger;
-                if (excalidrawRef) {
+                if (excalidrawRef && data) {
+                    // 确保 collaborators 是数组类型
+                    if (!data.appState) {
+                        data.appState = {};
+                    }
+                    if (!Array.isArray(data.appState.collaborators)) {
+                        data.appState.collaborators = [];
+                    }
                     excalidrawRef.updateScene(data);
                 }
             };
