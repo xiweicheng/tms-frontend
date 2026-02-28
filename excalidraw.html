@@ -196,7 +196,7 @@
             // 使用React 18+推荐的createRoot方法
             const root = ReactDOMClient.createRoot(container);
 
-            window.initExcalidraw = function (initialData) {
+            window.initExcalidraw = function (initialData, readonly = false) {
 
                 debugger;
 
@@ -227,6 +227,8 @@
                             }
                         },
                         langCode: "zh-CN",
+                        isCollaborating: readonly,
+                        viewModeEnabled: readonly,
                         onChange: (elements, appState) => {
                             currentElements = elements;
                             currentAppState = appState;
@@ -450,8 +452,7 @@
                                 } else {
                                     $('#title').val(data.data.title + ' (副本)');
                                 }
-                                window.initExcalidraw(JSON.parse(data.data.content));
-                                // window.loadExcalidrawData(JSON.parse(data.data.content))
+                                window.initExcalidraw(JSON.parse(data.data.content), readonly);
                             } else {
                                 toastr.error(data.data);
                             }
