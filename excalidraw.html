@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excalidraw 最终集成方案 (v0.18.0)</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #excalidraw-container {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="excalidraw-container"></div>
+
+    <!-- 设置EXCALIDRAW_ASSET_PATH以确保字体正确加载 -->
+    <script>
+        // 设置资源路径，用于加载字体
+        window.EXCALIDRAW_ASSET_PATH = "https://esm.sh/@excalidraw/excalidraw@0.18.0/dist/dev/";
+    </script>
+
+    <!-- Excalidraw样式 -->
+    <link rel="stylesheet" href="https://esm.sh/@excalidraw/excalidraw@0.18.0/dist/dev/index.css" />
+
+    <!-- Import maps用于管理依赖版本 -->
+    <script type="importmap">
+        {
+            "imports": {
+                "react": "https://esm.sh/react@19.0.0",
+                "react/jsx-runtime": "https://esm.sh/react@19.0.0/jsx-runtime",
+                "react-dom": "https://esm.sh/react-dom@19.0.0"
+            }
+        }
+    </script>
+
+    <!-- 使用ESM模块加载Excalidraw -->
+    <script type="module">
+        // 导入必要的依赖
+        import React from "https://esm.sh/react@19.0.0";
+        import ReactDOM from "https://esm.sh/react-dom@19.0.0";
+        import ReactDOMClient from "https://esm.sh/react-dom@19.0.0/client";
+        import * as ExcalidrawLib from "https://esm.sh/@excalidraw/excalidraw@0.18.0/dist/dev/index.js?external=react,react-dom";
+
+        console.log('所有依赖加载完成');
+        console.log('React:', typeof React);
+        console.log('ReactDOM:', typeof ReactDOM);
+        console.log('ReactDOMClient:', typeof ReactDOMClient);
+        console.log('ExcalidrawLib:', typeof ExcalidrawLib);
+        console.log('Excalidraw:', typeof ExcalidrawLib.Excalidraw);
+        console.log('createRoot:', typeof ReactDOMClient.createRoot);
+
+        try {
+            // 获取容器
+            const container = document.getElementById('excalidraw-container');
+
+            // 使用React 18+推荐的createRoot方法
+            const root = ReactDOMClient.createRoot(container);
+
+            // 渲染Excalidraw组件
+            root.render(
+                React.createElement(ExcalidrawLib.Excalidraw, {
+                    initialData: {
+                        elements: [],
+                        appState: {
+                            viewBackgroundColor: "#ffffff",
+                            gridSize: null
+                        }
+                    },
+                    langCode: "zh-CN",
+                    onChange: (elements, appState) => {
+                        console.log('画布更新:', {
+                            elementsCount: elements.length,
+                            appState: appState
+                        });
+                    },
+                    onCollabButtonClick: () => {
+                        console.log('协作按钮点击');
+                    }
+                })
+            );
+
+            console.log('Excalidraw v0.18.0 初始化成功！');
+
+        } catch (error) {
+            console.error('Excalidraw 初始化失败:', error);
+            console.error('错误堆栈:', error.stack);
+
+            // 显示错误信息
+            const container = document.getElementById('excalidraw-container');
+            container.innerHTML = `
+                <div style="padding: 20px; text-align: center;">
+                    <h2>Excalidraw 加载失败</h2>
+                    <p>请检查浏览器控制台获取详细错误信息。</p>
+                    <pre style="text-align: left; background: #f0f0f0; padding: 10px; margin: 10px auto; width: 80%; overflow: auto;">${error.message}</pre>
+                </div>
+            `;
+        }
+    </script>
+</body>
+
+</html>
