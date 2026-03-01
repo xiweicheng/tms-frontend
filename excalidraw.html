@@ -198,9 +198,11 @@
 
             window.initExcalidraw = function (initialData, readonly = false) {
 
+                console.log('初始化Excalidraw', { initialData, readonly });
+
                 // debugger;
 
-                window.changeCount = 0;
+                window.changeCount = initialData ? 0 : -1;
 
                 // 确保 initialData 和 appState 结构完整
                 if (initialData) {
