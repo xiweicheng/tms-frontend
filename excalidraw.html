@@ -54,6 +54,7 @@
         .readonly .App-menu_top {
             display: none !important;
         }
+
         .readonly .App-bottom-bar {
             display: none !important;
         }
@@ -145,12 +146,12 @@
                 gap: 8px;
                 padding: 8px;
             }
-            
+
             .topbar>input {
                 max-width: 100%;
                 font-size: 16px;
             }
-            
+
             button.btn {
                 padding: 8px 16px;
                 font-size: 14px;
@@ -316,6 +317,8 @@
         import ReactDOMClient from "https://esm.sh/react-dom@19.0.0/client";
         import * as ExcalidrawLib from "https://esm.sh/@excalidraw/excalidraw@0.18.0/dist/prod/index.js?external=react,react-dom";
 
+        // debugger;
+
         console.log('所有依赖加载完成');
         console.log('React:', typeof React);
         console.log('ReactDOM:', typeof ReactDOM);
@@ -327,6 +330,7 @@
         let excalidrawRef = null;
         let currentElements = [];
         let currentAppState = null;
+        let exportToClipboard = ExcalidrawLib.exportToClipboard;
 
         try {
             // 获取容器
@@ -360,6 +364,7 @@
                         excalidrawAPI: (ref) => {
                             // debugger;
                             excalidrawRef = ref;
+                            console.log('初始化excalidrawAPI')
                         },
                         initialData: initialData || {
                             elements: [],
@@ -412,6 +417,21 @@
                 }
 
                 return data;
+            };
+
+            window.exportToPng = () => {
+                if (excalidrawRef) {
+                    // debugger;
+                    // 3. 调用 exportToClipboard 复制到剪贴板
+                    exportToClipboard({
+                        elements: excalidrawRef.getSceneElements(), // 画布元素（必填）
+                        appState: excalidrawRef.getAppState(),       // 画布状态（必填）
+                        mimeType: 'image/png',    // 复制的格式（可选，默认png，也可填 image/svg+xml）
+                        type: 'png'
+                    });
+
+                    toastr.success('画布内容已复制到剪贴板，可直接粘贴使用！');
+                }
             };
 
             window.loadExcalidrawData = (data) => {
@@ -562,7 +582,7 @@
 
                 window.addEventListener && window.addEventListener('message', (evt) => {
                     if (evt.origin != window.location.origin) return;
-                    if (evt.data.source != 'blogClose') return;
+                    if (evt.data.source != 'blogClose' && evt.data.source != 'commentExcalidraw') return;
 
                     if (evt.data.action == 'isUpdated') {
                         // 统一判断逻辑：使用changeCount判断内容是否变更，提高效率
@@ -575,6 +595,11 @@
                             item: evt.data.item,
                             updated: updated
                         }, window.location.origin));
+                    } else if (evt.data.action == 'excalidrawExport') {
+                        if (evt.data.source == 'commentExcalidraw') {
+                            if (evt.data.item.id != comment.id) return;
+                            window.exportToPng();
+                        }
                     }
                 }, false);
 
@@ -674,7 +699,7 @@
 
                     // debugger;
                     if (evt.origin != window.location.origin) return;
-                    if (evt.data.source != 'blogClose') return;
+                    if (evt.data.source != 'blogClose' && evt.data.source != 'blogExcalidraw') return;
 
                     if (evt.data.action == 'isUpdated') {
                         var updated = false;
@@ -691,6 +716,11 @@
                             item: evt.data.item,
                             updated: updated
                         }, window.location.origin));
+                    } else if (evt.data.action == 'excalidrawExport') {
+                        if (evt.data.source == 'blogExcalidraw') {
+                            if (evt.data.item.id != blog.id) return;
+                            window.exportToPng();
+                        }
                     }
                 }, false);
 

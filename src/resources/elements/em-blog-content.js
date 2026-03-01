@@ -1447,4 +1447,16 @@ export class EmBlogContent {
                 }, window.location.origin));
         }
     }
+
+    excalidrawPngDownloadHandler() {
+        let ifrm = $(`.em-blog-excalidraw[data-id="${this.blog.id}"] > iframe`)[0];
+        if (ifrm) {
+            (ifrm.contentWindow.postMessage) && (ifrm.contentWindow
+                .postMessage({
+                    action: 'excalidrawExport',
+                    source: 'blogExcalidraw',
+                    item: this.blog
+                }, window.location.origin));
+        }
+    }
 }

@@ -143,6 +143,15 @@
                                 <i style="width: 1.18em; vertical-align:inherit;" class="table icon"></i>
                                 导出为表格
                             </a>
+                            <div show.bind="blog.editor == 'Excalidraw'" click.delegate="excalidrawPngDownloadHandler()" class="item">
+                                <i style="width: 1.18em; vertical-align:inherit;" class="file image outline icon"></i>
+                                导出为PNG
+                            </div>
+                            <a show.bind="blog.editor == 'Excalidraw'" href="/admin/blog/download/${blog.id}?type=excalidraw"
+                                class="item">
+                                <i style="width: 1.18em; vertical-align:inherit;" class="paint brush icon"></i>
+                                导出为白板
+                            </a>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username" class="divider"></div>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username"
                                 click.delegate="deleteHandler()" class="item" style="color: red;">
