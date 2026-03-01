@@ -256,6 +256,10 @@
         <div class="topbar">
             <input id="title" type="text" placeholder="标题">
             <button class="button -blue btn" id="save">保存</button>
+            <div style="display: inline-block;">
+                <input type="file" accept=".excalidraw" id="files" style="display:none" onchange="importHandler();" />
+                <input type="button" id="import" value="导入" />
+            </div>
         </div>
         <div class="excalidraw-container">
             <div id="excalidraw-container"></div>
@@ -499,6 +503,10 @@
                     if (!Array.isArray(data.appState.collaborators)) {
                         data.appState.collaborators = [];
                     }
+                    // 确保 files 数据被正确处理和保存
+                    if (data.files) {
+                        currentFiles = data.files;
+                    }
                     excalidrawRef.updateScene(data);
                 }
             };
@@ -523,7 +531,38 @@
 
     <!-- 保存功能脚本 -->
     <script>
+        // 导入功能处理函数
+        function importHandler() {
+            var selectedFile = document.getElementById("files").files[0]; // 获取读取的File对象
+            var name = selectedFile.name; // 读取选中文件的文件名
+
+            var reader = new FileReader(); // 这里是核心！！！读取操作就是由它完成的。
+            reader.readAsText(selectedFile); // 读取文件的内容
+
+            reader.onload = function () {
+                try {
+                    // 设置标题，去掉文件扩展名
+                    $('#title').val(name.replace('.excalidraw', ''));
+                    // 初始化Excalidraw数据
+                    window.loadExcalidrawData(JSON.parse(this.result));
+                    // 显示成功提示
+                    toastr.success('白板导入成功！', '', {
+                        positionClass: 'toast-top-center'
+                    });
+                } catch (err) {
+                    console.error('导入失败:', err);
+                    toastr.error('导入失败，请检查文件格式是否正确！', '', {
+                        positionClass: 'toast-top-center'
+                    });
+                }
+            };
+        }
+
         $(function () {
+            // 为导入按钮添加点击事件，触发文件选择对话框
+            $('#import').click(function () {
+                $('#files').click();
+            });
 
             var isComment = typeof url('?comment') !== 'undefined';
             var id = url('?id');
