@@ -38,6 +38,11 @@
             position: relative;
         }
 
+        /* 隐藏只读模式下的帮助按钮 */
+        .readonly .layer-ui__wrapper__footer-right {
+            display: none !important;
+        }
+
         #toast-container {
             z-index: 9999999999 !important;
         }
