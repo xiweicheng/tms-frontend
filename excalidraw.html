@@ -419,18 +419,60 @@
                 return data;
             };
 
-            window.exportToPng = () => {
-                if (excalidrawRef) {
-                    // debugger;
-                    // 3. 调用 exportToClipboard 复制到剪贴板
-                    exportToClipboard({
-                        elements: excalidrawRef.getSceneElements(), // 画布元素（必填）
-                        appState: excalidrawRef.getAppState(),       // 画布状态（必填）
-                        mimeType: 'image/png',    // 复制的格式（可选，默认png，也可填 image/svg+xml）
-                        type: 'png'
+            /**
+             * Excalidraw PNG导出方法
+             * @param {Object} options 导出选项
+             * @param {number} options.exportPadding 导出边距，默认10
+             * @param {string} options.mimeType 导出格式，默认image/png
+             * @param {number} options.quality 导出质量，0-1之间，默认0.92
+             * @param {string} options.filename 导出文件名，默认excalidraw.png
+             * @returns {Promise<Blob>} 返回PNG Blob对象
+             */
+            window.exportExcalidrawToPng = async (options = {}) => {
+                if (!excalidrawRef) {
+                    throw new Error('Excalidraw 实例未初始化');
+                }
+
+                const {
+                    exportPadding = 10,
+                    mimeType = 'image/png',
+                    quality = 0.92,
+                    filename = 'excalidraw.png',
+                    download = true
+                } = options;
+
+                try {
+                    const elements = excalidrawRef.getSceneElements();
+                    const appState = excalidrawRef.getAppState();
+
+                    // 调用 exportToBlob 生成 PNG blob
+                    const blob = await ExcalidrawLib.exportToBlob({
+                        elements,
+                        appState,
+                        exportPadding,
+                        mimeType,
+                        quality,
                     });
 
-                    toastr.success('画布内容已复制到剪贴板，可直接粘贴使用！');
+                    // 如果需要下载，则创建下载链接
+                    if (download) {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+
+                        toastr.success('PNG导出成功！');
+                    }
+
+                    return blob;
+                } catch (error) {
+                    console.error('导出PNG失败:', error);
+                    toastr.error('导出PNG失败，请检查控制台获取详细信息。');
+                    throw error;
                 }
             };
 
@@ -598,7 +640,7 @@
                     } else if (evt.data.action == 'excalidrawExport') {
                         if (evt.data.source == 'commentExcalidraw') {
                             if (evt.data.item.id != comment.id) return;
-                            window.exportToPng();
+                            window.exportExcalidrawToPng();
                         }
                     }
                 }, false);
@@ -719,7 +761,7 @@
                     } else if (evt.data.action == 'excalidrawExport') {
                         if (evt.data.source == 'blogExcalidraw') {
                             if (evt.data.item.id != blog.id) return;
-                            window.exportToPng();
+                            window.exportExcalidrawToPng();
                         }
                     }
                 }, false);
