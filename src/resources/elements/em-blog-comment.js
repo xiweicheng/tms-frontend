@@ -1105,6 +1105,9 @@ export class EmBlogComment {
         } else if (editor == 'mind') {
             $('.em-blog-write-mind > iframe').attr('src', utils.getResourceBase() + 'mind.html?comment&id=' + this.blog.id + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-mind"]').click();
+        } else if (editor == 'excalidraw') {
+            $('.em-blog-write-excalidraw > iframe').attr('src', utils.getResourceBase() + 'excalidraw.html?comment&id=' + this.blog.id + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-excalidraw"]').click();
         }
     }
 
