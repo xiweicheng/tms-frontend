@@ -158,6 +158,42 @@
             }
         }
 
+        /* 导入按钮样式 */
+        #import {
+            color: white;
+            background: #6c757d;
+            padding: 8px 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: none;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        #import:hover {
+            background: #5a6268;
+        }
+
+        #import:active {
+            background: #495057;
+        }
+
+        @media only screen and (max-width: 767px) {
+            button.btn,
+            #import {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
+
         /* 保存弹框样式优化 */
         #saveModal {
             border-radius: 8px;
