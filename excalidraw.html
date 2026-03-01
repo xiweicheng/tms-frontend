@@ -330,7 +330,7 @@
         let excalidrawRef = null;
         let currentElements = [];
         let currentAppState = null;
-        let exportToClipboard = ExcalidrawLib.exportToClipboard;
+        let currentFiles = {};
 
         try {
             // 获取容器
@@ -356,6 +356,10 @@
                     if (!Array.isArray(initialData.appState.collaborators)) {
                         initialData.appState.collaborators = [];
                     }
+                    // 初始化files数据
+                    currentFiles = initialData.files || {};
+                } else {
+                    currentFiles = {};
                 }
 
                 // 渲染Excalidraw组件
@@ -372,19 +376,22 @@
                                 viewBackgroundColor: "#ffffff",
                                 gridSize: null,
                                 collaborators: []  // 确保 collaborators 是数组类型
-                            }
+                            },
+                            files: {}
                         },
                         langCode: "zh-CN",
                         isCollaborating: readonly,
                         viewModeEnabled: readonly,
-                        onChange: (elements, appState) => {
+                        onChange: (elements, appState, files) => {
                             // debugger;
                             window.changeCount++;
                             currentElements = elements;
                             currentAppState = appState;
+                            currentFiles = files || {};
                             console.log('画布更新:', {
                                 elementsCount: elements.length,
-                                appState: appState
+                                appState: appState,
+                                filesCount: Object.keys(files || {}).length
                             }, window.changeCount);
                         },
                         onCollabButtonClick: () => {
@@ -402,7 +409,8 @@
                 // 确保返回完整的数据结构
                 const data = {
                     elements: currentElements || [],
-                    appState: currentAppState || {}
+                    appState: currentAppState || {},
+                    files: currentFiles || {}
                 };
 
                 // 确保appState包含所有必要属性
@@ -445,10 +453,11 @@
                     const elements = excalidrawRef.getSceneElements();
                     const appState = excalidrawRef.getAppState();
 
-                    // 调用 exportToBlob 生成 PNG blob
+                    // 调用 exportToBlob 生成 PNG blob，包含 files 数据以确保图片正确导出
                     const blob = await ExcalidrawLib.exportToBlob({
                         elements,
                         appState,
+                        files: currentFiles,
                         exportPadding,
                         mimeType,
                         quality,
