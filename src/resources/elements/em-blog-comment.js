@@ -959,6 +959,9 @@ export class EmBlogComment {
         } else if (item.editor == 'Mind') {
             $(`.em-blog-write-mind > iframe`).attr('src', utils.getResourceBase() + 'mind.html?comment&cid=' + item.id + '&id=' + this.blog.id + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-mind"]').click();
+        } else if(item.editor == 'Excalidraw') {
+            $(`.em-blog-write-excalidraw > iframe`).attr('src', utils.getResourceBase() + 'excalidraw.html?comment&cid=' + item.id + '&id=' + this.blog.id + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-excalidraw"]').click();
         } else {
 
             $.get(`/admin/blog/comment/get`, {
