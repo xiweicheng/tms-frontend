@@ -58,31 +58,47 @@
         }
 
         .topbar {
-            position: absolute;
-            top: -50px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: white;
+            box-shadow: none;
+            border: none;
             width: 100%;
+            box-sizing: border-box;
         }
 
         .topbar>input {
-            /*width: 300px;*/
-            width: 100%;
-            font-size: 26px;
+            flex: 1;
+            min-width: 200px;
+            font-size: 18px;
+            padding: 8px 12px;
             box-sizing: border-box;
-            /*box-shadow: none;*/
-            outline: 0;
-            border: 0;
+            outline: none;
+            border: none;
+            border-radius: 0;
+            background: white;
             box-shadow: 0px 1px 0px 0px #dddddd;
-            padding-right: 80px;
+            transition: all 0.2s ease;
+            font-weight: 400;
+            color: #333;
+        }
+
+        .topbar>input:focus {
+            border-color: transparent;
+            box-shadow: 0px 2px 0px 0px #1678c2;
         }
 
         .topbar>.actions {
-            right: 0;
-            top: 0;
-            position: absolute;
+            display: flex;
+            gap: 8px;
+            margin: 0;
+            margin-left: auto;
         }
 
         .topbar>.actions button {
-            font-size: 12px;
+            font-size: 14px;
         }
 
         #preview {
@@ -94,18 +110,30 @@
         }
 
         button.btn {
-            color: #fff;
+            color: white;
             background: #2185d0;
-            padding: .5rem 1rem;
-            display: inline-block;
+            padding: 8px 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
             border-radius: 4px;
-            transition-duration: .25s;
+            transition: all 0.2s ease;
             border: none;
             font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: none;
+            text-transform: none;
+            letter-spacing: normal;
         }
 
         button.btn:hover {
             background: #1678c2;
+        }
+
+        button.btn:active {
+            background: #1a689e;
         }
 
         #saveFrm .row {
@@ -141,9 +169,8 @@
                 <button class="button -blue btn" id="save">保存</button>
                 <button class="button -blue btn" id="preview">预览</button>
             </div>
-            <span id="msg" style="color: red; padding-left: 16px;"></span>
         </div>
-        <div id='edit' style="margin-top: 60px; padding-bottom: 60px;"></div>
+        <div id='edit' style="margin-top: 10px; padding-bottom: 60px;"></div>
     </div>
     <!-- Modal HTML embedded directly into document -->
     <div id="saveModal" class="modal">
