@@ -474,13 +474,17 @@
                         document.body.removeChild(a);
                         URL.revokeObjectURL(url);
 
-                        toastr.success('PNG导出成功！');
+                        toastr.success('PNG导出成功！', '', {
+                            positionClass: 'toast-top-center'
+                        });
                     }
 
                     return blob;
                 } catch (error) {
                     console.error('导出PNG失败:', error);
-                    toastr.error('导出PNG失败，请检查控制台获取详细信息。');
+                    toastr.error('导出PNG失败，请检查控制台获取详细信息。', '', {
+                        positionClass: 'toast-top-center'
+                    });
                     throw error;
                 }
             };
