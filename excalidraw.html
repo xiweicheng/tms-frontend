@@ -372,7 +372,11 @@
                         excalidrawAPI: (ref) => {
                             // debugger;
                             excalidrawRef = ref;
-                            console.log('初始化excalidrawAPI')
+                            console.log('初始化excalidrawAPI');
+                            // 初始化后，确保files数据被正确添加
+                            // if (initialData && initialData.files && typeof ref.addFiles === 'function') {
+                            //     ref.addFiles(initialData.files);
+                            // }
                         },
                         initialData: initialData || {
                             elements: [],
@@ -506,7 +510,12 @@
                     // 确保 files 数据被正确处理和保存
                     if (data.files) {
                         currentFiles = data.files;
+                        // 使用 addFiles 方法添加文件数据到 Excalidraw 实例
+                        if (typeof excalidrawRef.addFiles === 'function') {
+                            excalidrawRef.addFiles(data.files);
+                        }
                     }
+                    // 更新场景
                     excalidrawRef.updateScene(data);
                 }
             };
