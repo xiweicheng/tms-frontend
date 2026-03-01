@@ -640,7 +640,7 @@
                     } else if (evt.data.action == 'excalidrawExport') {
                         if (evt.data.source == 'commentExcalidraw') {
                             if (evt.data.item.id != comment.id) return;
-                            window.exportExcalidrawToPng();
+                            window.exportExcalidrawToPng({filename: comment.id + '.png'});
                         }
                     }
                 }, false);
@@ -761,7 +761,7 @@
                     } else if (evt.data.action == 'excalidrawExport') {
                         if (evt.data.source == 'blogExcalidraw') {
                             if (evt.data.item.id != blog.id) return;
-                            window.exportExcalidrawToPng();
+                            window.exportExcalidrawToPng({filename: blog.title + '-' + blog.id + '.png'});
                         }
                     }
                 }, false);
