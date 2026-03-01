@@ -439,6 +439,7 @@
                         }, function (data, textStatus, xhr) {
                             if (data.success) {
                                 comment = data.data;
+                                window.changeCount = 0; // 重置变更计数
                                 toastr && toastr.success('博文评论保存成功！');
                                 (window.parent && window.parent.postMessage) && (window.parent.postMessage({
                                     action: 'created',
@@ -462,6 +463,7 @@
                         }, function (data, textStatus, xhr) {
                             if (data.success) {
                                 comment = data.data;
+                                window.changeCount = 0; // 重置变更计数
                                 toastr && toastr.success('博文评论保存成功！');
                                 (window.parent && window.parent.postMessage) && (window.parent.postMessage({
                                     action: 'updated',
@@ -483,17 +485,9 @@
                     if (evt.data.source != 'blogClose') return;
 
                     if (evt.data.action == 'isUpdated') {
-                        var updated = false;
-                        var currentData = window.getExcalidrawData();
-
-                        if (comment) {
-                            // 使用深度比较替代字符串比较
-                            var originalData = JSON.parse(comment.content);
-                            updated = !window.deepCompare(currentData, originalData);
-                        } else {
-                            // 检查是否为非默认状态
-                            updated = !window.isExcalidrawDataDefault(currentData);
-                        }
+                        // 统一判断逻辑：使用changeCount判断内容是否变更，提高效率
+                        const contentChanged = window.changeCount > 1;
+                        updated = contentChanged;
 
                         (window.parent && window.parent.postMessage) && (window.parent.postMessage({
                             action: 'isUpdated',
