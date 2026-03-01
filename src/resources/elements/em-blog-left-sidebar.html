@@ -162,6 +162,10 @@
                                                                                 click.delegate="createMindHandler(space, dir, item)">
                                                                                 思维导图
                                                                             </a>
+                                                                            <a class="item"
+                                                                                click.delegate="createExcalidrawHandler(space, dir, item)">
+                                                                                手绘白板
+                                                                            </a>
                                                                             <div class="ui divider"></div>
                                                                             <a click.delegate="selectTplHandler(space, dir, item)"
                                                                                 class="item">
@@ -223,10 +227,14 @@
                                                                                         电子表格
                                                                                     </a>
                                                                                     <a class="item"
-                                                                                        click.delegate="createMindHandler(space, dir, child)">
-                                                                                        思维导图
-                                                                                    </a>
-                                                                                    <div class="ui divider"></div>
+                                                                                click.delegate="createMindHandler(space, dir, child)">
+                                                                                思维导图
+                                                                            </a>
+                                                                            <a class="item"
+                                                                                click.delegate="createExcalidrawHandler(space, dir, child)">
+                                                                                手绘白板
+                                                                            </a>
+                                                                            <div class="ui divider"></div>
                                                                                     <a click.delegate="selectTplHandler(space, dir, child)"
                                                                                         class="item">
                                                                                         基于模板
@@ -368,12 +376,16 @@
                                                                                                         电子表格
                                                                                                     </a>
                                                                                                     <a class="item"
-                                                                                                        click.delegate="createMindHandler(space, dir, child3)">
-                                                                                                        思维导图
-                                                                                                    </a>
-                                                                                                    <div
-                                                                                                        class="ui divider">
-                                                                                                    </div>
+                                                                            click.delegate="createMindHandler(space, dir, child3)">
+                                                                            思维导图
+                                                                        </a>
+                                                                        <a class="item"
+                                                                            click.delegate="createExcalidrawHandler(space, dir, child3)">
+                                                                            手绘白板
+                                                                        </a>
+                                                                        <div
+                                                                            class="ui divider">
+                                                                        </div>
                                                                                                     <a click.delegate="selectTplHandler(space, dir, child3)"
                                                                                                         class="item">
                                                                                                         基于模板
@@ -466,6 +478,10 @@
                                                                 <a class="item"
                                                                     click.delegate="createMindHandler(space, dir)">
                                                                     思维导图
+                                                                </a>
+                                                                <a class="item"
+                                                                    click.delegate="createExcalidrawHandler(space, dir)">
+                                                                    手绘白板
                                                                 </a>
                                                                 <div class="ui divider"></div>
                                                                 <a click.delegate="selectTplHandler(space, dir)"
@@ -655,6 +671,10 @@
                                                                                 click.delegate="createMindHandler(space, dir, child2)">
                                                                                 思维导图
                                                                             </a>
+                                                                            <a class="item"
+                                                                                click.delegate="createExcalidrawHandler(space, dir, child2)">
+                                                                                手绘白板
+                                                                            </a>
                                                                             <div class="ui divider">
                                                                             </div>
                                                                             <a click.delegate="selectTplHandler(space, dir, child2)"
@@ -805,6 +825,9 @@
                                                 </a>
                                                 <a class="item" click.delegate="createMindHandler(space)">
                                                     思维导图
+                                                </a>
+                                                <a class="item" click.delegate="createExcalidrawHandler(space)">
+                                                    手绘白板
                                                 </a>
                                                 <div class="ui divider"></div>
                                                 <a click.delegate="selectTplHandler(space)" class="item">

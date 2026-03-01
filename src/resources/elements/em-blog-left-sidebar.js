@@ -1150,7 +1150,7 @@ export class EmBlogLeftSidebar {
         return false;
     }
 
-    createExcaldrawHandler(space, dir, blog) {
+    createExcalidrawHandler(space, dir, blog) {
         $('.em-blog-write-excalidraw > iframe').attr('src', this.baseRes + 'excalidraw.html' + '?_=' + new Date().getTime() + '&spaceId=' + (space ? space.id : '') + '&dirId=' + (dir ? dir.id : '') + '&pid=' + (blog ? blog.id : ''));
         $('a[href="#modaal-blog-write-excalidraw"]').click();
         return false;
