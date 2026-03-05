@@ -388,7 +388,7 @@
                     const blob = await window.excalidraw.ExcalidrawAPI.exportToBlob({
                         elements,
                         appState,
-                        files: currentFiles,
+                        files: window.excalidraw.files || {},
                         exportPadding,
                         mimeType,
                         quality,
