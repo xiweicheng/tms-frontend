@@ -334,19 +334,14 @@
     <!-- 使用ESM模块加载Excalidraw -->
     <script>
 
-
-
         try {
-            // 获取容器
-            const container = document.getElementById('excalidraw-container');
-
             // 暴露获取数据的方法
             window.getExcalidrawData = () => {
                 // 确保返回完整的数据结构
                 const data = {
-                    elements: currentElements || [],
-                    appState: currentAppState || {},
-                    files: currentFiles || {}
+                    elements: window.excalidraw.elements || [],
+                    appState: window.excalidraw.appState || {},
+                    files: window.excalidraw.files || {}
                 };
 
                 // 确保appState包含所有必要属性
@@ -373,7 +368,7 @@
              * @returns {Promise<Blob>} 返回PNG Blob对象
              */
             window.exportExcalidrawToPng = async (options = {}) => {
-                if (!excalidrawRef) {
+                if (!window.excalidraw.excalidrawRef) {
                     throw new Error('Excalidraw 实例未初始化');
                 }
 
@@ -386,11 +381,11 @@
                 } = options;
 
                 try {
-                    const elements = excalidrawRef.getSceneElements();
-                    const appState = excalidrawRef.getAppState();
+                    const elements = window.excalidraw.excalidrawRef.getSceneElements();
+                    const appState = window.excalidraw.excalidrawRef.getAppState();
 
                     // 调用 exportToBlob 生成 PNG blob，包含 files 数据以确保图片正确导出
-                    const blob = await ExcalidrawLib.exportToBlob({
+                    const blob = await window.excalidraw.ExcalidrawAPI.exportToBlob({
                         elements,
                         appState,
                         files: currentFiles,
@@ -427,7 +422,7 @@
 
             window.loadExcalidrawData = (data) => {
                 // debugger;
-                if (excalidrawRef && data) {
+                if (window.excalidraw && data) {
                     // 确保 collaborators 是数组类型
                     if (!data.appState) {
                         data.appState = {};
@@ -439,12 +434,12 @@
                     if (data.files) {
                         currentFiles = data.files;
                         // 使用 addFiles 方法添加文件数据到 Excalidraw 实例
-                        if (typeof excalidrawRef.addFiles === 'function') {
-                            excalidrawRef.addFiles(data.files);
+                        if (typeof window.excalidraw.excalidrawRef.addFiles === 'function') {
+                            window.excalidraw.excalidrawRef.addFiles(data.files);
                         }
                     }
                     // 更新场景
-                    excalidrawRef.updateScene(data);
+                    window.excalidraw.excalidrawRef.updateScene(data);
                 }
             };
 
@@ -578,7 +573,7 @@
                         }, function (data, textStatus, xhr) {
                             if (data.success) {
                                 comment = data.data;
-                                window.changeCount = 0; // 重置变更计数
+                                window.excalidraw.updateCount = 0; // 重置变更计数
                                 toastr && toastr.success('博文评论保存成功！');
                                 (window.parent && window.parent.postMessage) && (window.parent.postMessage({
                                     action: 'created',
@@ -602,7 +597,7 @@
                         }, function (data, textStatus, xhr) {
                             if (data.success) {
                                 comment = data.data;
-                                window.changeCount = 0; // 重置变更计数
+                                window.excalidraw.updateCount = 0; // 重置变更计数
                                 toastr && toastr.success('博文评论保存成功！');
                                 (window.parent && window.parent.postMessage) && (window.parent.postMessage({
                                     action: 'updated',
@@ -624,8 +619,8 @@
                     if (evt.data.source != 'blogClose' && evt.data.source != 'commentExcalidraw') return;
 
                     if (evt.data.action == 'isUpdated') {
-                        // 统一判断逻辑：使用changeCount判断内容是否变更，提高效率
-                        const contentChanged = window.changeCount > 1;
+                        // 统一判断逻辑：使用updateCount判断内容是否变更，提高效率
+                        const contentChanged = window.excalidraw.updateCount > 1;
                         updated = contentChanged;
 
                         (window.parent && window.parent.postMessage) && (window.parent.postMessage({
@@ -757,7 +752,7 @@
 
                         // 统一判断逻辑：标题或内容任一变动即视为已更新
                         const titleChanged = blog ? blog.title !== title : !!$.trim(title);
-                        const contentChanged = window.changeCount > 1;
+                        const contentChanged = window.excalidraw.updateCount > 1;
                         updated = titleChanged || contentChanged;
 
                         (window.parent && window.parent.postMessage) && (window.parent.postMessage({
@@ -829,7 +824,7 @@
                         }, function (data, textStatus, xhr) {
                             if (data.success) {
                                 blog = data.data;
-                                window.changeCount = 0;
+                                window.excalidraw.updateCount = 0; // 重置变更计数
                                 toastr && toastr.success('博文更新成功！');
                                 (window.parent && window.parent.postMessage) && (window.parent.postMessage({
                                     action: 'updated',
