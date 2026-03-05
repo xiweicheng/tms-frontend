@@ -187,6 +187,7 @@
         }
 
         @media only screen and (max-width: 767px) {
+
             button.btn,
             #import {
                 padding: 8px 16px;
@@ -322,131 +323,22 @@
         </div>
     </div>
 
-    <!-- 设置EXCALIDRAW_ASSET_PATH以确保字体正确加载 -->
-    <script>
-        // 设置资源路径，用于加载字体
-        window.EXCALIDRAW_ASSET_PATH = "https://esm.sh/@excalidraw/excalidraw@0.18.0/dist/prod/";
-    </script>
-
-    <!-- Excalidraw样式 -->
-    <link rel="stylesheet" href="https://esm.sh/@excalidraw/excalidraw@0.18.0/dist/prod/index.css" />
-
     <!-- Include jQuery lib. -->
     <script type="text/javascript" src="cdn/jquery.min.js"></script>
     <script type="text/javascript" src="cdn/toastr.min.js"></script>
     <script type="text/javascript" src="cdn/url.min.js"></script>
     <script type="text/javascript" src="cdn/jquery.modal.min.js"></script>
     <script type="text/javascript" src="cdn/lodash.core.min.js"></script>
-
-    <!-- Import maps用于管理依赖版本 -->
-    <script type="importmap">
-        {
-            "imports": {
-                "react": "https://esm.sh/react@19.0.0",
-                "react/jsx-runtime": "https://esm.sh/react@19.0.0/jsx-runtime",
-                "react-dom": "https://esm.sh/react-dom@19.0.0"
-            }
-        }
-    </script>
+    <script type="text/javascript" src="cdn/excalidraw/bundle.js"></script>
 
     <!-- 使用ESM模块加载Excalidraw -->
-    <script type="module">
-        // 导入必要的依赖
-        import React from "https://esm.sh/react@19.0.0";
-        import ReactDOM from "https://esm.sh/react-dom@19.0.0";
-        import ReactDOMClient from "https://esm.sh/react-dom@19.0.0/client";
-        import * as ExcalidrawLib from "https://esm.sh/@excalidraw/excalidraw@0.18.0/dist/prod/index.js?external=react,react-dom";
+    <script>
 
-        // debugger;
 
-        console.log('所有依赖加载完成');
-        console.log('React:', typeof React);
-        console.log('ReactDOM:', typeof ReactDOM);
-        console.log('ReactDOMClient:', typeof ReactDOMClient);
-        console.log('ExcalidrawLib:', typeof ExcalidrawLib);
-        console.log('Excalidraw:', typeof ExcalidrawLib.Excalidraw);
-        console.log('createRoot:', typeof ReactDOMClient.createRoot);
-
-        let excalidrawRef = null;
-        let currentElements = [];
-        let currentAppState = null;
-        let currentFiles = {};
 
         try {
             // 获取容器
             const container = document.getElementById('excalidraw-container');
-
-            // 使用React 18+推荐的createRoot方法
-            const root = ReactDOMClient.createRoot(container);
-
-            window.initExcalidraw = function (initialData, readonly = false) {
-
-                console.log('初始化Excalidraw', { initialData, readonly });
-
-                // debugger;
-
-                window.changeCount = initialData ? 0 : -1;
-
-                // 确保 initialData 和 appState 结构完整
-                if (initialData) {
-                    if (!initialData.appState) {
-                        initialData.appState = {};
-                    }
-                    // 确保 collaborators 始终是数组类型
-                    if (!Array.isArray(initialData.appState.collaborators)) {
-                        initialData.appState.collaborators = [];
-                    }
-                    // 初始化files数据
-                    currentFiles = initialData.files || {};
-                } else {
-                    currentFiles = {};
-                }
-
-                // 渲染Excalidraw组件
-                root.render(
-                    React.createElement(ExcalidrawLib.Excalidraw, {
-                        excalidrawAPI: (ref) => {
-                            // debugger;
-                            excalidrawRef = ref;
-                            console.log('初始化excalidrawAPI');
-                            // 初始化后，确保files数据被正确添加
-                            // if (initialData && initialData.files && typeof ref.addFiles === 'function') {
-                            //     ref.addFiles(initialData.files);
-                            // }
-                        },
-                        initialData: initialData || {
-                            elements: [],
-                            appState: {
-                                viewBackgroundColor: "#ffffff",
-                                gridSize: null,
-                                collaborators: []  // 确保 collaborators 是数组类型
-                            },
-                            files: {}
-                        },
-                        langCode: "zh-CN",
-                        isCollaborating: readonly,
-                        viewModeEnabled: readonly,
-                        onChange: (elements, appState, files) => {
-                            // debugger;
-                            window.changeCount++;
-                            currentElements = elements;
-                            currentAppState = appState;
-                            currentFiles = files || {};
-                            console.log('画布更新:', {
-                                elementsCount: elements.length,
-                                appState: appState,
-                                filesCount: Object.keys(files || {}).length
-                            }, window.changeCount);
-                        },
-                        onCollabButtonClick: () => {
-                            console.log('协作按钮点击');
-                        }
-                    })
-                );
-
-            }
-
-            console.log('Excalidraw v0.18.0 初始化成功！');
 
             // 暴露获取数据的方法
             window.getExcalidrawData = () => {
@@ -638,7 +530,10 @@
                             if (data.success) {
                                 comment = data.data;
 
-                                window.initExcalidraw(JSON.parse(data.data.content), readonly);
+                                window.excalidraw = window.mountExcalidraw('excalidraw-container', {
+                                    initialData: JSON.parse(data.data.content),
+                                    viewModeEnabled: readonly
+                                });
                             } else {
                                 toastr.error(data.data);
                             }
@@ -650,14 +545,19 @@
                             if (data.success) {
                                 comment = data.data;
 
-                                window.initExcalidraw(JSON.parse(data.data.content), readonly);
+                                window.excalidraw = window.mountExcalidraw('excalidraw-container', {
+                                    initialData: JSON.parse(data.data.content),
+                                    viewModeEnabled: readonly
+                                });
                             } else {
                                 toastr.error(data.data);
                             }
                         });
                     }
                 } else {
-                    window.initExcalidraw();
+                    window.excalidraw = window.mountExcalidraw('excalidraw-container', {
+                        viewModeEnabled: readonly
+                    });
                 }
 
                 $('#save').click(function (event) {
@@ -737,7 +637,7 @@
                     } else if (evt.data.action == 'excalidrawExport') {
                         if (evt.data.source == 'commentExcalidraw') {
                             if (evt.data.item.id != comment.id) return;
-                            window.exportExcalidrawToPng({filename: comment.id + '.png'});
+                            window.exportExcalidrawToPng({ filename: comment.id + '.png' });
                         }
                     }
                 }, false);
@@ -757,7 +657,10 @@
                                 } else {
                                     $('#title').val(data.data.title + ' (副本)');
                                 }
-                                window.initExcalidraw(JSON.parse(data.data.content), readonly);
+                                window.excalidraw = window.mountExcalidraw('excalidraw-container', {
+                                    initialData: JSON.parse(data.data.content),
+                                    viewModeEnabled: readonly
+                                });
                             } else {
                                 toastr.error(data.data);
                             }
@@ -777,7 +680,10 @@
                                         $('#title').val(data.data.title + ' (副本)');
                                     }
 
-                                    window.initExcalidraw(JSON.parse(data.data.content), readonly);
+                                    window.excalidraw = window.mountExcalidraw('excalidraw-container', {
+                                        initialData: JSON.parse(data.data.content),
+                                        viewModeEnabled: readonly
+                                    });
                                 } else {
                                     toastr.error(data.data);
                                 }
@@ -795,7 +701,10 @@
                                         $('#title').val(data.data.blog.title + ' (副本)');
                                     }
 
-                                    window.initExcalidraw(JSON.parse(data.data.blog.content), readonly);
+                                    window.excalidraw = window.mountExcalidraw('excalidraw-container', {
+                                        initialData: JSON.parse(data.data.blog.content),
+                                        viewModeEnabled: readonly
+                                    });
                                 } else {
                                     toastr.error(data.data);
                                 }
@@ -803,7 +712,9 @@
                         }
                     }
                 } else {
-                    window.initExcalidraw();
+                    window.excalidraw = window.mountExcalidraw('excalidraw-container', {
+                        viewModeEnabled: readonly
+                    });
                 }
 
                 // 博文保存选择，空间 + 分类
@@ -858,7 +769,7 @@
                     } else if (evt.data.action == 'excalidrawExport') {
                         if (evt.data.source == 'blogExcalidraw') {
                             if (evt.data.item.id != blog.id) return;
-                            window.exportExcalidrawToPng({filename: blog.title + '-' + blog.id + '.png'});
+                            window.exportExcalidrawToPng({ filename: blog.title + '-' + blog.id + '.png' });
                         }
                     }
                 }, false);
