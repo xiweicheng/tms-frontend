@@ -82,15 +82,15 @@
                             title="更多操作">
                             <i class="large ellipsis horizontal icon"></i>
                             <div class="menu">
-                                <a show.bind="item.editor != 'Mind' && item.editor != 'Excel' && item.editor != 'Sheet'"
+                                <a show.bind="item.editor != 'Mind' && item.editor != 'Excel' && item.editor != 'Sheet' && item.editor != 'Excalidraw'"
                                     href="/admin/blog/comment/download/${item.id}?type=pdf" class="item">
                                     <i class="file pdf outline icon"></i> 导出为PDF
                                 </a>
-                                <a show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor !='Excel' && item.editor != 'Sheet'"
+                                <a show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor !='Excel' && item.editor != 'Sheet' && item.editor != 'Excalidraw'"
                                     href="/admin/blog/comment/download/${item.id}?type=md" class="item">
                                     <i class="file text outline icon"></i> 导出为Markdown
                                 </a>
-                                <div show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor != 'Excel' && item.editor != 'Sheet'"
+                                <div show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor != 'Excel' && item.editor != 'Sheet' && item.editor != 'Excalidraw'"
                                     click.delegate="md2HtmlDownloadHandler(item)" class="item">
                                     <i class="html5 icon"></i> 导出为HTML
                                 </div>
@@ -128,6 +128,17 @@
                                     href="/admin/blog/comment/download/${item.id}?type=mind" class="item">
                                     <i style="width: 1.18em; vertical-align:inherit;" class="usb icon"></i>
                                     导出为导图
+                                </a>
+                                <div show.bind="item.editor == 'Excalidraw'" click.delegate="excalidrawPngDownloadHandler(item)"
+                                    class="item">
+                                    <i style="width: 1.18em; vertical-align:inherit;"
+                                        class="file image outline icon"></i>
+                                    导出为PNG
+                                </div>
+                                <a show.bind="item.editor == 'Excalidraw'"
+                                    href="/admin/blog/comment/download/${item.id}?type=excalidraw" class="item">
+                                    <i style="width: 1.18em; vertical-align:inherit;" class="file image outline icon"></i>
+                                    导出为白板
                                 </a>
                             </div>
                         </div>

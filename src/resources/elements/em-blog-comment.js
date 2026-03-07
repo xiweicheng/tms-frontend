@@ -1196,4 +1196,15 @@ export class EmBlogComment {
 
     }
 
+    excalidrawPngDownloadHandler(item) {
+        let ifrm = $(`.em-blog-excalidraw[data-cid="${item.id}"] > iframe`)[0];
+        if (ifrm) {
+            (ifrm.contentWindow.postMessage) && (ifrm.contentWindow
+                .postMessage({
+                    action: 'excalidrawExport',
+                    source: 'commentExcalidraw',
+                    item: item
+                }, window.location.origin));
+        }
+    }
 }
