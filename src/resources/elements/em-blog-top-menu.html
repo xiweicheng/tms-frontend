@@ -66,7 +66,10 @@
                         <a modaal="blog-create-mind" href="#modaal-blog-write-mind" class="item" style="display: none;">
                             <div class="ui blue empty circular label"></div> 思维导图
                         </a>
-                        <a if.bind="!!sysConf.drawUrl" class="item" target="_blank" href="${sysConf.drawUrl}">
+                        <a modaal="blog-create-draw" href="#modaal-blog-write-draw" class="item" style="display: none;">
+                            <div class="ui blue empty circular label"></div> 图表工具
+                        </a>
+                        <a class="item" click.delegate="createDrawHandler()">
                             <div class="ui blue empty circular label"></div> 图表工具
                         </a>
                         <a modaal="blog-create-excalidraw" href="#modaal-blog-write-excalidraw" class="item"
@@ -101,6 +104,11 @@
         </div>
         <div id="modaal-blog-write-excalidraw" style="display:none;">
             <em-blog-write-excalidraw></em-blog-write-excalidraw>
+        </div>
+        <div id="modaal-blog-write-draw" style="display:none;">
+            <div class="em-blog-write-draw" style="height:100vh;overflow: hidden;">
+                <iframe style="width: 100%;height: 100%;" frameborder="0"></iframe>
+            </div>
         </div>
         <div class="right menu">
             <a ref="tasksRef" class="item icon tms-task" click.delegate="tasksRefreshHandler()"><i
