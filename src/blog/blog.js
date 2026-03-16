@@ -56,9 +56,9 @@ export class Blog {
                 // console.log('ss', payload)
 
                 var content = '页面存在未保存内容，确认要关闭吗?';
-                    if(payload.item.name == 'write-sheet') {
-                        content = '页面可能存在未保存内容，确认要关闭吗?';
-                    }
+                if (payload.item.name == 'write-sheet') {
+                    content = '页面可能存在未保存内容，确认要关闭吗?';
+                }
 
                 this.emConfirmModal.show({
                     title: '关闭确认',
@@ -101,7 +101,7 @@ export class Blog {
         // var socket = new SockJS('http://localhost:8080/ws');
         let socket = new SockJS('/ws');
         window.stompClient = Stomp.over(socket);
-        window.stompClient.debug = () => {};
+        window.stompClient.debug = () => { };
         // stompClient.debug = (msg) => { console.log(msg) };
         window.stompClient.connect({}, (frame) => {
             // 注册发送消息
@@ -199,26 +199,31 @@ export class Blog {
             }, {
                 id: 'create-excalidraw',
                 name: 'write-excalidraw'
+            }, {
+                id: 'create-draw',
+                name: 'write-draw'
             }];
 
             var $modaal = $(event.currentTarget).closest('.modaal-wrapper');
 
+            // debugger;
             _.each(modaalClasses, item => {
                 if ($modaal.hasClass(`blog-${item.id}`)) {
 
-                    var ifrm = $modaal.find('iframe')[0];
-                    if (ifrm) {
-                        (ifrm.contentWindow.postMessage) && (ifrm.contentWindow
-                            .postMessage({
-                                action: 'isUpdated',
-                                source: 'blogClose',
-                                item: item
-                            }, window.location.origin));
-                    } else {
-                        ea.publish(nsCons.EVENT_BLOG_IS_UPDATED, {
-                            item: item
-                        });
-                    }
+                    // var ifrm = $modaal.find('iframe')[0];
+                    // if (ifrm) {
+                    //     (ifrm.contentWindow.postMessage) && (ifrm.contentWindow
+                    //         .postMessage({
+                    //             action: 'isUpdated',
+                    //             source: 'blogClose',
+                    //             item: item
+                    //         }, window.location.origin));
+                    // } else {
+                    ea.publish(nsCons.EVENT_BLOG_IS_UPDATED, {
+                        item: item
+                    });
+                    $(`a[href="#modaal-blog-${item.name}"]`).modaal('close');
+                    // }
 
                     // $(`a[href="#modaal-blog-${item.name}"]`).modaal('close');
                 }
@@ -239,7 +244,7 @@ export class Blog {
                     // console.log('s', evt.data)
 
                     var content = '页面存在未保存内容，确认要关闭吗?';
-                    if(evt.data.item.name == 'write-sheet') {
+                    if (evt.data.item.name == 'write-sheet') {
                         content = '页面可能存在未保存内容，确认要关闭吗?';
                     }
 
@@ -342,17 +347,17 @@ export class Blog {
         });
 
         return Promise.all([chatService.loginUser().then((user) => {
-                nsCtx.loginUser = user;
-                nsCtx.isSuper = utils.isSuperUser(user);
-                nsCtx.isAdmin = utils.isAdminUser(user);
-            }),
-            chatService.listUsers(true).then((users) => {
-                nsCtx.users = users;
-                window.tmsUsers = users;
-            }),
-            chatService.sysConf(true).then((sysConf) => {
-                nsCtx.sysConf = sysConf;
-            })
+            nsCtx.loginUser = user;
+            nsCtx.isSuper = utils.isSuperUser(user);
+            nsCtx.isAdmin = utils.isAdminUser(user);
+        }),
+        chatService.listUsers(true).then((users) => {
+            nsCtx.users = users;
+            window.tmsUsers = users;
+        }),
+        chatService.sysConf(true).then((sysConf) => {
+            nsCtx.sysConf = sysConf;
+        })
         ]);
     }
 }
