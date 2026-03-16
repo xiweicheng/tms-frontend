@@ -1,6 +1,13 @@
 <template>
   <require from="./em-blog-write-draw.css"></require>
   <div ref="cRef" class="em-blog-write-draw">
+    <div class="topbar">
+      <input type="text" placeholder="标题" class="title-input">
+      <div class="buttons">
+        <button class="save-btn">保存</button>
+        <button class="import-btn">导入</button>
+      </div>
+    </div>
     <iframe frameborder="0"></iframe>
   </div>
 </template>
