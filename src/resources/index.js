@@ -72,6 +72,7 @@ export function configure(aurelia) {
         'resources/elements/em-blog-write-excel',
         'resources/elements/em-blog-write-sheet',
         'resources/elements/em-blog-write-excalidraw',
+        'resources/elements/em-blog-write-draw',
         'resources/elements/em-blog-left-sidebar',
         'resources/elements/em-blog-right-sidebar',
         'resources/elements/em-blog-content',
