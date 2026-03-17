@@ -80,6 +80,7 @@ export function configure(aurelia) {
         'resources/elements/em-blog-excel',
         'resources/elements/em-blog-sheet',
         'resources/elements/em-blog-excalidraw',
+        'resources/elements/em-blog-draw',
         'resources/elements/em-blog-top-menu',
         'resources/elements/em-blog-share',
         'resources/elements/em-blog-comment',
