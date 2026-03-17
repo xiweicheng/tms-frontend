@@ -25,7 +25,6 @@ export class EmBlogWriteDraw {
                     const data = JSON.parse(event.data);
                     console.log('Received message from draw.io:', data);
 
-
                     // 处理导出事件 - draw.io官方API
                     if (data.event === 'export') {
                         console.log('Draw.io export event:', data);
@@ -64,15 +63,10 @@ export class EmBlogWriteDraw {
             this.importHandler();
         });
 
-        // 关闭按钮点击事件
-        $('.em-blog-write-draw').find('.close-btn').on('click', () => {
-            this.closeHandler();
-        });
-
         // 标题输入事件
-        $('.em-blog-write-draw').find('.title-input').on('input', (event) => {
-            this.title = event.target.value;
-        });
+        // $('.em-blog-write-draw').find('.title-input').on('input', (event) => {
+        //     this.title = event.target.value;
+        // });
     }
 
     detached() {
@@ -82,8 +76,7 @@ export class EmBlogWriteDraw {
         // 解绑事件处理程序
         $('.em-blog-write-draw').find('.save-btn').off('click');
         $('.em-blog-write-draw').find('.import-btn').off('click');
-        $('.em-blog-write-draw').find('.close-btn').off('click');
-        $('.em-blog-write-draw').find('.title-input').off('input');
+        // $('.em-blog-write-draw').find('.title-input').off('input');
     }
 
     // 保存按钮点击处理
