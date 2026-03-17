@@ -78,6 +78,7 @@ export class EmBlogSave {
             usernames: utils.parseUsernames(this.blogInfo.content, users, space ? space.channel : null).join(','),
             title: this.blogInfo.title,
             content: this.blogInfo.content,
+            editor: this.blogInfo.editor ? this.blogInfo.editor : '',
             spaceId: spaceId,
             dirId: dirId,
             privated: $(this.chk).checkbox('is checked'),
