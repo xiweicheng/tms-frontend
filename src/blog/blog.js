@@ -210,22 +210,20 @@ export class Blog {
             _.each(modaalClasses, item => {
                 if ($modaal.hasClass(`blog-${item.id}`)) {
 
-                    // var ifrm = $modaal.find('iframe')[0];
-                    // if (ifrm) {
-                    //     (ifrm.contentWindow.postMessage) && (ifrm.contentWindow
-                    //         .postMessage({
-                    //             action: 'isUpdated',
-                    //             source: 'blogClose',
-                    //             item: item
-                    //         }, window.location.origin));
-                    // } else {
-                    ea.publish(nsCons.EVENT_BLOG_IS_UPDATED, {
-                        item: item
-                    });
-                    $(`a[href="#modaal-blog-${item.name}"]`).modaal('close');
-                    // }
-
-                    // $(`a[href="#modaal-blog-${item.name}"]`).modaal('close');
+                    var ifrm = $modaal.find('iframe')[0];
+                    if (ifrm && item.id != 'create-draw') {
+                        (ifrm.contentWindow.postMessage) && (ifrm.contentWindow
+                            .postMessage({
+                                action: 'isUpdated',
+                                source: 'blogClose',
+                                item: item
+                            }, window.location.origin));
+                    } else {
+                        ea.publish(nsCons.EVENT_BLOG_IS_UPDATED, {
+                            item: item
+                        });
+                        $(`a[href="#modaal-blog-${item.name}"]`).modaal('close');
+                    }
                 }
             });
 
