@@ -306,6 +306,7 @@ export class EmBlogTopMenu {
             .attr('data-title', '')
             .attr('data-content', '');
 
+        $('.em-blog-write-draw').find('.title-input').val('');
         $('.em-blog-write-draw > iframe').attr('src', this.baseRes + 'cdn/drawio/index.html?embed=1&lang=zh&ui=simple&dark=0&offline=1&title=123&spin=0&modified=unsavedChanges&proto=json&noSaveBtn=1&noExitBtn=1&edit=1&saveAndExit=0&splash=0' + '&_=' + new Date().getTime());
         $('a[href="#modaal-blog-write-draw"]').click();
         return false;
