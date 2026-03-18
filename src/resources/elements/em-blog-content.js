@@ -354,7 +354,7 @@ export class EmBlogContent {
         $.post('/admin/blog/news/delete', {
             id: id
         }, (data, textStatus, xhr) => {
-            if (data.success) {}
+            if (data.success) { }
         });
     }
 
@@ -592,7 +592,7 @@ export class EmBlogContent {
             });
 
             utils.blink(`#${$(event.currentTarget).attr('data-id')}`, 1000);
-            
+
         };
 
         $('.em-blog-right-sidebar').on('click', '.panel-blog-dir .wiki-dir-item', this.wikiDirClHandler);
@@ -780,7 +780,7 @@ export class EmBlogContent {
         $('.em-blog-content').on('mouseleave', '.tms-blog-dir-item-', this.blogAnchorMlHandler);
 
         $('.em-blog-content').on('click', '.tms-blog-dir-item-', this.blogAnchorClHandler);
-        
+
     }
 
     fixDirItem() {
@@ -1066,6 +1066,18 @@ export class EmBlogContent {
         } else if (this.blog.editor == 'Excalidraw') {
             $('.em-blog-write-excalidraw > iframe').attr('src', utils.getResourceBase() + 'excalidraw.html?id=' + this.blog.id + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-excalidraw"]').click();
+        } else if (this.blog.editor == 'Excalidraw') {
+            $('.em-blog-write-excalidraw > iframe').attr('src', utils.getResourceBase() + 'excalidraw.html?id=' + this.blog.id + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-excalidraw"]').click();
+        } else if (this.blog.editor == 'Draw') {
+            $('.em-blog-write-draw').attr('data-mode', 'edit')
+                .attr('data-content', this.blog.content)
+                .attr('data-title', this.blog.title)
+                .attr('data-id', this.blog.id)
+                .attr('data-version', this.blog.version);
+            $('.em-blog-write-draw > iframe').attr('src', utils.getResourceBase() + 'cdn/drawio/index.html?embed=1&lang=zh&ui=simple&dark=0&offline=1&spin=0&modified=unsavedChanges&proto=json&noSaveBtn=1&noExitBtn=1&edit=1&saveAndExit=0&splash=0' + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-draw"]').click();
+
         } else if (!nsCtx.isModaalOpening) {
             ea.publish(nsCons.EVENT_BLOG_ACTION, {
                 action: 'edit',

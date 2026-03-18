@@ -6,8 +6,6 @@ import {
 @containerless
 export class EmBlogWriteDraw {
 
-    @bindable title = '';
-
     attached() {
 
         $('.em-blog-write-draw').height($(window).height());
@@ -21,6 +19,15 @@ export class EmBlogWriteDraw {
             let ifrm = $(`.em-blog-write-draw > iframe`)[0];
             // 确保消息来自draw.io iframe
             if (ifrm && event.source === ifrm.contentWindow) {
+
+                debugger;
+                this.mode = $('.em-blog-write-draw').attr('data-mode');
+                if (this.mode == 'edit') {
+                    $('.em-blog-write-draw').find('.title-input').val($('.em-blog-write-draw').attr('data-title'));
+                } else {
+                    $('.em-blog-write-draw').find('.title-input').val('');
+                }
+
                 try {
                     const data = JSON.parse(event.data);
                     console.log('Received message from draw.io:', data);
@@ -28,7 +35,7 @@ export class EmBlogWriteDraw {
                     // 处理导出事件 - draw.io官方API
                     if (data.event === 'export') {
                         console.log('Draw.io export event:', data);
-                        debugger;
+                        // debugger;
                         if (data.xml) {
                             // 处理XML数据并保存
                             console.log('Draw.io export XML data:', data.xml);
@@ -39,8 +46,15 @@ export class EmBlogWriteDraw {
                     // 处理初始化事件
                     else if (data.event === 'init') {
                         console.log('Draw.io initialized successfully');
-                        ifrm.contentWindow.postMessage(JSON.stringify(
-                            { action: 'load', xml: '' }), '*');
+                        debugger;
+                        if (this.mode == 'edit') {
+                            this.blogXml = $('.em-blog-write-draw').attr('data-content');
+                            ifrm.contentWindow.postMessage(JSON.stringify(
+                                { action: 'load', xml: this.blogXml }), '*');
+                        } else {
+                            ifrm.contentWindow.postMessage(JSON.stringify(
+                                { action: 'load', xml: '' }), '*');
+                        }
                     }
                 } catch (e) {
                     console.error('Error parsing draw.io message:', e);
@@ -65,10 +79,6 @@ export class EmBlogWriteDraw {
             this.importHandler();
         });
 
-        // 标题输入事件
-        $('.em-blog-write-draw').find('.title-input').on('input', (event) => {
-            this.title = event.target.value;
-        });
     }
 
     detached() {
@@ -78,11 +88,12 @@ export class EmBlogWriteDraw {
         // 解绑事件处理程序
         $('.em-blog-write-draw').find('.save-btn').off('click');
         $('.em-blog-write-draw').find('.import-btn').off('click');
-        $('.em-blog-write-draw').find('.title-input').off('input');
     }
 
     // 保存按钮点击处理
     saveHandler() {
+
+        $('.em-blog-write-draw').attr('data-title', $('.em-blog-write-draw').find('.title-input').val());
 
         let ifrm = $(`.em-blog-write-draw > iframe`)[0];
         // 确保消息来自draw.io iframe
@@ -108,11 +119,37 @@ export class EmBlogWriteDraw {
 
     // 保存图表数据
     saveDiagram() {
-        console.log('保存图表，标题：', this.title);
-        ea.publish(nsCons.EVENT_BLOG_SAVE, {
-            title: this.title,
-            content: this.blogXml ? this.blogXml : '',
-            editor: 'Draw'
-        });
+        if (this.mode == 'edit') {
+            console.log('更新图表', $('.em-blog-write-draw').find('.title-input').val());
+            $.post('/admin/blog/update', {
+                url: utils.getBasePath(),
+                id: $('.em-blog-write-draw').attr('data-id'),
+                version: $('.em-blog-write-draw').attr('data-version'),
+                title: $('.em-blog-write-draw').find('.title-input').val(),
+                content: this.blogXml ? this.blogXml : ''
+            }, (data, textStatus, xhr) => {
+                if (data.success) {
+                    toastr.success('博文更新成功!');
+                    $('.em-blog-write-draw').attr('data-version', data.data.version);
+                    $('.em-blog-write-draw').attr('data-content', this.blogXml ? this.blogXml : '');
+                    ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                        action: 'updated',
+                        autoFollow: true,
+                        blog: data.data
+                    });
+                } else {
+                    toastr.error(data.data, '博文更新失败!');
+                }
+            }).always(() => {
+            });
+        } else {
+            let title = $('.em-blog-write-draw').find('.title-input').val();
+            console.log('保存图表，标题：', title);
+            ea.publish(nsCons.EVENT_BLOG_SAVE, {
+                title: title,
+                content: this.blogXml ? this.blogXml : '',
+                editor: 'Draw'
+            });
+        }
     }
 }
