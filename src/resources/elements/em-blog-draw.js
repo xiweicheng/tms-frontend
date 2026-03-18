@@ -63,7 +63,7 @@ export class EmBlogDraw {
     initIframe() {
         const iframe = $(this.cRef).find('iframe');
         // 设置iframe的src为drawio
-        iframe.attr('src', `${this.baseRes}cdn/drawio/index.html?embed=1&mode=1&proto=json&locked=1&lang=zh&ui=min`);
+        iframe.attr('src', `${this.baseRes}cdn/drawio/index.html?embed=1&lightbox=1&proto=json&lang=zh`);
 
         // 添加消息事件监听器，处理来自draw.io iframe的消息
         this.messageHandler = (event) => {

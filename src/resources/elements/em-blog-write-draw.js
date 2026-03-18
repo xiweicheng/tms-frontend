@@ -28,10 +28,12 @@ export class EmBlogWriteDraw {
                     // 处理导出事件 - draw.io官方API
                     if (data.event === 'export') {
                         console.log('Draw.io export event:', data);
+                        debugger;
                         if (data.xml) {
                             // 处理XML数据并保存
                             console.log('Draw.io export XML data:', data.xml);
-                            this.saveDiagram(data.xml);
+                            this.blogXml = data.xml;
+                            this.saveDiagram();
                         }
                     }
                     // 处理初始化事件
@@ -64,9 +66,9 @@ export class EmBlogWriteDraw {
         });
 
         // 标题输入事件
-        // $('.em-blog-write-draw').find('.title-input').on('input', (event) => {
-        //     this.title = event.target.value;
-        // });
+        $('.em-blog-write-draw').find('.title-input').on('input', (event) => {
+            this.title = event.target.value;
+        });
     }
 
     detached() {
@@ -76,7 +78,7 @@ export class EmBlogWriteDraw {
         // 解绑事件处理程序
         $('.em-blog-write-draw').find('.save-btn').off('click');
         $('.em-blog-write-draw').find('.import-btn').off('click');
-        // $('.em-blog-write-draw').find('.title-input').off('input');
+        $('.em-blog-write-draw').find('.title-input').off('input');
     }
 
     // 保存按钮点击处理
@@ -105,11 +107,11 @@ export class EmBlogWriteDraw {
     }
 
     // 保存图表数据
-    saveDiagram(xml) {
-        console.log('保存图表，标题：', this.title, xml);
+    saveDiagram() {
+        console.log('保存图表，标题：', this.title);
         ea.publish(nsCons.EVENT_BLOG_SAVE, {
             title: this.title,
-            content: xml,
+            content: this.blogXml ? this.blogXml : '',
             editor: 'Draw'
         });
     }

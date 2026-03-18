@@ -187,7 +187,9 @@
                                     class="table icon"></i></span>
                             <span if.bind="blog.editor == 'Excalidraw'" title="手绘白板编辑器"><i style="color: black;"
                                     class="paint brush icon"></i></span>
-                            <span if.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw'"
+                            <span if.bind="blog.editor == 'Draw'" title="图表工具辑器"><i style="color: black;"
+                                    class="object group outline icon"></i></span>
+                            <span if.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw' && blog.editor != 'Draw'"
                                 title="Markdown编辑器"><img style="width: 14px;" src="img/markdown.png" alt=""></span>
                         </span>
                     </div>

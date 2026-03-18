@@ -1,6 +1,8 @@
 <template>
   <require from="./em-blog-draw.css"></require>
   <div ref="cRef" class="em-blog-draw" data-id="${blog.id}" data-cid="${comment.id}">
+    <!-- 预览页面：直接渲染 SVG 字符串 -->
+    <!-- <div innerhtml.bind="blogSvg"></div> -->
     <iframe frameborder="0"></iframe>
   </div>
 </template>
