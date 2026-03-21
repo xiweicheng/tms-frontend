@@ -12,6 +12,8 @@ export class EmBlogWriteDraw {
     }
 
     attached() {
+        // 将importDrawioHandler函数暴露到全局作用域，以便HTML中的onchange事件调用
+        window.importDrawioHandler = this.importDrawioHandler.bind(this);
 
         $('.em-blog-write-draw').height($(window).height());
 
@@ -99,12 +101,6 @@ export class EmBlogWriteDraw {
         $('.em-blog-write-draw').find('.save-btn').on('click', () => {
             this.saveHandler();
         });
-
-        // 导入按钮点击事件
-        $('.em-blog-write-draw').find('.import-btn').on('click', () => {
-            this.importHandler();
-        });
-
     }
 
     detached() {
@@ -113,13 +109,15 @@ export class EmBlogWriteDraw {
 
         // 解绑事件处理程序
         $('.em-blog-write-draw').find('.save-btn').off('click');
-        $('.em-blog-write-draw').find('.import-btn').off('click');
-
+        
         // 取消所有订阅
         this.subscriptions.forEach(subscription => {
             subscription.dispose();
         });
         this.subscriptions = [];
+        
+        // 从全局作用域中移除importDrawioHandler函数
+        delete window.importDrawioHandler;
     }
 
     // 保存按钮点击处理
@@ -157,11 +155,56 @@ export class EmBlogWriteDraw {
         }
     }
 
-    // 导入按钮点击处理
-    importHandler() {
-        console.log('导入图表');
-        // 这里可以添加导入逻辑，例如打开文件选择对话框
-        // 可以使用input[type="file"]来实现
+    // 处理draw.io文件导入
+    importDrawioHandler() {
+        const fileInput = document.getElementById('drawio-files');
+        if (fileInput && fileInput.files && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            console.log('Importing draw.io file:', file.name);
+            
+            // 读取文件内容
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const content = e.target.result;
+                    let xmlData = content;
+
+                    // 设置标题为文件名，移除扩展名
+                    $('.em-blog-write-draw').find('.title-input').val(file.name.replace('.draw', ''));
+                    
+                    // 将XML数据加载到draw.io编辑器
+                    this.loadDiagramFromXml(xmlData);
+                    
+                    // 重置文件输入
+                    fileInput.value = '';
+                } catch (error) {
+                    console.error('Error importing draw.io file:', error);
+                    alert('导入文件失败：' + error.message);
+                }
+            };
+            
+            reader.onerror = (error) => {
+                console.error('Error reading draw.io file:', error);
+                alert('读取文件失败：' + error.message);
+            };
+            
+            // 读取文件内容
+            reader.readAsText(file);
+        }
+    }
+
+    // 从XML数据加载图表
+    loadDiagramFromXml(xmlData) {
+        const ifrm = $(`.em-blog-write-draw > iframe`)[0];
+        if (ifrm && ifrm.contentWindow) {
+            console.log('Loading diagram from XML data...');
+            ifrm.contentWindow.postMessage(JSON.stringify({
+                action: 'load',
+                xml: xmlData,
+                autosave: 1,
+                modified: 1 // 标记为已修改
+            }), '*');
+        }
     }
 
     // 保存图表数据

@@ -5,7 +5,10 @@
       <input type="text" placeholder="标题" class="title-input">
       <div class="buttons">
         <button class="save-btn">保存</button>
-        <button class="import-btn">导入</button>
+        <div style="display: inline-block;">
+          <input type="file" accept=".draw" id="drawio-files" style="display:none" onchange="importDrawioHandler();" />
+          <input type="button" class="import-btn" value="导入" onclick="document.getElementById('drawio-files').click();" />
+        </div>
       </div>
     </div>
     <iframe frameborder="0"></iframe>
