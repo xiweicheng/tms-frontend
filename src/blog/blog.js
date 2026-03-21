@@ -206,7 +206,6 @@ export class Blog {
 
             var $modaal = $(event.currentTarget).closest('.modaal-wrapper');
 
-            // debugger;
             _.each(modaalClasses, item => {
                 if ($modaal.hasClass(`blog-${item.id}`)) {
 
