@@ -99,15 +99,15 @@
                                 <i class="html5 icon"></i> 转HTML
                             </div>
                             <div class="divider"></div>
-                            <a show.bind="blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw'"
+                            <a show.bind="blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw' && blog.editor != 'Draw'"
                                 href="/admin/blog/download/${blog.id}?type=pdf" class="item">
                                 <i class="file pdf outline icon"></i> 导出为PDF
                             </a>
-                            <a show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor !='Excel' && blog.editor !='Sheet' && blog.editor != 'Excalidraw'"
+                            <a show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor !='Excel' && blog.editor !='Sheet' && blog.editor != 'Excalidraw' && blog.editor != 'Draw'"
                                 href="/admin/blog/download/${blog.id}?type=md" class="item">
                                 <i class="file text outline icon"></i> 导出为Markdown
                             </a>
-                            <div show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw'"
+                            <div show.bind="blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw' && blog.editor != 'Draw'"
                                 click.delegate="md2HtmlDownloadHandler()" class="item">
                                 <i class="html5 icon"></i> 导出为HTML
                             </div>
@@ -151,6 +151,15 @@
                                 class="item">
                                 <i style="width: 1.18em; vertical-align:inherit;" class="paint brush icon"></i>
                                 导出为白板
+                            </a>
+                            <div show.bind="blog.editor == 'Draw'" click.delegate="drawPngDownloadHandler()" class="item">
+                                <i style="width: 1.18em; vertical-align:inherit;" class="file image outline icon"></i>
+                                导出为PNG
+                            </div>
+                            <a show.bind="blog.editor == 'Draw'" href="/admin/blog/download/${blog.id}?type=draw"
+                                class="item">
+                                <i style="width: 1.18em; vertical-align:inherit;" class="paint brush icon"></i>
+                                导出为图表
                             </a>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username" class="divider"></div>
                             <div if.bind="isSuper || blog.creator.username == loginUser.username"

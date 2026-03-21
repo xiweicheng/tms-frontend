@@ -79,6 +79,10 @@ export class EmBlogDraw {
                         console.log('Draw.io initialized successfully');
                         // 初始化完成后，加载图表数据
                         this.loadDiagramFromProps();
+                    } else if (data.event === 'export') {
+                        console.log('Draw.io export request:', data);
+                        // 处理导出请求
+                        this.handleExportRequest(data);
                     }
                 } catch (e) {
                     console.error('Error parsing draw.io message:', e);
@@ -113,5 +117,38 @@ export class EmBlogDraw {
         // 释放订阅
         this.subscribe.dispose();
         this.subscribe2.dispose();
+    }
+
+    handleExportRequest(data) {
+        if (data.event === 'export' && data.format === 'png' && data.data) {
+            // 处理PNG导出响应
+            console.log('PNG export response received:', data);
+            // 下载PNG文件
+            this.downloadPng(data.data);
+        }
+    }
+
+    downloadPng(pngData) {
+        // 创建下载链接
+        const link = document.createElement('a');
+        // 设置文件名
+        const fileName = this.blog ? `${this.blog.title}.png` : `diagram.png`;
+        
+        // 处理base64数据
+        if (pngData.startsWith('data:image/png;base64,')) {
+            // 直接使用base64数据
+            link.href = pngData;
+        } else {
+            // 如果是原始base64字符串，添加前缀
+            link.href = `data:image/png;base64,${pngData}`;
+        }
+        
+        link.download = fileName;
+        link.target = '_blank';
+        
+        // 触发下载
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 }

@@ -1075,7 +1075,7 @@ export class EmBlogContent {
                 .attr('data-title', this.blog.title)
                 .attr('data-id', this.blog.id)
                 .attr('data-version', this.blog.version);
-                
+
             $('.em-blog-write-draw').find('.title-input').val(this.blog.title);
 
             $('.em-blog-write-draw > iframe').attr('src', utils.getResourceBase() + 'cdn/drawio/index.html?embed=1&lang=zh&ui=simple&dark=0&offline=1&spin=0&modified=unsavedChanges&autosave=1&proto=json&noSaveBtn=1&noExitBtn=1&edit=1&saveAndExit=0&splash=0' + '&_=' + new Date().getTime());
@@ -1472,6 +1472,17 @@ export class EmBlogContent {
                     source: 'blogExcalidraw',
                     item: this.blog
                 }, window.location.origin));
+        }
+    }
+
+    drawPngDownloadHandler() {
+        let ifrm = $(`.em-blog-draw[data-id="${this.blog.id}"] > iframe`)[0];
+        if (ifrm) {
+            (ifrm.contentWindow.postMessage) && (ifrm.contentWindow
+                .postMessage(JSON.stringify({
+                    action: 'export',
+                    format: 'png'
+                }), '*'));
         }
     }
 }
