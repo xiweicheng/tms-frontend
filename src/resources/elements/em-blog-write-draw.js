@@ -6,6 +6,11 @@ import {
 @containerless
 export class EmBlogWriteDraw {
 
+    constructor() {
+        this.subscriptions = [];
+        this.autoSaveXml = '';
+    }
+
     attached() {
 
         $('.em-blog-write-draw').height($(window).height());
@@ -15,51 +20,72 @@ export class EmBlogWriteDraw {
         });
 
         this.messageHandler = (event) => {
-            // debugger;
             let ifrm = $(`.em-blog-write-draw > iframe`)[0];
             // 确保消息来自draw.io iframe
             if (ifrm && event.source === ifrm.contentWindow) {
-
+                console.log('Received message from draw.io:', event.data);
                 this.mode = $('.em-blog-write-draw').attr('data-mode');
                 try {
                     const data = JSON.parse(event.data);
-                    console.log('Received message from draw.io:', data);
 
-                    // 处理导出事件 - draw.io官方API
-                    if (data.event === 'export') {
-                        console.log('Draw.io export event:', data);
-                        // debugger;
-                        if (data.xml) {
-                            // 处理XML数据并保存
-                            console.log('Draw.io export XML data:', data.xml);
-                            this.blogXml = data.xml;
-                            this.saveDiagram();
-                        }
-                    }
                     // 处理初始化事件
-                    else if (data.event === 'init') {
-                        console.log('Draw.io initialized successfully');
+                    if (data.event === 'init') {
+
+                        // 加载初始数据
                         if (this.mode == 'edit') {
                             $('.em-blog-write-draw').find('.title-input').val($('.em-blog-write-draw').attr('data-title'));
                             this.blogXml = $('.em-blog-write-draw').attr('data-content');
                             ifrm.contentWindow.postMessage(JSON.stringify(
-                                { action: 'load', xml: this.blogXml, modified: 0 }), '*');
+                                { action: 'load', xml: this.blogXml, modified: 0, autosave: 1 }), '*');
                         } else {
                             $('.em-blog-write-draw').find('.title-input').val('');
+                            this.blogXml = '';
                             ifrm.contentWindow.postMessage(JSON.stringify(
-                                { action: 'load', xml: '' }), '*');
+                                { action: 'load', xml: this.blogXml, modified: 0, autosave: 1 }), '*');
                         }
                     }
+                    // 处理导出事件
+                    else if (data.event === 'export') {
+                        if (data.xml) {
+                            this.blogXml = data.xml;
+                            this.saveDiagram();
+                        }
+                    } else if (data.event === 'autosave') {
+                        this.autoSaveXml = data.xml;
+                    } else if (data.event === 'load') {
+                        this.autoSaveXml = data.xml;
+                    }
                 } catch (e) {
+                    // 忽略解析错误，可能是draw.io发送的非JSON消息
                     console.error('Error parsing draw.io message:', e);
                 }
             }
         };
 
+        // 绑定组件的messageHandler
         window.addEventListener('message', this.messageHandler, false);
-
         // 绑定事件处理程序
         this.bindEvents();
+
+        // EVENT_BLOG_IS_UPDATED 事件处理
+        this.subscriptions.push(ea.subscribe(nsCons.EVENT_BLOG_IS_UPDATED, (data) => {
+            if (data.item && data.item.id == 'create-draw') {
+
+                // 判断标题是否有更新
+                let title = $('.em-blog-write-draw').find('.title-input').val();
+                let titleUpdated = title !== $('.em-blog-write-draw').attr('data-title');
+
+                let isUpdated = this.autoSaveXml && this.autoSaveXml !== this.blogXml;
+
+                console.log('isUpdated', this.autoSaveXml, this.blogXml, isUpdated, titleUpdated);
+
+                ea.publish(nsCons.EVENT_BLOG_IS_UPDATED_ACK, {
+                    item: data.item,
+                    updated: isUpdated || titleUpdated
+                });
+            }
+        }));
+
     }
 
     bindEvents() {
@@ -82,6 +108,12 @@ export class EmBlogWriteDraw {
         // 解绑事件处理程序
         $('.em-blog-write-draw').find('.save-btn').off('click');
         $('.em-blog-write-draw').find('.import-btn').off('click');
+
+        // 取消所有订阅
+        this.subscriptions.forEach(subscription => {
+            subscription.dispose();
+        });
+        this.subscriptions = [];
     }
 
     // 保存按钮点击处理
@@ -112,16 +144,9 @@ export class EmBlogWriteDraw {
                 ifrm.contentWindow.postMessage(JSON.stringify({
                     action: 'load',
                     modified: 0,
-                    autosave: 0,
+                    autosave: 1,
                     xml: this.blogXml
                 }), '*');
-                ifrm.contentWindow.postMessage(
-                    JSON.stringify({
-                        action: "status",
-                        modified: false
-                    }),
-                    "*"
-                );
             }, 100);
         }
     }

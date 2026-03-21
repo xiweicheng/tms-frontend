@@ -219,10 +219,11 @@ export class Blog {
                                 item: item
                             }, window.location.origin));
                     } else {
+
                         ea.publish(nsCons.EVENT_BLOG_IS_UPDATED, {
                             item: item
                         });
-                        $(`a[href="#modaal-blog-${item.name}"]`).modaal('close');
+                        // $(`a[href="#modaal-blog-${item.name}"]`).modaal('close');
                     }
                 }
             });
