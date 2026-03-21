@@ -1156,6 +1156,16 @@ export class EmBlogLeftSidebar {
         return false;
     }
 
+    createDrawHandler(space, dir, blog) {
+        if (!nsCtx.isModaalOpening) {
+            nsCtx.newBlogSpace = space;
+            nsCtx.newBlogDir = dir;
+            nsCtx.newBlogBlog = blog;
+            $('a[href="#modaal-blog-write-draw"]').click();
+        }
+        return false;
+    }
+
     selectTplHandler(space, dir, blog) {
         this.blogTplSelectMd.show(space, dir, blog);
     }

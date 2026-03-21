@@ -132,8 +132,7 @@
                                                             </i>
                                                             ${item.title}</a>
                                                         <div class="actions">
-                                                            <div
-                                                                ui-dropdown class="ui right pointing dropdown">
+                                                            <div ui-dropdown class="ui right pointing dropdown">
                                                                 <i class="large ellipsis horizontal icon"></i>
                                                                 <div class="left menu">
                                                                     <div class="item">
@@ -161,6 +160,14 @@
                                                                             <a class="item"
                                                                                 click.delegate="createMindHandler(space, dir, item)">
                                                                                 思维导图
+                                                                            </a>
+                                                                            <a class="item"
+                                                                                click.delegate="createDrawHandler(space, dir, item)">
+                                                                                图表工具
+                                                                            </a>
+                                                                            <a class="item"
+                                                                                click.delegate="createDrawHandler(space, dir, item)">
+                                                                                图表工具
                                                                             </a>
                                                                             <a class="item"
                                                                                 click.delegate="createExcalidrawHandler(space, dir, item)">
@@ -200,8 +207,7 @@
                                                                             class="corner lock icon"></i>
                                                                     </i>${child.title}</a>
                                                                 <div class="actions">
-                                                                    <div
-                                                                        ui-dropdown class="ui right pointing dropdown">
+                                                                    <div ui-dropdown class="ui right pointing dropdown">
                                                                         <i class="large ellipsis horizontal icon"></i>
                                                                         <div class="left menu">
                                                                             <div class="item">
@@ -227,14 +233,18 @@
                                                                                         电子表格
                                                                                     </a>
                                                                                     <a class="item"
-                                                                                click.delegate="createMindHandler(space, dir, child)">
-                                                                                思维导图
-                                                                            </a>
-                                                                            <a class="item"
-                                                                                click.delegate="createExcalidrawHandler(space, dir, child)">
-                                                                                手绘白板
-                                                                            </a>
-                                                                            <div class="ui divider"></div>
+                                                                                        click.delegate="createMindHandler(space, dir, child)">
+                                                                                        思维导图
+                                                                                    </a>
+                                                                                    <a class="item"
+                                                                                        click.delegate="createDrawHandler(space, dir, child)">
+                                                                                        图表工具
+                                                                                    </a>
+                                                                                    <a class="item"
+                                                                                        click.delegate="createExcalidrawHandler(space, dir, child)">
+                                                                                        手绘白板
+                                                                                    </a>
+                                                                                    <div class="ui divider"></div>
                                                                                     <a click.delegate="selectTplHandler(space, dir, child)"
                                                                                         class="item">
                                                                                         基于模板
@@ -270,8 +280,7 @@
                                                                                     class="corner lock icon"></i>
                                                                             </i>${child2.title}</a>
                                                                         <div class="actions">
-                                                                            <div
-                                                                                ui-dropdown
+                                                                            <div ui-dropdown
                                                                                 class="ui right pointing dropdown">
                                                                                 <i
                                                                                     class="large ellipsis horizontal icon"></i>
@@ -303,7 +312,10 @@
                                                                                                 click.delegate="createMindHandler(space, dir, child2)">
                                                                                                 思维导图
                                                                                             </a>
-
+                                                                                            <a class="item"
+                                                                                                click.delegate="createDrawHandler(space, dir, child2">
+                                                                                                图表工具
+                                                                                            </a>
                                                                                             <a class="item"
                                                                                                 click.delegate="createExcalidrawHandler(space, dir, child2)">
                                                                                                 手绘白板
@@ -349,8 +361,7 @@
                                                                                             class="corner lock icon"></i>
                                                                                     </i>${child3.title}</a>
                                                                                 <div class="actions">
-                                                                                    <div
-                                                                                        ui-dropdown
+                                                                                    <div ui-dropdown
                                                                                         class="ui right pointing dropdown">
                                                                                         <i
                                                                                             class="large ellipsis horizontal icon"></i>
@@ -381,16 +392,20 @@
                                                                                                         电子表格
                                                                                                     </a>
                                                                                                     <a class="item"
-                                                                            click.delegate="createMindHandler(space, dir, child3)">
-                                                                            思维导图
-                                                                        </a>
-                                                                        <a class="item"
-                                                                            click.delegate="createExcalidrawHandler(space, dir, child3)">
-                                                                            手绘白板
-                                                                        </a>
-                                                                        <div
-                                                                            class="ui divider">
-                                                                        </div>
+                                                                                                        click.delegate="createMindHandler(space, dir, child3)">
+                                                                                                        思维导图
+                                                                                                    </a>
+                                                                                                    <a class="item"
+                                                                                                        click.delegate="createDrawHandler(space, dir, child3)">
+                                                                                                        图表工具
+                                                                                                    </a>
+                                                                                                    <a class="item"
+                                                                                                        click.delegate="createExcalidrawHandler(space, dir, child3)">
+                                                                                                        手绘白板
+                                                                                                    </a>
+                                                                                                    <div
+                                                                                                        class="ui divider">
+                                                                                                    </div>
                                                                                                     <a click.delegate="selectTplHandler(space, dir, child3)"
                                                                                                         class="item">
                                                                                                         基于模板
@@ -454,8 +469,7 @@
                                                 </div>
                                             </div>
                                             <div class="actions">
-                                                <div
-                                                    ui-dropdown class="ui right pointing dropdown">
+                                                <div ui-dropdown class="ui right pointing dropdown">
                                                     <i class="large ellipsis horizontal icon"></i>
                                                     <div class="left menu">
                                                         <div class="item">
@@ -483,6 +497,10 @@
                                                                 <a class="item"
                                                                     click.delegate="createMindHandler(space, dir)">
                                                                     思维导图
+                                                                </a>
+                                                                <a class="item"
+                                                                    click.delegate="createDrawHandler(space, dir)">
+                                                                    图表工具
                                                                 </a>
                                                                 <a class="item"
                                                                     click.delegate="createExcalidrawHandler(space, dir)">
@@ -523,8 +541,7 @@
                                             </i>
                                             ${item.title}</a>
                                         <div class="actions">
-                                            <div
-                                                ui-dropdown class="ui right pointing dropdown">
+                                            <div ui-dropdown class="ui right pointing dropdown">
                                                 <i class="large ellipsis horizontal icon"></i>
                                                 <div class="left menu">
                                                     <div class="item">
@@ -552,6 +569,10 @@
                                                             <a class="item"
                                                                 click.delegate="createMindHandler(space, dir, item)">
                                                                 思维导图
+                                                            </a>
+                                                            <a class="item"
+                                                                click.delegate="createDrawHandler(space, dir, item)">
+                                                                图表工具
                                                             </a>
                                                             <a class="item"
                                                                 click.delegate="createExcalidrawHandler(space, dir, item)">
@@ -586,8 +607,7 @@
                                                         <i show.bind="child.privated" class="corner lock icon"></i>
                                                     </i>${child.title}</a>
                                                 <div class="actions">
-                                                    <div
-                                                        ui-dropdown class="ui right pointing dropdown">
+                                                    <div ui-dropdown class="ui right pointing dropdown">
                                                         <i class="large ellipsis horizontal icon"></i>
                                                         <div class="left menu">
                                                             <div class="item">
@@ -615,6 +635,10 @@
                                                                     <a class="item"
                                                                         click.delegate="createMindHandler(space, dir, child)">
                                                                         思维导图
+                                                                    </a>
+                                                                    <a class="item"
+                                                                        click.delegate="createDrawHandler(space, dir, child)">
+                                                                        图表工具
                                                                     </a>
                                                                     <a class="item"
                                                                         click.delegate="createExcalidrawHandler(space, dir, child)">
@@ -653,8 +677,7 @@
                                                                     class="corner lock icon"></i>
                                                             </i>${child2.title}</a>
                                                         <div class="actions">
-                                                            <div
-                                                                ui-dropdown class="ui right pointing dropdown">
+                                                            <div ui-dropdown class="ui right pointing dropdown">
                                                                 <i class="large ellipsis horizontal icon"></i>
                                                                 <div class="left menu">
                                                                     <div class="item">
@@ -683,6 +706,10 @@
                                                                             <a class="item"
                                                                                 click.delegate="createMindHandler(space, dir, child2)">
                                                                                 思维导图
+                                                                            </a>
+                                                                            <a class="item"
+                                                                                click.delegate="createDrawHandler(space, dir, child2)">
+                                                                                图表工具
                                                                             </a>
                                                                             <a class="item"
                                                                                 click.delegate="createExcalidrawHandler(space, dir, child2)">
@@ -723,8 +750,7 @@
                                                                             class="corner lock icon"></i>
                                                                     </i>${child3.title}</a>
                                                                 <div class="actions">
-                                                                    <div
-                                                                        ui-dropdown class="ui right pointing dropdown">
+                                                                    <div ui-dropdown class="ui right pointing dropdown">
                                                                         <i class="large ellipsis horizontal icon"></i>
                                                                         <div class="left menu">
                                                                             <div class="item">
@@ -754,6 +780,10 @@
                                                                                     <a class="item"
                                                                                         click.delegate="createMindHandler(space, dir, child3)">
                                                                                         思维导图
+                                                                                    </a>
+                                                                                    <a class="item"
+                                                                                        click.delegate="createDrawHandler(space, dir, child3)">
+                                                                                        图表工具
                                                                                     </a>
                                                                                     <a class="item"
                                                                                         click.delegate="createExcalidrawHandler(space, dir, child3)">
@@ -819,8 +849,7 @@
                                 </div>
                             </div>
                             <div class="actions">
-                                <div ui-dropdown
-                                    class="ui right pointing dropdown">
+                                <div ui-dropdown class="ui right pointing dropdown">
                                     <i class="large ellipsis horizontal icon"></i>
                                     <div class="left menu">
                                         <div class="item">
@@ -842,6 +871,9 @@
                                                 </a>
                                                 <a class="item" click.delegate="createMindHandler(space)">
                                                     思维导图
+                                                </a>
+                                                <a class="item" click.delegate="createDrawHandler(space)">
+                                                    图表工具
                                                 </a>
                                                 <a class="item" click.delegate="createExcalidrawHandler(space)">
                                                     手绘白板
@@ -881,8 +913,7 @@
                                 <i show.bind="item.privated" class="corner lock icon"></i>
                             </i>${item.title}</a>
                         <div class="actions">
-                            <div ui-dropdown
-                                class="ui right pointing dropdown">
+                            <div ui-dropdown class="ui right pointing dropdown">
                                 <i class="large ellipsis horizontal icon"></i>
                                 <div class="left menu">
                                     <div class="item">
@@ -905,8 +936,10 @@
                                             <a class="item" click.delegate="createMindHandler(space, dir, item)">
                                                 思维导图
                                             </a>
-                                            <a class="item"
-                                                click.delegate="createExcalidrawHandler(space, dir, item)">
+                                            <a class="item" click.delegate="createDrawHandler(space, dir, item)">
+                                                图表工具
+                                            </a>
+                                            <a class="item" click.delegate="createExcalidrawHandler(space, dir, item)">
                                                 手绘白板
                                             </a>
                                             <div class="ui divider"></div>
@@ -934,8 +967,7 @@
                                         <i show.bind="child.privated" class="corner lock icon"></i>
                                     </i>${child.title}</a>
                                 <div class="actions">
-                                    <div ui-dropdown
-                                        class="ui right pointing dropdown">
+                                    <div ui-dropdown class="ui right pointing dropdown">
                                         <i class="large ellipsis horizontal icon"></i>
                                         <div class="left menu">
                                             <div class="item">
@@ -963,6 +995,9 @@
                                                         click.delegate="createMindHandler(space, dir, child)">
                                                         思维导图
                                                     </a>
+                                                    <a class="item" click.delegate="createDrawHandler(space, dir, child)">
+                                                        图表工具
+                                                    </a>
                                                     <a class="item"
                                                         click.delegate="createExcalidrawHandler(space, dir, child)">
                                                         手绘白板
@@ -976,7 +1011,8 @@
                                             </div>
                                             <div class="item" style="color: red;"
                                                 click.delegate="delBlogHandler(child)">
-                                                <i class="trash outline icon"></i>删除博文</div>
+                                                <i class="trash outline icon"></i>删除博文
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -995,8 +1031,7 @@
                                                 <i show.bind="child2.privated" class="corner lock icon"></i>
                                             </i>${child2.title}</a>
                                         <div class="actions">
-                                            <div
-                                                ui-dropdown class="ui right pointing dropdown">
+                                            <div ui-dropdown class="ui right pointing dropdown">
                                                 <i class="large ellipsis horizontal icon"></i>
                                                 <div class="left menu">
                                                     <div class="item">
@@ -1025,6 +1060,9 @@
                                                             <a class="item"
                                                                 click.delegate="createMindHandler(space, dir, child2)">
                                                                 思维导图
+                                                            </a>
+                                                            <a class="item" click.delegate="createDrawHandler(space, dir, child2)">
+                                                                图表工具
                                                             </a>
                                                             <a class="item"
                                                                 click.delegate="createExcalidrawHandler(space, dir, child2)">
@@ -1061,8 +1099,7 @@
                                                         <i show.bind="child3.privated" class="corner lock icon"></i>
                                                     </i>${child3.title}</a>
                                                 <div class="actions">
-                                                    <div
-                                                        ui-dropdown class="ui right pointing dropdown">
+                                                    <div ui-dropdown class="ui right pointing dropdown">
                                                         <i class="large ellipsis horizontal icon"></i>
                                                         <div class="left menu">
                                                             <div class="item">
@@ -1092,6 +1129,9 @@
                                                                     <a class="item"
                                                                         click.delegate="createMindHandler(space, dir, child3)">
                                                                         思维导图
+                                                                    </a>
+                                                                    <a class="item" click.delegate="createDrawHandler(space, dir, child3)">
+                                                                        图表工具
                                                                     </a>
                                                                     <a class="item"
                                                                         click.delegate="createExcalidrawHandler(space, dir, child3)">
