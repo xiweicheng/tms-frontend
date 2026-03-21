@@ -135,7 +135,7 @@ export class EmBlogWrite {
 
         this.subscribe5 = ea.subscribe(nsCons.EVENT_BLOG_IS_UPDATED, (payload) => {
 
-            if(payload.id != 'create') {
+            if (payload.item && payload.item.id != 'create') {
                 return;
             }
 
