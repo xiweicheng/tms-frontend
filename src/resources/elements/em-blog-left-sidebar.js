@@ -67,8 +67,8 @@ export class EmBlogLeftSidebar {
                     });
                 } else {
                     if (!_.find(this.blogs, {
-                            id: payload.blog.id
-                        })) {
+                        id: payload.blog.id
+                    })) {
                         this.blogs = [payload.blog, ...this.blogs];
                     }
                     this.calcTree();
@@ -1085,8 +1085,8 @@ export class EmBlogLeftSidebar {
         if (!this.filter) {
             _.each(this.spaces, s => {
                 if (_.find(s.blogs, {
-                        id: +nsCtx.blogId
-                    })) {
+                    id: +nsCtx.blogId
+                })) {
                     s.open = true;
                 } else {
                     s.open = false;
@@ -1161,6 +1161,16 @@ export class EmBlogLeftSidebar {
             nsCtx.newBlogSpace = space;
             nsCtx.newBlogDir = dir;
             nsCtx.newBlogBlog = blog;
+
+            $('.em-blog-write-draw')
+                .attr('data-mode', 'create')
+                .attr('data-id', '')
+                .attr('data-version', '')
+                .attr('data-title', '')
+                .attr('data-content', '');
+
+            $('.em-blog-write-draw').find('.title-input').val('');
+            $('.em-blog-write-draw > iframe').attr('src', this.baseRes + 'cdn/drawio/index.html?embed=1&lang=zh&ui=simple&dark=0&offline=1&title=123&spin=0&modified=unsavedChanges&proto=json&noSaveBtn=1&noExitBtn=1&edit=1&saveAndExit=0&splash=0' + '&_=' + new Date().getTime());
             $('a[href="#modaal-blog-write-draw"]').click();
         }
         return false;

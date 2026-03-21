@@ -187,11 +187,44 @@ export class EmBlogWriteDraw {
         } else {
             let title = $('.em-blog-write-draw').find('.title-input').val();
             console.log('保存图表，标题：', title);
-            ea.publish(nsCons.EVENT_BLOG_SAVE, {
-                title: title,
-                content: this.blogXml ? this.blogXml : '',
-                editor: 'Draw'
-            });
+
+            if (event.ctrlKey || nsCtx.newBlogSpace || nsCtx.newBlogBlog) {
+                // 给消息体增加uuid
+                nsCtx.b_uuid = nsCtx.b_uuid || utils.uuid();
+                $.post(`/admin/blog/create`, {
+                    url: utils.getBasePath(),
+                    usernames: utils.parseUsernames(this.blogXml ? this.blogXml : '', [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])]).join(','),
+                    title: title,
+                    content: this.blogXml ? this.blogXml : '',
+                    editor: 'Draw',
+                    spaceId: nsCtx.newBlogSpace ? nsCtx.newBlogSpace.id : '',
+                    dirId: nsCtx.newBlogDir ? nsCtx.newBlogDir.id : '',
+                    pid: nsCtx.newBlogBlog ? nsCtx.newBlogBlog.id : '',
+                    privated: false,
+                    uuid: nsCtx.b_uuid,
+                    contentHtml: utils.md2html(this.blogXml ? this.blogXml : '', true)
+                }, (data, textStatus, xhr) => {
+                    if (data.success) {
+                        nsCtx.b_uuid = utils.uuid();
+                        this.blogXml = data.data.content;
+                        toastr.success('博文保存成功!');
+                        ea.publish(nsCons.EVENT_BLOG_CHANGED, {
+                            action: 'created',
+                            blog: data.data
+                        });
+                        $('a[href="#modaal-blog-write-draw"]').modaal('close');
+                    } else {
+                        toastr.error(data.data, '博文保存失败!');
+                    }
+                });
+            } else {
+                ea.publish(nsCons.EVENT_BLOG_SAVE, {
+                    title: title,
+                    content: this.blogXml ? this.blogXml : '',
+                    editor: 'Draw'
+                });
+            }
+
         }
     }
 }
