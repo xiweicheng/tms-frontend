@@ -34,7 +34,10 @@
                     <div show.bind="item.editor == 'Excalidraw'" data-id="${item.id}" data-case="comment">
                         <em-blog-excalidraw comment.bind="item"></em-blog-excalidraw>
                     </div>
-                    <div show.bind="item.editor != 'Mind' && item.editor != 'Excel' && item.editor != 'Sheet' && item.editor != 'Excalidraw' && !item.isEditing"
+                    <div show.bind="item.editor == 'Draw'" data-id="${item.id}" data-case="comment">
+                        <em-blog-draw blog.bind="blog" comment.bind="item"></em-blog-draw>
+                    </div>
+                    <div show.bind="item.editor != 'Mind' && item.editor != 'Excel' && item.editor != 'Sheet' && item.editor != 'Excalidraw' && item.editor != 'Draw' && !item.isEditing"
                         data-id="${item.id}" data-case="comment" fancybox ref="mkbodyRef"
                         class="text markdown-body fr-view"
                         innerhtml.bind="item.content | parseMd:blog.space.channel:item.editor | emoji:mkbodyRef"></div>
@@ -82,15 +85,15 @@
                             title="更多操作">
                             <i class="large ellipsis horizontal icon"></i>
                             <div class="menu">
-                                <a show.bind="item.editor != 'Mind' && item.editor != 'Excel' && item.editor != 'Sheet' && item.editor != 'Excalidraw'"
+                                <a show.bind="item.editor != 'Mind' && item.editor != 'Excel' && item.editor != 'Sheet' && item.editor != 'Excalidraw' && item.editor != 'Draw'"
                                     href="/admin/blog/comment/download/${item.id}?type=pdf" class="item">
                                     <i class="file pdf outline icon"></i> 导出为PDF
                                 </a>
-                                <a show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor !='Excel' && item.editor != 'Sheet' && item.editor != 'Excalidraw'"
+                                <a show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor !='Excel' && item.editor != 'Sheet' && item.editor != 'Excalidraw' && item.editor != 'Draw'"
                                     href="/admin/blog/comment/download/${item.id}?type=md" class="item">
                                     <i class="file text outline icon"></i> 导出为Markdown
                                 </a>
-                                <div show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor != 'Excel' && item.editor != 'Sheet' && item.editor != 'Excalidraw'"
+                                <div show.bind="item.editor != 'Html' && item.editor != 'Mind' && item.editor != 'Excel' && item.editor != 'Sheet' && item.editor != 'Excalidraw' && item.editor != 'Draw'"
                                     click.delegate="md2HtmlDownloadHandler(item)" class="item">
                                     <i class="html5 icon"></i> 导出为HTML
                                 </div>
@@ -135,10 +138,21 @@
                                         class="file image outline icon"></i>
                                     导出为PNG
                                 </div>
+                                <div show.bind="item.editor == 'Draw'" click.delegate="drawPngDownloadHandler(item)"
+                                    class="item">
+                                    <i style="width: 1.18em; vertical-align:inherit;"
+                                        class="file image outline icon"></i>
+                                    导出为PNG
+                                </div>
                                 <a show.bind="item.editor == 'Excalidraw'"
                                     href="/admin/blog/comment/download/${item.id}?type=excalidraw" class="item">
                                     <i style="width: 1.18em; vertical-align:inherit;" class="file image outline icon"></i>
                                     导出为白板
+                                </a>
+                                <a show.bind="item.editor == 'Draw'"
+                                    href="/admin/blog/comment/download/${item.id}?type=draw" class="item">
+                                    <i style="width: 1.18em; vertical-align:inherit;" class="file image outline icon"></i>
+                                    导出为图表
                                 </a>
                             </div>
                         </div>
@@ -182,7 +196,10 @@
                             <div class="item" click.delegate="commentEditorHandler('mind')"><i class="usb icon"></i>
                                 思维导图
                             </div>
-                            <div class="item" click.delegate="commentEditorHandler('excalidraw')"><i class="square outline icon"></i>
+                            <div class="item" click.delegate="commentEditorHandler('draw')"><i class="object group outline icon"></i>
+                                图表工具
+                            </div>
+                            <div class="item" click.delegate="commentEditorHandler('excalidraw')"><i class="paint brush icon"></i>
                                 手绘白板
                             </div>
                         </div>

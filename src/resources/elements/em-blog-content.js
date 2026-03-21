@@ -731,6 +731,7 @@ export class EmBlogContent {
                 (ev.data.editor == 'excel') && $('a[href="#modaal-blog-write-excel"]').modaal('close');
                 (ev.data.editor == 'sheet') && $('a[href="#modaal-blog-write-sheet"]').modaal('close');
                 (ev.data.editor == 'excalidraw') && $('a[href="#modaal-blog-write-excalidraw"]').modaal('close');
+                (ev.data.editor == 'draw') && $('a[href="#modaal-blog-write-draw"]').modaal('close');
             }
 
             ev.data.from = 'html';

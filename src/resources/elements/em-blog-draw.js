@@ -67,6 +67,7 @@ export class EmBlogDraw {
 
         // 添加消息事件监听器，处理来自draw.io iframe的消息
         this.messageHandler = (event) => {
+            // debugger;
             let ifrm = $(this.cRef).find('iframe')[0];
             // 确保消息来自draw.io iframe
             if (ifrm && event.source === ifrm.contentWindow) {
@@ -94,7 +95,7 @@ export class EmBlogDraw {
     }
 
     loadDiagramFromProps() {
-        if (this.blog) {
+        if (this.blog && !this.comment) {
             this.initBlog(this.blog);
         } else if (this.comment) {
             this.initComment(this.comment);
@@ -131,9 +132,14 @@ export class EmBlogDraw {
     downloadPng(pngData) {
         // 创建下载链接
         const link = document.createElement('a');
-        // 设置文件名
-        const fileName = this.blog ? `${this.blog.title}.png` : `diagram.png`;
-        
+
+        let fileName = '';
+        if (this.comment) {
+            fileName = `${this.blog.title}_${this.comment.id}.png`;
+        } else {
+            fileName = this.blog ? `${this.blog.title}.png` : `diagram.png`;
+        }
+
         // 处理base64数据
         if (pngData.startsWith('data:image/png;base64,')) {
             // 直接使用base64数据
@@ -142,10 +148,10 @@ export class EmBlogDraw {
             // 如果是原始base64字符串，添加前缀
             link.href = `data:image/png;base64,${pngData}`;
         }
-        
+
         link.download = fileName;
         link.target = '_blank';
-        
+
         // 触发下载
         document.body.appendChild(link);
         link.click();

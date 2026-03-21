@@ -214,6 +214,13 @@ export class EmBlogWriteDraw {
     // 保存图表数据
     saveDiagram() {
         if (this.mode == 'edit') {
+
+            let type = $('.em-blog-write-draw').attr('data-type');
+            if (type == 'comment') {
+                this.updateComment();
+                return;
+            }
+
             console.log('更新图表', $('.em-blog-write-draw').find('.title-input').val());
             $.post('/admin/blog/update', {
                 url: utils.getBasePath(),
@@ -238,6 +245,13 @@ export class EmBlogWriteDraw {
             }).always(() => {
             });
         } else {
+
+            let type = $('.em-blog-write-draw').attr('data-type');
+            if (type == 'comment') {
+                this.saveComment();
+                return;
+            }
+
             let title = $('.em-blog-write-draw').find('.title-input').val();
             console.log('保存图表，标题：', title);
 
@@ -279,5 +293,64 @@ export class EmBlogWriteDraw {
             }
 
         }
+    }
+
+    updateComment() {
+        $.post(`/admin/blog/comment/update`, {
+            basePath: utils.getBasePath(),
+            id: $('.em-blog-write-draw').attr('data-bid'),
+            cid: $('.em-blog-write-draw').attr('data-id'),
+            version: $('.em-blog-write-draw').attr('data-version'),
+            content: this.blogXml ? this.blogXml : ''
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                toastr.success('博文评论更新成功!', '', { positionClass: 'toast-bottom-center' });
+                this.blogXml = data.data.content;
+                $('.em-blog-write-draw').attr('data-version', data.data.version);
+                $('.em-blog-write-draw').attr('data-content', this.blogXml ? this.blogXml : '');
+
+                this.saveSuccessHandler();
+                (window.parent && window.parent.postMessage) && (window.parent
+                    .postMessage({
+                        action: 'updated',
+                        source: 'comment',
+                        comment: data.data,
+                        editor: 'draw'
+                    }, window.location.origin));
+            } else {
+                toastr.error(data.data, '博文评论更新失败!');
+            }
+        }).always(() => {
+        });
+    }
+
+    saveComment() {
+        nsCtx.bc_uuid = nsCtx.bc_uuid || utils.uuid();
+
+        $.post(`/admin/blog/comment/create`, {
+            basePath: utils.getBasePath(),
+            id: $('.em-blog-write-draw').attr('data-bid'),
+            // users: utils.parseUsernames(content, users, channel).join(','),
+            content: this.blogXml,
+            editor: 'Draw',
+            // contentHtml: html,
+            uuid: nsCtx.bc_uuid
+        }, (data, textStatus, xhr) => {
+            if (data.success) {
+                this.blogXml = data.data.content;
+                // toastr.success('博文评论保存成功!', '', { positionClass: 'toast-bottom-center' });
+                (window.parent && window.parent.postMessage) && (window.parent
+                    .postMessage({
+                        action: 'created',
+                        source: 'comment',
+                        comment: data.data,
+                        editor: 'draw'
+                    }, window.location.origin));
+            } else {
+                toastr.error(data.data, '博文评论提交失败!', { positionClass: 'toast-bottom-center' });
+            }
+        }).always(() => {
+            nsCtx.bc_uuid = utils.uuid();
+        });
     }
 }
