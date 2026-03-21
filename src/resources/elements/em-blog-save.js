@@ -94,9 +94,10 @@ export class EmBlogSave {
                     blog: this.blog
                 });
                 modal.hide();
-                $('a[href="#modaal-blog-write"]').modaal('close');
+                $('a[href="#modaal-blog-write-draw"]').modaal('close');
             } else {
                 toastr.error(data.data, '博文保存失败!');
+                modal.hide();
             }
         });
     }

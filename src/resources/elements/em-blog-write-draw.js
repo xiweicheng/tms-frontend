@@ -20,14 +20,7 @@ export class EmBlogWriteDraw {
             // 确保消息来自draw.io iframe
             if (ifrm && event.source === ifrm.contentWindow) {
 
-                debugger;
                 this.mode = $('.em-blog-write-draw').attr('data-mode');
-                if (this.mode == 'edit') {
-                    $('.em-blog-write-draw').find('.title-input').val($('.em-blog-write-draw').attr('data-title'));
-                } else {
-                    $('.em-blog-write-draw').find('.title-input').val('');
-                }
-
                 try {
                     const data = JSON.parse(event.data);
                     console.log('Received message from draw.io:', data);
@@ -46,12 +39,13 @@ export class EmBlogWriteDraw {
                     // 处理初始化事件
                     else if (data.event === 'init') {
                         console.log('Draw.io initialized successfully');
-                        debugger;
                         if (this.mode == 'edit') {
+                            $('.em-blog-write-draw').find('.title-input').val($('.em-blog-write-draw').attr('data-title'));
                             this.blogXml = $('.em-blog-write-draw').attr('data-content');
                             ifrm.contentWindow.postMessage(JSON.stringify(
-                                { action: 'load', xml: this.blogXml }), '*');
+                                { action: 'load', xml: this.blogXml, modified: 0 }), '*');
                         } else {
+                            $('.em-blog-write-draw').find('.title-input').val('');
                             ifrm.contentWindow.postMessage(JSON.stringify(
                                 { action: 'load', xml: '' }), '*');
                         }
@@ -110,6 +104,27 @@ export class EmBlogWriteDraw {
         }
     }
 
+    // 保存成功后通知draw.io移除modified标志
+    saveSuccessHandler() {
+        let ifrm = $(`.em-blog-write-draw > iframe`)[0];
+        if (ifrm) {
+            setTimeout(() => {
+                ifrm.contentWindow.postMessage(JSON.stringify({
+                    action: 'merge',
+                    modified: false,
+                    key: 'saved'
+                }), '*');
+                ifrm.contentWindow.postMessage(
+                    JSON.stringify({
+                        action: "status",
+                        modified: false
+                    }),
+                    "*"
+                );
+            }, 100);
+        }
+    }
+
     // 导入按钮点击处理
     importHandler() {
         console.log('导入图表');
@@ -137,6 +152,7 @@ export class EmBlogWriteDraw {
                         autoFollow: true,
                         blog: data.data
                     });
+                    this.saveSuccessHandler();
                 } else {
                     toastr.error(data.data, '博文更新失败!');
                 }
