@@ -109,13 +109,13 @@ export class EmBlogWriteDraw {
 
         // 解绑事件处理程序
         $('.em-blog-write-draw').find('.save-btn').off('click');
-        
+
         // 取消所有订阅
         this.subscriptions.forEach(subscription => {
             subscription.dispose();
         });
         this.subscriptions = [];
-        
+
         // 从全局作用域中移除importDrawioHandler函数
         delete window.importDrawioHandler;
     }
@@ -161,7 +161,7 @@ export class EmBlogWriteDraw {
         if (fileInput && fileInput.files && fileInput.files.length > 0) {
             const file = fileInput.files[0];
             console.log('Importing draw.io file:', file.name);
-            
+
             // 读取文件内容
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -171,23 +171,27 @@ export class EmBlogWriteDraw {
 
                     // 设置标题为文件名，移除扩展名
                     $('.em-blog-write-draw').find('.title-input').val(file.name.replace('.draw', ''));
-                    
+
                     // 将XML数据加载到draw.io编辑器
                     this.loadDiagramFromXml(xmlData);
-                    
+
                     // 重置文件输入
                     fileInput.value = '';
                 } catch (error) {
                     console.error('Error importing draw.io file:', error);
-                    alert('导入文件失败：' + error.message);
+                    toastr.error('导入文件失败：' + error.message, '', {
+                        positionClass: 'toast-bottom-center'
+                    });
                 }
             };
-            
+
             reader.onerror = (error) => {
                 console.error('Error reading draw.io file:', error);
-                alert('读取文件失败：' + error.message);
+                toastr.error('读取文件失败：' + error.message, '', {
+                    positionClass: 'toast-bottom-center'
+                });
             };
-            
+
             // 读取文件内容
             reader.readAsText(file);
         }
@@ -219,7 +223,7 @@ export class EmBlogWriteDraw {
                 content: this.blogXml ? this.blogXml : ''
             }, (data, textStatus, xhr) => {
                 if (data.success) {
-                    toastr.success('博文更新成功!');
+                    toastr.success('博文更新成功!', '', { positionClass: 'toast-bottom-center' });
                     $('.em-blog-write-draw').attr('data-version', data.data.version);
                     $('.em-blog-write-draw').attr('data-content', this.blogXml ? this.blogXml : '');
                     ea.publish(nsCons.EVENT_BLOG_CHANGED, {
@@ -229,7 +233,7 @@ export class EmBlogWriteDraw {
                     });
                     this.saveSuccessHandler();
                 } else {
-                    toastr.error(data.data, '博文更新失败!');
+                    toastr.error(data.data, '博文更新失败!', { positionClass: 'toast-bottom-center' });
                 }
             }).always(() => {
             });
@@ -256,14 +260,14 @@ export class EmBlogWriteDraw {
                     if (data.success) {
                         nsCtx.b_uuid = utils.uuid();
                         this.blogXml = data.data.content;
-                        toastr.success('博文保存成功!');
+                        toastr.success('博文保存成功!', '', { positionClass: 'toast-bottom-center' });
                         ea.publish(nsCons.EVENT_BLOG_CHANGED, {
                             action: 'created',
                             blog: data.data
                         });
                         $('a[href="#modaal-blog-write-draw"]').modaal('close');
                     } else {
-                        toastr.error(data.data, '博文保存失败!');
+                        toastr.error(data.data, '博文保存失败!', { positionClass: 'toast-bottom-center' });
                     }
                 });
             } else {
