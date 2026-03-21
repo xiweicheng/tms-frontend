@@ -110,9 +110,10 @@ export class EmBlogWriteDraw {
         if (ifrm) {
             setTimeout(() => {
                 ifrm.contentWindow.postMessage(JSON.stringify({
-                    action: 'merge',
-                    modified: false,
-                    key: 'saved'
+                    action: 'load',
+                    modified: 0,
+                    autosave: 0,
+                    xml: this.blogXml
                 }), '*');
                 ifrm.contentWindow.postMessage(
                     JSON.stringify({
