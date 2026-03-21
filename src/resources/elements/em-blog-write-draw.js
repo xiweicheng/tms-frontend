@@ -38,8 +38,14 @@ export class EmBlogWriteDraw {
                             ifrm.contentWindow.postMessage(JSON.stringify(
                                 { action: 'load', xml: this.blogXml, modified: 0, autosave: 1 }), '*');
                         } else {
-                            $('.em-blog-write-draw').find('.title-input').val('');
-                            this.blogXml = '';
+                            let id = $('.em-blog-write-draw').attr('data-id');
+                            if (id) {
+                                this.blogXml = $('.em-blog-write-draw').attr('data-content');
+                                // $('.em-blog-write-draw').find('.title-input').val($('.em-blog-write-draw').attr('data-title') + ' (副本)');
+                            } else {
+                                $('.em-blog-write-draw').find('.title-input').val('');
+                                this.blogXml = '';
+                            }
                             ifrm.contentWindow.postMessage(JSON.stringify(
                                 { action: 'load', xml: this.blogXml, modified: 0, autosave: 1 }), '*');
                         }

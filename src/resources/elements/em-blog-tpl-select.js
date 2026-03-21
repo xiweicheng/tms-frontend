@@ -75,6 +75,17 @@ export class EmBlogTplSelect {
         } else if (item.editor == 'Excalidraw') {
             $('.em-blog-write-excalidraw > iframe').attr('src', utils.getResourceBase() + 'excalidraw.html?id=' + item.id + '&copy' + '&_=' + new Date().getTime() + '&spaceId=' + (this.space ? this.space.id : '') + '&dirId=' + (this.dir ? this.dir.id : '') + (this.blog ? this.blog.id : ''));
             $('a[href="#modaal-blog-write-excalidraw"]').click();
+        } else if (item.editor == 'Draw') {
+            $('.em-blog-write-draw').attr('data-mode', 'create')
+                .attr('data-content', item.content)
+                .attr('data-title', item.title + ' (副本)')
+                .attr('data-id', item.id)
+                .attr('data-version', item.version);
+
+            $('.em-blog-write-draw').find('.title-input').val(item.title + ' (副本)');
+
+            $('.em-blog-write-draw > iframe').attr('src', utils.getResourceBase() + 'cdn/drawio/index.html?embed=1&lang=zh&ui=simple&dark=0&offline=1&spin=0&modified=unsavedChanges&autosave=1&proto=json&noSaveBtn=1&noExitBtn=1&edit=1&saveAndExit=0&splash=0' + '&_=' + new Date().getTime());
+            $('a[href="#modaal-blog-write-draw"]').click();
         } else if (!nsCtx.isModaalOpening) {
             nsCtx.newBlogSpace = this.space;
             nsCtx.newBlogDir = this.dir;
