@@ -93,7 +93,7 @@
                                 <span class="description">alt + o</span>
                                 <i class="write icon"></i> ${blog.openEdit ? '关闭编辑' : '开放编辑'}
                             </div>
-                            <div if.bind="(blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw') && (isSuper || blog.creator.username == loginUser.username)"
+                            <div if.bind="(blog.editor != 'Html' && blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw' && blog.editor != 'Draw') && (isSuper || blog.creator.username == loginUser.username)"
                                 click.delegate="changeEditorHandler()" class="item">
                                 <span class="description">alt + e</span>
                                 <i class="html5 icon"></i> 转HTML
@@ -396,7 +396,15 @@
                                             class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
                                     </div>
                                 </div>
-                                <div show.bind="item.properties != 'Mind' && item.properties != 'Excel' && item.properties != 'Sheet' && item.properties != 'Excalidraw'"
+                                <div show.bind="item.properties == 'Draw'" data-id="${item.id}" class="extra text">
+                                    <em-blog-draw comment.bind="{id: item.targetId, content: item.newValue, editor: item.properties}">
+                                    </em-blog-draw>
+                                    <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
+                                        <i title="${item.isOpen ? '点击收起 (o)' : '点击展开 (o)'}"
+                                            class="angle double ${item.isOpen ? 'up' : 'down'} large icon"></i>
+                                    </div>
+                                </div>
+                                <div show.bind="item.properties != 'Mind' && item.properties != 'Excel' && item.properties != 'Sheet' && item.properties != 'Excalidraw' && item.properties != 'Draw'"
                                     ref="mkbodyRef2" class="extra text markdown-body fr-view">
                                     <div fancybox innerhtml.bind="item.newValue | parseMd | emoji:mkbodyRef2"></div>
                                     <div class="btn-open" click.delegate="openFeedEventItemHandler(item)">
