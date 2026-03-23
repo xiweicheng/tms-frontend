@@ -60,7 +60,7 @@ export class EmBlogSave {
 
     approveHandler(modal) {
 
-        var html = utils.md2html(this.blogInfo.content, true);
+        var html = (!!this.blog.editor && this.blog.editor != 'Markdown') ? '' : utils.md2html(this.blogInfo.content, true);
         let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
 
         let spaceId = $(this.spacesRef).dropdown('get value');
@@ -129,7 +129,7 @@ export class EmBlogSave {
         if (last) {
             _.defer(() => {
                 $(this.dirsRef).dropdown('clear').dropdown({
-                    onChange: (value, text, $choice) => {}
+                    onChange: (value, text, $choice) => { }
                 });
             });
         }
