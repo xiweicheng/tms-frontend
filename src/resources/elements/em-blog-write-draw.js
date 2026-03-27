@@ -260,7 +260,7 @@ export class EmBlogWriteDraw {
                 nsCtx.b_uuid = nsCtx.b_uuid || utils.uuid();
                 $.post(`/admin/blog/create`, {
                     url: utils.getBasePath(),
-                    usernames: utils.parseUsernames(this.blogXml ? this.blogXml : '', [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])]).join(','),
+                    usernames: '',
                     title: title,
                     content: this.blogXml ? this.blogXml : '',
                     editor: 'Draw',
@@ -269,7 +269,7 @@ export class EmBlogWriteDraw {
                     pid: nsCtx.newBlogBlog ? nsCtx.newBlogBlog.id : '',
                     privated: false,
                     uuid: nsCtx.b_uuid,
-                    contentHtml: utils.md2html(this.blogXml ? this.blogXml : '', true)
+                    contentHtml: ''
                 }, (data, textStatus, xhr) => {
                     if (data.success) {
                         nsCtx.b_uuid = utils.uuid();
