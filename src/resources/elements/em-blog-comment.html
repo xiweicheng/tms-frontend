@@ -22,22 +22,22 @@
                             <span title="${item.voteZan}">${item.voteZanCnt ? item.voteZanCnt : ''} 赞</span>
                         </div>
                     </div>
-                    <div show.bind="item.editor == 'Mind'" data-id="${item.id}" data-case="comment">
+                    <div if.bind="item.editor == 'Mind'" data-id="${item.id}" data-case="comment">
                         <em-blog-mind comment.bind="item"></em-blog-mind>
                     </div>
-                    <div show.bind="item.editor == 'Excel'" data-id="${item.id}" data-case="comment">
+                    <div if.bind="item.editor == 'Excel'" data-id="${item.id}" data-case="comment">
                         <em-blog-excel comment.bind="item"></em-blog-excel>
                     </div>
-                    <div show.bind="item.editor == 'Sheet'" data-id="${item.id}" data-case="comment">
+                    <div if.bind="item.editor == 'Sheet'" data-id="${item.id}" data-case="comment">
                         <em-blog-sheet comment.bind="item"></em-blog-sheet>
                     </div>
-                    <div show.bind="item.editor == 'Excalidraw'" data-id="${item.id}" data-case="comment">
+                    <div if.bind="item.editor == 'Excalidraw'" data-id="${item.id}" data-case="comment">
                         <em-blog-excalidraw comment.bind="item"></em-blog-excalidraw>
                     </div>
-                    <div show.bind="item.editor == 'Draw'" data-id="${item.id}" data-case="comment">
+                    <div if.bind="item.editor == 'Draw'" data-id="${item.id}" data-case="comment">
                         <em-blog-draw blog.bind="blog" comment.bind="item"></em-blog-draw>
                     </div>
-                    <div show.bind="item.editor != 'Mind' && item.editor != 'Excel' && item.editor != 'Sheet' && item.editor != 'Excalidraw' && item.editor != 'Draw' && !item.isEditing"
+                    <div if.bind="item.editor != 'Mind' && item.editor != 'Excel' && item.editor != 'Sheet' && item.editor != 'Excalidraw' && item.editor != 'Draw' && !item.isEditing"
                         data-id="${item.id}" data-case="comment" fancybox ref="mkbodyRef"
                         class="text markdown-body fr-view"
                         innerhtml.bind="item.content | parseMd:blog.space.channel:item.editor | emoji:mkbodyRef"></div>
