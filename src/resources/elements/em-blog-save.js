@@ -25,6 +25,7 @@ export class EmBlogSave {
     constructor() {
         this.subscribe = ea.subscribe(nsCons.EVENT_BLOG_SAVE, (payload) => {
             this.blogInfo = payload;
+            this.blogInfo.editor = this.blogInfo.editor ? this.blogInfo.editor : 'Markdown';
             this.show();
         });
     }
@@ -60,9 +61,6 @@ export class EmBlogSave {
 
     approveHandler(modal) {
 
-        var html = (!!this.blog.editor && this.blog.editor != 'Markdown') ? '' : utils.md2html(this.blogInfo.content, true);
-        let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
-
         let spaceId = $(this.spacesRef).dropdown('get value');
         let dirId = $(this.dirsRef).dropdown('get value');
 
@@ -70,12 +68,20 @@ export class EmBlogSave {
 
         let space = _.find(this.spaces, { id: +spaceId });
 
+        let usernames = '';
+        let html = '';
+        if (this.blogInfo.editor == 'Markdown') {
+            html = utils.md2html(this.blogInfo.content, true);
+            let users = [nsCtx.memberAll, ...(window.tmsUsers ? tmsUsers : [])];
+            usernames = utils.parseUsernames(this.blogInfo.content, users, space ? space.channel : null).join(',');
+        }
+
         // 给消息体增加uuid
         nsCtx.b_uuid = nsCtx.b_uuid || utils.uuid();
 
         $.post(`/admin/blog/create`, {
             url: utils.getBasePath(),
-            usernames: utils.parseUsernames(this.blogInfo.content, users, space ? space.channel : null).join(','),
+            usernames: usernames,
             title: this.blogInfo.title,
             content: this.blogInfo.content,
             editor: this.blogInfo.editor ? this.blogInfo.editor : '',
@@ -87,14 +93,17 @@ export class EmBlogSave {
         }, (data, textStatus, xhr) => {
             if (data.success) {
                 nsCtx.b_uuid = utils.uuid();
-                this.blog = data.data;
                 toastr.success('博文保存成功!');
                 ea.publish(nsCons.EVENT_BLOG_CHANGED, {
                     action: 'created',
-                    blog: this.blog
+                    blog: data.data
                 });
                 modal.hide();
-                $('a[href="#modaal-blog-write-draw"]').modaal('close');
+                if (this.blogInfo.editor == 'Draw') {
+                    $('a[href="#modaal-blog-write-draw"]').modaal('close');
+                } else if (this.blogInfo.editor == 'Markdown') {
+                    $('a[href="#modaal-blog-write"]').modaal('close');
+                }
             } else {
                 toastr.error(data.data, '博文保存失败!');
                 modal.hide();
