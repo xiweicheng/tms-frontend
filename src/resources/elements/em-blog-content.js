@@ -783,6 +783,11 @@ export class EmBlogContent {
 
         $('.em-blog-content').on('click', '.tms-blog-dir-item-', this.blogAnchorClHandler);
 
+        this.exitFullscreenHandler = (e) => {
+            if (e.key == 'Escape') {
+                this.fullscreenHandler();
+            }
+        }
     }
 
     fixDirItem() {
@@ -1340,15 +1345,26 @@ export class EmBlogContent {
     fullscreenHandler() {
         this.isFullscreen = !this.isFullscreen;
 
+        // 针对iframe添加按键监听
+        const iframe = $('.em-blog-main iframe')[0];
+        const iframeDoc = !iframe ? null : (iframe.contentDocument || iframe.contentWindow.document);
+
         if (this.isFullscreen) {
             // 进入全屏阅读模式
             $('body').addClass('blog-fullscreen-mode');
             $('.em-blog-content').addClass('fullscreen-content');
             toastr.success('已进入全屏阅读模式，按 ESC 退出', '', { positionClass: 'toast-bottom-center' });
+
+            // 直接在 iframe 里监听快捷键
+            iframeDoc && iframeDoc.addEventListener('keydown', this.exitFullscreenHandler);
+
         } else {
             // 退出全屏阅读模式
             $('body').removeClass('blog-fullscreen-mode');
             $('.em-blog-content').removeClass('fullscreen-content');
+
+            // 移除iframe按键监听
+            iframeDoc && iframeDoc.removeEventListener('keydown', this.exitFullscreenHandler);
         }
     }
 
