@@ -2,6 +2,11 @@ html,
 body {
     height: 100%;
     overflow: hidden;
+    &.blog-fullscreen-mode {
+        .em-blog-top-menu, .em-blog-left-sidebar, .tms-blog-progress {
+            display: none;
+        }
+    }
 }
 
 ::-webkit-scrollbar {

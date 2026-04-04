@@ -19,6 +19,7 @@ export class EmBlogContent {
     loginUser;
     isSuper;
     isAdmin;
+    isFullscreen = false;
 
     bind() {
         this.loginUser = nsCtx.loginUser;
@@ -888,6 +889,16 @@ export class EmBlogContent {
             event.preventDefault();
             this.deleteHandler();
         };
+        this.docKuAltFHandler = (event) => { // fullscreen
+            event.preventDefault();
+            this.fullscreenHandler();
+        };
+        this.docKuEscHandler = (event) => { // exit fullscreen
+            if (this.isFullscreen) {
+                event.preventDefault();
+                this.fullscreenHandler();
+            }
+        };
 
         try {
             $(document).bind('keyup', 'e', this.docKuEHandler)
@@ -906,6 +917,8 @@ export class EmBlogContent {
                 .bind('keydown', 'alt+o', this.docKuAltOHandler)
                 .bind('keydown', 'alt+t', this.docKuAltTHandler)
                 .bind('keydown', 'alt+e', this.docKuAltEHandler)
+                .bind('keydown', 'alt+f', this.docKuAltFHandler)
+                .bind('keydown', 'esc', this.docKuEscHandler)
                 .bind('keydown', 'alt+ctrl+d', this.docKuAltCtrlDHandler);
         } catch (err) {
             console.log(err);
@@ -1322,6 +1335,21 @@ export class EmBlogContent {
         ea.publish(nsCons.EVENT_BLOG_RIGHT_SIDEBAR_TOGGLE, {
             isHide: true
         });
+    }
+
+    fullscreenHandler() {
+        this.isFullscreen = !this.isFullscreen;
+
+        if (this.isFullscreen) {
+            // 进入全屏阅读模式
+            $('body').addClass('blog-fullscreen-mode');
+            $('.em-blog-content').addClass('fullscreen-content');
+            toastr.success('已进入全屏阅读模式，按 ESC 退出', '', { positionClass: 'toast-bottom-center' });
+        } else {
+            // 退出全屏阅读模式
+            $('body').removeClass('blog-fullscreen-mode');
+            $('.em-blog-content').removeClass('fullscreen-content');
+        }
     }
 
     commentsHandler() {

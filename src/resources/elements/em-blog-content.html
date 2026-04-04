@@ -57,6 +57,10 @@
                     <div ui-dropdown-action class="ui top right pointing dropdown basic mini icon button">
                         <i class="large ellipsis horizontal icon"></i>
                         <div class="menu">
+                            <div click.delegate="fullscreenHandler()" class="item">
+                                <span class="description">alt + f</span>
+                                <i class="${isFullscreen ? 'compress' : 'expand'} icon"></i> ${isFullscreen ? '退出全屏' : '全屏阅读'}
+                            </div>
                             <div click.delegate="refreshHandler()" class="item" style="min-width: 170px;">
                                 <span class="description">alt + r</span>
                                 <i class="refresh icon"></i> 刷新
@@ -204,19 +208,19 @@
                     </div>
                 </h1>
             </div>
-            <div if.bind="blog.editor == 'Mind'" data-id="${blog.id}">
+            <div class="em-blog-main" if.bind="blog.editor == 'Mind'" data-id="${blog.id}">
                 <em-blog-mind blog.bind="blog"></em-blog-mind>
             </div>
-            <div if.bind="blog.editor == 'Excel'" data-id="${blog.id}">
+            <div class="em-blog-main" if.bind="blog.editor == 'Excel'" data-id="${blog.id}">
                 <em-blog-excel blog.bind="blog"></em-blog-excel>
             </div>
-            <div if.bind="blog.editor == 'Sheet'" data-id="${blog.id}">
+            <div class="em-blog-main" if.bind="blog.editor == 'Sheet'" data-id="${blog.id}">
                 <em-blog-sheet blog.bind="blog"></em-blog-sheet>
             </div>
-            <div if.bind="blog.editor == 'Excalidraw'" data-id="${blog.id}">
+            <div class="em-blog-main" if.bind="blog.editor == 'Excalidraw'" data-id="${blog.id}">
                 <em-blog-excalidraw blog.bind="blog"></em-blog-excalidraw>
             </div>
-            <div if.bind="blog.editor == 'Draw'" data-id="${blog.id}">
+            <div class="em-blog-main" if.bind="blog.editor == 'Draw'" data-id="${blog.id}">
                 <em-blog-draw blog.bind="blog"></em-blog-draw>
             </div>
             <div if.bind="blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw' && blog.editor != 'Draw'" data-id="${blog.id}" data-case="blog"
