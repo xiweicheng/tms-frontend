@@ -126,7 +126,7 @@ export class EmBlogWrite {
         this.subscribe4 = ea.subscribe(nsCons.EVENT_BLOG_CHANGED, (payload) => {
             this.action = payload.action;
             if (payload.action === 'created') {
-                if (this.blog.editor == 'Markdown') {
+                if (this.blog && this.blog.editor == 'Markdown') {
                     this.blog = payload.blog;
                     $('#blog-save-btn span').text('更新');
                     $('#blog-save-btn').attr('title', 'ctrl+click更新后关闭窗口');

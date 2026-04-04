@@ -1353,7 +1353,7 @@ export class EmBlogContent {
             // 进入全屏阅读模式
             $('body').addClass('blog-fullscreen-mode');
             $('.em-blog-content').addClass('fullscreen-content');
-            toastr.success('已进入全屏阅读模式，按 ESC 退出', '', { positionClass: 'toast-bottom-center' });
+            toastr.success('已进入全屏阅读模式，按 ESC 退出', '', { positionClass: 'toast-top-center' });
 
             // 直接在 iframe 里监听快捷键
             iframeDoc && iframeDoc.addEventListener('keydown', this.exitFullscreenHandler);
