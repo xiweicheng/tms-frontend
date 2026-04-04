@@ -1356,7 +1356,7 @@ export class EmBlogContent {
             toastr.success('已进入全屏阅读模式，按 ESC 退出', '', { positionClass: 'toast-top-center' });
 
             // 直接在 iframe 里监听快捷键
-            iframeDoc && iframeDoc.addEventListener('keydown', this.exitFullscreenHandler);
+            iframeDoc && iframeDoc.addEventListener('keydown', this.exitFullscreenHandler, true);
 
         } else {
             // 退出全屏阅读模式
@@ -1364,7 +1364,7 @@ export class EmBlogContent {
             $('.em-blog-content').removeClass('fullscreen-content');
 
             // 移除iframe按键监听
-            iframeDoc && iframeDoc.removeEventListener('keydown', this.exitFullscreenHandler);
+            iframeDoc && iframeDoc.removeEventListener('keydown', this.exitFullscreenHandler, true);
         }
     }
 
