@@ -1,22 +1,82 @@
 <template>
     <require from="./user-pwd-reset.css"></require>
-    <div class="ui container tms-user-pwd-reset">
-        <div class="tms-flex">
-            <div if.bind="!token" ref="fm" class="ui form segment" style="width: 260px;">
-                <div class="ui message">输入您的邮箱地址,我们会发送密码重置链接到您的邮箱!</div>
-                <div class="field">
-                    <label style="display:none;">邮件地址</label>
-                    <input type="text" name="mail" autofocus="" value.bind="mail" placeholder="输入您的邮件地址">
+    <div class="tms-user-pwd-reset">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="login-logo">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <h1 class="login-title">密码重置</h1>
+                    <p class="login-subtitle">找回您的账户密码</p>
                 </div>
-                <div class="ui green fluid button ${isReq ? 'disabled' : ''}" click.delegate="resetPwdHandler()">发送密码重置邮件</div>
-            </div>
-            <div if.bind="token" ref="fm2" class="ui form segment" style="width: 260px;">
-                <div class="ui message">设置您的新密码,密码长度要求至少8位字符!</div>
-                <div class="field">
-                    <label style="display:none;">新密码</label>
-                    <input type="password" name="mail" autofocus="" value.bind="pwd" placeholder="设置您的新密码">
+                
+                <div if.bind="!token" ref="fm" class="login-form">
+                    <div class="form-message">
+                        输入您的邮箱地址，我们会发送密码重置链接到您的邮箱！
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <i class="input-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </i>
+                            <input type="text" name="mail" autofocus="" value.bind="mail" placeholder="输入您的邮件地址" class="form-input" />
+                        </div>
+                    </div>
+                    
+                    <button click.delegate="resetPwdHandler()" class="login-button ${isReq ? 'disabled' : ''}">
+                        <span class="button-text">发送密码重置邮件</span>
+                        <i class="button-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </i>
+                    </button>
+                    
+                    <div class="login-footer">
+                        <a href="#/login" class="login-link">返回登录页面</a>
+                    </div>
                 </div>
-                <div class="ui green fluid button ${isReq ? 'disabled' : ''}" click.delegate="newPwdHandler()">确认</div>
+                
+                <div if.bind="token" ref="fm2" class="login-form">
+                    <div class="form-message">
+                        设置您的新密码，密码长度要求至少8位字符！
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <i class="input-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </i>
+                            <input type="password" name="pwd" autofocus="" value.bind="pwd" placeholder="设置您的新密码" class="form-input" />
+                        </div>
+                    </div>
+                    
+                    <button click.delegate="newPwdHandler()" class="login-button ${isReq ? 'disabled' : ''}">
+                        <span class="button-text">确认</span>
+                        <i class="button-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14"></path>
+                                <path d="m12 5 7 7-7 7"></path>
+                            </svg>
+                        </i>
+                    </button>
+                    
+                    <div class="login-footer">
+                        <a href="#/login" class="login-link">返回登录页面</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
