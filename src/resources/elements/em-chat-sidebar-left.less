@@ -145,15 +145,18 @@
 
         .tms-header {
             >input {
-                background-color: transparent;
-                border: 1px rgba(103, 104, 104, 0.5) solid;
-                font-size: 12px;
+                background-color: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(103, 104, 104, 0.3);
+                font-size: 13px;
                 outline: none;
-                margin-top: 14px;
-                border-radius: 2px;
-                padding: 4px 16px;
-                margin-left: -8px;
-                width: 203px;
+                margin-top: 12px;
+                border-radius: 16px;
+                padding: 6px 24px 6px 16px;
+                margin-left: 0;
+                width: 100%;
+                box-sizing: border-box;
+                transition: all 0.3s ease;
+                color: @sidebar-font-color;
 
                 &::-webkit-input-placeholder {
                     color: @sidebar-input-placeholder-color  !important;
@@ -168,6 +171,10 @@
                 }
 
                 &:focus {
+                    border-color: @sidebar-font-color;
+                    background-color: rgba(255, 255, 255, 0.15);
+                    box-shadow: 0 0 0 2px rgba(65, 131, 196, 0.3);
+                    
                     &::-webkit-input-placeholder {
                         color: @sidebar-input-placeholder-focus-color  !important;
                     }
@@ -179,6 +186,11 @@
                     &:-ms-input-placeholder {
                         color: @sidebar-input-placeholder-focus-color  !important;
                     }
+                }
+
+                &:hover {
+                    border-color: rgba(103, 104, 104, 0.5);
+                    background-color: rgba(255, 255, 255, 0.12);
                 }
             }
 
@@ -197,8 +209,16 @@
 
             i.close.icon {
                 position: absolute;
-                right: 16px;
+                right: 20px;
                 top: 60px;
+                color: @sidebar-font-color;
+                opacity: 0.7;
+                transition: all 0.3s ease;
+                
+                &:hover {
+                    opacity: 1;
+                    transform: scale(1.1);
+                }
             }
         }
     }
