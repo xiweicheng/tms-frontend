@@ -26,6 +26,7 @@ src/
 - **组件文件**: 使用 `em-` 前缀，如 `em-blog-content.js`
 - **样式文件**: 使用 `.less` 格式，与组件同名
 - **模板文件**: 使用 `.html` 格式，与组件同名
+- **HTML模板引入**: 在HTML模板中使用 `.css` 扩展名引入样式文件，即使实际文件是 `.less` 格式（如：`<require from="./em-example.css"></require>`）
 - **类名**: 大驼峰命名，如 `BlogContent`
 
 ### 组件开发规范
