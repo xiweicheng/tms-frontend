@@ -18,21 +18,45 @@
 
         .title {
             position: relative;
-            margin-left: 10px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
 
             .ui.header {
-                display: inline-block;
-                margin-top: 2px;
-                margin-bottom: 0;
+                display: flex;
+                align-items: center;
+                margin: 0;
+                flex-grow: 1;
+                font-size: 14px;
+                
+                >i.icon {
+                    width: 20px;
+                    text-align: center;
+                    margin-right: 8px;
+                    flex-shrink: 0;
+                    font-size: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
             }
 
             i.plus.icon {
                 box-sizing: content-box;
-                position: absolute;
-                right: 10px;
                 font-size: 12px;
                 width: 12px !important;
                 height: 12px !important;
+                flex-shrink: 0;
+                margin-left: 8px;
+            }
+        }
+
+        .ui.list >.item {
+            >i.icon {
+                font-size: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
         }
 
@@ -42,17 +66,26 @@
             box-shadow: 0px -1px 1px -1px rgba(65, 131, 196, 0.5);
 
             >.item {
-                padding-left: 16px;
-                padding-top: 6px;
-                padding-bottom: 6px;
+                padding: 6px 16px;
                 border-radius: 0;
                 min-height: 32px;
                 display: flex;
                 align-items: center;
 
+                >.icon {
+                    width: 20px;
+                    text-align: center;
+                    flex-shrink: 0;
+                }
+
                 >.icon+.content {
                     padding: 0;
                     margin-left: 8px;
+                    flex-grow: 1;
+                }
+
+                .actions {
+                    flex-shrink: 0;
                 }
 
                 &.active {
