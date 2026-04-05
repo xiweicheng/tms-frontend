@@ -1,35 +1,67 @@
 <template>
     <require from="./user-login.css"></require>
     <div class="tms-user-login">
-        <div class="container">
-            <h2 class="ui center aligned icon header">
-            <i class="circular users icon"></i> 用户登录
-            </h2>
-            <div class="ui form segment">
-                <div class="field">
-                    <div class="ui left icon input">
-                        <i class="user icon"></i>
-                        <input type="text" name="username" value.bind="username" placeholder="用户名" />
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="login-logo">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
                     </div>
+                    <h1 class="login-title">用户登录</h1>
+                    <p class="login-subtitle">欢迎回来，继续您的团队协作</p>
                 </div>
-                <div class="field">
-                    <div class="ui left icon input">
-                        <i class="lock icon"></i>
-                        <input type="password" name="password" keydown.trigger="kdHandler($event)" value.bind="password" placeholder="密码" />
+                
+                <div class="login-form">
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <i class="input-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </i>
+                            <input type="text" name="username" value.bind="username" placeholder="用户名" class="form-input" />
+                        </div>
                     </div>
-                </div>
-                <div class="field">
-                    <div ref="rememberMeRef" class="ui checkbox">
-                        <input type="checkbox" name="remember-me" />
-                        <label>记住我在此计算机的登录(2周)</label>
+                    
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <i class="input-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </i>
+                            <input type="password" name="password" keydown.trigger="kdHandler($event)" value.bind="password" placeholder="密码" class="form-input" />
+                        </div>
                     </div>
-                </div>
-                <div class="ui center aligned header">
-                    <button click.delegate="loginHandler()" class="ui submit fluid button ${isReq ? 'disabled' : ''}">登录</button>
-                </div>
-                <div style="text-align: center; font-size:12px;">
-                    <a href="#/pwd-reset">忘记密码</a> &nbsp;&nbsp;
-                    <a if.bind="userRegister" href="#/register">注册用户</a>
+                    
+                    <div class="form-options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember-me" name="remember-me" />
+                            <label for="remember-me">记住我 2 周</label>
+                        </div>
+                        <a href="#/pwd-reset" class="forgot-password">忘记密码？</a>
+                    </div>
+                    
+                    <button click.delegate="loginHandler()" class="login-button ${isReq ? 'disabled' : ''}">
+                        <span class="button-text">登录</span>
+                        <i class="button-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14"></path>
+                                <path d="m12 5 7 7-7 7"></path>
+                            </svg>
+                        </i>
+                    </button>
+                    
+                    <div class="login-footer">
+                        <a if.bind="userRegister" href="#/register" class="register-link">注册新用户</a>
+                    </div>
                 </div>
             </div>
         </div>
