@@ -19,12 +19,23 @@ export class EmChannelTasksModal {
         this.subscribe = ea.subscribe(nsCons.EVENT_CLOSE_CHANNEL_TASKS_MODAL, (payload) => {
             this.emModal.hide();
         });
+
+        // 监听窗口大小变化，重新计算高度
+        this.resizeHandler = () => {
+            this.updateHeight();
+        };
+        $(window).on('resize', this.resizeHandler);
     }
 
     detached() {
         this.channel = null;
         this.loginUser = null;
         this.isAt = null;
+        
+        // 移除窗口大小变化监听
+        if (this.resizeHandler) {
+            $(window).off('resize', this.resizeHandler);
+        }
     }
 
     /**
@@ -33,6 +44,20 @@ export class EmChannelTasksModal {
     unbind() {
 
         this.subscribe.dispose();
+        
+        // 移除窗口大小变化监听
+        if (this.resizeHandler) {
+            $(window).off('resize', this.resizeHandler);
+        }
+    }
+
+    /**
+     * 更新模态框高度
+     */
+    updateHeight() {
+        let height = $(window).height() - 100;
+        $('.em-channel-tasks-modal').height(height);
+        $('.tms-dd-container').height(height - 110);
     }
 
     approveHandler(modal) {
@@ -41,9 +66,7 @@ export class EmChannelTasksModal {
     }
 
     show() {
-        let height = $(window).height() - 270;
-        $('.em-channel-tasks-modal').height(height);
-        $('.tms-dd-container').height(height - 110);
+        this.updateHeight();
 
         this.emModal.show({
             hideOnApprove: true,

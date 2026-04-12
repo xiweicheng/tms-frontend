@@ -1,11 +1,21 @@
 .em-channel-tasks-modal {}
 
-.em-channel-tasks-modal-parent {
+.modals.dimmer {
+    .em-channel-tasks-modal-parent {
 
-    >.content {
-        padding-top: 0 !important;
-        // padding-bottom: 0 !important;
-        padding-left: 8px !important;
-        padding-right: 8px !important;
+        &.ui.fullscreen.scrolling.modal {
+            margin: 8px auto!important;
+        }
+
+        >.content {
+            padding-top: 0 !important;
+            // padding-bottom: 0 !important;
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+        }
+
+        > .actions {
+            display: none;
+        }
     }
 }

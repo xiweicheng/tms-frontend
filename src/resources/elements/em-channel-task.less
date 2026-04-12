@@ -30,28 +30,111 @@
 
             .column {
                 height: 100%;
-                padding: 6px;
+                padding: 8px;
 
-                .ui.header {
+                .column-header {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 0 12px 0;
+                    margin-bottom: 0;
+
+                    .status-dot {
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 50%;
+                        margin-right: 8px;
+                        flex-shrink: 0;
+                        display: block;
+                    }
+
+                    .status-name {
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: #374151;
+                        margin-right: 8px;
+                    }
+
+                    .task-count {
+                        font-size: 13px;
+                        font-weight: 500;
+                        color: #6b7280;
+                        background: #f9fafb;
+                        padding: 1px 8px;
+                        border-radius: 10px;
+                    }
+
+                    .status-line {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 2px;
+                        border-radius: 2px;
+                    }
+
                     &:hover {
                         .btn-wrapper {
-                            display: inline;
+                            opacity: 1;
                         }
                     }
 
                     .btn-wrapper {
-                        display: none;
+                        opacity: 0;
                         position: absolute;
-                        right: 20px;
-                        top: 10px;
-
+                        right: 0;
+                        top: 0;
+                        display: flex;
+                        gap: 4px;
+                        transition: opacity 0.2s ease;
                     }
 
                     .ui.icon.button {
-                        display: inline-block;
-                        padding: .78571429em .78571429em .78571429em;
-                        margin-right: 0.25em;
-                        margin-right: 0;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 4px;
+                        border-radius: 4px;
+                        transition: all 0.2s ease;
+                        
+                        &:hover {
+                            background: rgba(0,0,0,0.05);
+                        }
+                    }
+                }
+                
+                &.s-0 {
+                    .column-header {
+                        .status-dot { background-color: #f2711c !important; }
+                        .status-line { background-color: #f2711c !important; }
+                    }
+                }
+                
+                &.s-1 {
+                    .column-header {
+                        .status-dot { background-color: #21ba45 !important; }
+                        .status-line { background-color: #21ba45 !important; }
+                    }
+                }
+                
+                &.s-2 {
+                    .column-header {
+                        .status-dot { background-color: #fbbd08 !important; }
+                        .status-line { background-color: #fbbd08 !important; }
+                    }
+                }
+                
+                &.s-3 {
+                    .column-header {
+                        .status-dot { background-color: #2185d0 !important; }
+                        .status-line { background-color: #2185d0 !important; }
+                    }
+                }
+                
+                &.s-4 {
+                    .column-header {
+                        .status-dot { background-color: #767676 !important; }
+                        .status-line { background-color: #767676 !important; }
                     }
                 }
             }
@@ -63,8 +146,11 @@
     }
 
     .tms-dd-container.ui.basic.segment {
-        overflow-y: scroll;
-        padding: 0;
+        overflow-y: auto;
+        padding: 8px 0 0 0;
+        background: transparent;
+        border: none;
+        border-top: none;
     }
 
     .tms-dd-task-item {

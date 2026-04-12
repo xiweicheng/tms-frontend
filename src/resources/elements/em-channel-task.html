@@ -22,9 +22,11 @@
         </div>
         <div ref="containerRef" class="ui equal width internally celled grid">
             <div class="row">
-                <div class="column" repeat.for="col of cols">
-                    <h4 class="ui top attached center aligned header">
-                        ${col.name}（${col.page.totalElements ? col.page.totalElements : 0}）
+                <div class="column s-${$index}" repeat.for="col of cols">
+                    <div class="column-header">
+                        <span class="status-dot"></span>
+                        <span class="status-name">${col.name}</span>
+                        <span class="task-count">${col.page.totalElements ? col.page.totalElements : 0}</span>
                         <div if.bind="!isAt" ref="filterRef" class="ui inline dropdown tms-task-filter" title="按任务关联人过滤"
                             data-col-name="${col.name}" task.bind="initFilterHandler(filterRef, col)">
                             <i class="filter icon"></i>
@@ -59,7 +61,8 @@
                                 <i class="refresh icon"></i>
                             </button>
                         </span>
-                    </h4>
+                        <div class="status-line"></div>
+                    </div>
                     <div scrollbar="scrollbar-macosx" class="ui basic segment tms-dd-container s-${col.value}"
                         data-sts="${col.name}">
                         <div repeat.for="item of col.page.content" show.bind="!item._hidden"
