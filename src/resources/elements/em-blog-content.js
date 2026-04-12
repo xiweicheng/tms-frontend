@@ -1358,6 +1358,9 @@ export class EmBlogContent {
             // 直接在 iframe 里监听快捷键
             iframeDoc && iframeDoc.addEventListener('keydown', this.exitFullscreenHandler, true);
 
+            // 进入浏览器全屏
+            this.enterBrowserFullscreen();
+
         } else {
             // 退出全屏阅读模式
             $('body').removeClass('blog-fullscreen-mode');
@@ -1365,6 +1368,73 @@ export class EmBlogContent {
 
             // 移除iframe按键监听
             iframeDoc && iframeDoc.removeEventListener('keydown', this.exitFullscreenHandler, true);
+
+            // 退出浏览器全屏
+            this.exitBrowserFullscreen();
+        }
+    }
+
+    /**
+     * 进入浏览器全屏模式
+     */
+    enterBrowserFullscreen() {
+        const elem = document.documentElement;
+        
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) { // Chrome, Safari and Opera
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { // IE/Edge
+            elem.msRequestFullscreen();
+        }
+
+        // 监听全屏变化
+        document.addEventListener('fullscreenchange', this.browserFullscreenChangeHandler);
+        document.addEventListener('webkitfullscreenchange', this.browserFullscreenChangeHandler);
+        document.addEventListener('msfullscreenchange', this.browserFullscreenChangeHandler);
+    }
+
+    /**
+     * 退出浏览器全屏模式
+     */
+    exitBrowserFullscreen() {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { // IE/Edge
+            document.msExitFullscreen();
+        }
+
+        // 移除全屏变化监听
+        document.removeEventListener('fullscreenchange', this.browserFullscreenChangeHandler);
+        document.removeEventListener('webkitfullscreenchange', this.browserFullscreenChangeHandler);
+        document.removeEventListener('msfullscreenchange', this.browserFullscreenChangeHandler);
+    }
+
+    /**
+     * 浏览器全屏变化监听
+     */
+    browserFullscreenChangeHandler = () => {
+        const isFullscreen = document.fullscreenElement || 
+                            document.webkitFullscreenElement || 
+                            document.msFullscreenElement;
+        
+        // 如果用户通过ESC退出了全屏，也同步退出阅读全屏
+        if (!isFullscreen && this.isFullscreen) {
+            this.isFullscreen = false;
+            $('body').removeClass('blog-fullscreen-mode');
+            $('.em-blog-content').removeClass('fullscreen-content');
+            
+            // 移除iframe按键监听
+            const iframe = $('.em-blog-main iframe')[0];
+            const iframeDoc = !iframe ? null : (iframe.contentDocument || iframe.contentWindow.document);
+            iframeDoc && iframeDoc.removeEventListener('keydown', this.exitFullscreenHandler, true);
+            
+            // 移除全屏变化监听
+            document.removeEventListener('fullscreenchange', this.browserFullscreenChangeHandler);
+            document.removeEventListener('webkitfullscreenchange', this.browserFullscreenChangeHandler);
+            document.removeEventListener('msfullscreenchange', this.browserFullscreenChangeHandler);
         }
     }
 
