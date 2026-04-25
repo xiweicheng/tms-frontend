@@ -76,7 +76,29 @@ export class ParseMdValueConverter {
         if (editor == 'Html') {
             return value ? value : '';
         }
-        return value ? marked(utils.preParse(value, channel)) : '';
+        let html = value ? marked(utils.preParse(value, channel)) : '';
+        
+        // 延迟渲染 mermaid 图表（因为需要在 DOM 插入后才能渲染）
+        _.defer(() => {
+            if (window.mermaid) {
+                const mermaidElements = document.querySelectorAll('.markdown-body .mermaid');
+                mermaidElements.forEach(async (elem) => {
+                    if (!elem.getAttribute('data-processed')) {
+                        try {
+                            let id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
+                            let { svg } = await mermaid.render(id, elem.textContent);
+                            elem.innerHTML = svg;
+                            elem.setAttribute('data-processed', 'true');
+                            elem.style.backgroundColor = 'transparent';
+                        } catch (error) {
+                            console.error('Mermaid rendering error:', error);
+                        }
+                    }
+                });
+            }
+        });
+        
+        return html;
     }
 }
 

@@ -34,6 +34,20 @@ import {
 } from 'color-hash';
 import 'modaal';
 import {
+    default as mermaid
+} from 'mermaid';
+
+// 初始化 mermaid
+mermaid.initialize({
+    startOnLoad: false,
+    theme: 'neutral',
+    securityLevel: 'loose',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+});
+
+// 将 mermaid 暴露到全局，以便在 value converter 中使用
+window.mermaid = mermaid;
+import {
     default as tableExport
 } from 'table-export';
 
@@ -156,11 +170,18 @@ export class Config {
                 }
             }
 
-            if (!lang) {
-                return `<div class="pre-code-wrapper"><i data-clipboard-text="${utils.escape(codeBk, true)}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre class="fold"><code>${escaped ? code : utils.escape(code, true)}\n</code></pre><div class="tms-chat-msg-code-trigger">展开</div></div>`;
+            // 支持 mermaid 图表
+            if (lang === 'mermaid') {
+                return `<div class="mermaid">${code}</div>`;
             }
 
-            return `<div class="pre-code-wrapper"><i data-clipboard-text="${utils.escape(codeBk, true)}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre class="fold"><code class="${this.options.langPrefix + utils.escape(lang, true)}">${escaped ? code : utils.escape(code, true)}\n</code></pre><div class="tms-chat-msg-code-trigger">展开</div></div>\n`;
+            if (!lang) {
+                return `<div class="pre-code-wrapper"><i data-clipboard-text="${utils.escape(codeBk, true)}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre class="fold"><code>${escaped ? code : utils.escape(code, true)}
+</code></pre><div class="tms-chat-msg-code-trigger">展开</div></div>`;
+            }
+
+            return `<div class="pre-code-wrapper"><i data-clipboard-text="${utils.escape(codeBk, true)}" title="复制(ctrl+click)" class="tms-clipboard copy icon"></i><pre class="fold"><code class="${this.options.langPrefix + utils.escape(lang, true)}">${escaped ? code : utils.escape(code, true)}
+</code></pre><div class="tms-chat-msg-code-trigger">展开</div></div>\n`;
         };
 
         renderer.html = function(html) {
