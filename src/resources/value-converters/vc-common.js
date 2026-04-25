@@ -320,28 +320,109 @@ export class ParseMdValueConverter {
         return downloadButton;
     }
     
+    // 获取 SVG 尺寸
+    getSvgDimensions(svg) {
+        const bbox = svg.getBBox();
+        const viewBox = svg.getAttribute('viewBox');
+        
+        let width, height;
+        
+        if (viewBox) {
+            const parts = viewBox.split(' ');
+            width = parseFloat(parts[2]);
+            height = parseFloat(parts[3]);
+        } else {
+            width = parseFloat(svg.getAttribute('width')) || bbox.width + bbox.x;
+            height = parseFloat(svg.getAttribute('height')) || bbox.height + bbox.y;
+        }
+        
+        // 使用 getBoundingClientRect 获取渲染后的实际尺寸
+        const rect = svg.getBoundingClientRect();
+        
+        return {
+            width: Math.max(width, bbox.width + bbox.x, rect.width),
+            height: Math.max(height, bbox.height + bbox.y, rect.height),
+            bbox: bbox
+        };
+    }
+    
+    // 导出 SVG 为图片
+    exportSvgToImage(svg, scale, callback) {
+        // 复制 SVG 以避免修改原始元素
+        const svgCopy = svg.cloneNode(true);
+        
+        // 获取 SVG 尺寸
+        const dims = this.getSvgDimensions(svg);
+        
+        // 设置 SVG 的宽度和高度
+        svgCopy.setAttribute('width', dims.width);
+        svgCopy.setAttribute('height', dims.height);
+        
+        // 确保 viewBox 正确
+        if (!svgCopy.getAttribute('viewBox')) {
+            svgCopy.setAttribute('viewBox', `0 0 ${dims.width} ${dims.height}`);
+        }
+        
+        // 为 SVG 添加白色背景
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('width', '100%');
+        rect.setAttribute('height', '100%');
+        rect.setAttribute('fill', 'white');
+        svgCopy.insertBefore(rect, svgCopy.firstChild);
+        
+        // 获取 SVG 数据
+        const svgData = new XMLSerializer().serializeToString(svgCopy);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        
+        const img = new Image();
+        img.onload = () => {
+            // 创建画布
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 设置高分辨率
+            const scaledWidth = dims.width * scale;
+            const scaledHeight = dims.height * scale;
+            
+            canvas.width = scaledWidth;
+            canvas.height = scaledHeight;
+            
+            // 填充白色背景
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, scaledWidth, scaledHeight);
+            
+            // 绘制 SVG
+            ctx.scale(scale, scale);
+            ctx.drawImage(img, 0, 0);
+            
+            // 清理
+            URL.revokeObjectURL(svgUrl);
+            
+            // 回调
+            callback(canvas);
+        };
+        
+        img.onerror = () => {
+            URL.revokeObjectURL(svgUrl);
+            console.error('Failed to load SVG');
+        };
+        
+        img.src = svgUrl;
+    }
+    
     // 下载图片
     downloadMermaid(element) {
         const svg = element.querySelector('svg');
         if (svg) {
-            const svgData = new XMLSerializer().serializeToString(svg);
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const img = new Image();
-            
-            img.onload = function() {
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                
+            // 使用 4x 缩放提高清晰度
+            this.exportSvgToImage(svg, 4, (canvas) => {
                 const pngData = canvas.toDataURL('image/png');
                 const link = document.createElement('a');
                 link.download = 'mermaid-chart.png';
                 link.href = pngData;
                 link.click();
-            };
-            
-            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+            });
         }
     }
     
@@ -349,22 +430,13 @@ export class ParseMdValueConverter {
     copyMermaid(element) {
         const svg = element.querySelector('svg');
         if (svg) {
-            const svgData = new XMLSerializer().serializeToString(svg);
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const img = new Image();
-            
-            img.onload = function() {
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                
-                // 复制到剪贴板
-                canvas.toBlob(function(blob) {
+            // 使用 4x 缩放提高清晰度
+            this.exportSvgToImage(svg, 4, (canvas) => {
+                canvas.toBlob((blob) => {
                     if (blob) {
                         navigator.clipboard.write([new ClipboardItem({
                             'image/png': blob
-                        })]).then(function() {
+                        })]).then(() => {
                             // 复制成功提示
                             const notification = document.createElement('div');
                             notification.textContent = '图片已复制到剪贴板';
@@ -382,21 +454,19 @@ export class ParseMdValueConverter {
                             `;
                             document.body.appendChild(notification);
                             
-                            setTimeout(function() {
+                            setTimeout(() => {
                                 notification.style.opacity = '0';
                                 notification.style.transition = 'opacity 0.3s';
-                                setTimeout(function() {
+                                setTimeout(() => {
                                     document.body.removeChild(notification);
                                 }, 300);
                             }, 2000);
-                        }).catch(function(err) {
+                        }).catch((err) => {
                             console.error('复制失败:', err);
                         });
                     }
                 });
-            };
-            
-            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+            });
         }
     }
     
