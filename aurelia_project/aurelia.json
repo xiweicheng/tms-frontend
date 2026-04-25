@@ -89,7 +89,6 @@
         "name": "deps-bundle.js",
         "dependencies": [
           "marked",
-          "mermaid",
           "autosize",
           "clipboard-js",
           "moment",

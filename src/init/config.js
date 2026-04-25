@@ -34,20 +34,6 @@ import {
 } from 'color-hash';
 import 'modaal';
 import {
-    default as mermaid
-} from 'mermaid';
-
-// 初始化 mermaid
-mermaid.initialize({
-    startOnLoad: false,
-    theme: 'neutral',
-    securityLevel: 'loose',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-});
-
-// 将 mermaid 暴露到全局，以便在 value converter 中使用
-window.mermaid = mermaid;
-import {
     default as tableExport
 } from 'table-export';
 
@@ -162,17 +148,18 @@ export class Config {
 
         renderer.code = function(code, lang, escaped) {
             let codeBk = code;
+
+            // 支持 mermaid 图表 - 直接返回纯文本，不进行高亮
+            if (lang && lang.toLowerCase() === 'mermaid') {
+                return `<div class="mermaid">${codeBk}</div>`;
+            }
+
             if (this.options.highlight) {
                 var out = this.options.highlight(code, lang);
                 if (out != null && out !== code) {
                     escaped = true;
                     code = out;
                 }
-            }
-
-            // 支持 mermaid 图表
-            if (lang === 'mermaid') {
-                return `<div class="mermaid">${code}</div>`;
             }
 
             if (!lang) {

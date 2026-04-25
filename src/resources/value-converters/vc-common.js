@@ -81,20 +81,30 @@ export class ParseMdValueConverter {
         // 延迟渲染 mermaid 图表（因为需要在 DOM 插入后才能渲染）
         _.defer(() => {
             if (window.mermaid) {
-                const mermaidElements = document.querySelectorAll('.markdown-body .mermaid');
-                mermaidElements.forEach(async (elem) => {
-                    if (!elem.getAttribute('data-processed')) {
-                        try {
-                            let id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
-                            let { svg } = await mermaid.render(id, elem.textContent);
-                            elem.innerHTML = svg;
-                            elem.setAttribute('data-processed', 'true');
-                            elem.style.backgroundColor = 'transparent';
-                        } catch (error) {
-                            console.error('Mermaid rendering error:', error);
-                        }
+                try {
+                    // 初始化 mermaid（如果还没初始化）
+                    if (!window.mermaidInitialized) {
+                        window.mermaid.initialize({
+                            startOnLoad: false,
+                            theme: 'neutral',
+                            securityLevel: 'loose'
+                        });
+                        window.mermaidInitialized = true;
                     }
-                });
+                    
+                    // 清理 mermaid 代码中的 HTML 标签
+                    $('.markdown-body .mermaid').each(function() {
+                        let $this = $(this);
+                        let text = $this.text();
+                        $this.text(text);
+                    });
+                    
+                    // 直接调用 mermaid 的 API 来处理整个页面
+                    // 这种方式更兼容旧版本
+                    window.mermaid.init(undefined, '.markdown-body .mermaid');
+                } catch (error) {
+                    console.error('Mermaid rendering error:', error);
+                }
             }
         });
         
