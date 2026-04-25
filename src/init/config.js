@@ -148,6 +148,12 @@ export class Config {
 
         renderer.code = function(code, lang, escaped) {
             let codeBk = code;
+
+            // 支持 mermaid 图表 - 直接返回纯文本，不进行高亮
+            if (lang && lang.toLowerCase() === 'mermaid') {
+                return `<div class="mermaid">${codeBk}</div>`;
+            }
+
             if (this.options.highlight) {
                 var out = this.options.highlight(code, lang);
                 if (out != null && out !== code) {

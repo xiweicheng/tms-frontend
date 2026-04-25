@@ -76,7 +76,38 @@ export class ParseMdValueConverter {
         if (editor == 'Html') {
             return value ? value : '';
         }
-        return value ? marked(utils.preParse(value, channel)) : '';
+        let html = value ? marked(utils.preParse(value, channel)) : '';
+        
+        // 延迟渲染 mermaid 图表（因为需要在 DOM 插入后才能渲染）
+        _.defer(() => {
+            if (window.mermaid) {
+                try {
+                    // 初始化 mermaid（如果还没初始化）
+                    if (!window.mermaidInitialized) {
+                        window.mermaid.initialize({
+                            startOnLoad: false,
+                            theme: 'neutral',
+                            securityLevel: 'loose'
+                        });
+                        window.mermaidInitialized = true;
+                    }
+                    
+                    // 只处理尚未渲染的 mermaid 元素（没有 SVG 子元素）
+                    $('.markdown-body .mermaid:not(:has(svg))').each(function() {
+                        let $this = $(this);
+                        let text = $this.text();
+                        $this.text(text);
+                    });
+                    
+                    // 直接调用 mermaid 的 API 来处理整个页面
+                    window.mermaid.init(undefined, '.markdown-body .mermaid:not(:has(svg))');
+                } catch (error) {
+                    console.error('Mermaid rendering error:', error);
+                }
+            }
+        });
+        
+        return html;
     }
 }
 
