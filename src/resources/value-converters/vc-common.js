@@ -92,16 +92,15 @@ export class ParseMdValueConverter {
                         window.mermaidInitialized = true;
                     }
                     
-                    // 清理 mermaid 代码中的 HTML 标签
-                    $('.markdown-body .mermaid').each(function() {
+                    // 只处理尚未渲染的 mermaid 元素（没有 SVG 子元素）
+                    $('.markdown-body .mermaid:not(:has(svg))').each(function() {
                         let $this = $(this);
                         let text = $this.text();
                         $this.text(text);
                     });
                     
                     // 直接调用 mermaid 的 API 来处理整个页面
-                    // 这种方式更兼容旧版本
-                    window.mermaid.init(undefined, '.markdown-body .mermaid');
+                    window.mermaid.init(undefined, '.markdown-body .mermaid:not(:has(svg))');
                 } catch (error) {
                     console.error('Mermaid rendering error:', error);
                 }
