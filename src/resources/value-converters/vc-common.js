@@ -84,23 +84,48 @@ export class ParseMdValueConverter {
                 try {
                     // 初始化 mermaid（如果还没初始化）
                     if (!window.mermaidInitialized) {
+                        console.log('Mermaid version:', window.mermaid.version);
+                        // 基本配置
                         window.mermaid.initialize({
                             startOnLoad: false,
                             theme: 'neutral',
-                            securityLevel: 'loose'
+                            securityLevel: 'loose',
+                            flowchart: {
+                                useMaxWidth: true
+                            }
                         });
                         window.mermaidInitialized = true;
+                        console.log('Mermaid initialized');
                     }
                     
-                    // 只处理尚未渲染的 mermaid 元素（没有 SVG 子元素）
-                    $('.markdown-body .mermaid:not(:has(svg))').each(function() {
-                        let $this = $(this);
-                        let text = $this.text();
-                        $this.text(text);
+                    // 只处理尚未渲染的 mermaid 元素
+                    const mermaidElements = document.querySelectorAll('.markdown-body .mermaid');
+                    console.log('Found mermaid elements:', mermaidElements.length);
+                    
+                    mermaidElements.forEach(element => {
+                        // 检查是否已经渲染（有 SVG 子元素）
+                        if (!element.querySelector('svg')) {
+                            console.log('Processing mermaid element:', element);
+                            // 清理 HTML 标签
+                            const text = element.textContent;
+                            element.textContent = text;
+                        }
                     });
                     
-                    // 直接调用 mermaid 的 API 来处理整个页面
-                    window.mermaid.init(undefined, '.markdown-body .mermaid:not(:has(svg))');
+                    // 渲染 mermaid 图表
+                    if (window.mermaid.run) {
+                        console.log('Using mermaid.run()');
+                        window.mermaid.run();
+                    } else if (window.mermaid.init) {
+                        console.log('Using mermaid.init()');
+                        window.mermaid.init(undefined, '.markdown-body .mermaid');
+                    }
+                    
+                    // 为渲染后的图表添加工具栏
+                    setTimeout(() => {
+                        this.addMermaidToolbar();
+                    }, 100);
+                    
                 } catch (error) {
                     console.error('Mermaid rendering error:', error);
                 }
@@ -108,6 +133,347 @@ export class ParseMdValueConverter {
         });
         
         return html;
+    }
+    
+    // 为 mermaid 图表添加自定义工具栏
+    addMermaidToolbar() {
+        // 为每个 mermaid 图表添加工具栏
+        document.querySelectorAll('.markdown-body .mermaid').forEach(mermaidElement => {
+            // 检查是否已经添加了工具栏
+            if (!mermaidElement.querySelector('.mermaid-toolbar')) {
+                // 设置 mermaid 元素为相对定位
+                mermaidElement.style.position = 'relative';
+                
+                // 创建工具栏容器
+                const toolbar = document.createElement('div');
+                toolbar.className = 'mermaid-toolbar';
+                toolbar.style.cssText = `
+                    position: absolute;
+                    top: 4px;
+                    right: 4px;
+                    z-index: 100;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: opacity 0.3s, visibility 0.3s;
+                `;
+                
+                // 使用 Semantic UI 按钮组
+                const buttonGroup = document.createElement('div');
+                buttonGroup.className = 'ui small icon buttons';
+                buttonGroup.style.cssText = 'box-shadow: 0 2px 8px rgba(0,0,0,0.1);';
+                
+                // 下载按钮（包含下拉菜单）
+                const downloadButton = this.createDownloadButton(mermaidElement);
+                buttonGroup.appendChild(downloadButton);
+                
+                // 添加其他工具按钮
+                const buttons = [
+                    { icon: 'zoom out', title: '缩小', action: this.zoomOut.bind(this, mermaidElement) },
+                    { icon: 'zoom in', title: '放大', action: this.zoomIn.bind(this, mermaidElement) },
+                    { icon: 'compress', title: '适应页面', action: this.fitToPage.bind(this, mermaidElement) },
+                    { icon: 'expand', title: '全屏', action: this.fullscreen.bind(this, mermaidElement) }
+                ];
+                
+                buttons.forEach(button => {
+                    const btn = document.createElement('button');
+                    btn.className = 'ui button';
+                    btn.innerHTML = `<i class="icon ${button.icon}"></i>`;
+                    btn.title = button.title;
+                    btn.addEventListener('click', button.action);
+                    buttonGroup.appendChild(btn);
+                });
+                
+                // 查看代码按钮
+                const viewCodeBtn = document.createElement('button');
+                viewCodeBtn.className = 'ui button';
+                viewCodeBtn.innerHTML = '<i class="icon code"></i> 代码';
+                viewCodeBtn.title = '查看代码';
+                viewCodeBtn.addEventListener('click', this.viewCode.bind(this, mermaidElement));
+                buttonGroup.appendChild(viewCodeBtn);
+                
+                toolbar.appendChild(buttonGroup);
+                
+                // 添加工具栏到 mermaid 元素
+                mermaidElement.appendChild(toolbar);
+                
+                // 添加鼠标悬停事件
+                mermaidElement.addEventListener('mouseenter', function() {
+                    const toolbar = this.querySelector('.mermaid-toolbar');
+                    if (toolbar) {
+                        toolbar.style.opacity = '1';
+                        toolbar.style.visibility = 'visible';
+                    }
+                });
+                
+                mermaidElement.addEventListener('mouseleave', function() {
+                    const toolbar = this.querySelector('.mermaid-toolbar');
+                    if (toolbar) {
+                        // 检查鼠标是否在工具栏上
+                        const toolbarRect = toolbar.getBoundingClientRect();
+                        const mouseX = event.clientX;
+                        const mouseY = event.clientY;
+                        
+                        if (!(mouseX >= toolbarRect.left && mouseX <= toolbarRect.right && 
+                              mouseY >= toolbarRect.top && mouseY <= toolbarRect.bottom)) {
+                            toolbar.style.opacity = '0';
+                            toolbar.style.visibility = 'hidden';
+                        }
+                    }
+                });
+                
+                // 工具栏本身的鼠标事件
+                toolbar.addEventListener('mouseenter', function() {
+                    this.style.opacity = '1';
+                    this.style.visibility = 'visible';
+                });
+                
+                toolbar.addEventListener('mouseleave', function() {
+                    this.style.opacity = '0';
+                    this.style.visibility = 'hidden';
+                });
+            }
+        });
+    }
+    
+    // 创建下载按钮（包含下拉菜单）
+    createDownloadButton(element) {
+        const downloadButton = document.createElement('div');
+        downloadButton.className = 'ui button';
+        downloadButton.style.cssText = 'position: relative;';
+        
+        const btn = document.createElement('i');
+        btn.className = 'icon download';
+        
+        // 下拉菜单
+        const dropdown = document.createElement('div');
+        dropdown.className = 'mermaid-dropdown';
+        dropdown.style.cssText = `
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 8px 0;
+            margin-top: 4px;
+            z-index: 101;
+            display: none;
+            min-width: 120px;
+        `;
+        
+        // 下载图片选项
+        const downloadOption = document.createElement('div');
+        downloadOption.textContent = '下载图片';
+        downloadOption.style.cssText = `
+            padding: 6px 16px;
+            cursor: pointer;
+            font-size: 14px;
+        `;
+        downloadOption.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f5f5f5';
+        });
+        downloadOption.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = 'transparent';
+        });
+        downloadOption.addEventListener('click', this.downloadMermaid.bind(this, element));
+        dropdown.appendChild(downloadOption);
+        
+        // 复制图片选项
+        const copyOption = document.createElement('div');
+        copyOption.textContent = '复制图片';
+        copyOption.style.cssText = `
+            padding: 6px 16px;
+            cursor: pointer;
+            font-size: 14px;
+        `;
+        copyOption.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f5f5f5';
+        });
+        copyOption.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = 'transparent';
+        });
+        copyOption.addEventListener('click', this.copyMermaid.bind(this, element));
+        dropdown.appendChild(copyOption);
+        
+        downloadButton.appendChild(btn);
+        downloadButton.appendChild(dropdown);
+        
+        // 点击按钮显示/隐藏下拉菜单
+        downloadButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            } else {
+                dropdown.style.display = 'block';
+            }
+        });
+        
+        // 点击其他地方关闭下拉菜单
+        document.addEventListener('click', function() {
+            const dropdowns = document.querySelectorAll('.mermaid-dropdown');
+            dropdowns.forEach(dropdown => {
+                dropdown.style.display = 'none';
+            });
+        });
+        
+        return downloadButton;
+    }
+    
+    // 下载图片
+    downloadMermaid(element) {
+        const svg = element.querySelector('svg');
+        if (svg) {
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                
+                const pngData = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = 'mermaid-chart.png';
+                link.href = pngData;
+                link.click();
+            };
+            
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        }
+    }
+    
+    // 复制图片
+    copyMermaid(element) {
+        const svg = element.querySelector('svg');
+        if (svg) {
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                
+                // 复制到剪贴板
+                canvas.toBlob(function(blob) {
+                    if (blob) {
+                        navigator.clipboard.write([new ClipboardItem({
+                            'image/png': blob
+                        })]).then(function() {
+                            // 复制成功提示
+                            const notification = document.createElement('div');
+                            notification.textContent = '图片已复制到剪贴板';
+                            notification.style.cssText = `
+                                position: fixed;
+                                top: 20px;
+                                right: 20px;
+                                background: #28a745;
+                                color: white;
+                                padding: 10px 16px;
+                                border-radius: 4px;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                                z-index: 9999;
+                                font-size: 14px;
+                            `;
+                            document.body.appendChild(notification);
+                            
+                            setTimeout(function() {
+                                notification.style.opacity = '0';
+                                notification.style.transition = 'opacity 0.3s';
+                                setTimeout(function() {
+                                    document.body.removeChild(notification);
+                                }, 300);
+                            }, 2000);
+                        }).catch(function(err) {
+                            console.error('复制失败:', err);
+                        });
+                    }
+                });
+            };
+            
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        }
+    }
+    
+    // 放大
+    zoomIn(element) {
+        const svg = element.querySelector('svg');
+        if (svg) {
+            const currentTransform = svg.style.transform || 'scale(1)';
+            const currentScale = parseFloat(currentTransform.match(/scale\(([^)]+)\)/)[1]) || 1;
+            const newScale = currentScale * 1.2;
+            svg.style.transform = `scale(${newScale})`;
+            svg.style.transformOrigin = 'center center';
+        }
+    }
+    
+    // 缩小
+    zoomOut(element) {
+        const svg = element.querySelector('svg');
+        if (svg) {
+            const currentTransform = svg.style.transform || 'scale(1)';
+            const currentScale = parseFloat(currentTransform.match(/scale\(([^)]+)\)/)[1]) || 1;
+            const newScale = Math.max(0.5, currentScale / 1.2);
+            svg.style.transform = `scale(${newScale})`;
+            svg.style.transformOrigin = 'center center';
+        }
+    }
+    
+    // 适应页面
+    fitToPage(element) {
+        const svg = element.querySelector('svg');
+        if (svg) {
+            svg.style.transform = 'scale(1)';
+            svg.style.transformOrigin = 'center center';
+        }
+    }
+    
+    // 全屏
+    fullscreen(element) {
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+        } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+        } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+        }
+    }
+    
+    // 查看代码
+    viewCode(element) {
+        const originalCode = element.textContent;
+        const codeElement = document.createElement('pre');
+        codeElement.style.cssText = `
+            background: #f5f5f5;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        `;
+        codeElement.textContent = originalCode;
+        
+        // 替换内容为代码
+        const originalContent = element.innerHTML;
+        element.innerHTML = '';
+        element.appendChild(codeElement);
+        
+        // 添加关闭按钮
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'ui button';
+        closeBtn.textContent = '关闭';
+        closeBtn.addEventListener('click', () => {
+            element.innerHTML = originalContent;
+        });
+        element.appendChild(closeBtn);
     }
 }
 
