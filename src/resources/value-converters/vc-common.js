@@ -186,21 +186,6 @@ export class ParseMdValueConverter {
                     buttonGroup.appendChild(btn);
                 });
                 
-                // 查看代码按钮
-                const viewCodeBtn = document.createElement('button');
-                viewCodeBtn.className = 'ui button view-code-btn';
-                viewCodeBtn.style.backgroundColor = 'white';
-                viewCodeBtn.innerHTML = '<i class="icon code"></i> 代码';
-                viewCodeBtn.title = '查看代码';
-                viewCodeBtn.addEventListener('mouseenter', function() {
-                    this.style.backgroundColor = '#f0f0f0';
-                });
-                viewCodeBtn.addEventListener('mouseleave', function() {
-                    this.style.backgroundColor = 'white';
-                });
-                viewCodeBtn.addEventListener('click', this.viewCode.bind(this, mermaidElement));
-                buttonGroup.appendChild(viewCodeBtn);
-                
                 toolbar.appendChild(buttonGroup);
                 
                 // 添加工具栏到 mermaid 元素
@@ -667,16 +652,13 @@ export class ParseMdValueConverter {
     // 处理全屏状态变化
     handleFullscreenChange(element) {
         const onFullscreenChange = () => {
-            const viewCodeBtn = element.querySelector('.view-code-btn');
             if (!document.fullscreenElement && !document.mozFullScreenElement &&
                 !document.webkitFullscreenElement && !document.msFullscreenElement) {
-                // 退出全屏时恢复背景色和按钮
+                // 退出全屏时恢复背景色
                 element.style.backgroundColor = '';
-                if (viewCodeBtn) viewCodeBtn.style.display = '';
                 this.updateFullscreenButton(element, false);
             } else {
-                // 进入全屏时隐藏代码按钮并更新图标
-                if (viewCodeBtn) viewCodeBtn.style.display = 'none';
+                // 进入全屏时更新图标
                 this.updateFullscreenButton(element, true);
             }
         };
@@ -693,7 +675,7 @@ export class ParseMdValueConverter {
         if (!buttonGroup) return;
         
         const buttons = buttonGroup.querySelectorAll('button.ui.button');
-        const fullscreenBtn = buttons[buttons.length - 2]; // 全屏按钮在倒数第二个位置
+        const fullscreenBtn = buttons[buttons.length - 1]; // 全屏按钮在最后一个位置
         
         if (fullscreenBtn) {
             if (isFullscreen) {
@@ -722,43 +704,11 @@ export class ParseMdValueConverter {
             document.msExitFullscreen();
         }
 
-        // 恢复背景色和按钮
+        // 恢复背景色
         element.style.backgroundColor = '';
-        const viewCodeBtn = element.querySelector('.view-code-btn');
-        if (viewCodeBtn) viewCodeBtn.style.display = '';
 
         // 恢复图标
         this.updateFullscreenButton(element, false);
-    }
-    
-    // 查看代码
-    viewCode(element) {
-        const originalCode = element.textContent;
-        const codeElement = document.createElement('pre');
-        codeElement.style.cssText = `
-            background: #f5f5f5;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin: 10px 0;
-            white-space: pre-wrap;
-            font-family: monospace;
-        `;
-        codeElement.textContent = originalCode;
-        
-        // 替换内容为代码
-        const originalContent = element.innerHTML;
-        element.innerHTML = '';
-        element.appendChild(codeElement);
-        
-        // 添加关闭按钮
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'ui button';
-        closeBtn.textContent = '关闭';
-        closeBtn.addEventListener('click', () => {
-            element.innerHTML = originalContent;
-        });
-        element.appendChild(closeBtn);
     }
 }
 
