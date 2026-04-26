@@ -77,6 +77,13 @@ export class ParseMdValueConverter {
             return value ? value : '';
         }
         let html = value ? marked(utils.preParse(value, channel)) : '';
+
+        // 检查是否包含 mermaid 图表相关的 HTML 结构
+        const hasMermaid = /<div[^>]*class="[^"]*mermaid[^"]*"[^>]*>|<pre[^>]*>.*?<code[^>]*class="[^"]*language-mermaid[^"]*"[^>]*>/.test(html);
+        if (!hasMermaid) {
+            console.log('No mermaid diagrams found.');
+            return html;
+        }
         
         // 延迟渲染 mermaid 图表（因为需要在 DOM 插入后才能渲染）
         _.defer(() => {
@@ -99,14 +106,20 @@ export class ParseMdValueConverter {
                     }
                    
                     // 渲染 mermaid 图表
-                    if (window.mermaid.run) {
+                    // window.mermaid.run();
+                    console.log('Render mermaid diagrams...');
+                    window.mermaid.init(undefined, document.querySelectorAll('.markdown-body .mermaid:not(:has(svg))'));
+                    
+                    // 备用渲染：延迟 200ms 后只对未渲染的图表进行二次渲染
+                    setTimeout(() => {
                         window.mermaid.run();
-                    }
+                        // window.mermaid.init(undefined, '.markdown-body .mermaid:not(:has(svg))');
+                    }, 200);
                     
                     // 为渲染后的图表添加工具栏
                     setTimeout(() => {
                         this.addMermaidToolbar();
-                    }, 100);
+                    }, 500);
                     
                 } catch (error) {
                     console.error('Mermaid rendering error:', error);
@@ -418,7 +431,7 @@ export class ParseMdValueConverter {
         const downloadOption = document.createElement('div');
         downloadOption.textContent = '下载图片';
         downloadOption.style.cssText = `
-            padding: 6px 16px;
+            padding: 10px 16px;
             cursor: pointer;
             font-size: 14px;
         `;
@@ -430,6 +443,7 @@ export class ParseMdValueConverter {
         });
         downloadOption.addEventListener('click', (e) => {
             e.stopPropagation();
+            dropdown.style.display = 'none';
             this.downloadMermaid(element);
         });
         dropdown.appendChild(downloadOption);
@@ -438,7 +452,7 @@ export class ParseMdValueConverter {
         const copyOption = document.createElement('div');
         copyOption.textContent = '复制图片';
         copyOption.style.cssText = `
-            padding: 6px 16px;
+            padding: 10px 16px;
             cursor: pointer;
             font-size: 14px;
         `;
@@ -450,6 +464,7 @@ export class ParseMdValueConverter {
         });
         copyOption.addEventListener('click', (e) => {
             e.stopPropagation();
+            dropdown.style.display = 'none';
             this.copyMermaid(element);
         });
         dropdown.appendChild(copyOption);
@@ -608,30 +623,7 @@ export class ParseMdValueConverter {
                             navigator.clipboard.write([new ClipboardItem({
                                 'image/png': blob
                             })]).then(() => {
-                                // 复制成功提示
-                                const notification = document.createElement('div');
-                                notification.textContent = '图片已复制到剪贴板';
-                                notification.style.cssText = `
-                                    position: fixed;
-                                    top: 20px;
-                                    right: 20px;
-                                    background: #28a745;
-                                    color: white;
-                                    padding: 10px 16px;
-                                    border-radius: 4px;
-                                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-                                    z-index: 9999;
-                                    font-size: 14px;
-                                `;
-                                document.body.appendChild(notification);
-                                
-                                setTimeout(() => {
-                                    notification.style.opacity = '0';
-                                    notification.style.transition = 'opacity 0.3s';
-                                    setTimeout(() => {
-                                        document.body.removeChild(notification);
-                                    }, 300);
-                                }, 2000);
+                                toastr.success('图片已复制到剪贴板');
                             }).catch((err) => {
                                 console.error('复制失败:', err);
                                 toastr.error('复制图片失败');
