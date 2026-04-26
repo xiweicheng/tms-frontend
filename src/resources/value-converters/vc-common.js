@@ -428,7 +428,10 @@ export class ParseMdValueConverter {
         downloadOption.addEventListener('mouseleave', function() {
             this.style.backgroundColor = 'transparent';
         });
-        downloadOption.addEventListener('click', this.downloadMermaid.bind(this, element));
+        downloadOption.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.downloadMermaid(element);
+        });
         dropdown.appendChild(downloadOption);
         
         // 复制图片选项
@@ -445,7 +448,10 @@ export class ParseMdValueConverter {
         copyOption.addEventListener('mouseleave', function() {
             this.style.backgroundColor = 'transparent';
         });
-        copyOption.addEventListener('click', this.copyMermaid.bind(this, element));
+        copyOption.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.copyMermaid(element);
+        });
         dropdown.appendChild(copyOption);
         
         downloadButton.appendChild(btn);
@@ -507,7 +513,7 @@ export class ParseMdValueConverter {
     }
     
     // 导出 SVG 为图片
-    exportSvgToImage(svg, scale, callback) {
+    exportSvgToImage(svg, scale, callback, errorCallback) {
         // 复制 SVG 以避免修改原始元素
         const svgCopy = svg.cloneNode(true);
         
@@ -530,58 +536,62 @@ export class ParseMdValueConverter {
         rect.setAttribute('fill', 'white');
         svgCopy.insertBefore(rect, svgCopy.firstChild);
         
-        // 获取 SVG 数据
+        // 获取 SVG 数据并转换为 base64
         const svgData = new XMLSerializer().serializeToString(svgCopy);
-        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const svgUrl = URL.createObjectURL(svgBlob);
+        const base64 = btoa(unescape(encodeURIComponent(svgData)));
+        const dataUrl = `data:image/svg+xml;base64,${base64}`;
         
         const img = new Image();
+        
         img.onload = () => {
-            // 创建画布
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // 设置高分辨率
-            const scaledWidth = dims.width * scale;
-            const scaledHeight = dims.height * scale;
-            
-            canvas.width = scaledWidth;
-            canvas.height = scaledHeight;
-            
-            // 填充白色背景
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, scaledWidth, scaledHeight);
-            
-            // 绘制 SVG
-            ctx.scale(scale, scale);
-            ctx.drawImage(img, 0, 0);
-            
-            // 清理
-            URL.revokeObjectURL(svgUrl);
-            
-            // 回调
-            callback(canvas);
+            try {
+                // 创建画布
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // 设置高分辨率
+                const scaledWidth = dims.width * scale;
+                const scaledHeight = dims.height * scale;
+                
+                canvas.width = scaledWidth;
+                canvas.height = scaledHeight;
+                
+                // 填充白色背景
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, scaledWidth, scaledHeight);
+                
+                // 绘制 SVG
+                ctx.scale(scale, scale);
+                ctx.drawImage(img, 0, 0);
+                
+                // 回调
+                callback(canvas);
+            } catch (e) {
+                console.error('Canvas export error:', e);
+                toastr.error('图片导出失败');
+            }
         };
         
         img.onerror = () => {
-            URL.revokeObjectURL(svgUrl);
             console.error('Failed to load SVG');
+            if (errorCallback) errorCallback();
         };
         
-        img.src = svgUrl;
+        img.src = dataUrl;
     }
     
     // 下载图片
     downloadMermaid(element) {
         const svg = element.querySelector('svg');
         if (svg) {
-            // 使用 4x 缩放提高清晰度
             this.exportSvgToImage(svg, 4, (canvas) => {
                 const pngData = canvas.toDataURL('image/png');
                 const link = document.createElement('a');
                 link.download = 'mermaid-chart.png';
                 link.href = pngData;
                 link.click();
+            }, () => {
+                toastr.error('图片导出失败');
             });
         }
     }
@@ -592,40 +602,48 @@ export class ParseMdValueConverter {
         if (svg) {
             // 使用 4x 缩放提高清晰度
             this.exportSvgToImage(svg, 4, (canvas) => {
-                canvas.toBlob((blob) => {
-                    if (blob) {
-                        navigator.clipboard.write([new ClipboardItem({
-                            'image/png': blob
-                        })]).then(() => {
-                            // 复制成功提示
-                            const notification = document.createElement('div');
-                            notification.textContent = '图片已复制到剪贴板';
-                            notification.style.cssText = `
-                                position: fixed;
-                                top: 20px;
-                                right: 20px;
-                                background: #28a745;
-                                color: white;
-                                padding: 10px 16px;
-                                border-radius: 4px;
-                                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-                                z-index: 9999;
-                                font-size: 14px;
-                            `;
-                            document.body.appendChild(notification);
-                            
-                            setTimeout(() => {
-                                notification.style.opacity = '0';
-                                notification.style.transition = 'opacity 0.3s';
+                try {
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            navigator.clipboard.write([new ClipboardItem({
+                                'image/png': blob
+                            })]).then(() => {
+                                // 复制成功提示
+                                const notification = document.createElement('div');
+                                notification.textContent = '图片已复制到剪贴板';
+                                notification.style.cssText = `
+                                    position: fixed;
+                                    top: 20px;
+                                    right: 20px;
+                                    background: #28a745;
+                                    color: white;
+                                    padding: 10px 16px;
+                                    border-radius: 4px;
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                                    z-index: 9999;
+                                    font-size: 14px;
+                                `;
+                                document.body.appendChild(notification);
+                                
                                 setTimeout(() => {
-                                    document.body.removeChild(notification);
-                                }, 300);
-                            }, 2000);
-                        }).catch((err) => {
-                            console.error('复制失败:', err);
-                        });
-                    }
-                });
+                                    notification.style.opacity = '0';
+                                    notification.style.transition = 'opacity 0.3s';
+                                    setTimeout(() => {
+                                        document.body.removeChild(notification);
+                                    }, 300);
+                                }, 2000);
+                            }).catch((err) => {
+                                console.error('复制失败:', err);
+                                toastr.error('复制图片失败');
+                            });
+                        }
+                    });
+                } catch (e) {
+                    console.error('复制图片失败:', e);
+                    toastr.error('复制图片失败');
+                }
+            }, () => {
+                toastr.error('复制图片失败，请尝试下载');
             });
         }
     }
