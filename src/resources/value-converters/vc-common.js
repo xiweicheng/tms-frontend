@@ -97,28 +97,10 @@ export class ParseMdValueConverter {
                         window.mermaidInitialized = true;
                         console.log('Mermaid initialized');
                     }
-                    
-                    // 只处理尚未渲染的 mermaid 元素
-                    const mermaidElements = document.querySelectorAll('.markdown-body .mermaid');
-                    console.log('Found mermaid elements:', mermaidElements.length);
-                    
-                    mermaidElements.forEach(element => {
-                        // 检查是否已经渲染（有 SVG 子元素）
-                        if (!element.querySelector('svg')) {
-                            console.log('Processing mermaid element:', element);
-                            // 清理 HTML 标签
-                            const text = element.textContent;
-                            element.textContent = text;
-                        }
-                    });
-                    
+                   
                     // 渲染 mermaid 图表
                     if (window.mermaid.run) {
-                        console.log('Using mermaid.run()');
                         window.mermaid.run();
-                    } else if (window.mermaid.init) {
-                        console.log('Using mermaid.init()');
-                        window.mermaid.init(undefined, '.markdown-body .mermaid');
                     }
                     
                     // 为渲染后的图表添加工具栏
