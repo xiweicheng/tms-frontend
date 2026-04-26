@@ -301,8 +301,14 @@ export class ParseMdValueConverter {
         
         // 鼠标滚轮缩放支持
         svg.addEventListener('wheel', (e) => {
-            // 按下 Ctrl 键或 Cmd 键时执行缩放
-            if (e.ctrlKey || e.metaKey) {
+            // 检查是否处于全屏模式
+            const isFullscreen = document.fullscreenElement === element || 
+                               document.mozFullScreenElement === element || 
+                               document.webkitFullscreenElement === element || 
+                               document.msFullscreenElement === element;
+            
+            // 全屏模式下直接缩放，非全屏模式需要按下 Ctrl 键或 Cmd 键
+            if (isFullscreen || e.ctrlKey || e.metaKey) {
                 e.preventDefault();
                 
                 // 确定缩放方向
@@ -662,6 +668,11 @@ export class ParseMdValueConverter {
     fullscreen(element) {
         // 设置全屏时的背景色
         element.style.backgroundColor = 'white';
+        // 设置全屏时的居中样式
+        element.style.display = 'flex';
+        element.style.justifyContent = 'center';
+        element.style.alignItems = 'center';
+        element.style.height = '100vh';
         
         if (element.requestFullscreen) {
             element.requestFullscreen();
@@ -682,8 +693,12 @@ export class ParseMdValueConverter {
         const onFullscreenChange = () => {
             if (!document.fullscreenElement && !document.mozFullScreenElement &&
                 !document.webkitFullscreenElement && !document.msFullscreenElement) {
-                // 退出全屏时恢复背景色
+                // 退出全屏时恢复背景色和样式
                 element.style.backgroundColor = '';
+                element.style.display = '';
+                element.style.justifyContent = '';
+                element.style.alignItems = '';
+                element.style.height = '';
                 this.updateFullscreenButton(element, false);
             } else {
                 // 进入全屏时更新图标
