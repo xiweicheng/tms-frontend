@@ -180,7 +180,7 @@ export class ParseMdValueConverter {
                     { icon: 'zoom out', title: '缩小', action: this.zoomOut.bind(this, mermaidElement) },
                     { icon: 'zoom in', title: '放大', action: this.zoomIn.bind(this, mermaidElement) },
                     { icon: 'square outline', title: '适应页面', action: this.fitToPage.bind(this, mermaidElement) },
-                    { icon: 'expand', title: '全屏', action: this.fullscreen.bind(this, mermaidElement) }
+                    { icon: 'expand', title: '全屏查看', action: this.fullscreen.bind(this, mermaidElement) }
                 ];
                 
                 buttons.forEach(button => {
@@ -458,6 +458,7 @@ export class ParseMdValueConverter {
             padding: 10px 16px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 400;
         `;
         downloadOption.addEventListener('mouseenter', function() {
             this.style.backgroundColor = '#f5f5f5';
@@ -479,6 +480,7 @@ export class ParseMdValueConverter {
             padding: 10px 16px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 400;
         `;
         copyOption.addEventListener('mouseenter', function() {
             this.style.backgroundColor = '#f5f5f5';
@@ -734,7 +736,7 @@ export class ParseMdValueConverter {
             } else {
                 // 非全屏状态，显示全屏图标
                 fullscreenBtn.innerHTML = '<i class="icon expand"></i>';
-                fullscreenBtn.title = '全屏';
+                fullscreenBtn.title = '全屏查看';
                 fullscreenBtn.onclick = () => this.fullscreen(element);
             }
         }
