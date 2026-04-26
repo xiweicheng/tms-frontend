@@ -299,6 +299,24 @@ export class ParseMdValueConverter {
             }
         });
         
+        // 鼠标滚轮缩放支持
+        svg.addEventListener('wheel', (e) => {
+            // 按下 Ctrl 键或 Cmd 键时执行缩放
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                
+                // 确定缩放方向
+                const delta = e.deltaY > 0 ? -1 : 1;
+                
+                // 执行缩放
+                if (delta > 0) {
+                    this.zoomIn(element);
+                } else {
+                    this.zoomOut(element);
+                }
+            }
+        }, { passive: false });
+        
         // 触摸事件支持
         svg.addEventListener('touchstart', (e) => {
             const scale = parseFloat(svg.dataset.scale) || 1;
