@@ -541,12 +541,9 @@ export class ParseMdValueConverter {
             height = parseFloat(svg.getAttribute('height')) || bbox.height + bbox.y;
         }
         
-        // 使用 getBoundingClientRect 获取渲染后的实际尺寸
-        const rect = svg.getBoundingClientRect();
-        
         return {
-            width: Math.max(width, bbox.width + bbox.x, rect.width),
-            height: Math.max(height, bbox.height + bbox.y, rect.height),
+            width: Math.max(width, bbox.width + bbox.x),
+            height: Math.max(height, bbox.height + bbox.y),
             bbox: bbox
         };
     }
@@ -555,6 +552,14 @@ export class ParseMdValueConverter {
     exportSvgToImage(svg, scale, callback, errorCallback) {
         // 复制 SVG 以避免修改原始元素
         const svgCopy = svg.cloneNode(true);
+        
+        // 保存原始的 transform 样式
+        const originalTransform = svg.style.transform;
+        const originalTransformOrigin = svg.style.transformOrigin;
+        
+        // 临时移除 transform 以获取完整的 SVG 内容尺寸
+        svgCopy.style.transform = '';
+        svgCopy.style.transformOrigin = '';
         
         // 获取 SVG 尺寸
         const dims = this.getSvgDimensions(svg);
