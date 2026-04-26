@@ -141,8 +141,22 @@ export class ParseMdValueConverter {
         document.querySelectorAll('.markdown-body .mermaid').forEach(mermaidElement => {
             // 检查是否已经添加了工具栏
             if (!mermaidElement.querySelector('.mermaid-toolbar')) {
-                // 设置 mermaid 元素为相对定位
+                // 设置 mermaid 元素为相对定位和溢出隐藏
                 mermaidElement.style.position = 'relative';
+                mermaidElement.style.overflow = 'hidden';
+                
+                // 设置 SVG 容器样式，支持拖拽
+                const svg = mermaidElement.querySelector('svg');
+                if (svg) {
+                    // 存储当前的缩放和偏移状态
+                    svg.dataset.scale = '1';
+                    svg.dataset.translateX = '0';
+                    svg.dataset.translateY = '0';
+                    
+                    // 设置 SVG 样式，支持拖拽
+                    svg.style.cursor = 'grab';
+                    svg.style.display = 'block';
+                }
                 
                 // 创建工具栏容器
                 const toolbar = document.createElement('div');
@@ -157,10 +171,10 @@ export class ParseMdValueConverter {
                     transition: opacity 0.3s, visibility 0.3s;
                 `;
                 
-                // 使用 Semantic UI 按钮组
+                // 使用 Semantic UI 小按钮组
                 const buttonGroup = document.createElement('div');
-                buttonGroup.className = 'ui small icon buttons';
-                buttonGroup.style.cssText = 'box-shadow: 0 2px 8px rgba(0,0,0,0.1);';
+                buttonGroup.className = 'ui icon buttons small';
+                buttonGroup.style.cssText = 'box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; border: 1px solid #e0e0e0; border-radius: 4px;';
                 
                 // 下载按钮（包含下拉菜单）
                 const downloadButton = this.createDownloadButton(mermaidElement);
@@ -170,24 +184,38 @@ export class ParseMdValueConverter {
                 const buttons = [
                     { icon: 'zoom out', title: '缩小', action: this.zoomOut.bind(this, mermaidElement) },
                     { icon: 'zoom in', title: '放大', action: this.zoomIn.bind(this, mermaidElement) },
-                    { icon: 'compress', title: '适应页面', action: this.fitToPage.bind(this, mermaidElement) },
+                    { icon: 'square outline', title: '适应页面', action: this.fitToPage.bind(this, mermaidElement) },
                     { icon: 'expand', title: '全屏', action: this.fullscreen.bind(this, mermaidElement) }
                 ];
                 
                 buttons.forEach(button => {
                     const btn = document.createElement('button');
                     btn.className = 'ui button';
+                    btn.style.backgroundColor = 'white';
                     btn.innerHTML = `<i class="icon ${button.icon}"></i>`;
                     btn.title = button.title;
+                    btn.addEventListener('mouseenter', function() {
+                        this.style.backgroundColor = '#f0f0f0';
+                    });
+                    btn.addEventListener('mouseleave', function() {
+                        this.style.backgroundColor = 'white';
+                    });
                     btn.addEventListener('click', button.action);
                     buttonGroup.appendChild(btn);
                 });
                 
                 // 查看代码按钮
                 const viewCodeBtn = document.createElement('button');
-                viewCodeBtn.className = 'ui button';
+                viewCodeBtn.className = 'ui button view-code-btn';
+                viewCodeBtn.style.backgroundColor = 'white';
                 viewCodeBtn.innerHTML = '<i class="icon code"></i> 代码';
                 viewCodeBtn.title = '查看代码';
+                viewCodeBtn.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f0f0f0';
+                });
+                viewCodeBtn.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = 'white';
+                });
                 viewCodeBtn.addEventListener('click', this.viewCode.bind(this, mermaidElement));
                 buttonGroup.appendChild(viewCodeBtn);
                 
@@ -231,15 +259,172 @@ export class ParseMdValueConverter {
                     this.style.opacity = '0';
                     this.style.visibility = 'hidden';
                 });
+                
+                // 初始化拖拽功能
+                this.initDragFunctionality(mermaidElement);
             }
         });
+    }
+    
+    // 初始化拖拽功能
+    initDragFunctionality(element) {
+        const svg = element.querySelector('svg');
+        if (!svg) return;
+        
+        let isDragging = false;
+        let startX, startY, startTranslateX, startTranslateY;
+        
+        svg.addEventListener('mousedown', (e) => {
+            const scale = parseFloat(svg.dataset.scale) || 1;
+            // 只有放大时才允许拖拽
+            if (scale > 1) {
+                isDragging = true;
+                svg.style.cursor = 'grabbing';
+                startX = e.clientX;
+                startY = e.clientY;
+                startTranslateX = parseFloat(svg.dataset.translateX) || 0;
+                startTranslateY = parseFloat(svg.dataset.translateY) || 0;
+                e.preventDefault();
+            }
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                
+                let newTranslateX = startTranslateX + dx;
+                let newTranslateY = startTranslateY + dy;
+                
+                // 限制拖拽范围
+                const scale = parseFloat(svg.dataset.scale) || 1;
+                const rect = svg.getBoundingClientRect();
+                const maxTranslateX = (rect.width * (scale - 1)) / 2;
+                const maxTranslateY = (rect.height * (scale - 1)) / 2;
+                
+                newTranslateX = Math.max(-maxTranslateX, Math.min(maxTranslateX, newTranslateX));
+                newTranslateY = Math.max(-maxTranslateY, Math.min(maxTranslateY, newTranslateY));
+                
+                svg.dataset.translateX = newTranslateX;
+                svg.dataset.translateY = newTranslateY;
+                
+                this.updateTransform(svg, scale, newTranslateX, newTranslateY);
+            }
+        });
+        
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                svg.style.cursor = 'grab';
+            }
+        });
+        
+        // 触摸事件支持
+        svg.addEventListener('touchstart', (e) => {
+            const scale = parseFloat(svg.dataset.scale) || 1;
+            if (scale > 1 && e.touches.length === 1) {
+                isDragging = true;
+                svg.style.cursor = 'grabbing';
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                startTranslateX = parseFloat(svg.dataset.translateX) || 0;
+                startTranslateY = parseFloat(svg.dataset.translateY) || 0;
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (isDragging && e.touches.length === 1) {
+                const dx = e.touches[0].clientX - startX;
+                const dy = e.touches[0].clientY - startY;
+                
+                let newTranslateX = startTranslateX + dx;
+                let newTranslateY = startTranslateY + dy;
+                
+                const scale = parseFloat(svg.dataset.scale) || 1;
+                const rect = svg.getBoundingClientRect();
+                const maxTranslateX = (rect.width * (scale - 1)) / 2;
+                const maxTranslateY = (rect.height * (scale - 1)) / 2;
+                
+                newTranslateX = Math.max(-maxTranslateX, Math.min(maxTranslateX, newTranslateX));
+                newTranslateY = Math.max(-maxTranslateY, Math.min(maxTranslateY, newTranslateY));
+                
+                svg.dataset.translateX = newTranslateX;
+                svg.dataset.translateY = newTranslateY;
+                
+                this.updateTransform(svg, scale, newTranslateX, newTranslateY);
+            }
+        }, { passive: false });
+        
+        document.addEventListener('touchend', () => {
+            if (isDragging) {
+                isDragging = false;
+                svg.style.cursor = 'grab';
+            }
+        });
+    }
+    
+    // 更新 SVG transform
+    updateTransform(svg, scale, translateX, translateY) {
+        svg.style.transform = `scale(${scale}) translate(${translateX / scale}px, ${translateY / scale}px)`;
+        svg.style.transformOrigin = 'center center';
+    }
+    
+    // 放大
+    zoomIn(element) {
+        const svg = element.querySelector('svg');
+        if (svg) {
+            let scale = parseFloat(svg.dataset.scale) || 1;
+            const translateX = parseFloat(svg.dataset.translateX) || 0;
+            const translateY = parseFloat(svg.dataset.translateY) || 0;
+            
+            scale = Math.min(scale * 1.2, 5); // 最大放大到 5 倍
+            svg.dataset.scale = scale;
+            
+            this.updateTransform(svg, scale, translateX, translateY);
+        }
+    }
+    
+    // 缩小
+    zoomOut(element) {
+        const svg = element.querySelector('svg');
+        if (svg) {
+            let scale = parseFloat(svg.dataset.scale) || 1;
+            let translateX = parseFloat(svg.dataset.translateX) || 0;
+            let translateY = parseFloat(svg.dataset.translateY) || 0;
+            
+            scale = Math.max(scale / 1.2, 0.5); // 最小缩小到 0.5 倍
+            
+            // 如果缩小到 1 以下，重置偏移
+            if (scale <= 1) {
+                translateX = 0;
+                translateY = 0;
+                svg.dataset.translateX = 0;
+                svg.dataset.translateY = 0;
+            }
+            
+            svg.dataset.scale = scale;
+            
+            this.updateTransform(svg, scale, translateX, translateY);
+        }
+    }
+    
+    // 适应页面
+    fitToPage(element) {
+        const svg = element.querySelector('svg');
+        if (svg) {
+            svg.dataset.scale = 1;
+            svg.dataset.translateX = 0;
+            svg.dataset.translateY = 0;
+            this.updateTransform(svg, 1, 0, 0);
+        }
     }
     
     // 创建下载按钮（包含下拉菜单）
     createDownloadButton(element) {
         const downloadButton = document.createElement('div');
         downloadButton.className = 'ui button';
-        downloadButton.style.cssText = 'position: relative;';
+        downloadButton.style.cssText = 'position: relative; background: white;';
         
         const btn = document.createElement('i');
         btn.className = 'icon download';
@@ -298,6 +483,14 @@ export class ParseMdValueConverter {
         
         downloadButton.appendChild(btn);
         downloadButton.appendChild(dropdown);
+        
+        // 鼠标悬停效果
+        downloadButton.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f0f0f0';
+        });
+        downloadButton.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = 'white';
+        });
         
         // 点击按钮显示/隐藏下拉菜单
         downloadButton.addEventListener('click', function(e) {
@@ -470,41 +663,11 @@ export class ParseMdValueConverter {
         }
     }
     
-    // 放大
-    zoomIn(element) {
-        const svg = element.querySelector('svg');
-        if (svg) {
-            const currentTransform = svg.style.transform || 'scale(1)';
-            const currentScale = parseFloat(currentTransform.match(/scale\(([^)]+)\)/)[1]) || 1;
-            const newScale = currentScale * 1.2;
-            svg.style.transform = `scale(${newScale})`;
-            svg.style.transformOrigin = 'center center';
-        }
-    }
-    
-    // 缩小
-    zoomOut(element) {
-        const svg = element.querySelector('svg');
-        if (svg) {
-            const currentTransform = svg.style.transform || 'scale(1)';
-            const currentScale = parseFloat(currentTransform.match(/scale\(([^)]+)\)/)[1]) || 1;
-            const newScale = Math.max(0.5, currentScale / 1.2);
-            svg.style.transform = `scale(${newScale})`;
-            svg.style.transformOrigin = 'center center';
-        }
-    }
-    
-    // 适应页面
-    fitToPage(element) {
-        const svg = element.querySelector('svg');
-        if (svg) {
-            svg.style.transform = 'scale(1)';
-            svg.style.transformOrigin = 'center center';
-        }
-    }
-    
     // 全屏
     fullscreen(element) {
+        // 设置全屏时的背景色
+        element.style.backgroundColor = 'white';
+        
         if (element.requestFullscreen) {
             element.requestFullscreen();
         } else if (element.mozRequestFullScreen) {
@@ -514,6 +677,76 @@ export class ParseMdValueConverter {
         } else if (element.msRequestFullscreen) {
             element.msRequestFullscreen();
         }
+        
+        // 监听全屏变化
+        this.handleFullscreenChange(element);
+    }
+    
+    // 处理全屏状态变化
+    handleFullscreenChange(element) {
+        const onFullscreenChange = () => {
+            const viewCodeBtn = element.querySelector('.view-code-btn');
+            if (!document.fullscreenElement && !document.mozFullScreenElement &&
+                !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                // 退出全屏时恢复背景色和按钮
+                element.style.backgroundColor = '';
+                if (viewCodeBtn) viewCodeBtn.style.display = '';
+                this.updateFullscreenButton(element, false);
+            } else {
+                // 进入全屏时隐藏代码按钮并更新图标
+                if (viewCodeBtn) viewCodeBtn.style.display = 'none';
+                this.updateFullscreenButton(element, true);
+            }
+        };
+
+        document.addEventListener('fullscreenchange', onFullscreenChange);
+        document.addEventListener('mozfullscreenchange', onFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+        document.addEventListener('MSFullscreenChange', onFullscreenChange);
+    }
+    
+    // 更新全屏按钮状态
+    updateFullscreenButton(element, isFullscreen) {
+        const buttonGroup = element.querySelector('.mermaid-toolbar .ui.buttons');
+        if (!buttonGroup) return;
+        
+        const buttons = buttonGroup.querySelectorAll('button.ui.button');
+        const fullscreenBtn = buttons[buttons.length - 2]; // 全屏按钮在倒数第二个位置
+        
+        if (fullscreenBtn) {
+            if (isFullscreen) {
+                // 全屏状态，显示退出图标
+                fullscreenBtn.innerHTML = '<i class="icon compress"></i>';
+                fullscreenBtn.title = '退出全屏';
+                fullscreenBtn.onclick = () => this.exitFullscreen(element);
+            } else {
+                // 非全屏状态，显示全屏图标
+                fullscreenBtn.innerHTML = '<i class="icon expand"></i>';
+                fullscreenBtn.title = '全屏';
+                fullscreenBtn.onclick = () => this.fullscreen(element);
+            }
+        }
+    }
+    
+    // 退出全屏
+    exitFullscreen(element) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+
+        // 恢复背景色和按钮
+        element.style.backgroundColor = '';
+        const viewCodeBtn = element.querySelector('.view-code-btn');
+        if (viewCodeBtn) viewCodeBtn.style.display = '';
+
+        // 恢复图标
+        this.updateFullscreenButton(element, false);
     }
     
     // 查看代码
