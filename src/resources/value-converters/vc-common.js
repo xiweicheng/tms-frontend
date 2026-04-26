@@ -189,6 +189,8 @@ export class ParseMdValueConverter {
                     btn.style.backgroundColor = 'white';
                     btn.innerHTML = `<i class="icon ${button.icon}"></i>`;
                     btn.title = button.title;
+                    // btn.setAttribute('data-tooltip', button.title);
+                    // btn.setAttribute('data-position', 'bottom center');
                     btn.addEventListener('mouseenter', function() {
                         this.style.backgroundColor = '#f0f0f0';
                     });
@@ -498,30 +500,34 @@ export class ParseMdValueConverter {
         downloadButton.appendChild(btn);
         downloadButton.appendChild(dropdown);
         
+        // 存储下拉菜单的显示状态
+        let dropdownTimeout;
+        
         // 鼠标悬停效果
         downloadButton.addEventListener('mouseenter', function() {
             this.style.backgroundColor = '#f0f0f0';
+            // 清除之前的定时器
+            clearTimeout(dropdownTimeout);
+            // 鼠标悬停时显示下拉菜单
+            dropdown.style.display = 'block';
         });
         downloadButton.addEventListener('mouseleave', function() {
             this.style.backgroundColor = 'white';
+            // 延迟隐藏下拉菜单，给鼠标时间移动到下拉菜单
+            dropdownTimeout = setTimeout(function() {
+                dropdown.style.display = 'none';
+            }, 200);
         });
         
-        // 点击按钮显示/隐藏下拉菜单
-        downloadButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (dropdown.style.display === 'block') {
-                dropdown.style.display = 'none';
-            } else {
-                dropdown.style.display = 'block';
-            }
+        // 下拉菜单本身的鼠标事件
+        dropdown.addEventListener('mouseenter', function() {
+            // 清除定时器，保持下拉菜单显示
+            clearTimeout(dropdownTimeout);
+            this.style.display = 'block';
         });
-        
-        // 点击其他地方关闭下拉菜单
-        document.addEventListener('click', function() {
-            const dropdowns = document.querySelectorAll('.mermaid-dropdown');
-            dropdowns.forEach(dropdown => {
-                dropdown.style.display = 'none';
-            });
+        dropdown.addEventListener('mouseleave', function() {
+            // 鼠标离开下拉菜单时隐藏
+            this.style.display = 'none';
         });
         
         return downloadButton;
