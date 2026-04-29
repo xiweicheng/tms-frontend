@@ -72,8 +72,8 @@ export class TimeagoValueConverter {
  * markdown内容解析处理
  */
 export class ParseMdValueConverter {
-    toView(value, channel = null, editor = null) {
-        if (editor == 'Html') {
+    toView(value, channel = null, item = null) {
+        if (item && item.editor == 'Html') {
             return value ? value : '';
         }
         let html = value ? marked(utils.preParse(value, channel)) : '';
@@ -86,7 +86,7 @@ export class ParseMdValueConverter {
         }
         
         // 延迟渲染 mermaid 图表（因为需要在 DOM 插入后才能渲染）
-        _.defer(() => {
+        _.delay(() => {
             if (window.mermaid) {
                 try {
                     // 初始化 mermaid（如果还没初始化）
@@ -94,27 +94,36 @@ export class ParseMdValueConverter {
                         console.log('Mermaid version:', window.mermaid.version);
                         // 基本配置
                         window.mermaid.initialize({
-                            startOnLoad: false,
-                            theme: 'neutral',
-                            securityLevel: 'loose',
                             flowchart: {
                                 useMaxWidth: true
-                            }
+                            },
+                            startOnLoad: false,          // 关闭自动渲染
+                            securityLevel: 'loose',      // 宽松模式，兼容特殊字符
+                            suppressErrorRendering: true,// 不渲染错误图表
+                            suppressErrorDiagrams: true, // 隐藏报错红框
+                            logLevel: 'warn',            // 减少日志
+                            theme: 'default'             // 主题
                         });
                         window.mermaidInitialized = true;
                         console.log('Mermaid initialized');
                     }
                    
                     // 渲染 mermaid 图表
-                    // window.mermaid.run();
                     console.log('Render mermaid diagrams...');
-                    window.mermaid.init(undefined, document.querySelectorAll('.markdown-body .mermaid:not(:has(svg))'));
+                    const selector = item && item.id ? `.markdown-body[data-id="${item.id}"] .mermaid:not(:has(svg))` : '.markdown-body .mermaid:not(:has(svg))';
+                    window.mermaid.run({
+                        nodes: document.querySelectorAll(selector),
+                        suppressErrors: true  // 关键：语法错也不炸
+                    });
                     
                     // 备用渲染：延迟 200ms 后只对未渲染的图表进行二次渲染
                     setTimeout(() => {
-                        window.mermaid.run();
-                        // window.mermaid.init(undefined, '.markdown-body .mermaid:not(:has(svg))');
-                    }, 200);
+                        window.mermaid.run({
+                            nodes: document.querySelectorAll(selector),
+                            suppressErrors: true  // 关键：语法错也不炸
+                        });
+                        // window.mermaid.init(undefined, document.querySelectorAll(selector));
+                    }, 5000);
                     
                     // 为渲染后的图表添加工具栏
                     setTimeout(() => {
@@ -125,7 +134,7 @@ export class ParseMdValueConverter {
                     console.error('Mermaid rendering error:', error);
                 }
             }
-        });
+        }, 0);
         
         return html;
     }

@@ -225,7 +225,7 @@
             </div>
             <div if.bind="blog.editor != 'Mind' && blog.editor != 'Excel' && blog.editor != 'Sheet' && blog.editor != 'Excalidraw' && blog.editor != 'Draw'" data-id="${blog.id}" data-case="blog"
                 fancybox ref="mkbodyRef" class="tms-blog-content markdown-body fr-view"
-                innerhtml.bind="blog.content | parseMd:blog.space.channel:blog.editor | emoji:mkbodyRef"></div>
+                innerhtml.bind="blog.content | parseMd:blog.space.channel:blog | emoji:mkbodyRef"></div>
             <div class="footer">
                 <span click.delegate="rateHandler()" class="rate"><i
                         class="link icon thumbs outline up"></i>${blog.voteZan &&

@@ -40,7 +40,7 @@
                 </template>
             </div>
             <div data-id="${item.id}" data-case="chat" ref="mkbodyRef" fancybox show.bind="!item.isEditing"
-                class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel | emoji:mkbodyRef">
+                class="text markdown-body fr-view" innerhtml.bind="item.content | parseMd:channel:item| emoji:mkbodyRef">
             </div>
             <div class="textcomplete-container" show.bind="item.isEditing">
                 <div class="append-to"></div>
