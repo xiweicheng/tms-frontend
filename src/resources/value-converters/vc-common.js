@@ -189,7 +189,8 @@ export class ParseMdValueConverter {
                     { icon: 'zoom out', title: '缩小', action: this.zoomOut.bind(this, mermaidElement) },
                     { icon: 'zoom in', title: '放大', action: this.zoomIn.bind(this, mermaidElement) },
                     { icon: 'square outline', title: '适应页面', action: this.fitToPage.bind(this, mermaidElement) },
-                    { icon: 'expand', title: '全屏查看', action: this.fullscreen.bind(this, mermaidElement) }
+                    { icon: 'expand', title: '全屏查看', action: this.fullscreen.bind(this, mermaidElement) },
+                    { icon: 'code', title: '查看源代码', action: this.showMermaidSource.bind(this, mermaidElement) }
                 ];
                 
                 buttons.forEach(button => {
@@ -812,6 +813,192 @@ export class ParseMdValueConverter {
 
         // 恢复图标
         this.updateFullscreenButton(element, false);
+    }
+    
+    // 显示 mermaid 源代码
+    showMermaidSource(element) {
+        // 获取源代码
+        const sourceCode = element.getAttribute('data-source') || '';
+        
+        // 检查是否已经存在模态框
+        let modal = document.querySelector('.mermaid-source-modal');
+        if (modal) {
+            // 移除旧的模态框
+            modal.remove();
+        }
+        
+        // 创建模态框
+        modal = document.createElement('div');
+        modal.className = 'mermaid-source-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        `;
+        
+        // 创建模态框内容
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = `
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        `;
+        
+        // 创建标题栏
+        const header = document.createElement('div');
+        header.style.cssText = `
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        `;
+        
+        const title = document.createElement('h3');
+        title.textContent = 'Mermaid 源代码';
+        title.style.cssText = 'margin: 0; font-size: 18px;';
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'ui icon button small';
+        closeBtn.innerHTML = '<i class="icon close"></i>';
+        closeBtn.style.cssText = 'background: #f5f5f5;';
+        closeBtn.addEventListener('click', () => {
+            modal.remove();
+        });
+        
+        header.appendChild(title);
+        header.appendChild(closeBtn);
+        
+        // 创建代码显示区域
+        const codeContainer = document.createElement('div');
+        codeContainer.style.cssText = `
+            flex: 1;
+            overflow: auto;
+            background: #f5f5f5;
+            border-radius: 4px;
+            padding: 15px;
+        `;
+        
+        const codeElement = document.createElement('pre');
+        codeElement.style.cssText = `
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #333;
+        `;
+        codeElement.textContent = sourceCode;
+        
+        codeContainer.appendChild(codeElement);
+        
+        // 创建操作按钮栏
+        const actionBar = document.createElement('div');
+        actionBar.style.cssText = `
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+        `;
+        
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'ui primary button small';
+        copyBtn.innerHTML = '<i class="icon copy"></i> 复制源代码';
+        copyBtn.addEventListener('click', () => {
+            this.copyMermaidSource(sourceCode, copyBtn);
+        });
+        
+        actionBar.appendChild(copyBtn);
+        
+        // 组装模态框
+        modalContent.appendChild(header);
+        modalContent.appendChild(codeContainer);
+        modalContent.appendChild(actionBar);
+        modal.appendChild(modalContent);
+        
+        // 添加到页面
+        document.body.appendChild(modal);
+        
+        // 点击背景关闭
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+        
+        // ESC 键关闭
+        const escHandler = (e) => {
+            if (e.key === 'Escape') {
+                modal.remove();
+                document.removeEventListener('keydown', escHandler);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
+    }
+    
+    // 复制 mermaid 源代码
+    copyMermaidSource(sourceCode, button) {
+        const originalText = button.innerHTML;
+        
+        // 使用 Clipboard API 复制
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(sourceCode)
+                .then(() => {
+                    button.innerHTML = '<i class="icon checkmark"></i> 复制成功';
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                    }, 2000);
+                })
+                .catch(() => {
+                    this.copyFallback(sourceCode, button, originalText);
+                });
+        } else {
+            // 降级方案
+            this.copyFallback(sourceCode, button, originalText);
+        }
+    }
+    
+    // 复制降级方案
+    copyFallback(sourceCode, button, originalText) {
+        const textArea = document.createElement('textarea');
+        textArea.value = sourceCode;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        textArea.style.top = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                button.innerHTML = '<i class="icon checkmark"></i> 复制成功';
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                }, 2000);
+            } else {
+                toastr.error('复制失败，请手动复制');
+            }
+        } catch (err) {
+            toastr.error('复制失败，请手动复制');
+        }
+        
+        document.body.removeChild(textArea);
     }
 }
 

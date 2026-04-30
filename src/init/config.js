@@ -151,7 +151,7 @@ export class Config {
 
             // 支持 mermaid 图表 - 直接返回纯文本，不进行高亮
             if (lang && lang.toLowerCase() === 'mermaid') {
-                return `<div class="mermaid">${codeBk}</div>`;
+                return `<div class="mermaid" data-source="${utils.escape(codeBk, true)}">${codeBk}</div>`;
             }
 
             if (this.options.highlight) {
