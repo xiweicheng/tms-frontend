@@ -901,7 +901,7 @@ export class ParseMdValueConverter {
             existingTempToolbar.remove();
         }
         
-        // 创建临时工具栏
+        // 创建临时工具栏 - 立即显示
         const tempToolbar = document.createElement('div');
         tempToolbar.className = 'mermaid-temp-toolbar';
         tempToolbar.style.cssText = `
@@ -911,7 +911,68 @@ export class ParseMdValueConverter {
             z-index: 100;
             opacity: 1;
             visibility: visible;
+            transition: opacity 0.3s, visibility 0.3s;
         `;
+        
+        // 标记是否已经进入悬停模式
+        let hoverMode = false;
+        
+        // 保存事件监听器的引用，方便后续移除
+        const showTempToolbar = function() {
+            if (element.dataset.sourceMode === 'true') {
+                tempToolbar.style.opacity = '1';
+                tempToolbar.style.visibility = 'visible';
+            }
+        };
+        
+        const hideTempToolbar = function() {
+            if (element.dataset.sourceMode === 'true' && hoverMode) {
+                tempToolbar.style.opacity = '0';
+                tempToolbar.style.visibility = 'hidden';
+            }
+        };
+        
+        const keepToolbarVisible = function() {
+            tempToolbar.style.opacity = '1';
+            tempToolbar.style.visibility = 'visible';
+        };
+        
+        const checkToolbarHover = function() {
+            const isStillHovering = element.matches(':hover');
+            if (!isStillHovering && hoverMode) {
+                tempToolbar.style.opacity = '0';
+                tempToolbar.style.visibility = 'hidden';
+            }
+        };
+        
+        // 保存监听器引用到元素上
+        element._mermaidShowHandler = showTempToolbar;
+        element._mermaidHideHandler = hideTempToolbar;
+        tempToolbar._mermaidKeepVisible = keepToolbarVisible;
+        tempToolbar._mermaidCheckHover = checkToolbarHover;
+        
+        // 2秒后自动隐藏工具栏，进入悬停模式
+        setTimeout(() => {
+            if (element.dataset.sourceMode === 'true') {
+                hoverMode = true;
+                const isHovering = element.matches(':hover');
+                if (!isHovering) {
+                    tempToolbar.style.opacity = '0';
+                    tempToolbar.style.visibility = 'hidden';
+                }
+            }
+        }, 2000);
+        
+        // 鼠标悬停显示工具栏
+        element.addEventListener('mouseenter', showTempToolbar);
+        
+        // 鼠标离开隐藏工具栏
+        element.addEventListener('mouseleave', hideTempToolbar);
+        
+        // 鼠标悬停在工具栏上也要保持显示
+        tempToolbar.addEventListener('mouseenter', keepToolbarVisible);
+        
+        tempToolbar.addEventListener('mouseleave', checkToolbarHover);
         
         // 创建新的按钮组
         const buttonGroup = document.createElement('div');
@@ -972,9 +1033,26 @@ export class ParseMdValueConverter {
             sourceContainer.style.display = 'none';
         }
         
-        // 移除临时工具栏
+        // 移除临时工具栏和事件监听器
         const tempToolbar = element.querySelector('.mermaid-temp-toolbar');
         if (tempToolbar) {
+            // 移除事件监听器
+            if (element._mermaidShowHandler) {
+                element.removeEventListener('mouseenter', element._mermaidShowHandler);
+                delete element._mermaidShowHandler;
+            }
+            if (element._mermaidHideHandler) {
+                element.removeEventListener('mouseleave', element._mermaidHideHandler);
+                delete element._mermaidHideHandler;
+            }
+            if (tempToolbar._mermaidKeepVisible) {
+                tempToolbar.removeEventListener('mouseenter', tempToolbar._mermaidKeepVisible);
+                delete tempToolbar._mermaidKeepVisible;
+            }
+            if (tempToolbar._mermaidCheckHover) {
+                tempToolbar.removeEventListener('mouseleave', tempToolbar._mermaidCheckHover);
+                delete tempToolbar._mermaidCheckHover;
+            }
             tempToolbar.remove();
         }
         
@@ -995,6 +1073,14 @@ export class ParseMdValueConverter {
         const toolbar = element.querySelector('.mermaid-toolbar');
         if (toolbar) {
             toolbar.style.display = '';
+            // 临时显示工具栏，让用户看到
+            toolbar.style.opacity = '1';
+            toolbar.style.visibility = 'visible';
+            // 2秒后恢复原来的悬停显示效果
+            setTimeout(() => {
+                toolbar.style.opacity = '';
+                toolbar.style.visibility = '';
+            }, 2000);
         }
         
         // 清除状态
@@ -1015,11 +1101,13 @@ export class ParseMdValueConverter {
             navigator.clipboard.writeText(sourceCode)
                 .then(() => {
                     button.innerHTML = '<i class="icon checkmark"></i>';
-                    button.title = '复制成功';
-        setTimeout(() => {
-            button.innerHTML = originalHTML;
-            button.title = '复制代码';
-        }, 2000);
+                    button.title = '已复制';
+                    button.setAttribute('data-tooltip', '已复制');
+                    setTimeout(() => {
+                        button.innerHTML = originalHTML;
+                        button.title = '复制代码';
+                        button.setAttribute('data-tooltip', '复制代码');
+                    }, 2000);
                 })
                 .catch(() => {
                     this.copyFallbackInline(sourceCode, button, originalHTML);
@@ -1044,11 +1132,13 @@ export class ParseMdValueConverter {
             const successful = document.execCommand('copy');
             if (successful) {
                 button.innerHTML = '<i class="icon checkmark"></i>';
-                button.title = '复制成功';
-            setTimeout(() => {
-                button.innerHTML = originalHTML;
-                button.title = '复制代码';
-            }, 2000);
+                button.title = '已复制';
+                button.setAttribute('data-tooltip', '已复制');
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.title = '复制代码';
+                    button.setAttribute('data-tooltip', '复制代码');
+                }, 2000);
             } else {
                 toastr.error('复制失败，请手动复制');
             }
