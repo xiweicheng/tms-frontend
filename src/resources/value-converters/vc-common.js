@@ -190,7 +190,7 @@ export class ParseMdValueConverter {
                     { icon: 'zoom in', title: '放大', action: this.zoomIn.bind(this, mermaidElement) },
                     { icon: 'square outline', title: '适应页面', action: this.fitToPage.bind(this, mermaidElement) },
                     { icon: 'expand', title: '全屏查看', action: this.fullscreen.bind(this, mermaidElement) },
-                    { icon: 'code', title: '查看源代码', action: this.showMermaidSource.bind(this, mermaidElement) }
+                    { icon: 'code', title: '查看代码', action: this.showMermaidSource.bind(this, mermaidElement) }
                 ];
                 
                 buttons.forEach(button => {
@@ -815,167 +815,223 @@ export class ParseMdValueConverter {
         this.updateFullscreenButton(element, false);
     }
     
-    // 显示 mermaid 源代码
+    // 显示 mermaid 源代码（在原区域显示）
     showMermaidSource(element) {
+        // 检查是否已经在查看源代码模式
+        if (element.dataset.sourceMode === 'true') {
+            return;
+        }
+        
         // 获取源代码
         const sourceCode = element.getAttribute('data-source') || '';
         
-        // 检查是否已经存在模态框
-        let modal = document.querySelector('.mermaid-source-modal');
-        if (modal) {
-            // 移除旧的模态框
-            modal.remove();
+        // 获取并保存工具栏
+        const toolbar = element.querySelector('.mermaid-toolbar');
+        const svg = element.querySelector('svg');
+        
+        // 保存原状态
+        element.dataset.sourceMode = 'true';
+        if (svg) {
+            element.dataset.originalSvgDisplay = svg.style.display;
         }
         
-        // 创建模态框
-        modal = document.createElement('div');
-        modal.className = 'mermaid-source-modal';
-        modal.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        `;
+        // 临时移除 overflow: hidden，确保源码能显示
+        if (!element.dataset.originalOverflow) {
+            element.dataset.originalOverflow = element.style.overflow;
+            element.style.overflow = 'visible';
+        }
         
-        // 创建模态框内容
-        const modalContent = document.createElement('div');
-        modalContent.style.cssText = `
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            max-width: 800px;
-            width: 90%;
-            max-height: 80vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        `;
+        // 隐藏原图表
+        if (svg) {
+            svg.style.display = 'none';
+        }
         
-        // 创建标题栏
-        const header = document.createElement('div');
-        header.style.cssText = `
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e0e0e0;
-        `;
+        // 隐藏原工具栏
+        if (toolbar) {
+            toolbar.style.display = 'none';
+        }
         
-        const title = document.createElement('h3');
-        title.textContent = 'Mermaid 源代码';
-        title.style.cssText = 'margin: 0; font-size: 18px;';
+        // 检查是否已经有源代码容器
+        let sourceContainer = element.querySelector('.mermaid-source-container');
+        if (!sourceContainer) {
+            // 创建源代码容器
+            sourceContainer = document.createElement('div');
+            sourceContainer.className = 'mermaid-source-container';
+            sourceContainer.style.cssText = `
+                width: 100%;
+                min-height: 200px;
+                background: #f9fafb;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                padding: 16px;
+                overflow: auto;
+                position: relative;
+                z-index: 1;
+            `;
+            
+            // 创建代码显示
+            const codeElement = document.createElement('pre');
+            codeElement.style.cssText = `
+                margin: 0;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+                font-size: 13px;
+                line-height: 1.6;
+                color: #374151;
+            `;
+            codeElement.textContent = sourceCode;
+            
+            sourceContainer.appendChild(codeElement);
+            element.insertBefore(sourceContainer, svg);
+        } else {
+            // 显示已存在的源代码容器
+            sourceContainer.style.display = 'block';
+        }
         
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'ui icon button small';
-        closeBtn.innerHTML = '<i class="icon close"></i>';
-        closeBtn.style.cssText = 'background: #f5f5f5;';
-        closeBtn.addEventListener('click', () => {
-            modal.remove();
-        });
-        
-        header.appendChild(title);
-        header.appendChild(closeBtn);
-        
-        // 创建代码显示区域
-        const codeContainer = document.createElement('div');
-        codeContainer.style.cssText = `
-            flex: 1;
-            overflow: auto;
-            background: #f5f5f5;
-            border-radius: 4px;
-            padding: 15px;
-        `;
-        
-        const codeElement = document.createElement('pre');
-        codeElement.style.cssText = `
-            margin: 0;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 13px;
-            line-height: 1.5;
-            color: #333;
-        `;
-        codeElement.textContent = sourceCode;
-        
-        codeContainer.appendChild(codeElement);
-        
-        // 创建操作按钮栏
-        const actionBar = document.createElement('div');
-        actionBar.style.cssText = `
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px solid #e0e0e0;
-        `;
-        
-        const copyBtn = document.createElement('button');
-        copyBtn.className = 'ui primary button small';
-        copyBtn.innerHTML = '<i class="icon copy"></i> 复制源代码';
-        copyBtn.addEventListener('click', () => {
-            this.copyMermaidSource(sourceCode, copyBtn);
-        });
-        
-        actionBar.appendChild(copyBtn);
-        
-        // 组装模态框
-        modalContent.appendChild(header);
-        modalContent.appendChild(codeContainer);
-        modalContent.appendChild(actionBar);
-        modal.appendChild(modalContent);
-        
-        // 添加到页面
-        document.body.appendChild(modal);
-        
-        // 点击背景关闭
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.remove();
-            }
-        });
-        
-        // ESC 键关闭
-        const escHandler = (e) => {
-            if (e.key === 'Escape') {
-                modal.remove();
-                document.removeEventListener('keydown', escHandler);
-            }
-        };
-        document.addEventListener('keydown', escHandler);
+        // 创建临时工具栏
+        this.createTempToolbar(element, sourceCode);
     }
     
-    // 复制 mermaid 源代码
-    copyMermaidSource(sourceCode, button) {
-        const originalText = button.innerHTML;
+    // 创建临时工具栏
+    createTempToolbar(element, sourceCode) {
+        // 移除已存在的临时工具栏
+        const existingTempToolbar = element.querySelector('.mermaid-temp-toolbar');
+        if (existingTempToolbar) {
+            existingTempToolbar.remove();
+        }
+        
+        // 创建临时工具栏
+        const tempToolbar = document.createElement('div');
+        tempToolbar.className = 'mermaid-temp-toolbar';
+        tempToolbar.style.cssText = `
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            z-index: 100;
+            opacity: 1;
+            visibility: visible;
+        `;
+        
+        // 创建新的按钮组
+        const buttonGroup = document.createElement('div');
+        buttonGroup.className = 'ui icon buttons small';
+        buttonGroup.style.cssText = 'box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; border: 1px solid #e0e0e0; border-radius: 4px;';
+        
+        // 复制按钮
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'ui button';
+        copyBtn.style.backgroundColor = 'white';
+        copyBtn.innerHTML = '<i class="icon copy"></i>';
+        copyBtn.title = '复制代码';
+        copyBtn.setAttribute('data-tooltip', '复制代码');
+        copyBtn.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f0f0f0';
+        });
+        copyBtn.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = 'white';
+        });
+        copyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.copyMermaidSourceInline(sourceCode, copyBtn);
+        });
+        
+        // 预览按钮
+        const previewBtn = document.createElement('button');
+        previewBtn.className = 'ui button';
+        previewBtn.style.backgroundColor = 'white';
+        previewBtn.innerHTML = '<i class="icon eye"></i>';
+        previewBtn.title = '预览图表';
+        previewBtn.setAttribute('data-tooltip', '预览图表');
+        previewBtn.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f0f0f0';
+        });
+        previewBtn.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = 'white';
+        });
+        previewBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.hideMermaidSource(element);
+        });
+        
+        buttonGroup.appendChild(copyBtn);
+        buttonGroup.appendChild(previewBtn);
+        tempToolbar.appendChild(buttonGroup);
+        element.appendChild(tempToolbar);
+    }
+    
+    // 隐藏 mermaid 源代码，恢复图表
+    hideMermaidSource(element) {
+        if (element.dataset.sourceMode !== 'true') {
+            return;
+        }
+        
+        // 隐藏源代码容器
+        const sourceContainer = element.querySelector('.mermaid-source-container');
+        if (sourceContainer) {
+            sourceContainer.style.display = 'none';
+        }
+        
+        // 移除临时工具栏
+        const tempToolbar = element.querySelector('.mermaid-temp-toolbar');
+        if (tempToolbar) {
+            tempToolbar.remove();
+        }
+        
+        // 恢复 overflow
+        if (element.dataset.originalOverflow !== undefined) {
+            element.style.overflow = element.dataset.originalOverflow;
+        }
+        
+        // 恢复原图表
+        const svg = element.querySelector('svg');
+        if (svg && element.dataset.originalSvgDisplay) {
+            svg.style.display = element.dataset.originalSvgDisplay;
+        } else if (svg) {
+            svg.style.display = 'block';
+        }
+        
+        // 恢复原工具栏
+        const toolbar = element.querySelector('.mermaid-toolbar');
+        if (toolbar) {
+            toolbar.style.display = '';
+        }
+        
+        // 清除状态
+        element.dataset.sourceMode = 'false';
+        delete element.dataset.originalSvgDisplay;
+        delete element.dataset.originalOverflow;
+        
+        // 重新初始化拖拽功能
+        this.initDragFunctionality(element);
+    }
+    
+    // 复制 mermaid 源代码（内联模式）
+    copyMermaidSourceInline(sourceCode, button) {
+        const originalHTML = button.innerHTML;
         
         // 使用 Clipboard API 复制
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(sourceCode)
                 .then(() => {
-                    button.innerHTML = '<i class="icon checkmark"></i> 复制成功';
-                    setTimeout(() => {
-                        button.innerHTML = originalText;
-                    }, 2000);
+                    button.innerHTML = '<i class="icon checkmark"></i>';
+                    button.title = '复制成功';
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.title = '复制代码';
+        }, 2000);
                 })
                 .catch(() => {
-                    this.copyFallback(sourceCode, button, originalText);
+                    this.copyFallbackInline(sourceCode, button, originalHTML);
                 });
         } else {
             // 降级方案
-            this.copyFallback(sourceCode, button, originalText);
+            this.copyFallbackInline(sourceCode, button, originalHTML);
         }
     }
     
-    // 复制降级方案
-    copyFallback(sourceCode, button, originalText) {
+    // 复制降级方案（内联模式）
+    copyFallbackInline(sourceCode, button, originalHTML) {
         const textArea = document.createElement('textarea');
         textArea.value = sourceCode;
         textArea.style.position = 'fixed';
@@ -987,10 +1043,12 @@ export class ParseMdValueConverter {
         try {
             const successful = document.execCommand('copy');
             if (successful) {
-                button.innerHTML = '<i class="icon checkmark"></i> 复制成功';
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                }, 2000);
+                button.innerHTML = '<i class="icon checkmark"></i>';
+                button.title = '复制成功';
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+                button.title = '复制代码';
+            }, 2000);
             } else {
                 toastr.error('复制失败，请手动复制');
             }
