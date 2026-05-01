@@ -714,14 +714,20 @@ export class ParseMdValueConverter {
                 try {
                     canvas.toBlob((blob) => {
                         if (blob) {
-                            navigator.clipboard.write([new ClipboardItem({
-                                'image/png': blob
-                            })]).then(() => {
-                                toastr.success('图片已复制到剪贴板');
-                            }).catch((err) => {
-                                console.error('复制失败:', err);
-                                toastr.error('复制图片失败');
-                            });
+                            // 优先使用 Clipboard API
+                            if (navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) {
+                                navigator.clipboard.write([new ClipboardItem({
+                                    'image/png': blob
+                                })]).then(() => {
+                                    toastr.success('图片已复制到剪贴板');
+                                }).catch((err) => {
+                                    console.error('Clipboard API 复制失败，尝试降级方案:', err);
+                                    this.copyImageFallback(canvas);
+                                });
+                            } else {
+                                // 降级方案：使用传统方法
+                                this.copyImageFallback(canvas);
+                            }
                         }
                     });
                 } catch (e) {
@@ -731,6 +737,58 @@ export class ParseMdValueConverter {
             }, () => {
                 toastr.error('复制图片失败，请尝试下载');
             });
+        }
+    }
+    
+    // 复制图片降级方案
+    copyImageFallback(canvas) {
+        try {
+            // 降级方案：直接显示图片并提示用户手动复制
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL('image/png');
+            img.style.cssText = 'max-width: 400px; max-height: 400px;';
+            
+            // 显示临时通知
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                text-align: center;
+                max-width: 450px;
+            `;
+            notification.innerHTML = `
+                <p style="margin-bottom: 15px; color: #333;">当前浏览器不支持一键复制图片，请手动复制：</p>
+                <div style="margin-bottom: 15px; border: 1px solid #eee; padding: 10px; display: inline-block;"></div>
+                <p style="margin-bottom: 15px; color: #666; font-size: 14px;">右键点击上方图片 → 复制图片</p>
+                <button style="background: #2185d0; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer;">关闭</button>
+            `;
+            
+            notification.querySelector('div').appendChild(img);
+            
+            notification.querySelector('button').addEventListener('click', () => {
+                document.body.removeChild(notification);
+            });
+            
+            // 点击背景关闭
+            notification.addEventListener('click', (e) => {
+                if (e.target === notification) {
+                    document.body.removeChild(notification);
+                }
+            });
+            
+            document.body.appendChild(notification);
+            
+            toastr.info('请手动复制图片');
+        } catch (e) {
+            console.error('降级方案复制失败:', e);
+            toastr.error('复制图片失败，请尝试下载');
         }
     }
     
