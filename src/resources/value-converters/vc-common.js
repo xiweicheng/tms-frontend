@@ -186,11 +186,11 @@ export class ParseMdValueConverter {
                 
                 // 添加其他工具按钮
                 const buttons = [
-                    { icon: 'zoom out', title: '缩小', action: this.zoomOut.bind(this, mermaidElement) },
-                    { icon: 'zoom in', title: '放大', action: this.zoomIn.bind(this, mermaidElement) },
-                    { icon: 'square outline', title: '适应页面', action: this.fitToPage.bind(this, mermaidElement) },
-                    { icon: 'expand', title: '全屏查看', action: this.fullscreen.bind(this, mermaidElement) },
-                    { icon: 'code', title: '查看代码', action: this.showMermaidSource.bind(this, mermaidElement) }
+                    { icon: 'zoom out', title: '缩小', action: this.zoomOut.bind(this, mermaidElement), type: 'zoom-out' },
+                    { icon: 'zoom in', title: '放大', action: this.zoomIn.bind(this, mermaidElement), type: 'zoom-in' },
+                    { icon: 'square outline', title: '适应页面', action: this.fitToPage.bind(this, mermaidElement), type: 'fit' },
+                    { icon: 'expand', title: '全屏查看', action: this.fullscreen.bind(this, mermaidElement), type: 'fullscreen' },
+                    { icon: 'code', title: '查看代码', action: this.showMermaidSource.bind(this, mermaidElement), type: 'code' }
                 ];
                 
                 const self = this; // 保存 this 引用
@@ -200,6 +200,7 @@ export class ParseMdValueConverter {
                     btn.style.backgroundColor = 'white';
                     btn.innerHTML = `<i class="icon ${button.icon}"></i>`;
                     btn.dataset.tooltipText = button.title;
+                    btn.dataset.buttonType = button.type; // 添加按钮类型标识
                     // 添加自定义 tooltip 事件
                     btn.addEventListener('mouseenter', (e) => {
                         btn.style.backgroundColor = '#f0f0f0';
@@ -805,28 +806,38 @@ export class ParseMdValueConverter {
         }
     }
     
-    // 全屏
+    // 全屏/退出全屏
     fullscreen(element) {
-        // 设置全屏时的背景色
-        element.style.backgroundColor = 'white';
-        // 设置全屏时的居中样式
-        element.style.display = 'flex';
-        element.style.justifyContent = 'center';
-        element.style.alignItems = 'center';
-        element.style.height = '100vh';
+        // 检查当前是否已在全屏状态
+        const isFullscreen = document.fullscreenElement || document.mozFullScreenElement ||
+                            document.webkitFullscreenElement || document.msFullscreenElement;
         
-        if (element.requestFullscreen) {
-            element.requestFullscreen();
-        } else if (element.mozRequestFullScreen) {
-            element.mozRequestFullScreen();
-        } else if (element.webkitRequestFullscreen) {
-            element.webkitRequestFullscreen();
-        } else if (element.msRequestFullscreen) {
-            element.msRequestFullscreen();
+        if (isFullscreen) {
+            // 如果已在全屏状态，退出全屏
+            this.exitFullscreen(element);
+        } else {
+            // 不在全屏状态，进入全屏
+            // 设置全屏时的背景色
+            element.style.backgroundColor = 'white';
+            // 设置全屏时的居中样式
+            element.style.display = 'flex';
+            element.style.justifyContent = 'center';
+            element.style.alignItems = 'center';
+            element.style.height = '100vh';
+            
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen();
+            }
+            
+            // 监听全屏变化
+            this.handleFullscreenChange(element);
         }
-        
-        // 监听全屏变化
-        this.handleFullscreenChange(element);
     }
     
     // 处理全屏状态变化
@@ -858,8 +869,8 @@ export class ParseMdValueConverter {
         const buttonGroup = element.querySelector('.mermaid-toolbar .ui.buttons');
         if (!buttonGroup) return;
         
-        const buttons = buttonGroup.querySelectorAll('button.ui.button');
-        const fullscreenBtn = buttons[buttons.length - 1]; // 全屏按钮在最后一个位置
+        const fullscreenBtn = buttonGroup.querySelector('button.ui.button[data-button-type="fullscreen"]');
+        const codeBtn = buttonGroup.querySelector('button.ui.button[data-button-type="code"]');
         
         if (fullscreenBtn) {
             if (isFullscreen) {
@@ -872,6 +883,15 @@ export class ParseMdValueConverter {
                 fullscreenBtn.innerHTML = '<i class="icon expand"></i>';
                 fullscreenBtn.dataset.tooltipText = '全屏查看';
                 fullscreenBtn.title = '全屏查看';
+            }
+        }
+        
+        // 全屏模式下隐藏查看代码按钮
+        if (codeBtn) {
+            if (isFullscreen) {
+                codeBtn.style.display = 'none';
+            } else {
+                codeBtn.style.display = '';
             }
         }
     }
