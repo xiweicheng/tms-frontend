@@ -145,7 +145,7 @@ export class ParseMdValueConverter {
         document.querySelectorAll('.markdown-body .mermaid').forEach(mermaidElement => {
             // 检查是否已经添加了工具栏
             if (!mermaidElement.querySelector('.mermaid-toolbar')) {
-                // 设置 mermaid 元素为相对定位和溢出隐藏
+                // 设置 mermaid 元素为相对定位和溢出隐藏，防止图表超出
                 mermaidElement.style.position = 'relative';
                 mermaidElement.style.overflow = 'hidden';
                 
@@ -193,19 +193,21 @@ export class ParseMdValueConverter {
                     { icon: 'code', title: '查看代码', action: this.showMermaidSource.bind(this, mermaidElement) }
                 ];
                 
+                const self = this; // 保存 this 引用
                 buttons.forEach(button => {
                     const btn = document.createElement('button');
                     btn.className = 'ui button';
                     btn.style.backgroundColor = 'white';
                     btn.innerHTML = `<i class="icon ${button.icon}"></i>`;
-                    btn.title = button.title;
-                    // btn.setAttribute('data-tooltip', button.title);
-                    // btn.setAttribute('data-position', 'bottom center');
-                    btn.addEventListener('mouseenter', function() {
-                        this.style.backgroundColor = '#f0f0f0';
+                    btn.dataset.tooltipText = button.title;
+                    // 添加自定义 tooltip 事件
+                    btn.addEventListener('mouseenter', (e) => {
+                        btn.style.backgroundColor = '#f0f0f0';
+                        self.showCustomTooltip(e.target, button.title);
                     });
-                    btn.addEventListener('mouseleave', function() {
-                        this.style.backgroundColor = 'white';
+                    btn.addEventListener('mouseleave', () => {
+                        btn.style.backgroundColor = 'white';
+                        self.hideCustomTooltip();
                     });
                     btn.addEventListener('click', button.action);
                     buttonGroup.appendChild(btn);
@@ -479,6 +481,13 @@ export class ParseMdValueConverter {
         const downloadButton = document.createElement('div');
         downloadButton.className = 'ui button';
         downloadButton.style.cssText = 'position: relative; background: white;';
+        // 添加鼠标悬停效果
+        downloadButton.addEventListener('mouseenter', () => {
+            downloadButton.style.backgroundColor = '#f0f0f0';
+        });
+        downloadButton.addEventListener('mouseleave', () => {
+            downloadButton.style.backgroundColor = 'white';
+        });
         
         const btn = document.createElement('i');
         btn.className = 'icon download';
@@ -785,13 +794,13 @@ export class ParseMdValueConverter {
             if (isFullscreen) {
                 // 全屏状态，显示退出图标
                 fullscreenBtn.innerHTML = '<i class="icon compress"></i>';
+                fullscreenBtn.dataset.tooltipText = '退出全屏';
                 fullscreenBtn.title = '退出全屏';
-                fullscreenBtn.onclick = () => this.exitFullscreen(element);
             } else {
                 // 非全屏状态，显示全屏图标
                 fullscreenBtn.innerHTML = '<i class="icon expand"></i>';
+                fullscreenBtn.dataset.tooltipText = '全屏查看';
                 fullscreenBtn.title = '全屏查看';
-                fullscreenBtn.onclick = () => this.fullscreen(element);
             }
         }
     }
@@ -984,13 +993,14 @@ export class ParseMdValueConverter {
         copyBtn.className = 'ui button';
         copyBtn.style.backgroundColor = 'white';
         copyBtn.innerHTML = '<i class="icon copy"></i>';
-        copyBtn.title = '复制代码';
-        copyBtn.setAttribute('data-tooltip', '复制代码');
-        copyBtn.addEventListener('mouseenter', function() {
-            this.style.backgroundColor = '#f0f0f0';
+        copyBtn.dataset.tooltipText = '复制代码';
+        copyBtn.addEventListener('mouseenter', (e) => {
+            copyBtn.style.backgroundColor = '#f0f0f0';
+            this.showCustomTooltip(e.target, '复制代码');
         });
-        copyBtn.addEventListener('mouseleave', function() {
-            this.style.backgroundColor = 'white';
+        copyBtn.addEventListener('mouseleave', () => {
+            copyBtn.style.backgroundColor = 'white';
+            this.hideCustomTooltip();
         });
         copyBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -1002,13 +1012,14 @@ export class ParseMdValueConverter {
         previewBtn.className = 'ui button';
         previewBtn.style.backgroundColor = 'white';
         previewBtn.innerHTML = '<i class="icon eye"></i>';
-        previewBtn.title = '预览图表';
-        previewBtn.setAttribute('data-tooltip', '预览图表');
-        previewBtn.addEventListener('mouseenter', function() {
-            this.style.backgroundColor = '#f0f0f0';
+        previewBtn.dataset.tooltipText = '预览图表';
+        previewBtn.addEventListener('mouseenter', (e) => {
+            previewBtn.style.backgroundColor = '#f0f0f0';
+            this.showCustomTooltip(e.target, '预览图表');
         });
-        previewBtn.addEventListener('mouseleave', function() {
-            this.style.backgroundColor = 'white';
+        previewBtn.addEventListener('mouseleave', () => {
+            previewBtn.style.backgroundColor = 'white';
+            this.hideCustomTooltip();
         });
         previewBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -1101,12 +1112,14 @@ export class ParseMdValueConverter {
             navigator.clipboard.writeText(sourceCode)
                 .then(() => {
                     button.innerHTML = '<i class="icon checkmark"></i>';
-                    button.title = '已复制';
-                    button.setAttribute('data-tooltip', '已复制');
+                    button.dataset.tooltipText = '已复制';
+                    // 如果 tooltip 当前正在显示，立即更新文本
+                    if (this.customTooltip) {
+                        this.customTooltip.textContent = '已复制';
+                    }
                     setTimeout(() => {
                         button.innerHTML = originalHTML;
-                        button.title = '复制代码';
-                        button.setAttribute('data-tooltip', '复制代码');
+                        button.dataset.tooltipText = '复制代码';
                     }, 2000);
                 })
                 .catch(() => {
@@ -1132,12 +1145,14 @@ export class ParseMdValueConverter {
             const successful = document.execCommand('copy');
             if (successful) {
                 button.innerHTML = '<i class="icon checkmark"></i>';
-                button.title = '已复制';
-                button.setAttribute('data-tooltip', '已复制');
+                button.dataset.tooltipText = '已复制';
+                // 如果 tooltip 当前正在显示，立即更新文本
+                if (this.customTooltip) {
+                    this.customTooltip.textContent = '已复制';
+                }
                 setTimeout(() => {
                     button.innerHTML = originalHTML;
-                    button.title = '复制代码';
-                    button.setAttribute('data-tooltip', '复制代码');
+                    button.dataset.tooltipText = '复制代码';
                 }, 2000);
             } else {
                 toastr.error('复制失败，请手动复制');
@@ -1147,6 +1162,87 @@ export class ParseMdValueConverter {
         }
         
         document.body.removeChild(textArea);
+    }
+    
+    // 自定义 tooltip 元素
+    customTooltip = null;
+    
+    // 显示自定义 tooltip
+    showCustomTooltip(element, text) {
+        // 如果已有 tooltip，先移除
+        this.hideCustomTooltip();
+        
+        // 确保 element 可能是内部的 icon 元素，需要获取按钮元素
+        let buttonElement = element;
+        while (buttonElement) {
+            if (buttonElement.classList && 
+                (buttonElement.classList.contains('ui') || buttonElement.classList.contains('button'))) {
+                break;
+            }
+            buttonElement = buttonElement.parentElement;
+        }
+        if (!buttonElement) {
+            buttonElement = element;
+        }
+        
+        // 创建 tooltip 元素
+        const tooltip = document.createElement('div');
+        tooltip.className = 'custom-mermaid-tooltip';
+        tooltip.style.cssText = `
+            position: fixed;
+            background: #1b1c1d;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 9999;
+            pointer-events: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            visibility: hidden;
+        `;
+        tooltip.textContent = text;
+        
+        // 添加小箭头
+        const arrow = document.createElement('div');
+        arrow.style.cssText = `
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #1b1c1d;
+        `;
+        tooltip.appendChild(arrow);
+        
+        // 添加 tooltip 到 body
+        document.body.appendChild(tooltip);
+        this.customTooltip = tooltip;
+        
+        // 计算并设置 tooltip 位置
+        const rect = buttonElement.getBoundingClientRect();
+        const tooltipRect = tooltip.getBoundingClientRect();
+        
+        // 计算水平居中位置
+        const left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+        
+        // 计算垂直位置（在元素上方）
+        const top = rect.top - tooltipRect.height - 8;
+        
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+        tooltip.style.visibility = 'visible';
+    }
+    
+    // 隐藏自定义 tooltip
+    hideCustomTooltip() {
+        if (this.customTooltip) {
+            this.customTooltip.remove();
+            this.customTooltip = null;
+        }
     }
 }
 
