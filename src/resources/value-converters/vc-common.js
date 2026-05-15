@@ -336,8 +336,8 @@ export class ParseMdValueConverter {
             }
         });
         
-        // 鼠标滚轮缩放支持
-        svg.addEventListener('wheel', (e) => {
+        // 鼠标滚轮缩放支持（以鼠标位置为缩放中心，支持鼠标在容器范围内任意位置）
+        element.addEventListener('wheel', (e) => {
             // 检查是否处于全屏模式
             const isFullscreen = document.fullscreenElement === element || 
                                document.mozFullScreenElement === element || 
@@ -346,6 +346,15 @@ export class ParseMdValueConverter {
             
             // 全屏模式下直接缩放，非全屏模式需要按下 Ctrl 键或 Cmd 键
             if (isFullscreen || e.ctrlKey || e.metaKey) {
+                // 检查鼠标是否在容器范围内
+                const rect = element.getBoundingClientRect();
+                const isInsideContainer = e.clientX >= rect.left && e.clientX <= rect.right &&
+                                       e.clientY >= rect.top && e.clientY <= rect.bottom;
+                
+                if (!isInsideContainer) {
+                    return; // 鼠标不在容器范围内，不触发缩放
+                }
+                
                 e.preventDefault();
                 
                 // 根据滚轮滚动量计算缩放比例
@@ -359,12 +368,28 @@ export class ParseMdValueConverter {
                     let translateX = parseFloat(svgElement.dataset.translateX) || 0;
                     let translateY = parseFloat(svgElement.dataset.translateY) || 0;
                     
-                    scale *= scaleChange;
-                    scale = Math.max(0.5, Math.min(5, scale)); // 限制缩放范围
-                    // 不重置偏移，支持自由画布
+                    // 获取视窗尺寸
+                    const viewportWidth = rect.width;
+                    const viewportHeight = rect.height;
                     
-                    svgElement.dataset.scale = scale;
-                    this.updateTransform(svgElement, scale, translateX, translateY);
+                    // 计算鼠标相对于容器视窗中心的位置
+                    const mouseX = e.clientX - rect.left - viewportWidth / 2;
+                    const mouseY = e.clientY - rect.top - viewportHeight / 2;
+                    
+                    // 计算新的缩放比例
+                    const newScale = Math.max(0.5, Math.min(5, scale * scaleChange));
+                    
+                    // 以鼠标位置为缩放中心
+                    // 公式：newTranslate = oldTranslate * ratio + mouseOffset * (1 - ratio)
+                    const ratio = newScale / scale;
+                    translateX = translateX * ratio + mouseX * (1 - ratio);
+                    translateY = translateY * ratio + mouseY * (1 - ratio);
+                    
+                    svgElement.dataset.scale = newScale;
+                    svgElement.dataset.translateX = translateX;
+                    svgElement.dataset.translateY = translateY;
+                    
+                    this.updateTransform(svgElement, newScale, translateX, translateY);
                 }
             }
         }, { passive: false });
@@ -419,26 +444,37 @@ export class ParseMdValueConverter {
     
     // 更新 SVG transform
     updateTransform(svg, scale, translateX, translateY) {
-        svg.style.transform = `scale(${scale}) translate(${translateX / scale}px, ${translateY / scale}px)`;
-        svg.style.transformOrigin = '0 0';
+        svg.style.transform = `scale(${scale})`;
+        svg.style.transformOrigin = 'center center';
+        svg.style.position = 'relative';
+        svg.style.left = `${translateX}px`;
+        svg.style.top = `${translateY}px`;
     }
     
-    // 放大
+    // 放大（以视窗中心为缩放中心）
     zoomIn(element) {
         const svg = element.querySelector('svg');
         if (svg) {
             let scale = parseFloat(svg.dataset.scale) || 1;
-            const translateX = parseFloat(svg.dataset.translateX) || 0;
-            const translateY = parseFloat(svg.dataset.translateY) || 0;
+            let translateX = parseFloat(svg.dataset.translateX) || 0;
+            let translateY = parseFloat(svg.dataset.translateY) || 0;
             
-            scale = Math.min(scale * 1.2, 5); // 最大放大到 5 倍
-            svg.dataset.scale = scale;
+            const newScale = Math.min(scale * 1.2, 5); // 最大放大到 5 倍
             
-            this.updateTransform(svg, scale, translateX, translateY);
+            // 以视窗中心为缩放中心
+            // translateX, translateY 相对于视窗中心的位置
+            translateX *= (newScale / scale);
+            translateY *= (newScale / scale);
+            
+            svg.dataset.scale = newScale;
+            svg.dataset.translateX = translateX;
+            svg.dataset.translateY = translateY;
+            
+            this.updateTransform(svg, newScale, translateX, translateY);
         }
     }
     
-    // 缩小
+    // 缩小（以视窗中心为缩放中心）
     zoomOut(element) {
         const svg = element.querySelector('svg');
         if (svg) {
@@ -446,19 +482,23 @@ export class ParseMdValueConverter {
             let translateX = parseFloat(svg.dataset.translateX) || 0;
             let translateY = parseFloat(svg.dataset.translateY) || 0;
             
-            scale = Math.max(scale / 1.2, 0.5); // 最小缩小到 0.5 倍
+            const newScale = Math.max(scale / 1.2, 0.5); // 最小缩小到 0.5 倍
             
             // 如果缩小到 1 以下，重置偏移
-            if (scale <= 1) {
+            if (newScale <= 1) {
                 translateX = 0;
                 translateY = 0;
-                svg.dataset.translateX = 0;
-                svg.dataset.translateY = 0;
+            } else {
+                // 以视窗中心为缩放中心
+                translateX *= (newScale / scale);
+                translateY *= (newScale / scale);
             }
             
-            svg.dataset.scale = scale;
+            svg.dataset.scale = newScale;
+            svg.dataset.translateX = translateX;
+            svg.dataset.translateY = translateY;
             
-            this.updateTransform(svg, scale, translateX, translateY);
+            this.updateTransform(svg, newScale, translateX, translateY);
         }
     }
     
