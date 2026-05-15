@@ -376,8 +376,8 @@ export class ParseMdValueConverter {
                     const mouseX = e.clientX - rect.left - viewportWidth / 2;
                     const mouseY = e.clientY - rect.top - viewportHeight / 2;
                     
-                    // 计算新的缩放比例
-                    const newScale = Math.max(0.5, Math.min(5, scale * scaleChange));
+                    // 计算新的缩放比例（无限缩放）
+                    const newScale = scale * scaleChange;
                     
                     // 以鼠标位置为缩放中心
                     // 公式：newTranslate = oldTranslate * ratio + mouseOffset * (1 - ratio)
@@ -459,7 +459,7 @@ export class ParseMdValueConverter {
             let translateX = parseFloat(svg.dataset.translateX) || 0;
             let translateY = parseFloat(svg.dataset.translateY) || 0;
             
-            const newScale = Math.min(scale * 1.2, 5); // 最大放大到 5 倍
+            const newScale = scale * 1.2; // 无限放大
             
             // 以视窗中心为缩放中心
             // translateX, translateY 相对于视窗中心的位置
@@ -482,17 +482,11 @@ export class ParseMdValueConverter {
             let translateX = parseFloat(svg.dataset.translateX) || 0;
             let translateY = parseFloat(svg.dataset.translateY) || 0;
             
-            const newScale = Math.max(scale / 1.2, 0.5); // 最小缩小到 0.5 倍
+            const newScale = scale / 1.2; // 无限缩小
             
-            // 如果缩小到 1 以下，重置偏移
-            if (newScale <= 1) {
-                translateX = 0;
-                translateY = 0;
-            } else {
-                // 以视窗中心为缩放中心
-                translateX *= (newScale / scale);
-                translateY *= (newScale / scale);
-            }
+            // 以视窗中心为缩放中心
+            translateX *= (newScale / scale);
+            translateY *= (newScale / scale);
             
             svg.dataset.scale = newScale;
             svg.dataset.translateX = translateX;
