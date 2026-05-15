@@ -148,6 +148,11 @@ export class ParseMdValueConverter {
                 // 设置 mermaid 元素为相对定位和溢出隐藏，防止图表超出
                 mermaidElement.style.position = 'relative';
                 mermaidElement.style.overflow = 'hidden';
+                // 禁用文本选择，防止拖拽时文字被选中
+                mermaidElement.style.userSelect = 'none';
+                mermaidElement.style.webkitUserSelect = 'none';
+                mermaidElement.style.mozUserSelect = 'none';
+                mermaidElement.style.msUserSelect = 'none';
                 
                 // 设置 SVG 容器样式，支持拖拽
                 const svg = mermaidElement.querySelector('svg');
@@ -160,6 +165,11 @@ export class ParseMdValueConverter {
                     // 设置 SVG 样式，支持拖拽
                     svg.style.cursor = 'grab';
                     svg.style.display = 'block';
+                    // 禁用 SVG 内文本选择
+                    svg.style.userSelect = 'none';
+                    svg.style.webkitUserSelect = 'none';
+                    svg.style.mozUserSelect = 'none';
+                    svg.style.msUserSelect = 'none';
                 }
                 
                 // 创建工具栏容器
@@ -281,24 +291,26 @@ export class ParseMdValueConverter {
             return { width: bbox.width + bbox.x, height: bbox.height + bbox.y };
         };
         
-        svg.addEventListener('mousedown', (e) => {
-            const scale = parseFloat(svg.dataset.scale) || 1;
-            // 只有放大时才允许拖拽
-            if (scale > 1) {
-                isDragging = true;
-                svg.style.cursor = 'grabbing';
-                startX = e.clientX;
-                startY = e.clientY;
-                startTranslateX = parseFloat(svg.dataset.translateX) || 0;
-                startTranslateY = parseFloat(svg.dataset.translateY) || 0;
-                
-                // 保存原始尺寸
-                const size = getSvgOriginalSize();
-                originalWidth = size.width;
-                originalHeight = size.height;
-                
-                e.preventDefault();
+        // 在整个容器上绑定鼠标按下事件，支持非图表区域拖拽
+        element.addEventListener('mousedown', (e) => {
+            // 忽略工具栏上的点击
+            if (e.target.closest('.mermaid-toolbar')) {
+                return;
             }
+            
+            isDragging = true;
+            svg.style.cursor = 'grabbing';
+            startX = e.clientX;
+            startY = e.clientY;
+            startTranslateX = parseFloat(svg.dataset.translateX) || 0;
+            startTranslateY = parseFloat(svg.dataset.translateY) || 0;
+            
+            // 保存原始尺寸
+            const size = getSvgOriginalSize();
+            originalWidth = size.width;
+            originalHeight = size.height;
+            
+            e.preventDefault();
         });
         
         document.addEventListener('mousemove', (e) => {
@@ -309,18 +321,11 @@ export class ParseMdValueConverter {
                 let newTranslateX = startTranslateX + dx;
                 let newTranslateY = startTranslateY + dy;
                 
-                // 限制拖拽范围
-                const scale = parseFloat(svg.dataset.scale) || 1;
-                const maxTranslateX = (originalWidth * (scale - 1)) / 2;
-                const maxTranslateY = (originalHeight * (scale - 1)) / 2;
-                
-                newTranslateX = Math.max(-maxTranslateX, Math.min(maxTranslateX, newTranslateX));
-                newTranslateY = Math.max(-maxTranslateY, Math.min(maxTranslateY, newTranslateY));
-                
+                // 不限制拖拽范围，实现自由画布
                 svg.dataset.translateX = newTranslateX;
                 svg.dataset.translateY = newTranslateY;
                 
-                this.updateTransform(svg, scale, newTranslateX, newTranslateY);
+                this.updateTransform(svg, parseFloat(svg.dataset.scale) || 1, newTranslateX, newTranslateY);
             }
         });
         
@@ -356,14 +361,7 @@ export class ParseMdValueConverter {
                     
                     scale *= scaleChange;
                     scale = Math.max(0.5, Math.min(5, scale)); // 限制缩放范围
-                    
-                    // 如果缩小到 1 以下，重置偏移
-                    if (scale <= 1) {
-                        translateX = 0;
-                        translateY = 0;
-                        svgElement.dataset.translateX = 0;
-                        svgElement.dataset.translateY = 0;
-                    }
+                    // 不重置偏移，支持自由画布
                     
                     svgElement.dataset.scale = scale;
                     this.updateTransform(svgElement, scale, translateX, translateY);
@@ -371,10 +369,14 @@ export class ParseMdValueConverter {
             }
         }, { passive: false });
         
-        // 触摸事件支持
-        svg.addEventListener('touchstart', (e) => {
-            const scale = parseFloat(svg.dataset.scale) || 1;
-            if (scale > 1 && e.touches.length === 1) {
+        // 触摸事件支持 - 在整个容器上绑定，支持非图表区域拖拽
+        element.addEventListener('touchstart', (e) => {
+            // 忽略工具栏上的点击
+            if (e.target.closest('.mermaid-toolbar')) {
+                return;
+            }
+            
+            if (e.touches.length === 1) {
                 isDragging = true;
                 svg.style.cursor = 'grabbing';
                 startX = e.touches[0].clientX;
@@ -399,17 +401,11 @@ export class ParseMdValueConverter {
                 let newTranslateX = startTranslateX + dx;
                 let newTranslateY = startTranslateY + dy;
                 
-                const scale = parseFloat(svg.dataset.scale) || 1;
-                const maxTranslateX = (originalWidth * (scale - 1)) / 2;
-                const maxTranslateY = (originalHeight * (scale - 1)) / 2;
-                
-                newTranslateX = Math.max(-maxTranslateX, Math.min(maxTranslateX, newTranslateX));
-                newTranslateY = Math.max(-maxTranslateY, Math.min(maxTranslateY, newTranslateY));
-                
+                // 不限制拖拽范围，实现自由画布
                 svg.dataset.translateX = newTranslateX;
                 svg.dataset.translateY = newTranslateY;
                 
-                this.updateTransform(svg, scale, newTranslateX, newTranslateY);
+                this.updateTransform(svg, parseFloat(svg.dataset.scale) || 1, newTranslateX, newTranslateY);
             }
         }, { passive: false });
         
@@ -424,7 +420,7 @@ export class ParseMdValueConverter {
     // 更新 SVG transform
     updateTransform(svg, scale, translateX, translateY) {
         svg.style.transform = `scale(${scale}) translate(${translateX / scale}px, ${translateY / scale}px)`;
-        svg.style.transformOrigin = 'center center';
+        svg.style.transformOrigin = '0 0';
     }
     
     // 放大
