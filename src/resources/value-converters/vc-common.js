@@ -1008,6 +1008,7 @@ export class ParseMdValueConverter {
                 font-size: 13px;
                 line-height: 1.6;
                 color: #374151;
+                max-height: 300px;
             `;
             codeElement.textContent = sourceCode;
             
