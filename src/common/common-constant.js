@@ -109,4 +109,5 @@ window.nsCons = {
     KEY_CHAT_NEW_MSG_CNT: 'tms/chat/new_msg_cnt',
     KEY_CHAT_NEW_AT_MSG_CNT: 'tms/chat/new_at_msg_cnt',
     WIDTH_RIGHT_BAR: 300,
+    WIDTH_LEFT_BAR: 300,
 }

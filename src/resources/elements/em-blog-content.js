@@ -1365,6 +1365,12 @@ export class EmBlogContent {
             // 退出全屏阅读模式
             $('body').removeClass('blog-fullscreen-mode');
             $('.em-blog-content').removeClass('fullscreen-content');
+            
+            if ($('.tms-blog').hasClass('right-sidebar-show')) {
+                $('.em-blog-content').width($(window).width() - $('.em-blog-left-sidebar').width() - $('.em-blog-right-sidebar').width() - 32);
+            } else {
+                $('.em-blog-content').width($(window).width() - $('.em-blog-left-sidebar').width() - 32);
+            }
 
             // 移除iframe按键监听
             iframeDoc && iframeDoc.removeEventListener('keydown', this.exitFullscreenHandler, true);
@@ -1425,7 +1431,14 @@ export class EmBlogContent {
             this.isFullscreen = false;
             $('body').removeClass('blog-fullscreen-mode');
             $('.em-blog-content').removeClass('fullscreen-content');
-            
+
+            if ($('.tms-blog').hasClass('right-sidebar-show')) {
+                $('.em-blog-content').width($(window).width() - $('.em-blog-left-sidebar').width() - $('.em-blog-right-sidebar').width() - 32);
+            } else {
+                $('.em-blog-content').width($(window).width() - $('.em-blog-left-sidebar').width() - 32);
+            }
+
+           
             // 移除iframe按键监听
             const iframe = $('.em-blog-main iframe')[0];
             const iframeDoc = !iframe ? null : (iframe.contentDocument || iframe.contentWindow.document);
