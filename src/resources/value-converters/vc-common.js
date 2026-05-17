@@ -996,7 +996,6 @@ export class ParseMdValueConverter {
                 padding: 16px;
                 overflow: auto;
                 position: relative;
-                z-index: 1;
             `;
             
             // 创建代码显示
