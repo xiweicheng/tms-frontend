@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="description"
+        content="TMS（Team Management System）是一套免费开源的团队协作 Web 系统，覆盖团队沟通、博文知识库与国际化翻译三大场景。" />
+    <meta name="keywords"
+        content="tms,chat,wiki,translation,blog,markdown,team,aurelia,teamwork,团队协作,知识库,博文,国际化翻译" />
+    <title>TMS · 团队协作系统前端</title>
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234d394b'/%3E%3Ctext x='50' y='68' font-family='Arial,sans-serif' font-size='52' font-weight='bold' text-anchor='middle' fill='white'%3ET%3C/text%3E%3C/svg%3E"
+        type="image/x-icon" />
+    <style>
+        :root {
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --surface-2: #f5f3f1;
+            --sidebar: #4d394b;
+            --sidebar-2: #3d2c3b;
+            --text: #2f2f2f;
+            --text-muted: #6b6b6b;
+            --text-light: rgba(255, 255, 255, 0.92);
+            --text-light-muted: rgba(255, 255, 255, 0.62);
+            --accent: #4183c4;
+            --accent-2: #5aa1e8;
+            --accent-soft: rgba(65, 131, 196, 0.12);
+            --border: #ebebeb;
+            --code-bg: #1e1e1e;
+            --code-text: #e6e6e6;
+            --shadow-sm: 0 1px 2px rgba(15, 15, 15, 0.06), 0 1px 1px rgba(15, 15, 15, 0.04);
+            --shadow-md: 0 4px 14px rgba(15, 15, 15, 0.08);
+            --shadow-lg: 0 18px 50px rgba(15, 15, 15, 0.12);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #1a1a1a;
+                --surface: #242424;
+                --surface-2: #2e2e2e;
+                --text: #e6e6e6;
+                --text-muted: #a0a0a0;
+                --border: #333;
+                --accent-soft: rgba(90, 161, 232, 0.18);
+                --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+                --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4);
+                --shadow-lg: 0 18px 50px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        a:hover {
+            color: var(--accent-2);
+            text-decoration: underline;
+        }
+
+        /* ===== 顶栏 ===== */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: saturate(180%) blur(14px);
+            -webkit-backdrop-filter: saturate(180%) blur(14px);
+            background: rgba(250, 250, 250, 0.78);
+            border-bottom: 1px solid var(--border);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .topbar {
+                background: rgba(26, 26, 26, 0.78);
+            }
+        }
+
+        .topbar-inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--text);
+        }
+
+        .brand:hover {
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--sidebar), var(--sidebar-2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand-sub {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-left: 2px;
+        }
+
+        .topbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .topbar-nav a {
+            padding: 8px 14px;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+
+        .topbar-nav a:hover {
+            background: var(--surface-2);
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .topbar-cta {
+            padding: 8px 16px;
+            background: var(--accent);
+            color: #fff !important;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .topbar-cta:hover {
+            background: var(--accent-2);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .topbar-nav a:not(.topbar-cta) {
+                display: none;
+            }
+        }
+
+        /* ===== Hero ===== */
+        .hero {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 90px 24px 60px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: clamp(36px, 6vw, 64px);
+            line-height: 1.1;
+            margin: 0 0 24px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 .grad {
+            background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: clamp(16px, 2vw, 19px);
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto 36px;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.18s ease;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-2);
+            color: #fff;
+            text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-ghost {
+            background: var(--surface);
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        .btn-ghost:hover {
+            background: var(--surface-2);
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        /* ===== 通用 section ===== */
+        .section {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 64px 24px;
+        }
+
+        .section-head {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-head h2 {
+            font-size: clamp(28px, 4vw, 36px);
+            margin: 0 0 12px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .section-head p {
+            color: var(--text-muted);
+            font-size: 16px;
+            margin: 0;
+        }
+
+        /* ===== 特性卡片 ===== */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 28px;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .feature:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent);
+        }
+
+        .feature-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+
+        .feature h3 {
+            margin: 0 0 8px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .feature p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ===== 技术栈 ===== */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+        }
+
+        .tech-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.15s ease;
+        }
+
+        .tech-item:hover {
+            background: var(--surface-2);
+            border-color: var(--accent);
+        }
+
+        .tech-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .tech-desc {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .tech-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: var(--surface-2);
+            color: var(--text-muted);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* ===== 架构图 ===== */
+        .arch {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 36px;
+            box-shadow: var(--shadow-sm);
+            overflow-x: auto;
+        }
+
+        .arch-flow {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            min-width: 720px;
+        }
+
+        .arch-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .arch-col-title {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+        }
+
+        .arch-box {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.15s ease;
+        }
+
+        .arch-box.accent {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .arch-box:hover {
+            border-color: var(--accent);
+        }
+
+        .arch-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 14px;
+            color: var(--text-muted);
+            font-size: 20px;
+        }
+
+        /* ===== 代码块 ===== */
+        .code-block {
+            background: var(--code-bg);
+            color: var(--code-text);
+            border-radius: var(--radius-md);
+            padding: 22px 24px;
+            font-family: "SF Mono", Monaco, Menlo, Consolas, "Liberation Mono", monospace;
+            font-size: 13.5px;
+            line-height: 1.7;
+            overflow-x: auto;
+            box-shadow: var(--shadow-md);
+        }
+
+        .code-comment {
+            color: #6a9955;
+        }
+
+        .code-keyword {
+            color: #569cd6;
+        }
+
+        .code-string {
+            color: #ce9178;
+        }
+
+        .code-fn {
+            color: #dcdcaa;
+        }
+
+        .code-prop {
+            color: #9cdcfe;
+        }
+
+        /* ===== 模块列表 ===== */
+        .modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .module {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .module-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .module-name {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .module-path {
+            font-family: "SF Mono", Monaco, Menlo, monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--surface-2);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .module-desc {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 0 0 14px;
+        }
+
+        .module-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 13.5px;
+        }
+
+        .module-list li {
+            padding: 6px 0;
+            border-bottom: 1px dashed var(--border);
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .module-list li:last-child {
+            border-bottom: none;
+        }
+
+        .module-list code {
+            font-family: "SF Mono", Monaco, Menlo, monospace;
+            font-size: 12.5px;
+            color: var(--accent);
+            background: var(--accent-soft);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        .module-list .desc {
+            color: var(--text-muted);
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        /* ===== 编辑器卡片 ===== */
+        .editors {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .editor-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 22px;
+            text-align: center;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .editor-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent);
+        }
+
+        .editor-emoji {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .editor-card h4 {
+            margin: 0 0 6px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .editor-card p {
+            margin: 0 0 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .editor-card .lib {
+            font-family: "SF Mono", Monaco, Menlo, monospace;
+            font-size: 12px;
+            color: var(--accent);
+            background: var(--accent-soft);
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* ===== 快速开始 ===== */
+        .steps {
+            counter-reset: step;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .step {
+            position: relative;
+            padding: 20px 0 20px 56px;
+            border-left: 2px solid var(--border);
+            margin-left: 20px;
+        }
+
+        .step:last-child {
+            border-left-color: transparent;
+        }
+
+        .step::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: -19px;
+            top: 22px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 0 0 4px var(--bg);
+        }
+
+        .step h4 {
+            margin: 0 0 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .step p {
+            margin: 0 0 10px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* ===== 统计 ===== */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+            text-align: center;
+            margin-top: 48px;
+        }
+
+        .stat-num {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* ===== 页脚 ===== */
+        .footer {
+            border-top: 1px solid var(--border);
+            background: var(--surface);
+            padding: 40px 24px;
+            margin-top: 40px;
+        }
+
+        .footer-inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-text {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 18px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 640px) {
+            .hero {
+                padding: 60px 20px 40px;
+            }
+
+            .section {
+                padding: 48px 20px;
+            }
+
+            .arch {
+                padding: 24px 18px;
+            }
+
+            .code-block {
+                font-size: 12.5px;
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 顶栏 -->
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a href="#top" class="brand">
+                <span class="brand-logo">T</span>
+                <span>TMS <span class="brand-sub">/ 团队协作系统</span></span>
+            </a>
+            <nav class="topbar-nav">
+                <a href="#features">特性</a>
+                <a href="#tech">技术栈</a>
+                <a href="#architecture">架构</a>
+                <a href="#modules">模块</a>
+                <a href="#editors">编辑器</a>
+                <a href="#start">快速开始</a>
+                <a href="https://github.com/xiweicheng/tms-frontend" target="_blank"
+                    rel="noopener" class="topbar-cta">GitHub</a>
+            </nav>
+        </div>
+    </header>
+
+    <a id="top"></a>
+
+    <!-- Hero -->
+    <section class="hero">
+        <span class="hero-badge">开源 · Aurelia + jQuery + Semantic UI</span>
+        <h1>让团队协作<span class="grad">简单而高效</span></h1>
+        <p>
+            TMS（Team Management System）是一套免费开源的团队协作 Web 系统，覆盖<strong>团队沟通</strong>、<strong>博文知识库</strong>与<strong>国际化翻译</strong>三大场景，采用响应式设计并完整适配移动端。
+        </p>
+        <div class="hero-actions">
+            <a href="#start" class="btn btn-primary">快速开始 →</a>
+            <a href="https://github.com/xiweicheng/tms-frontend" target="_blank" rel="noopener"
+                class="btn btn-ghost">查看源码</a>
+        </div>
+
+        <div class="stats">
+            <div>
+                <div class="stat-num">70+</div>
+                <div class="stat-label">自定义组件</div>
+            </div>
+            <div>
+                <div class="stat-num">6</div>
+                <div class="stat-label">HTML 编辑器</div>
+            </div>
+            <div>
+                <div class="stat-num">20+</div>
+                <div class="stat-label">自定义属性</div>
+            </div>
+            <div>
+                <div class="stat-num">3</div>
+                <div class="stat-label">核心业务模块</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特性 -->
+    <section class="section" id="features">
+        <div class="section-head">
+            <h2>核心特性</h2>
+            <p>开箱即用的团队协作能力，覆盖沟通、知识与任务协作</p>
+        </div>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">💬</div>
+                <h3>实时团队沟通</h3>
+                <p>基于 SockJS + STOMP 的 WebSocket 实时通信，支持私聊、频道群聊、@ 提及、消息回复、消息搜索与过滤、文件附件、富文本与 Markdown 输入。</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📚</div>
+                <h3>博文知识库</h3>
+                <p>多空间、多层级目录的博文管理，支持 Markdown / 富文本 / 表格 / 思维导图 / 白板 / Excel / 流程图七种编辑器，版本历史与 diff 对比、评论与分享。</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🗂️</div>
+                <h3>看板任务管理</h3>
+                <p>频道内的看板式任务流（待规划 / 待处理 / 进行中 / 已完成 / 已验收），支持任务标签、任务讨论、跨频道任务面板、拖拽排序。</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📅</div>
+                <h3>日程与甘特图</h3>
+                <p>FullCalendar 日程视图、自定义提前提醒、WebSocket 日程变更推送、甘特图编辑，让团队节奏一目了然。</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📱</div>
+                <h3>全端响应式</h3>
+                <p>viewport 锁定缩放、移动端布局自动切换、侧边栏折叠、触摸友好的交互，一套代码覆盖桌面与移动端。</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🌐</div>
+                <h3>国际化翻译</h3>
+                <p>内置 i18n 翻译工作流，配合博文知识库沉淀多语言资源，助力跨地域团队协作。</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔔</div>
+                <h3>多通道通知</h3>
+                <p>桌面通知（push.js）、声音提醒（alert.mp3/ogg）、Toastr 气泡、未读消息角标，关键消息不遗漏。</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔌</div>
+                <h3>事件总线架构</h3>
+                <p>基于 Aurelia EventAggregator 的全局事件总线，统一编排 90+ 事件名，组件解耦清晰，扩展容易。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技术栈 -->
+    <section class="section" id="tech">
+        <div class="section-head">
+            <h2>技术栈</h2>
+            <p>成熟稳定的前端技术组合</p>
+        </div>
+        <div class="tech-grid">
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">Aurelia 1.x</div>
+                    <div class="tech-desc">核心 MVVM 框架</div>
+                </div>
+                <span class="tech-tag">框架</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">aurelia-cli + Gulp 4</div>
+                    <div class="tech-desc">构建与脚手架</div>
+                </div>
+                <span class="tech-tag">构建</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">Babel</div>
+                    <div class="tech-desc">ES2015 + stage-1 + 装饰器</div>
+                </div>
+                <span class="tech-tag">编译</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">Semantic UI</div>
+                    <div class="tech-desc">tms-semantic-ui 衍生</div>
+                </div>
+                <span class="tech-tag">UI</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">jQuery 1.x</div>
+                    <div class="tech-desc">DOM 操作与插件</div>
+                </div>
+                <span class="tech-tag">DOM</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">Lodash 4.x</div>
+                    <div class="tech-desc">工具函数库</div>
+                </div>
+                <span class="tech-tag">工具</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">LESS</div>
+                    <div class="tech-desc">样式预处理</div>
+                </div>
+                <span class="tech-tag">样式</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">SockJS + STOMP</div>
+                    <div class="tech-desc">WebSocket 实时通信</div>
+                </div>
+                <span class="tech-tag">通信</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">SimpleMDE / marked</div>
+                    <div class="tech-desc">Markdown 编辑与渲染</div>
+                </div>
+                <span class="tech-tag">编辑</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">Luckysheet / x-spreadsheet</div>
+                    <div class="tech-desc">电子表格</div>
+                </div>
+                <span class="tech-tag">表格</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">Excalidraw</div>
+                    <div class="tech-desc">手绘白板（React）</div>
+                </div>
+                <span class="tech-tag">白板</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">mind-elixir-core</div>
+                    <div class="tech-desc">思维导图</div>
+                </div>
+                <span class="tech-tag">导图</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">FullCalendar 3</div>
+                    <div class="tech-desc">日历视图</div>
+                </div>
+                <span class="tech-tag">日历</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">Dropzone</div>
+                    <div class="tech-desc">文件拖拽上传</div>
+                </div>
+                <span class="tech-tag">上传</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">highlight.js</div>
+                    <div class="tech-desc">代码高亮</div>
+                </div>
+                <span class="tech-tag">高亮</span>
+            </div>
+            <div class="tech-item">
+                <div>
+                    <div class="tech-name">push.js + Toastr</div>
+                    <div class="tech-desc">桌面通知 + 气泡提示</div>
+                </div>
+                <span class="tech-tag">通知</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 架构 -->
+    <section class="section" id="architecture">
+        <div class="section-head">
+            <h2>系统架构</h2>
+            <p>从浏览器入口到后端 API 的完整数据流</p>
+        </div>
+        <div class="arch">
+            <div class="arch-flow">
+                <div class="arch-col">
+                    <div class="arch-col-title">浏览器入口</div>
+                    <div class="arch-box accent">index.html</div>
+                    <div class="arch-box">aurelia-bootstrapper</div>
+                    <div class="arch-box">main.js</div>
+                    <div class="arch-box">App 根组件 + 路由</div>
+                </div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-col">
+                    <div class="arch-col-title">业务页面</div>
+                    <div class="arch-box">chat/chat</div>
+                    <div class="arch-box">blog/blog</div>
+                    <div class="arch-box">user/login · register · pwd-reset</div>
+                    <div class="arch-box">test/test-lifecycle</div>
+                </div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-col">
+                    <div class="arch-col-title">资源系统</div>
+                    <div class="arch-box">em-* 自定义元素 (70+)</div>
+                    <div class="arch-box">attr-* 自定义属性 (20+)</div>
+                    <div class="arch-box">vc-common 值转换器</div>
+                    <div class="arch-box">bb-key 绑定行为</div>
+                </div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-col">
+                    <div class="arch-col-title">公共能力</div>
+                    <div class="arch-box">common-poll 自适应轮询</div>
+                    <div class="arch-box">EventAggregator 事件总线</div>
+                    <div class="arch-box">nsCtx 全局上下文</div>
+                    <div class="arch-box">nsCons 常量与事件名</div>
+                </div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-col">
+                    <div class="arch-col-title">后端 TMS</div>
+                    <div class="arch-box accent">/admin/* REST API</div>
+                    <div class="arch-box">/ws SockJS+STOMP</div>
+                    <div class="arch-box">/admin/file/* 文件</div>
+                    <div class="arch-box">kkfileview 在线预览</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 通信协议代码示例 -->
+    <section class="section">
+        <div class="section-head">
+            <h2>事件总线与通信</h2>
+            <p>统一的组件解耦与 iframe 编辑器通信协议</p>
+        </div>
+        <div style="max-width:820px;margin:0 auto;">
+            <div class="code-block">
+<span class="code-comment">// 1. 事件总线：发布 / 订阅（全局变量 ea 来自 Aurelia EventAggregator）</span>
+<span class="code-keyword">this</span>.<span class="code-prop">subscribe</span> = <span class="code-prop">ea</span>.<span class="code-fn">subscribe</span>(<span class="code-prop">nsCons</span>.<span class="code-property">EVENT_BLOG_CHANGED</span>, (<span class="code-prop">payload</span>) => {
+    <span class="code-keyword">if</span> (payload.<span class="code-prop">action</span> === <span class="code-string">'updated'</span>) {
+        <span class="code-fn">_</span>.<span class="code-fn">extend</span>(<span class="code-keyword">this</span>.<span class="code-prop">blog</span>, payload.<span class="code-prop">blog</span>);
+    }
+});
+
+<span class="code-comment">// 2. iframe 编辑器 postMessage 通信协议</span>
+<span class="code-comment">// 子窗口 → 父窗口</span>
+<span class="code-prop">window</span>.<span class="code-prop">parent</span>.<span class="code-fn">postMessage</span>({
+    <span class="code-prop">action</span>: <span class="code-string">'created'</span> | <span class="code-string">'updated'</span> | <span class="code-string">'isUpdated'</span>,
+    <span class="code-prop">source</span>: <span class="code-string">'blog'</span> | <span class="code-string">'comment'</span>,
+    <span class="code-prop">data</span>: {}
+}, <span class="code-prop">window</span>.<span class="code-prop">location</span>.<span class="code-prop">origin</span>);
+
+<span class="code-comment">// 3. 自适应轮询：6s 起步，无数据递增到 5min 上限</span>
+<span class="code-prop">poll</span>.<span class="code-fn">start</span>((reset, stop) => {
+    <span class="code-keyword">return</span> <span class="code-fn">fetchLatest</span>().<span class="code-fn">then</span>(data => {
+        <span class="code-keyword">if</span> (data.<span class="code-prop">hasNew</span>) <span class="code-fn">reset</span>();  <span class="code-comment">// 有新数据 → 恢复 6s</span>
+    });
+});
+            </div>
+        </div>
+    </section>
+
+    <!-- 模块 -->
+    <section class="section" id="modules">
+        <div class="section-head">
+            <h2>核心模块</h2>
+            <p>三大业务模块 + 公共能力层</p>
+        </div>
+        <div class="modules">
+            <div class="module">
+                <div class="module-head">
+                    <span class="module-name">💬 聊天 chat</span>
+                    <span class="module-path">src/chat/</span>
+                </div>
+                <p class="module-desc">私聊、频道群聊、@ 提及、消息回复、富文本输入</p>
+                <ul class="module-list">
+                    <li><code>chat.js</code><span class="desc">路由页面 + SockJS 初始化</span></li>
+                    <li><code>chat-service.js</code><span class="desc">单例 Service，带缓存</span></li>
+                    <li><code>chat.html</code><span class="desc">三栏布局</span></li>
+                    <li><code>em-chat-input</code><span class="desc">SimpleMDE + Dropzone 输入</span></li>
+                    <li><code>em-chat-sidebar-left/right</code><span class="desc">用户/频道列表</span></li>
+                    <li><code>em-chat-channel-*</code><span class="desc">频道创建/编辑/成员</span></li>
+                    <li><code>em-chat-schedule*</code><span class="desc">日程与提醒</span></li>
+                    <li><code>em-chat-gantt*</code><span class="desc">甘特图</span></li>
+                </ul>
+            </div>
+
+            <div class="module">
+                <div class="module-head">
+                    <span class="module-name">📚 博文 blog</span>
+                    <span class="module-path">src/blog/</span>
+                </div>
+                <p class="module-desc">多空间知识库，七种编辑器，版本历史与评论</p>
+                <ul class="module-list">
+                    <li><code>blog.js</code><span class="desc">路由页面 + 事件编排</span></li>
+                    <li><code>em-blog-left-sidebar</code><span class="desc">空间/目录/收藏</span></li>
+                    <li><code>em-blog-content</code><span class="desc">博文正文渲染</span></li>
+                    <li><code>em-blog-write*</code><span class="desc">7 种编辑器容器</span></li>
+                    <li><code>em-blog-history*</code><span class="desc">版本历史 + diff</span></li>
+                    <li><code>em-blog-comment*</code><span class="desc">评论与回复</span></li>
+                    <li><code>em-blog-space-*</code><span class="desc">空间与权限管理</span></li>
+                    <li><code>em-blog-tpl-*</code><span class="desc">博文模板</span></li>
+                </ul>
+            </div>
+
+            <div class="module">
+                <div class="module-head">
+                    <span class="module-name">🗂️ 频道任务 channel-task</span>
+                    <span class="module-path">src/resources/elements/</span>
+                </div>
+                <p class="module-desc">频道看板：待规划 → 待处理 → 进行中 → 已完成 → 已验收</p>
+                <ul class="module-list">
+                    <li><code>em-channel-task</code><span class="desc">看板主容器</span></li>
+                    <li><code>em-channel-task-create</code><span class="desc">任务创建</span></li>
+                    <li><code>em-channel-task-item-header/footer</code><span class="desc">任务卡片</span></li>
+                    <li><code>em-channel-tasks-modal</code><span class="desc">全屏任务面板</span></li>
+                    <li><code>em-channel-chat-task-talk-modal</code><span class="desc">任务讨论</span></li>
+                </ul>
+            </div>
+
+            <div class="module">
+                <div class="module-head">
+                    <span class="module-name">🧰 公共能力 common</span>
+                    <span class="module-path">src/common/</span>
+                </div>
+                <p class="module-desc">工具、常量、上下文、轮询、事件总线</p>
+                <ul class="module-list">
+                    <li><code>common-constant.js</code><span class="desc">nsCons 事件名/常量</span></li>
+                    <li><code>common-ctx.js</code><span class="desc">nsCtx 全局上下文</span></li>
+                    <li><code>common-utils.js</code><span class="desc">URL 与工具函数</span></li>
+                    <li><code>common-poll.js</code><span class="desc">自适应轮询</span></li>
+                    <li><code>common-toastr.js</code><span class="desc">Toastr 配置</span></li>
+                    <li><code>common-tips.js</code><span class="desc">Markdown 快捷输入</span></li>
+                    <li><code>common-emoji.js</code><span class="desc">Emoji 数据</span></li>
+                    <li><code>common-diff.js / paste.js</code><span class="desc">diff 与粘贴</span></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 编辑器 -->
+    <section class="section" id="editors">
+        <div class="section-head">
+            <h2>内置 HTML 编辑器</h2>
+            <p>六种独立编辑器页面，通过 iframe + postMessage 嵌入</p>
+        </div>
+        <div class="editors">
+            <div class="editor-card">
+                <div class="editor-emoji">📝</div>
+                <h4>富文本博文</h4>
+                <p>Froala 所见即所得</p>
+                <span class="lib">blog.html</span>
+            </div>
+            <div class="editor-card">
+                <div class="editor-emoji">📊</div>
+                <h4>电子表格</h4>
+                <p>功能完整的 Luckysheet</p>
+                <span class="lib">sheet.html</span>
+            </div>
+            <div class="editor-card">
+                <div class="editor-emoji">📗</div>
+                <h4>Excel</h4>
+                <p>轻量 x-spreadsheet</p>
+                <span class="lib">excel.html</span>
+            </div>
+            <div class="editor-card">
+                <div class="editor-emoji">🧠</div>
+                <h4>思维导图</h4>
+                <p>mind-elixir-core</p>
+                <span class="lib">mind.html</span>
+            </div>
+            <div class="editor-card">
+                <div class="editor-emoji">🎨</div>
+                <h4>手绘白板</h4>
+                <p>Excalidraw（React）</p>
+                <span class="lib">excalidraw.html</span>
+            </div>
+            <div class="editor-card">
+                <div class="editor-emoji">🔀</div>
+                <h4>流程图</h4>
+                <p>Draw.io iframe 嵌入</p>
+                <span class="lib">em-blog-draw</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 快速开始 -->
+    <section class="section" id="start">
+        <div class="section-head">
+            <h2>快速开始</h2>
+            <p>三步启动开发环境</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <h4>安装 aurelia-cli</h4>
+                <p>全局安装 Aurelia 命令行工具</p>
+                <div class="code-block">
+<span class="code-comment"># 全局安装 aurelia-cli</span>
+npm install aurelia-cli -g</div>
+            </div>
+            <div class="step">
+                <h4>安装工程依赖</h4>
+                <p>在项目根目录执行依赖安装</p>
+                <div class="code-block">
+<span class="code-comment"># 进入工程目录后</span>
+npm install
+<span class="code-comment"># 或使用 pnpm</span>
+pnpm install</div>
+            </div>
+            <div class="step">
+                <h4>启动开发模式</h4>
+                <p>默认带 watch + browser-sync，访问 <code>http://localhost:9000</code></p>
+                <div class="code-block">
+<span class="code-comment"># 开发模式</span>
+au run --watch
+
+<span class="code-comment"># 生产构建</span>
+au run build --env prod</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 部署 -->
+    <section class="section">
+        <div class="section-head">
+            <h2>部署到后端</h2>
+            <p>生产构建后，将工程内容（排除 node_modules）复制到 TMS 后端</p>
+        </div>
+        <div style="max-width:760px;margin:0 auto;">
+            <div class="code-block">
+<span class="code-comment"># 1. 生产构建</span>
+au run build --env prod
+
+<span class="code-comment"># 2. 复制到后端工程（排除 node_modules）</span>
+<span class="code-comment"># 目标路径：tms/src/main/resources/static/page</span>
+rsync -av --exclude=<span class="code-string">'node_modules'</span> \
+       --exclude=<span class="code-string">'.git'</span> \
+       ./ tms/src/main/resources/static/page/</div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-text">
+                TMS · Team Management System · MIT License · 基于 Aurelia 构建
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/xiweicheng/tms-frontend" target="_blank"
+                    rel="noopener">前端仓库</a>
+                <a href="https://github.com/xiweicheng/tms" target="_blank" rel="noopener">后端仓库</a>
+                <a href="http://aurelia.io" target="_blank" rel="noopener">Aurelia</a>
+                <a href="#top">回到顶部 ↑</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
