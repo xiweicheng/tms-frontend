@@ -1,6 +1,6 @@
 # TMS 前端工程
 
-> TMS（Team Management System）是一套免费开源的团队协作 Web 系统，覆盖**团队沟通（聊天）**、**博文知识库**与**国际化翻译（i18n）**三大场景，采用响应式界面设计并适配移动端。
+> TMS（Team Management System）是一套免费开源的团队协作 Web 系统，覆盖**团队沟通（聊天）**与**博文知识库**两大场景，采用响应式界面设计并适配移动端。
 
 基于 Aurelia 框架 + jQuery + Semantic UI 构建，使用 aurelia-cli 脚手架管理开发与生产构建流程。
 
