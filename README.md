@@ -4,6 +4,8 @@
 
 基于 Aurelia 框架 + jQuery + Semantic UI 构建，使用 aurelia-cli 脚手架管理开发与生产构建流程。
 
+- 前端工程（Gitee）：<https://gitee.com/xiweicheng/tms-frontend>
+- 前端工程（GitHub）：<https://github.com/xiweicheng/tms-frontend>
 - 后端工程：<https://github.com/xiweicheng/tms>
 - 框架官网：<http://aurelia.io>
 - CLI 文档：<http://aurelia.io/hub.html#/doc/article/aurelia/framework/latest/the-aurelia-cli/1>

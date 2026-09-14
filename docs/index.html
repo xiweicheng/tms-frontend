@@ -181,8 +181,17 @@
             text-decoration: none;
         }
 
+        .topbar-cta-gitee {
+            background: #c71d23;
+            margin-right: 4px;
+        }
+
+        .topbar-cta-gitee:hover {
+            background: #a5161c;
+        }
+
         @media (max-width: 768px) {
-            .topbar-nav a:not(.topbar-cta) {
+            .topbar-nav a:not(.topbar-cta):not(.topbar-cta-gitee) {
                 display: none;
             }
         }
@@ -764,6 +773,8 @@
                 <a href="#modules">模块</a>
                 <a href="#editors">编辑器</a>
                 <a href="#start">快速开始</a>
+                <a href="https://gitee.com/xiweicheng/tms-frontend" target="_blank"
+                    rel="noopener" class="topbar-cta topbar-cta-gitee">Gitee</a>
                 <a href="https://github.com/xiweicheng/tms-frontend" target="_blank"
                     rel="noopener" class="topbar-cta">GitHub</a>
             </nav>
@@ -781,8 +792,10 @@
         </p>
         <div class="hero-actions">
             <a href="#start" class="btn btn-primary">快速开始 →</a>
+            <a href="https://gitee.com/xiweicheng/tms-frontend" target="_blank" rel="noopener"
+                class="btn btn-ghost">Gitee 源码</a>
             <a href="https://github.com/xiweicheng/tms-frontend" target="_blank" rel="noopener"
-                class="btn btn-ghost">查看源码</a>
+                class="btn btn-ghost">GitHub 源码</a>
         </div>
 
         <div class="stats">
@@ -1235,8 +1248,10 @@ rsync -av --exclude=<span class="code-string">'node_modules'</span> \
                 TMS · Team Management System · MIT License · 基于 Aurelia 构建
             </div>
             <div class="footer-links">
+                <a href="https://gitee.com/xiweicheng/tms-frontend" target="_blank"
+                    rel="noopener">Gitee 前端</a>
                 <a href="https://github.com/xiweicheng/tms-frontend" target="_blank"
-                    rel="noopener">前端仓库</a>
+                    rel="noopener">GitHub 前端</a>
                 <a href="https://github.com/xiweicheng/tms" target="_blank" rel="noopener">后端仓库</a>
                 <a href="http://aurelia.io" target="_blank" rel="noopener">Aurelia</a>
                 <a href="#top">回到顶部 ↑</a>
