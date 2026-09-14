@@ -34,7 +34,7 @@
 | Markdown | SimpleMDE（fork 版本）、marked、highlight.js |
 | 实时通信 | SockJS + STOMP over WebSocket |
 | 轮询 | 自研 common-poll（自适应间隔轮询） |
-| 表格 | x-spreadsheet、Luckysheet、xlsx |
+| 表格 | Luckysheet、xlsx |
 | 思维导图 | mind-elixir-core |
 | 白板 | Excalidraw、Draw.io |
 | 日历 | FullCalendar 3.x + moment |
@@ -46,10 +46,10 @@
 tms-frontend/
 ├── index.html              # 应用入口（Aurelia bootstrapper）
 ├── blog.html               # 独立博文编辑器入口（Froala）
-├── sheet.html              # 独立电子表格编辑器（Luckysheet）
+├── sheet.html              # 独立电子表格编辑器（Luckysheet，活跃使用）
 ├── mind.html               # 独立思维导图编辑器（mind-elixir-core）
 ├── excalidraw.html         # 独立白板编辑器（Excalidraw）
-├── excel.html              # 独立 Excel 编辑器
+├── excel.html              # 已废弃的轻量 Excel 编辑器（x-spreadsheet，仅保留渲染历史文档）
 ├── deps.js                 # 第三方依赖映射（requirejs config）
 ├── package.json            # 依赖与脚本
 ├── pnpm-lock.yaml          # 依赖锁定
@@ -110,7 +110,6 @@ au run build --env prod
 | `login` | user/user-login | 登录 |
 | `chat/:username` | chat/chat | 私聊 / 频道聊天 |
 | `blog`、`blog/:id` | blog/blog | 博文知识库 |
-| `test` | test/test-lifecycle | 生命周期测试页 |
 | `''`（默认） | — | 重定向到 `chat/{lastChatTo 或 @admin}` |
 
 `App.attached()` 还承担三类全局行为：
@@ -167,16 +166,17 @@ au run build --env prod
 
 ## HTML 编辑器
 
-项目内置 6 个独立的 HTML 编辑器页面，通过 iframe 嵌入到博文/聊天中，使用 `postMessage` 与父窗口通信。
+项目内置 5 个独立的 HTML 编辑器页面，通过 iframe 嵌入到博文/聊天中，使用 `postMessage` 与父窗口通信。
 
 | 文件 | 底层库 | 用途 |
 | --- | --- | --- |
 | [blog.html](blog.html) | Froala | 富文本博文编辑 |
-| [sheet.html](sheet.html) | Luckysheet | 电子表格（功能完整版） |
-| [excel.html](excel.html) | x-spreadsheet | 轻量 Excel |
+| [sheet.html](sheet.html) | Luckysheet | 电子表格（活跃使用） |
 | [mind.html](mind.html) | mind-elixir-core | 思维导图 |
 | [excalidraw.html](excalidraw.html) | Excalidraw（React） | 手绘白板 |
 | — | Draw.io（iframe 嵌入，见 `em-blog-write-draw` / `em-blog-draw`） | 流程图 |
+
+> 已废弃：[excel.html](excel.html)（基于 x-spreadsheet）不再支持新建，仅保留 `em-blog-excel` / `em-blog-write-excel` 组件用于渲染历史 Excel 文档。新建电子表格请使用 `sheet.html`。
 
 ### 编辑器通信协议
 
@@ -203,8 +203,8 @@ window.addEventListener('message', (evt) => {
 
 ### 对应的 Aurelia 组件
 
-- `em-blog-write` / `em-blog-write-html` / `em-blog-write-sheet` / `em-blog-write-excel` / `em-blog-write-mind` / `em-blog-write-excalidraw` / `em-blog-write-draw`：编辑态容器
-- `em-blog-content` / `em-blog-sheet` / `em-blog-excel` / `em-blog-mind` / `em-blog-excalidraw` / `em-blog-draw`：只读态容器
+- `em-blog-write` / `em-blog-write-html` / `em-blog-write-sheet` / `em-blog-write-mind` / `em-blog-write-excalidraw` / `em-blog-write-draw`：编辑态容器（`em-blog-write-excel` 已废弃，仅渲染历史文档）
+- `em-blog-content` / `em-blog-sheet` / `em-blog-mind` / `em-blog-excalidraw` / `em-blog-draw`：只读态容器（`em-blog-excel` 已废弃，仅渲染历史文档）
 
 ## 资源系统
 
@@ -353,7 +353,7 @@ au run build --env prod
 - Fancybox 3：<http://fancyapps.com/fancybox/3/>
 - Froala：<https://github.com/froala/wysiwyg-editor>
 - jsdiff：<https://github.com/kpdecker/jsdiff>
-- x-spreadsheet：<https://github.com/myliang/x-spreadsheet>
+- Luckysheet：<https://github.com/dream-num/Luckysheet>
 - mind-elixir-core：<https://github.com/ssshooter/mind-elixir-core>
 - SortableJS：<http://www.sortablejs.com/index.html>
 

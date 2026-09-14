@@ -467,6 +467,14 @@
             line-height: 1.7;
             overflow-x: auto;
             box-shadow: var(--shadow-md);
+            white-space: pre;
+            word-wrap: normal;
+            tab-size: 4;
+        }
+
+        .code-block code,
+        .code-block span {
+            white-space: pre;
         }
 
         .code-comment {
@@ -783,7 +791,7 @@
                 <div class="stat-label">自定义组件</div>
             </div>
             <div>
-                <div class="stat-num">6</div>
+                <div class="stat-num">5</div>
                 <div class="stat-label">HTML 编辑器</div>
             </div>
             <div>
@@ -812,7 +820,7 @@
             <div class="feature">
                 <div class="feature-icon">📚</div>
                 <h3>博文知识库</h3>
-                <p>多空间、多层级目录的博文管理，支持 Markdown / 富文本 / 表格 / 思维导图 / 白板 / Excel / 流程图七种编辑器，版本历史与 diff 对比、评论与分享。</p>
+                <p>多空间、多层级目录的博文管理，支持 Markdown / 富文本 / 表格 / 思维导图 / 白板 / 流程图六种编辑器，版本历史与 diff 对比、评论与分享。</p>
             </div>
             <div class="feature">
                 <div class="feature-icon">🗂️</div>
@@ -919,8 +927,8 @@
             </div>
             <div class="tech-item">
                 <div>
-                    <div class="tech-name">Luckysheet / x-spreadsheet</div>
-                    <div class="tech-desc">电子表格</div>
+                    <div class="tech-name">Luckysheet</div>
+                    <div class="tech-desc">电子表格（活跃）</div>
                 </div>
                 <span class="tech-tag">表格</span>
             </div>
@@ -990,7 +998,6 @@
                     <div class="arch-box">chat/chat</div>
                     <div class="arch-box">blog/blog</div>
                     <div class="arch-box">user/login · register · pwd-reset</div>
-                    <div class="arch-box">test/test-lifecycle</div>
                 </div>
                 <div class="arch-arrow">→</div>
                 <div class="arch-col">
@@ -1135,7 +1142,7 @@
     <section class="section" id="editors">
         <div class="section-head">
             <h2>内置 HTML 编辑器</h2>
-            <p>六种独立编辑器页面，通过 iframe + postMessage 嵌入</p>
+            <p>五种独立编辑器页面，通过 iframe + postMessage 嵌入</p>
         </div>
         <div class="editors">
             <div class="editor-card">
@@ -1149,12 +1156,6 @@
                 <h4>电子表格</h4>
                 <p>功能完整的 Luckysheet</p>
                 <span class="lib">sheet.html</span>
-            </div>
-            <div class="editor-card">
-                <div class="editor-emoji">📗</div>
-                <h4>Excel</h4>
-                <p>轻量 x-spreadsheet</p>
-                <span class="lib">excel.html</span>
             </div>
             <div class="editor-card">
                 <div class="editor-emoji">🧠</div>
